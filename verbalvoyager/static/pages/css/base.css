@@ -1,0 +1,44 @@
+:root {
+    --color-white-warm: #EDE2D1;
+
+    --color-brown: #A25E1B;
+    --color-brown-pale: #D08F4E;
+    --color-brown-paler: #D1A071;
+    --color-creme: #eec8a5;
+    --color-brown-dark: #693909;
+    --color-brown-darker: #371805;
+
+    /* Exersices */
+    /* --color-ex-violet-main: #8106A9;
+    --color-ex-violet-dark: #68237F;
+    --color-ex-violet-darker: #54026E;
+    --color-ex-violet-pale: #AF3BD4;
+    --color-ex-violet-paler: #B964D4;
+    --color-ex-violet-max-pale: #D9A6EA; */
+    
+    --color-violet-pastel-main: #A17DD0;
+    --color-violet-pastel-dark: #816D9C;
+    --color-violet-pastel-darker: #512987;
+    --color-violet-pastel-pale: #C0A2E8;
+    --color-violet-pastel-paler: #CBB5E8;
+    --color-violet-pastel-max-pale: #E3D6F3;
+
+    --color-pink-pastel-main: #CC73CC;
+    --color-pink-pastel-dark: #996799;
+    --color-pink-pastel-darker: #852585;
+    --color-pink-pastel-pale: #E59AE5;
+    --color-pink-pastel-paler: #E5AEE5;
+    --color-pink-pastel-max-pale: #F2D2F2;
+
+    --color-blue-pastel-main: #8585D3;
+    --color-blue-pastel-dark: #72729E;
+    --color-blue-pastel-darker: #2B2B89;
+    --color-blue-pastel-pale: #A8A8E9;
+    --color-blue-pastel-paler: #BABAE9;
+    --color-blue-pastel-max-pale: #D9D9F4;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: white;
+}

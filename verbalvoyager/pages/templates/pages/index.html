@@ -1,0 +1,184 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+
+{% block title %}Главная{% endblock  %}
+{% block 'style' %}
+  <link rel="stylesheet" href="{% static 'pages/css/index.css' %}">
+{% endblock  %}
+
+{% block content %}
+  <!-- Preview  -->
+  <div class='container mt-5'>
+    <div class="text-body-emphasis preview-container">
+      <div class="row row-cols-2 row-cols-sm-1 justify-content-center">
+        <div class='col-8 col-sm-8 col-md-4 col-xl-4 pt-2 align-self-end'>
+          <img src="{% static 'pages/images/main_photo.png' %}" width='300' class="img-fluid w-auto" alt='Photo'>
+        </div>
+        <div class="col-12 col-sm-12 col-md-8 col-xl-6 align-self-center preview-text">
+          <div class="preview-header p-2">
+            <h1 class="preview-header-text-main display-5 text-end text-uppercase">Здравствуйте</h1>
+            <h5 class="preview-header-text-secondary text-end">Я - преподаватель иностранных языков</h5>
+          </div>
+          <div class="px-3">
+            <p class="lead my-3">Открыть новые возможности для коммуникации, обогатить знания о других культурах, помочь лучше понять наш мир - всё это и не только помогает изучение нового для вас языка!</p>
+            <a class="btn mb-5 text-end disabled" href="{% url 'portfolio' %}" role="button" aria-disabled="true">Подробнее</a>
+          </div>
+        </div>
+      </div> 
+    </div>
+  </div>
+  
+  <!-- Caruosel -->
+  {% include 'pages/carousel.html' %}
+
+  <!-- Cards -->
+  <div class="album py-2">
+    <div class='container py-2'>
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        <div class="col-xl-4 col-md-12">
+          <div class="card d-flex flex-column h-100 shadow-sm">
+            <img src="{% static 'pages/images/english.png' %}" class="d-block w-100" alt="Third Slide Image">
+            <div class="card-body d-flex flex-column justify-content-start">
+              <h5 class="card-title align-self-start">English course</h5>
+              <p class="card-text">Английский - безусловно самый популярный международный язык в настоящее время. Он открывает бесчисленные возможности: путешествия, новая работа, общение с людьми всего мира. Знание этого языка помогает расширить горизонты и обогатить свою жизнь независимо от причин, по которым вы его изучаете.</p>
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+              <span>95 учеников</span>
+              <a class="btn disabled" href="{% url 'english' %}" role="button" aria-disabled="true">Записаться</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4 col-md-12">
+          <div class="card d-flex flex-column h-100 shadow-sm">
+            <img src="{% static 'pages/images/french.png' %}" class="d-block w-100" alt="Third Slide Image">
+            <div class="card-body d-flex flex-column justify-content-start">
+              <h5 class="card-title align-self-start">French course</h5>
+              <p class="card-text">Французский - язык любви, изящности и искусства. Его изучение поможет вам погрузиться в богатую культуру и историю Франции. Французский язык также является одним из официальных языков многих международных организаций, что делает его полезным для карьерного роста и профессиональной деятельности.</p>
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+              <span>66 учеников</span>
+              <a class="btn disabled" href="{% url 'french' %}" role="button" aria-disabled="true">Записаться</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4 col-md-12">
+          <div class="card d-flex flex-column h-100 shadow-sm">
+            <img src="{% static 'pages/images/spanish.png' %}" class="d-block w-100" alt="Third Slide Image">
+            <div class="card-body d-flex flex-column justify-content-start">
+              <h5 class="card-title align-self-start">Spanish course</h5>
+              <p class="card-text">Испанский - третий по популярности язык в мире. В этом языке 60% англо-саксонских корней и он достаточно прост в изучении. Знание этого языка открывает вам доступ ко многим испаноязычным странам: Мексике, Аргентине, Кубе, Колумбии, Чили и другим! </p>
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+              <span>30 учеников</span>
+              <a class="btn disabled" href="{% url 'spanish' %}" role="button" aria-disabled="true">Записаться</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Blog -->
+  <!-- <div class="container py-4 text-start">
+    <h2 class="featurette-heading pb-3 fw-normal lh-1 text-center">Блог</h2>
+    <div class="row mb-2">
+      <div class="col-md-6 align-self-right">
+        <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-100 position-relative blog-card">
+          <div class="col p-4 d-flex flex-column position-static">
+            <strong class="d-inline-block mb-2 text-primary-emphasis blog-theme">World</strong>
+            <h3 class="mb-0">Featured post</h3>
+            <div class="mb-1 text-body-secondary blog-date">Nov 12</div>
+            <p class="card-text mb-auto">{% lorem 1 b random %}</p>
+            <a class="blog-link btn" href="#" role="button">Перейти к статье</a>
+          </div>
+          <div class="col-auto p-4 d-none d-lg-block m-auto">
+            <img src="http://placehold.it/400x500/2c3e50/3498db&text=No Photo" class="bd-placeholder-img" width="200" height="250" alt="Third Slide Image">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 align-self-right">
+        <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-100 position-relative blog-card">
+          <div class="col p-4 d-flex flex-column position-static">
+            <strong class="d-inline-block mb-2 text-primary-emphasis blog-theme">World</strong>
+            <h3 class="mb-0">Featured post</h3>
+            <div class="mb-1 text-body-secondary blog-date">Nov 12</div>
+            <p class="card-text mb-auto">{% lorem 1 b random %}</p>
+            <a class="blog-link btn" href="#" role="button">Перейти к статье</a>
+          </div>
+          <div class="col-auto p-4 d-none d-lg-block m-auto">
+            <img src="http://placehold.it/400x500/2c3e50/3498db&text=No Photo" class="blog-link bd-placeholder-img" width="200" height="250" alt="Third Slide Image">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+      
+  <!-- Reviews -->
+  
+  <div class="container reviews-container">
+    {% if reviews %}
+      <h2 class="featurette-heading py-3 fw-normal lh-1 text-center">Ваши отзывы</h2>
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+        {% for review in reviews  %}
+          <div class="review-card-not-even col-xl-4 col-md-12">
+            <div class="d-flex flex-column">
+              <div class="d-flex flex-column p-4 h-100 align-items-center justify-content-center review-card">
+                <img class='avatar rounded-circle' src="{% static "images/default_avatar.png" %}" width="140" height="140" alt="User photo">
+                <p>
+                  <h2 class="fw-normal">{{ review.from_user.first_name }}</h2>
+                  <small class="text-body-secondary">{{review.course_name}}</small>
+                  <small class="text-body-secondary">{{review.date}}</small>
+                </p>
+                <hr class='review-hr w-100'>
+                <p class='review-text'>{{review.text }}</p>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- State -->
+  <!-- <div class="container py-2 text-center state-container">
+    <h2 class="featurette-heading py-3 fw-normal lh-1">Штат</h2>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 justify-content-center">
+      <div class="col-xl-4 col-md-12 align-self-center">
+        <div class="card mb-3" style="max-width: 540px;">
+          <div class="row g-0">
+            <div class="col-md-4">
+              <div class="d-flex flex-column h-100">
+                <img src="http://placehold.it/300x450/2c3e50/3498db&text=Photo" class="d-block w-100 h-100" alt="Photo">
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="card-body">
+                <h5 class="card-title">Elizapeth</h5>
+                <p class="card-text"><small class="text-body-secondary">Teacher</small></p>
+                <p class="card-text text-start">{% lorem 15 w random %}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-4 col-md-12 align-content-center">
+        <div class="card mb-3" style="max-width: 540px;">
+          <div class="row g-0">
+            <div class="col-md-4">
+              <div class="d-flex flex-column h-100">
+                <img src="http://placehold.it/300x450/2c3e50/3498db&text=Photo" class="d-block w-100 h-100" alt="Photo">
+              </div>            
+            </div>
+            <div class="col-md-8">
+              <div class="card-body">
+                <h5 class="card-title">Ivan</h5>
+                <p class="card-text"><small class="text-body-secondary">Developer</small></p>
+                <p class="card-text text-start">{% lorem 15 w random %}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+{% endblock content %}

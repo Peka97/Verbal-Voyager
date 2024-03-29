@@ -1,0 +1,94 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}{% endblock  %}
+
+{% block content %}
+    <div class='container text-start'>
+        <div class='row pt-3 text-start'>
+            <div class='col'>
+                <h2>Биография</h2>
+            </div>
+        </div>
+        <div class='row pt-3 align-self-center'>
+            <div class='col col-lg-auto'>
+                <img src="{% static 'main/images/portfolio_elizabeth.png' %}" class="bd-placeholder-img align-self-center w-auto" height="400" alt="Third Slide Image">
+            </div>
+            <div class='col align-self-center'>
+                <p>{% lorem 1 p random %}</p>
+            </div>
+        </div>
+        <hr>
+        <div class='row pt-3 text-end'>
+            <div class='col'>
+                <h2>Школа дополнительного образования</h2>
+            </div>
+        </div>
+        <div class='row pt-3 align-self-center'>
+            <div class='col align-self-center'>
+                <p>{% lorem 1 p random %}</p>
+            </div>
+            <div class='col col-lg-auto'>
+                <img src="http://placehold.it/400x500/2c3e50/3498db&text=Photo" class="bd-placeholder-img align-self-center w-auto" height="400" alt="Third Slide Image">
+            </div>
+        </div>
+        <hr>
+        <div class='row pt-3 text-start'>
+            <div class='col'>
+                <h2>Высшее образование</h2>
+            </div>
+        </div>
+        <div class='row pt-3 align-self-center'>
+            <div class='col col-lg-auto'>
+                <img src="http://placehold.it/400x500/2c3e50/3498db&text=Photo" class="bd-placeholder-img align-self-center w-auto" height="400" alt="Third Slide Image">
+            </div>
+            <div class='col align-self-center'>
+                <p>{% lorem 1 p random %}</p>
+            </div>
+        </div>
+        <hr>
+        <div class='row pt-3 text-end'>
+            <div class='col'>
+                <h2>Повышение квалификации</h2>
+            </div>
+        </div>
+        <div class='row pt-3 align-self-center'>
+            <div class='col align-self-center'>
+                <p>{% lorem 1 p random %}</p>
+            </div>
+            <div class='col col-lg-auto'>
+                <img src="http://placehold.it/400x500/2c3e50/3498db&text=Photo" class="bd-placeholder-img align-self-center w-auto" height="400" alt="Third Slide Image">
+            </div>
+        </div>
+        <hr>
+        <div class='row pt-3 text-start'>
+            <div class='col'>
+                <h2>Опыт работы</h2>
+            </div>
+        </div>
+        <div class='row pt-3 align-self-center'>
+            <div class='col col-lg-auto'>
+                <img src="http://placehold.it/400x500/2c3e50/3498db&text=Photo" class="bd-placeholder-img align-self-center w-auto" height="400" alt="Third Slide Image">
+            </div>
+            <div class='col align-self-center'>
+                <p>{% lorem 1 p random %}</p>
+            </div>
+        </div>
+        <hr>
+    <div class='row pt-3 text-end'>
+        <div class='col'>
+            <h2>Дипломы, сертификаты и благодарственные письма</h2>
+        </div>
+    </div>
+    <div class='row pt-3 align-self-center'>
+        <div class='col align-self-center'>
+            <p>{% lorem 1 p random %}</p>
+        </div>
+        <div class='col col-lg-auto'>
+            <img src="http://placehold.it/400x500/2c3e50/3498db&text=Photo" class="bd-placeholder-img align-self-center w-auto" height="400" alt="Third Slide Image">
+        </div>
+    </div>
+    <hr>
+</div>
+
+{% endblock  %}

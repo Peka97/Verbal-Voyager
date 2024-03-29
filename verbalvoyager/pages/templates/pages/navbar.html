@@ -1,0 +1,65 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-md w-100 sticky-top">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>        
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav m-auto mb-lg-0">
+            <li>
+              <a href='{% url "" %}' class="nav-link py-0">
+                <img class='logo' src="{% static 'pages/images/logo.png' %}" alt="logo">
+              </a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle align-middle disabled" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-disabled="true">
+                Курсы
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'english' %}">Английский язык</a></li>
+                <li><a class="dropdown-item" href="{% url 'french' %}">Французский язык</a></li>
+                <li><a class="dropdown-item" href="{% url 'spanish' %}">Испанский язык</a></li>
+              </ul>
+            </li>
+            <li><a href="{% url 'about' %}" class="nav-link px-2 disabled" aria-disabled="true">О проекте</a></li>
+            <li><a href="{% url 'faq' %}" class="nav-link px-2 disabled" aria-disabled="true">FAQ</a></li>
+            <li><a href="{% url 'portfolio' %}" class="nav-link px-2 disabled" aria-disabled="true">О себе</a></li>
+            <li><a href="{% url 'contacts' %}" class="nav-link px-2" aria-disabled="true">Контакты</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="navbar align-self-start">
+      {% if user.is_authenticated %}
+        <div class="dropdown pt-2">
+          <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class='px-2 text-light'>
+              {% if user.first_name %}
+                {{ user.last_name }} {{ user.first_name }}
+              {% else %}
+                {{ user.username}}
+              {% endif %}
+              
+            </span>
+            <img class='avatar rounded-circle' src="{% static "users/images/default_avatar.png" %}" width="32" height="32" alt="User photo">
+          </a>
+          <ul class="dropdown-menu text-small shadow" style="">
+            <li><a class="dropdown-item" href="{% url 'profile' %}">Профиль</a></li>
+            {% if user.is_teacher %}
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'admin' %}">Администрирование</a></li>
+            {% endif %}
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
+          </ul>
+        </div>
+      {% else %}
+        <a class="btn me-2" href="{% url 'auth' %}" role="button">Войти</a>
+        <a class="btn me-2" href="{% url 'sign_up' %}" role="button">Зарегистрироваться</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>

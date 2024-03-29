@@ -1,0 +1,107 @@
+{% for event in events %}
+    {% if event.students.count < 2 %}
+        <div name='{{ event.datetime.day }}.{{ event.datetime.month }}.{{ event.datetime.year }}' class="event-card">
+            <div class="accordion accordion-flush" id="accordionFlushExample">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ event.pk }}" aria-expanded="false" aria-controls="flush-collapse{{ event.pk }}">
+                            <div class="event-name"> 
+                                {% if event.datetime.minute < 10 %}
+                                    {% with prefix=0 %}
+                                        {{ event.datetime.hour }}:{{ prefix }}{{ event.datetime.minute}} (SRT)
+                                    {% endwith %}
+                                {% else %}
+                                    {% with prefix="" %}
+                                        {{ event.datetime.hour }}:{{ prefix }}{{ event.datetime.minute}} (SRT)
+                                    {% endwith %}
+                                {% endif %}
+                                <br>
+                                <i class="bi bi-person-fill" style='color: indigo'></i> {{ event.students.first.last_name }} {{ event.students.first.first_name }}													
+                            </div>
+                            <div class="event-count pr-2">
+                                {% if event.status == 'P' %}
+                                    <i class="bi bi-clock text-warning"></i> 
+                                {% elif event.status == 'C' %}
+                                    <i class="bi bi-x-circle text-danger"></i>
+                                {% else %}
+                                    <i class="bi bi-check-circle text-success"></i> 
+                                {% endif %}
+
+                                {% if event.is_paid %}
+                                    <i class="bi bi-wallet text-success"></i>
+                                {% else %}
+                                    <i class="bi bi-wallet text-danger"></i> 
+                                {% endif %}
+                                <br>
+                                {{ event.title }}
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="flush-collapse{{ event.pk }}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                        <div class="accordion-body"> 
+                            <span style='font-weight: lighter; color: indigo'>HW: </span>{{ event.description }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div name='{{ event.datetime.day }}.{{ event.datetime.month }}.{{ event.datetime.year }}' class="event-card">
+            <div class="accordion accordion-flush" id="accordionFlushExample">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ event.pk }}" aria-expanded="false" aria-controls="flush-collapse{{ event.pk }}">
+                            <div class="event-name"> 
+                                {% if event.datetime.minute < 10 %}
+                                    {% with prefix=0 %}
+                                        {{ event.datetime.hour }}:{{ prefix }}{{ event.datetime.minute}} (SRT)
+                                    {% endwith %}
+                                {% else %}
+                                    {% with prefix="" %}
+                                        {{ event.datetime.hour }}:{{ prefix }}{{ event.datetime.minute}} (SRT)
+                                    {% endwith %}
+                                {% endif %}
+                                <br>
+                                <i class="bi bi-people-fill" style='color: indigo'></i>
+                                Group name
+                            </div>
+                            <div class="event-count">
+                                {% if event.status == 'P' %}
+                                    <i class="bi bi-clock text-warning"></i> 
+                                {% elif event.status == 'C' %}
+                                    <i class="bi bi-x-circle text-danger"></i>
+                                {% else %}
+                                    <i class="bi bi-check-circle text-success"></i> 
+                                {% endif %}
+
+                                {% if lesson.is_paid %}
+                                    <i class="bi bi-wallet text-success"></i>
+                                {% else %}
+                                    <i class="bi bi-wallet text-danger"></i> 
+                                {% endif %}
+
+                                {{ event.title }}
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="flush-collapse{{ event.pk }}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                        <div class="accordion-body"> 
+                            {% for student in event.students.all %}
+                                <div class='event-name'> 
+                                    <span class='' style='font-weight: bold; color: indigo'>
+                                        {{ student.last_name }} {{ student.first_name }}
+                                    </span>
+                                    <div class='event-name'> 
+                                        <span style='font-weight: lighter; color: indigo'>HW: </span>
+                                        {{ lesson.description }}
+                                    </div>
+                                    <hr class='border-primary p-0 m-0'>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endfor %}

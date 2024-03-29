@@ -1,0 +1,94 @@
+.btn {
+    color: white;
+    background-color: var(--color-brown);
+    border: var(--color-brown-dark) solid 1px;
+}
+
+.btn:hover {
+    background-color: var(--color-brown-pale);
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+/* a.dropdown-toggle:active {
+    color: var(--color-brown-paler)
+} */
+
+.preview-container {
+    /* background-color: var(--color-1-pale); */
+}
+
+.preview-header {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    border: var(--color-brown-dark) solid 10px;
+}
+
+.preview-header-text-main {
+    color: var(--color-brown-darker);
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.preview-header-text-secondary {
+    font-weight: bold;
+}
+
+.preview-text {
+    /* background-color: var(--color-1-pale); */
+}
+
+.carousel-caption {
+    background-color: var(--color-brown-pale);
+}
+
+.carousel-control-prev, .carousel-control-next {
+    background-color: var(--color-brown);
+}
+
+.card {
+    background-color: white;
+    border: var(--color-brown-paler) solid 1px;
+}
+
+.card-title {
+    font-weight: bold;
+    color: var(--color-brown-darker);
+}
+
+
+.card-footer {
+    background-color: var(--color-creme);
+    border-top: var(--color-brown-paler) solid 1px;
+}
+
+.card-btn {
+    background-color: var(--color-brown);
+    color: white;
+    border-color: var(--color-brown-darker);
+}
+
+.card-btn:hover {
+    background-color: var(--color-brown-pale);
+    color: black;
+    border-color: var(--color-brown-darker);
+}
+
+/* .reviews-container {
+    background-color: white;
+    border: var(--color-brown-paler) solid 1px;
+} */
+
+/* .review-card-even {
+    background-color: var(--color-brown-pale);
+}
+
+.review-card-not-even {
+    background-color: var(--color-brown-paler);
+} */
+
+.state-container {
+    /* background-color: var(--color-main-3-pastel); */
+}

@@ -1,0 +1,111 @@
+.btn {
+    width: max-content;
+    color: white;
+    background-color: var(--color-violet-pastel-dark);
+    border: var(--color-violet-pastel-darker) solid 1px;
+}
+
+.btn:hover {
+    color: black !important;
+    background-color: var(--color-violet-pastel-paler);
+    border-color: var(--color-violet-pastel-darker);
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+.preview-header {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    border: var(--color-violet-pastel-dark) solid 10px;
+    border-radius: 5px;
+}
+
+.preview-header-text-main {
+    color: var(--color-violet-pastel-darker);
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.preview-header-text-secondary {
+    color: var(--color-violet-pastel-darker);
+    font-weight: bold;
+}
+
+.carousel-caption {
+    background-color: var(--color-blue-pastel-max-pale);
+    border-radius: 5px;
+}
+
+.carousel-control-prev, .carousel-control-next {
+    background-color: var(--color-blue-pastel-pale);
+}
+
+.carousel-header {
+    font-weight: bolder;
+    color: var(--color-blue-pastel-darker);
+}
+
+.carousel-text {
+    color: var(--color-blue-pastel-darker);
+}
+
+.card {
+    background-color: white;
+    border: var(--color-blue-pastel-paler) solid 1px;
+}
+
+.card-title {
+    font-weight: bold;
+    color: var(--color-violet-pastel-darker);
+}
+
+.card-footer {
+    background-color: var(--color-pink-pastel-max-pale);
+    border-top: var(--color-blue-pastel-darker) solid 1px;
+}
+
+.blog-card {
+    background-color: var(--color-blue-pastel-max-pale);
+    border: var(--color-violet-pastel-dark) solid 1px !important; 
+}
+
+.blog-theme {
+    color: var(--color-violet-pastel-darker);
+}
+
+.blog-date {
+    color: var(--color-violet-pastel-pale);
+}
+
+.blog-link:hover {
+    color: var(--color-violet-pastel-dark)
+}
+
+/* .reviews-container {
+    background-color: white;
+    border: var(--color-brown-paler) solid 1px;
+} */
+
+/* .review-card-even {
+    background-color: var(--color-brown-pale);
+}
+
+.review-card-not-even {
+    background-color: var(--color-brown-paler);
+} */
+
+.review-hr {
+    color: var(--color-blue-pastel-darker)
+}
+
+.review-card {
+    background-color: var(--color-blue-pastel-max-pale);
+    border: var(--color-violet-pastel-darker) solid 1px  ;
+    border-radius: 10px;
+}
+
+.state-container {
+    /* background-color: var(--color-main-3-pastel); */
+}

@@ -1,0 +1,251 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Главная{% endblock  %}
+
+{% block 'style' %}
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="{% static 'css/calendar.css' %}">
+{% endblock  %}
+
+{% block content %}
+<div class="container bg-body-secondary">
+
+	<div class='row'>
+		<div class='col'>
+			<h2 class='p-2'>Профиль студента</h2>
+		</div>
+	</div>
+
+    <div class="row justify-content-center bg-body-secondary">
+		<div class='col-lg-auto my-3'>
+			<img src="http://placehold.it/400x500/2c3e50/3498db&text=User photo" class="bd-placeholder-img" width="200" height="250" alt="User photo">
+		</div>
+        <div class="col my-3">
+			<div class=''>
+				<div class='col align-self-center'>
+					<h3>Личные данные</h3>
+					<hr class='border-black border-2'>
+					<div class='row row-cols-auto text-black'>
+						<div class='col col-lg-3 align-self-center'>
+							<p> Имя: </p>
+						</div>
+						<div class='col align-self-center'>
+							<p> {{ user.first_name }} </p>
+						</div>
+					</div> 
+					<div class='row row-cols-auto text-black align-self-center'>
+						<div class='col col-lg-3'>
+							<p> Фамилия: </p>
+						</div>
+						<div class='col align-self-center'>
+							<p> {{ user.last_name }} </p>
+						</div>
+					</div> 
+				</div> 
+			</div> 
+		</div> 
+        <div class="col my-3">
+			<h3>Статистика</h3>
+			<hr class='border-black border-2'>
+			<div class='row row-cols-auto text-black'>
+				<div class='col align-self-center'>
+					<p> Количество проведенных занятий: </p>
+				</div>
+				<div class='col align-self-center'>
+					<p> {{ events_count_done }} </p>
+				</div>
+			</div>
+			<div class='row row-cols-auto text-black'>
+				<div class='col col-lg-3 align-self-center'>
+					<p> Занятий всего: </p>
+				</div>
+				<div class='col align-self-center'>
+					<p> {{ events_count_total }} </p>
+				</div>
+            </div>
+        </div>
+	</div>
+	<hr class='border-black border-3'>
+	<div class='row'>
+		<div class='col'>
+			<h2>Сервисы</h2>
+		</div>
+		<div class="accordion" id="accordionExample">
+			<div class="accordion-item">
+			  <h4 class="accordion-header">
+				<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+				  Accordion Item #1
+				</button>
+			  </h4>
+			  <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
+				<div class="accordion-body">
+				  <strong>This is the first item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+				</div>
+			  </div>
+			</div>
+			<div class="accordion-item">
+			  <h4 class="accordion-header">
+				<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+				  Accordion Item #2
+				</button>
+			  </h4>
+			  <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+				<div class="accordion-body">
+				  <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+				</div>
+			  </div>
+			</div>
+			<div class="accordion-item">
+			  <h4 class="accordion-header">
+				<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+				  Accordion Item #3
+				</button>
+			  </h4>
+			  <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+				<div class="accordion-body">
+				  <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+				</div>
+			  </div>
+			</div>
+		  </div>
+	</div>
+	<div class="row justify-content-center">
+		<div class='body-calendar'>
+			<section class="ftco-section">
+				<div class="container">
+					<div class="row justify-content-center">
+						<div class="col text-center">
+							<h2 class="heading-section">Календарь</h2>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<div class="content w-100">
+							<div class="calendar-container">
+								<div class="calendar"> 
+								<div class="year-header"> 
+									<span class="left-button fa fa-chevron-left" id="prev"> </span> 
+									<span class="year" id="label"></span> 
+									<span class="right-button fa fa-chevron-right" id="next"> </span>
+								</div> 
+								<table class="months-table w-100"> 
+									<tbody>
+									<tr class="months-row">
+										<td class="month">Jan</td> 
+										<td class="month">Feb</td> 
+										<td class="month">Mar</td> 
+										<td class="month">Apr</td> 
+										<td class="month">May</td> 
+										<td class="month">Jun</td> 
+										<td class="month">Jul</td>
+										<td class="month">Aug</td> 
+										<td class="month">Sep</td> 
+										<td class="month">Oct</td>          
+										<td class="month">Nov</td>
+										<td class="month">Dec</td>
+									</tr>
+									</tbody>
+								</table> 
+								
+								<table class="days-table w-100"> 
+									<td class="day">Sun</td> 
+									<td class="day">Mon</td> 
+									<td class="day">Tue</td> 
+									<td class="day">Wed</td> 
+									<td class="day">Thu</td> 
+									<td class="day">Fri</td> 
+									<td class="day">Sat</td>
+								</table>
+								<div class="frame"> 
+									<table class="dates-table w-100"> 
+									<tbody class="tbody">  
+										{{ calendar | safe }}            
+									</tbody> 
+									</table>
+								</div> 
+								{% if teacher %}
+								<button class="button" id="add-button">Add Event</button>
+								{% endif %}
+								</div>
+							</div>
+							<div class="events-container">
+								<div name='empty-card' class="event-card hidden">
+									<div class='event-name'>Занятий сегодня нет</div>
+								</div>
+								{% if events %}
+									{% for event in events %}
+										{% if event.time.minute < 10 %}
+											{% with prefix=0 %}
+											<div name='{{ event.time.day }}.{{ event.time.month }}.{{ event.time.year }}' class="event-card">
+												<div class="event-name"> {{ event.time.hour }}:{{ prefix }}{{ event.time.minute}} | {{ event.teacher.last_name }} {{ event.teacher.first_name }}</div>
+												<div class="event-count"> {{ event.title }} </div>
+												<div class="accordion accordion-flush" id="accordionFlushExample">
+													<div class="accordion-item">
+													  <h2 class="accordion-header">
+														<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+														  Accordion Item #1
+														</button>
+													  </h2>
+													  <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+														<div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the <code>.accordion-flush</code> class. This is the first item's accordion body.</div>
+													  </div>
+													</div>
+												</div>
+											</div>
+											{% endwith %}
+										{% else %}
+											{% with prefix="" %}
+											<div name='{{ event.time.day }}.{{ event.time.month }}.{{ event.time.year }}' class="event-card">
+												<div class="event-name"> {{ event.time.hour }}:{{ prefix }}{{ event.time.minute}} | {{ event.teacher.last_name }} {{ event.teacher.first_name }}</div>
+												<div class="event-count"> {{ event.title }} </div>
+												<div class="event-name"> {{ event.teacher }} </div>
+											</div>
+											{% endwith %}
+
+										{% endif %}
+										
+									{% endfor %}
+
+								{% else %}
+								<div class="event-card" style="border-left: 10px solid rgb(255, 23, 68);">
+									<div class="event-name">
+										There are no events planned for August 23.
+									</div>
+								</div>
+								{% endif %}
+
+							</div>
+							<div class="dialog" id="dialog">
+								<h2 class="dialog-header"> Add New Event </h2>
+								<form class="form" id="form">
+									<div class="form-container" align="center">
+									<label class="form-label" id="valueFromMyButton" for="name">Event name</label>
+									<input class="input" type="text" id="name" maxlength="36">
+									<label class="form-label" id="valueFromMyButton" for="count">Number of people to invite</label>
+									<input class="input" type="number" id="count" min="0" max="1000000" maxlength="7">
+									<input type="button" value="Cancel" class="button" id="cancel-button">
+									<input type="button" value="OK" class="button button-white" id="ok-button">
+									</div>
+								</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+    </div>
+</div>
+</body>
+{% endblock %}
+
+{% block 'js' %}
+	<script src="{% static 'js/jquery.min.js' %}"></script>
+  <script src="{% static 'js/popper.js' %}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+	<script src="{% static 'js/main.js' %}"></script>
+  <script src="/docs/5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+  <script src="{% static 'js/name.js' %}"></script>
+{% endblock  %}
