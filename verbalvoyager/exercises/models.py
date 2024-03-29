@@ -17,10 +17,10 @@ class Word(models.Model):
             ('sp', 'Spanish')
         ]
     )
-    sentences = models.TextField(max_length=255, null=True, blank=True)
+    sentences = models.TextField(max_length=500, null=True, blank=True)
 
     def __str__(self) -> str:
-        return f'{self.word}'
+        return f'{self.lang} | {self.word} - {self.translate}'
 
     class Meta:
         verbose_name = 'Слово для изучения'

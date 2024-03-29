@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block 'title' %}{% endblock  %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css" integrity="sha384-b6lVK+yci+bfDmaY1u0zE8YYJt0TZxLEAFyYSLHId4xoVvsrQu3INevFKo+Xir8e" crossorigin="anonymous">  
+    
+    <!-- Font Awesome CSS-->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    {% block 'style' %}{% endblock %}
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <ul class="nav nav-tabs nav-fill">
+          <li class="nav-item p-2">
+            <a id='step_1' class="nav-link {% if step == 1 %}active step-active {% elif step > 1 %} step-complete {% else %} step-future {% endif %} disabled" aria-disabled="true">
+              {% if step == 1 %}
+                → Step 1 ←
+              {% elif step > 1 %}
+                Step 1 ✔
+              {% else %}
+                Step 1
+              {% endif %}
+            </a>
+          </li>
+          <li class="nav-item p-2">
+            <a id='step_2' class="nav-link {% if step == 2 %}active step-active {% elif step > 2 %} step-complete {% else %} step-future {% endif %} disabled" href={% url "exercises_words" id=id step=2 %} aria-disabled="true">
+              {% if step == 2 %}
+                → Step 2 ←
+              {% elif step > 2 %}
+                Step 2 ✔
+              {% else %}
+                Step 2 
+              {% endif %}
+            </a>
+          </li>
+          <li class="nav-item p-2">
+            <a id='step_3' class="nav-link {% if step == 3 %}active step-active {% elif step > 3 %} step-complete {% else %} step-future {% endif %} disabled" href={% url "exercises_words" id=id step=3 %} aria-disabled="true">
+              {% if step == 3 %}
+                → Step 3 ←
+              {% elif step > 3 %}
+                Step 3 ✔
+              {% else %}
+                Step 3
+              {% endif %}
+            </a>
+          </li>
+          <li class="nav-item p-2">
+            <a id='step_4' class="nav-link {% if step == 4 %}active step-active {% else %} step-future {% endif %} disabled" href={% url "exercises_words" id=id step=4 %} aria-disabled="true">
+              {% if step == 4 %}
+                → Step 4 ←
+              {% else %}
+                Step 4
+              {% endif %}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!-- Alerts-->
+    <div class='row justify-content-center pt-3'>
+      <div class='col-6'>
+              <div id='main-alert' class="alert alert-success text-center hidden" role="alert">
+                  Твои ответы отправлены! Выбирай следующий шаг на панели выше
+                  <button id="btn-done" class="btn btn-success hidden">Завершить</button>
+              </div>
+          </div>
+      </div>
+    <div>
+      {% block 'content' %}{% endblock  %}
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+  
+  <!-- Custom JS -->
+  {% block 'js' %}{% endblock  %}
+</body>
+</html>

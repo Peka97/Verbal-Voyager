@@ -1,0 +1,87 @@
+{% extends "exercises/base.html" %}
+{% load static %}
+
+{% block 'title' %} Exercise | Step {{step}}{% endblock  %}
+{% block 'style' %}
+    <link rel="stylesheet" href="{% static 'pages/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/exercise.css' %}">
+{% endblock  %}
+
+{% block 'content' %}
+    <!-- Header -->
+    <div class="row justify-content-center">
+        <div class="col-12 title ramka-6 w-50 header">
+            <h2 class='title'>Запоминаем</h2>
+            <button type="button" class="btn btn-lg btn__help" data-bs-toggle="popover" data-bs-html="true" data-bs-title='Упражнение "Запоминаем"' data-bs-content="1. Step one.<br> 2. Step two." ><i class="bi bi-question-circle"></i></button>
+            {% csrf_token %}
+        </div>
+    </div>
+
+    <!-- Words -->
+    {% for word in words %}
+        <div id='word_{{word.id}}' class="row justify-content-center word__block {% if word.id != 1 %}hidden{% endif %}">
+            <div class="col">
+                <div class="row justify-content-center words word-main-mask">
+                    <div class="col-3 word_word__col">
+                        <p class="word step_one__word_word">{{word.word}}</p>
+                    </div>
+                    <div class="col-3 word_translate__col">
+                        <p class="word step_one__word_translate">{{word.translate}}</p>
+                    </div>
+                    <!-- <p class="text w-50 mx-auto text-center word-main">{{ word.word }}  {{ word.translate }}</p> -->
+                </div>
+                <div class='word-card'>
+                    <div class="row">
+                        <div class="col my-auto text-start">
+                            <div>
+                                <p class="text"> Transcription: {{ word.api.transcription }} </p>
+                            </div>
+                            <div>
+                                <audio controls>
+                                    <source src="{{ word.api.sound_url }}">
+                                </audio>
+                            </div>
+                            <ul>
+                                {% for sentence in word.sentences %}
+                                    <li>
+                                        <p class="text">{{ sentence }}</p>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        
+                        <div class="col text-end">
+                            <img class="bd-placeholder-img" src="{{ word.api.image_url }}" alt="Word Image">
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    <!-- Pagination -->
+    <div class='row'>
+        <div class='col'>
+            <nav aria-label="words">
+                <ul class="pagination justify-content-center">
+                    <li id='prev_btn' class="page-item disabled">
+                        <button type='button' class="page-link" href="#">Предыдущее</button>
+                    </li>
+                    {% for num in len %}
+                        <li id='page_{{num}}' class="page-item">
+                            <button type='button' class="page-link" href="#">{{num}}</button>
+                        </li>
+                    {% endfor %}
+                    <li id='next_btn' class="page-item">
+                        <button type='button' class="page-link" href="#">Следующее</button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+{% endblock  %}
+
+{% block 'js' %}
+    <script src="{% static 'exercises/js/step_1.js' %}"></script>
+{% endblock  %}

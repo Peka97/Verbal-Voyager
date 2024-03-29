@@ -19,7 +19,9 @@
 
         <!-- Font Awesome CSS-->
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
-        <link rel="stylesheet" href="{% static 'css/sign_up.css' %}">
+
+        <!-- Custom CCS -->
+        <link rel="stylesheet" href="{% static 'users/css/sign_up.css' %}">
     </head>
     <body class=''>
         <div class="container container-table text-center">
@@ -29,7 +31,7 @@
                         {% csrf_token %}
                         
                         <a href={% url "" %}>
-                            <img src="{% static "main/images/logo.png" %}" class="logo my-3" alt="logo">
+                            <img src="{% static "pages/images/logo.png" %}" class="logo my-3" alt="logo">
                         </a>
                         
                         {% for field in form %}

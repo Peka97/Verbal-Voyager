@@ -1,44 +1,54 @@
-nav {
+nav.header.navbar {
     background-color: var(--color-violet-pastel-dark);
     border-bottom: 1px solid var(--color-violet-pastel-darker);
 }
 
-.nav-link {
+.header.nav-link {
     color: white;
     white-space: nowrap;
+    font-weight: 400 !important;
 }
 
-.navbar-nav .nav-link.active, .navbar-nav .nav-link.show {
-    color: var(--color-violet-pastel-paler);
+.header.nav-link.disabled {
+    color: var(--bs-nav-link-disabled-color) !important;
 }
 
-.nav-link:hover {
-    color: var(--color-violet-pastel-max-pale);
+.header.navbar-nav, .header.nav-link.active, .header.nav-link.show {
+    color: var(--color-violet-pastel-paler) ;
 }
 
-.dropdown-menu {
-    border-color: var(--color-violet-pastel-dark);
-    background-color: var(--color-violet-pastel-pale);}
+.header.nav-link:hover {
+    color: var(--color-violet-pastel-max-pale) ;
+}
 
-.dropdown-item {
-    color: white;
-    border: var(--color-violet-pastel-pale) solid 1px;
+.header.dropdown-menu {
+    border-color: var(--color-violet-pastel-dark) ;
+    background-color: var(--color-violet-pastel-pale) ;
+}
+
+.header.dropdown-item {
+    color: white ;
+    border: var(--color-violet-pastel-pale) solid 1px ;
 
 }
 
-.dropdown-item:hover {
-    background-color: var(--color-violet-pastel-max-pale);
-    border-color: var(--color-violet-pastel-dark);
+.header.dropdown-item:hover {
+    color: var(--color-violet-pastel-darker);
+    background-color: var(--color-violet-pastel-max-pale) ;
 }
 
-.logo {
+.header.dropdown-item::before:hover {
+    border-color: var(--color-violet-pastel-dark) ;
+}
+
+.header.logo {
     height: 40px;
     width: 40px;
     
     transition: scale 0.5s;
 }
 
-.logo:hover {
+.header.logo:hover {
     border: var(--color-violet-pastel-pale) solid 1px;
     border-radius: 50%;
     scale: 1.1;

@@ -1,6 +1,6 @@
 {% load static %}
 
-<nav class="navbar navbar-expand-md w-100 sticky-top">
+<nav class="header navbar navbar-expand-md w-100 sticky-top">
   <div class="container">
     <div class="row">
       <div class="col-md-8">
@@ -8,26 +8,26 @@
           <span class="navbar-toggler-icon"></span>
         </button>        
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav m-auto mb-lg-0">
+          <ul class="header navbar-nav m-auto mb-lg-0">
             <li>
-              <a href='{% url "" %}' class="nav-link py-0">
-                <img class='logo' src="{% static 'pages/images/logo.png' %}" alt="logo">
+              <a href='{% url "" %}' class="header nav-link py-0">
+                <img class='header logo' src="{% static 'pages/images/logo.png' %}" alt="logo">
               </a>
             </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle align-middle disabled" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-disabled="true">
+            <li class="header nav-item dropdown">
+              <a class="header nav-link dropdown-toggle align-middle {% if not user.is_admin %} disabled {% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-disabled="true">
                 Курсы
               </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'english' %}">Английский язык</a></li>
-                <li><a class="dropdown-item" href="{% url 'french' %}">Французский язык</a></li>
-                <li><a class="dropdown-item" href="{% url 'spanish' %}">Испанский язык</a></li>
+              <ul class="header dropdown-menu">
+                {% for course in courses %}
+                  <li><a class="header dropdown-item" href="{% url 'english' %}">{{ course.name }}</a></li>
+                {% endfor %}
               </ul>
             </li>
-            <li><a href="{% url 'about' %}" class="nav-link px-2 disabled" aria-disabled="true">О проекте</a></li>
-            <li><a href="{% url 'faq' %}" class="nav-link px-2 disabled" aria-disabled="true">FAQ</a></li>
-            <li><a href="{% url 'portfolio' %}" class="nav-link px-2 disabled" aria-disabled="true">О себе</a></li>
-            <li><a href="{% url 'contacts' %}" class="nav-link px-2" aria-disabled="true">Контакты</a></li>
+            <li><a href="{% url 'about' %}" class="header nav-link px-2 {% if not user.is_admin %} disabled {% endif %}" aria-disabled="true">О проекте</a></li>
+            <li><a href="{% url 'faq' %}" class="header nav-link px-2 {% if not user.is_admin %} disabled {% endif %}" aria-disabled="true">FAQ</a></li>
+            <li><a href="{% url 'portfolio' %}" class="header nav-link px-2 {% if not user.is_admin %} disabled {% endif %}" aria-disabled="true">О себе</a></li>
+            <li><a href="{% url 'contacts' %}" class="header nav-link px-2" aria-disabled="true">Контакты</a></li>
           </ul>
         </div>
       </div>
@@ -42,18 +42,17 @@
               {% else %}
                 {{ user.username}}
               {% endif %}
-              
             </span>
             <img class='avatar rounded-circle' src="{% static "users/images/default_avatar.png" %}" width="32" height="32" alt="User photo">
           </a>
-          <ul class="dropdown-menu text-small shadow" style="">
-            <li><a class="dropdown-item" href="{% url 'profile' %}">Профиль</a></li>
+          <ul class="header dropdown-menu text-small shadow" style="">
+            <li><a class="header dropdown-item" href="{% url 'profile' %}">Профиль</a></li>
             {% if user.is_teacher %}
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="{% url 'admin' %}">Администрирование</a></li>
+              <li><a class="header dropdown-item" href="{% url 'admin' %}">Администрирование</a></li>
             {% endif %}
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
+            <li><a class="header dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
           </ul>
         </div>
       {% else %}

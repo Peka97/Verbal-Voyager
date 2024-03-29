@@ -4,8 +4,9 @@ import datetime as dt
 
 from django.shortcuts import render, HttpResponse
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 
-from pages.models import Review
+from pages.models import Review, Course
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -17,17 +18,26 @@ User = get_user_model()
 
 
 def index(request):
+    context = {}
+
+    courses = [course for course in Course.objects.all()]
+
     reviews = list(Review.objects.all())
     shuffle(reviews)
     reviews = reviews[:3]
 
     for review in reviews:
-        review.date = f'{review.datetime.day}.{review.datetime.month}.{review.datetime.year}'
+        review.date = f'{review.created_at.day}.{review.created_at.month}.{review.created_at.year}'
 
-    context = {
-        'reviews': reviews,
-        'user': User.objects.get(username=request.user)
-    }
+    try:
+        user = User.objects.get(username=request.user.username)
+    except ObjectDoesNotExist:
+        user = None
+
+    context['courses'] = courses
+    context['reviews'] = reviews
+    context['user'] = user
+
     return render(request, 'pages/index.html', context)
     # return HttpResponse('Index Page OK')
 

@@ -1,4 +1,5 @@
 {% load static %}
+
 <!doctype html>
 <html lang="en">
     <head>
@@ -18,8 +19,10 @@
 
         <!-- Font Awesome CSS-->
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
-        <link rel="stylesheet" href="{% static 'css/base.css' %}">
-        <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="{% static 'users/css/base.css' %}">
+        <link rel="stylesheet" href="{% static 'users/css/auth.css' %}">
     </head>
     <body class=''>
         <div class="container container-table text-center">
@@ -28,9 +31,8 @@
                     <form method='POST'>
                         {% csrf_token %}
                         <a href={% url "" %}>
-                            <img src="{% static "main/images/logo.png" %}" class="logo my-3" alt="logo">
+                            <img src="{% static "pages/images/logo.png" %}" class="logo my-3" alt="logo">
                         </a>
-                        {% comment %} <img src="http://placehold.it/150x150/2c3e50/3498db&text=Logo" class="shadow" alt="logo"> {% endcomment %}
                         <div class="form-floating pb-2">
                             <input type="login" name='login' class="form-control" id="floatingInput" placeholder="login">
                             <label for="floatingInput">Логин</label>

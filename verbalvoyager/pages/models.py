@@ -73,18 +73,20 @@ class Review(models.Model):
         related_name='course_name',
         null=True
     )
-    text = models.CharField(max_length=150)
+    text = models.TextField(max_length=500)
     from_user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='from_user'
     )
-    datetime = models.DateTimeField(
-        auto_now=True,
+    created_at = models.DateTimeField(
+        editable=True,
+        null=True,
+        blank=True
     )
 
     def __str__(self) -> str:
-        return f'{self.pk} - {self.datetime.strftime("%d.%m.%Y")} - {self.from_user.first_name}'
+        return f'{self.pk} - {self.created_at.strftime("%d.%m.%Y")} - {self.course_name} - {self.from_user.first_name}'
 
     class Meta:
         verbose_name = 'Отзыв'

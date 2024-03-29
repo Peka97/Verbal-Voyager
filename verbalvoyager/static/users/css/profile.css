@@ -1,5 +1,6 @@
 :root {
     --color-white-warm: #EDE2D1;
+    --color-grey-paler: #F7F6F2;
 
     --color-brown: #A25E1B;
     --color-brown-pale: #D08F4E;
@@ -41,46 +42,47 @@ body {
     background-color: white;
 }
 
-div.page {
-    /* background-color: var(--color-blue-pastel-max-pale); */
+div.tab-content {
+    background-color: white;
 }
-
 
 /* Навигация */
 .container-nav-profile {
     background-color: var(--color-violet-pastel-pale) !important;
 }
 
-.profile-nav-tabs {
+.profile.nav {
+    --bs-nav-link-color: white !important;
+    --bs-nav-link-hover-color: black !important;
+}
+
+.profile.nav-tabs {
     padding-left: 5px;
     padding-top: 5px;
     padding-bottom: 1px;
 }
 
-.profile-nav-item {
+.profile.nav-item {
     margin-right: 5px;
     background-color: var(--color-violet-pastel-main) !important;
     border-radius: 5px 5px 0px 0px;
 }
 
-.profile-nav-item:hover {
+.profile.nav-item:hover {
     /* color: var(--color-violet-darker);
     background-color: var(--color-violet-pastel-max-pale);
     border-color: white;
     border-width: 1px; */
 }
 
-.profile-nav-link {
-}
-
-.profile-nav-link:hover {
+.profile.nav-link:hover {
     color: black !important;
     background-color: var(--color-violet-pastel-max-pale);
     border-color: white;
     border-width: 1px;
 }
 
-.profile-nav-link.active {
+.profile.nav-link.active {
     color: var(--color-violet-pastel-darker) !important;
     background-color: white !important;
     border-color: white !important;
