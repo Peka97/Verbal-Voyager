@@ -1,0 +1,61 @@
+{% comment %} {% extends 'pages/base.html' %}
+{% load static %}
+
+{% block title %} {{ title }} {% endblock  %}
+{% block 'style' %}
+  <link rel="stylesheet" href="{% static 'pages/css/error.css' %}">
+{% endblock  %}
+
+{% block content %}
+    <div class="error">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7 text-center">
+                    <img src="{% static 'pages/images/error_img.jpeg' %}" alt="image 404">
+                    <h2><b>404</b> Страница не найдена</h2>
+                    <p>Посетите главную страницу <br> возможно, вы найдёте её</p>
+                    <a class="btn mb-5 text-end" href="{% url '' %}" role="button" aria-disabled="true">На главную</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %} {% endcomment %}
+
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> {{ title }} </title>
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="{% static 'pages/images/favicon.ico' %}"/>
+    <link type="image/x-icon" href="{% static 'pages/images/favicon.ico' %}" rel="shortcut icon">
+    <link type="Image/x-icon" href="{% static 'pages/images/favicon.ico' %}" rel="icon">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css" integrity="sha384-b6lVK+yci+bfDmaY1u0zE8YYJt0TZxLEAFyYSLHId4xoVvsrQu3INevFKo+Xir8e" crossorigin="anonymous">  
+    <!-- Font Awesome CSS-->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'pages/css/error.css' %}">
+  </head>
+  <body>
+    <div class="error">
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-7 text-center">
+                    <img src="{% static 'pages/images/error_img.jpeg' %}" alt="image error">
+                    <h2><b> {{ title }} </b> </h2>
+                    <p> {{ error_message }} </p>
+                    <a class="btn my-3 text-end" href="{% url '' %}" role="button" aria-disabled="true">На главную</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+  </body>
+</html>

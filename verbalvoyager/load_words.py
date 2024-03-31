@@ -61,13 +61,13 @@ def get_words(url):
 
 def save(word, transtale, lang='eng'):
     try:
-        word_in_base = Word.objects.filter(word=word.title()).exists()
+        word_in_base = Word.objects.filter(word=word).exists()
         if word_in_base:
             return
         else:
             Word.objects.create(
-                word=word.title(),
-                translate=transtale.title(),
+                word=word,
+                translate=transtale,
                 lang=lang,
             )
     except BaseException:
@@ -82,8 +82,7 @@ def save(word, transtale, lang='eng'):
 def delete():
     words = list(Word.objects.all())
     for word in words:
-        if "<td" in word.word:
-            Word.objects.get(id=word.pk).delete()
+        Word.objects.get(id=word.pk).delete()
 
 
 if __name__ == '__main__':
@@ -99,24 +98,34 @@ if __name__ == '__main__':
     # save(word)
 
     # words = get_words('https://studynow.ru/dicta/allwords')
+
     with open('/home/peka97/verbalvoyager/Verbal-Voyager/verbalvoyager/Слова для VV.csv', 'r') as words_file:
         reader = csv.reader(words_file, delimiter=';')
         counter = 0
 
         for line in reader:
+            if len(line[0]) < 1 or len(line[1]) < 1:
+                continue
+
             line = line[:2]
 
             if counter > 10:
                 break
 
-            word = line[0]
-            translate = line[1]
+            try:
+                word = line[0].strip(' ')
+                word = word[0].upper() + word[1:]
+                translate = line[1].strip(' ')
+                translate = translate[0].upper() + translate[1:]
+            except IndexError:
+                print(word, translate)
+
             save(word, translate)
 
             # counter += 1
 
     # for word in words:
-        # save(word)
-        # pass
+    # save(word)
+    # pass
 
     # delete()

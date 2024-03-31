@@ -89,18 +89,22 @@ function checkAnswer() {
     let word = document.getElementById(`word_check_${curr_page}`);
     let user_input = String(word.children[1].value).toLowerCase();
     let translate = String(word.children[1].id).toLowerCase();
-    console.log(user_input + '' + translate)
+    console.log('Ввод пользователя: ' + user_input)
+
     if (user_input == translate) {
-        console.log('Правильно!')
+        console.log(user_input + ' == ' + translate)
         alert_success.classList.remove('hidden');
         alert_danger.classList.add('hidden');
         check_words[word.id] = true;
     }
     else {
+        console.log(user_input + ' != ' + translate)
         alert_success.classList.add('hidden');
         alert_danger.classList.remove('hidden');
     }
+
     let check = check_all_words_true();
+    
     if (check) {
         done_btn.parentElement.parentElement.classList.remove('hidden')
         document.getElementById('step_4').classList.remove('active');

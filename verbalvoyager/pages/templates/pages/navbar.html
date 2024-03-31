@@ -7,15 +7,15 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>        
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="collapse navbar-collapse my-2" id="navbarSupportedContent">
           <ul class="header navbar-nav m-auto mb-lg-0">
             <li>
-              <a href='{% url "" %}' class="header nav-link py-0">
+              <a href='{% url "" %}' class="header nav-link py-0 pe-3">
                 <img class='header logo' src="{% static 'pages/images/logo.png' %}" alt="logo">
               </a>
             </li>
             <li class="header nav-item dropdown">
-              <a class="header nav-link dropdown-toggle align-middle {% if not user.is_admin %} disabled {% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-disabled="true">
+              <a class="header nav-link dropdown-toggle align-middle px-1 {% if not user.is_admin %} disabled {% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-disabled="true">
                 Курсы
               </a>
               <ul class="header dropdown-menu">
@@ -24,10 +24,10 @@
                 {% endfor %}
               </ul>
             </li>
-            <li><a href="{% url 'about' %}" class="header nav-link px-2 {% if not user.is_admin %} disabled {% endif %}" aria-disabled="true">О проекте</a></li>
-            <li><a href="{% url 'faq' %}" class="header nav-link px-2 {% if not user.is_admin %} disabled {% endif %}" aria-disabled="true">FAQ</a></li>
-            <li><a href="{% url 'portfolio' %}" class="header nav-link px-2 {% if not user.is_admin %} disabled {% endif %}" aria-disabled="true">О себе</a></li>
-            <li><a href="{% url 'contacts' %}" class="header nav-link px-2" aria-disabled="true">Контакты</a></li>
+            <li><a href="{% url 'about' %}" class="header nav-link px-1 w-100 {% if not user.is_admin %} disabled {% endif %}" aria-disabled="true">О проекте</a></li>
+            <li><a href="{% url 'faq' %}" class="header nav-link px-1 w-100 {% if not user.is_admin %} disabled {% endif %}" aria-disabled="true">FAQ</a></li>
+            <li><a href="{% url 'portfolio' %}" class="header nav-link px-1 w-100 {% if not user.is_admin %} disabled {% endif %}" aria-disabled="true">О себе</a></li>
+            <li><a href="{% url 'contacts' %}" class="header nav-link px-1 w-100" aria-disabled="true">Контакты</a></li>
           </ul>
         </div>
       </div>
@@ -45,7 +45,7 @@
             </span>
             <img class='avatar rounded-circle' src="{% static "users/images/default_avatar.png" %}" width="32" height="32" alt="User photo">
           </a>
-          <ul class="header dropdown-menu text-small shadow" style="">
+          <ul class="header dropdown-menu dropdown-menu-end text-small shadow" style="">
             <li><a class="header dropdown-item" href="{% url 'profile' %}">Профиль</a></li>
             {% if user.is_teacher %}
               <li><hr class="dropdown-divider"></li>

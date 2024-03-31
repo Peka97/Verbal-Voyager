@@ -11,10 +11,34 @@ from pages.models import Review, Course
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.FileHandler(
-    '/home/peka97/Django-Lang-Site/lang_school/logs/debug.log')
+    '/home/peka97/verbalvoyager/Verbal-Voyager/verbalvoyager/logs/debug.log')
 )
 
 User = get_user_model()
+
+
+def handler_403(request, exception):
+    context = {
+        'title': 'Ошибка доступа: 403',
+        'error_message': 'Доступ к этой странице ограничен.',
+    }
+    return render(request, 'pages/error.html', context, status=403)
+
+
+def handler_404(request, exception):
+    context = {
+        'title': 'Страница не найдена: 404',
+        'error_message': 'К сожалению такая страница была не найдена.',
+    }
+    return render(request, 'pages/error.html', context, status=404)
+
+
+def handler_500(request):
+    context = {
+        'title': 'Ошибка сервера: 500',
+        'error_message': 'Внутренняя ошибка сайта, вернитесь на главную страницу.',
+    }
+    return render(request, 'pages/error.html', context, status=500)
 
 
 def index(request):

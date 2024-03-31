@@ -4,6 +4,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
 
+from pages.views import handler_403, handler_404, handler_500
+
+
+handler403 = handler_403
+handler404 = handler_404
+handler500 = handler_500
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('pages.urls'), name='main'),

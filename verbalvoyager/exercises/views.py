@@ -4,8 +4,13 @@ import logging
 from random import sample, shuffle
 
 from django.http import HttpResponse
+from django.core.exceptions import PermissionDenied
+from django.http.response import Http404
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Exercise, Word, ExerciseResult
 
@@ -13,6 +18,7 @@ logger = logging.getLogger(__file__)
 User = get_user_model()
 
 
+@login_required
 def exercises_words(request, id, step):
     user = User.objects.get(username=request.user.username)
 
@@ -22,7 +28,7 @@ def exercises_words(request, id, step):
             student=user
         ).all())[0]
     except IndexError:
-        return redirect('profile')
+        raise PermissionDenied
 
     words = get_words(exercise)
 
@@ -90,6 +96,7 @@ def get_translate_vars(words: list[Word], word: str):  # list[Word]
     return words
 
 
+@login_required
 def update(request, id):
     if request.method == 'POST':
         # data = json.loads(request.body)

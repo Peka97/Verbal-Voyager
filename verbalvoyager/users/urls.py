@@ -2,7 +2,12 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 
 from . import views
+from pages.views import handler_403, handler_404, handler_500
 
+
+handler403 = handler_403
+handler404 = handler_404
+handler500 = handler_500
 
 urlpatterns = [
     path('auth', views.user_auth, name='auth'),

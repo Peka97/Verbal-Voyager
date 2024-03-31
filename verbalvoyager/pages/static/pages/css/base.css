@@ -36,6 +36,14 @@
     --color-blue-pastel-pale: #A8A8E9;
     --color-blue-pastel-paler: #BABAE9;
     --color-blue-pastel-max-pale: #D9D9F4;
+
+    /* Скрываем scrollbar */
+    -ms-overflow-style: none;  /* IE и Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+:root::-webkit-scrollbar {
+    display: none; /* Chrome, Safari и Opera */
 }
 
 body {

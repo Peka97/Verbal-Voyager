@@ -2,7 +2,7 @@ import requests
 from django.core.mail import send_mail
 import smtplib as smtp
 
-from config import DevConfig
+from .config import DevConfig
 
 
 login = DevConfig.email_login
@@ -20,7 +20,7 @@ password = DevConfig.email_password
 # print(err)
 
 
-YANDEX_TOKEN = 'y0_AgAAAAAJwHvOAATuwQAAAADsrZyadEkUpG9VQQuphjHUvondjmmAxS4'
+YANDEX_TOKEN = DevConfig.YANDEX_TOKEN
 
 headers = {
     'content-type': 'application/x-www-form-urlencoded',

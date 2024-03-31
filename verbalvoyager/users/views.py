@@ -68,12 +68,9 @@ def user_logout(request):
     return redirect('')
 
 
-@login_required
+@login_required(login_url="/users/auth")
 def user_profile(request):
     context = {}
-
-    # if request.method == 'POST':
-    #     print(request.POST)
 
     user = User.objects.get(username=request.user.username)
 

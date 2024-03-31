@@ -1,12 +1,16 @@
 import os
 
 from pathlib import Path
+from config import *
+
+
+config = ProdConfig
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure--gv8z__p^_@&&*8g#jfnx0#xfl)^v^ac6qs4#up57=lo106d9g'
+SECRET_KEY = config.SECRET_KEY
 
-DEBUG = True
+DEBUG = config.DEBUG
 
 ALLOWED_HOSTS = [
     '127.0.0.1', 'localhost', '', '::1', '158.160.153.27'
@@ -119,8 +123,8 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 EMAIL_TIMEOUT = 15
-# EMAIL_HOST_USER = config.email_login
-# EMAIL_HOST_PASSWORD = config.email_password
+EMAIL_HOST_USER = config.email_login
+EMAIL_HOST_PASSWORD = config.email_password
 
 # Loggings
 LOGGING = {
