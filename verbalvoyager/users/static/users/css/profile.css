@@ -40,6 +40,14 @@
 
 body {
     background-color: white;
+    overflow-x: hidden !important;
+}
+
+div.container.page {
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 div.tab-content {
@@ -64,19 +72,13 @@ div.tab-content {
 
 .profile.nav-item {
     margin-right: 5px;
+    margin-bottom: -3px;
     background-color: var(--color-violet-pastel-main) !important;
     border-radius: 5px 5px 0px 0px;
 }
 
 .profile.nav-item:hover {
-    /* color: var(--color-violet-darker);
-    background-color: var(--color-violet-pastel-max-pale);
-    border-color: white;
-    border-width: 1px; */
-}
-
-.profile.nav-link:hover {
-    color: black !important;
+    color: var(--color-violet-darker);
     background-color: var(--color-violet-pastel-max-pale);
     border-color: white;
     border-width: 1px;
@@ -86,7 +88,6 @@ div.tab-content {
     color: var(--color-violet-pastel-darker) !important;
     background-color: white !important;
     border-color: white !important;
-    border-width: 3px;
     border-bottom: none;
 }
 
@@ -107,9 +108,9 @@ div.tab-content {
 }
 
 .calendar-container {
-    max-width: max-content;
+    /* max-width: max-content; */
     max-height: max-content;
-    min-width: fit-content;
+    /* min-width: fit-content; */
     min-height: fit-content;
     background-color: var(--color-blue-pastel-pale);
     border-right: var(--color-blue-pastel-dark) solid 3px;
@@ -136,7 +137,7 @@ div.tab-content {
 }
 
 .months-table {
-    background-color: var(--color-blue-pastel-paler);
+    /* background-color: var(--color-blue-pastel-paler); */
 }
 
 .month {
@@ -244,13 +245,28 @@ h4.notification-title {
     color: white;
 }
 
+@media (max-width: 575.98px) {
+    div.notifications {
+        margin-top: 5%;
+    }
+}
+
+@media (max-width: 1024px) {
+    div.notifications {
+        margin-top: 2%;
+    }
+}
+
+
+
 div.notifications {
     background-color: var(--color-violet-pastel-dark);
 }
 
 div.notification {
     background-color: var(--color-violet-pastel-paler);
-    color: var(--color-violet-pastel-darker)
+    color: var(--color-violet-pastel-darker);
+    margin-bottom: 2%;
 }
 
 a.ex_name {
@@ -261,4 +277,20 @@ a.ex_name {
 
 a.ex_name:hover {
     color: var(--color-violet-pastel-dark);
+}
+
+
+@media (max-width: 350px) {
+    .row>* .col-12>* .col-xl-9>* .calendar-col>* {
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+        margin-left: 0px !important;
+        margin-right: 0px !important;
+    }
+}
+
+@media (max-width: 350px) {
+    .months-table .days-table {
+        border-collapse: collapse  !important;
+    }
 }

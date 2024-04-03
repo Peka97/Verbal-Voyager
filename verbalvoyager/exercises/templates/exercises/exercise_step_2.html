@@ -7,22 +7,10 @@
 {% endblock  %}
 
 {% block 'content' %}
-    <!-- Header -->
-    <div class="row py-3 justify-content-center">
-        <div class="col-12 title ramka-6 w-50">
-            <h2 class='title'>Переводим</h2>
-            {% csrf_token %}
-        </div>
-        <div class='row justify-content-center'>
-            <div class='col text-center'>
-                <button id='btn-send' type='submit' class='btn btn-warning hidden'>Закончить этап и отправить данные</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Words -->
     {% for word in words %}
-        <div id='word_check_{{word.id}}' class="row row-cols-1 justify-content-center word {% if word.id != 1 %}hidden{% endif %}">
+        <div id='word_check_{{word.id}}' class="row row-cols-1 justify-content-center word-check word {% if word.id != 1 %}hidden{% endif %}">
             <div class="col">
                 <p class="text text-center word-main">{{ word.word }}</p>
             </div>
@@ -37,10 +25,10 @@
         </div>
     {% endfor %}
 
-    <!-- Alerts-->
-    <div class='row justify-content-center pt-3'>
-        <div class='col-3'>
-            <div class='alerts pt-3'>
+    <!-- Ex. Alerts -->
+    <div class='row row-alerts justify-content-center pt-3'>
+        <div class='col'>
+            <div class='alerts'>
                 <div id='alert-success' class="alert alert-success text-center hidden" role="alert">
                     Верно! Так держать!
                 </div>
@@ -48,27 +36,6 @@
                     Не верно! Подумай ещё
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Pagination -->
-    <div class='row'>
-        <div class='col'>
-            <nav aria-label="words">
-                <ul class="pagination justify-content-center">
-                    <li id='prev_btn' class="page-item disabled">
-                        <button type='button' class="page-link" href="#">Предыдущее</button>
-                    </li>
-                    {% for num in len %}
-                        <li id='page_{{num}}' class="page-item">
-                            <button type='button' class="page-link" href="#">{{num}}</button>
-                        </li>
-                    {% endfor %}
-                    <li id='next_btn' class="page-item">
-                        <button type='button' class="page-link" href="#">Следующее</button>
-                    </li>
-                </ul>
-            </nav>
         </div>
     </div>
 {% endblock  %}

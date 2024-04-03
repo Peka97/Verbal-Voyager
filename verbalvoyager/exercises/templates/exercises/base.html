@@ -16,67 +16,105 @@
     {% block 'style' %}{% endblock %}
 </head>
 <body>
+  <nav class="navbar navbar-expand-md w-100 sticky-top">
+    <div class="container container-navbar justify-content-center">
+      <div class="row nav-row w-100">
+        <div class="col-12">
+          <ul class="nav nav-tabs nav-fill">
+            <li class="nav-item align-self-center px-auto">
+              <a id='step_1' class="nav-link {% if step == 1 %}active step-active {% elif step > 1 %} step-complete {% else %} step-future {% endif %} disabled" aria-disabled="true">
+                {% if step == 1 %}
+                  → Step 1 ←
+                {% elif step > 1 %}
+                  Step 1 ✔
+                {% else %}
+                  Step 1
+                {% endif %}
+              </a>
+            </li>
+            <li class="nav-item align-self-center px-auto">
+              <a id='step_2' class="nav-link {% if step == 2 %}active step-active {% elif step > 2 %} step-complete {% else %} step-future {% endif %} disabled" href={% url "exercises_words" id=id step=2 %} aria-disabled="true">
+                {% if step == 2 %}
+                  → Step 2 ←
+                {% elif step > 2 %}
+                  Step 2 ✔
+                {% else %}
+                  Step 2 
+                {% endif %}
+              </a>
+            </li>
+            <li class="nav-item align-self-center px-auto">
+              <a id='step_3' class="nav-link {% if step == 3 %}active step-active {% elif step > 3 %} step-complete {% else %} step-future {% endif %} disabled" href={% url "exercises_words" id=id step=3 %} aria-disabled="true">
+                {% if step == 3 %}
+                  → Step 3 ←
+                {% elif step > 3 %}
+                  Step 3 ✔
+                {% else %}
+                  Step 3
+                {% endif %}
+              </a>
+            </li>
+            <li class="nav-item align-self-center px-auto">
+              <a id='step_4' class="nav-link {% if step == 4 %}active step-active {% else %} step-future {% endif %} disabled" href={% url "exercises_words" id=id step=4 %} aria-disabled="true">
+                {% if step == 4 %}
+                  → Step 4 ←
+                {% else %}
+                  Step 4
+                {% endif %}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+    
   <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <ul class="nav nav-tabs nav-fill">
-          <li class="nav-item p-2">
-            <a id='step_1' class="nav-link {% if step == 1 %}active step-active {% elif step > 1 %} step-complete {% else %} step-future {% endif %} disabled" aria-disabled="true">
-              {% if step == 1 %}
-                → Step 1 ←
-              {% elif step > 1 %}
-                Step 1 ✔
-              {% else %}
-                Step 1
-              {% endif %}
-            </a>
-          </li>
-          <li class="nav-item p-2">
-            <a id='step_2' class="nav-link {% if step == 2 %}active step-active {% elif step > 2 %} step-complete {% else %} step-future {% endif %} disabled" href={% url "exercises_words" id=id step=2 %} aria-disabled="true">
-              {% if step == 2 %}
-                → Step 2 ←
-              {% elif step > 2 %}
-                Step 2 ✔
-              {% else %}
-                Step 2 
-              {% endif %}
-            </a>
-          </li>
-          <li class="nav-item p-2">
-            <a id='step_3' class="nav-link {% if step == 3 %}active step-active {% elif step > 3 %} step-complete {% else %} step-future {% endif %} disabled" href={% url "exercises_words" id=id step=3 %} aria-disabled="true">
-              {% if step == 3 %}
-                → Step 3 ←
-              {% elif step > 3 %}
-                Step 3 ✔
-              {% else %}
-                Step 3
-              {% endif %}
-            </a>
-          </li>
-          <li class="nav-item p-2">
-            <a id='step_4' class="nav-link {% if step == 4 %}active step-active {% else %} step-future {% endif %} disabled" href={% url "exercises_words" id=id step=4 %} aria-disabled="true">
-              {% if step == 4 %}
-                → Step 4 ←
-              {% else %}
-                Step 4
-              {% endif %}
-            </a>
-          </li>
-        </ul>
+
+    <!-- Main Alerts -->
+    <div class='row row-alerts justify-content-center pt-3'>
+      <div class='col'>
+        <div id='main-alert' class="alert alert-success text-center hidden" role="alert">
+          Твои ответы отправлены! Выбирай следующий шаг на панели выше
+          <button id="btn-done" class="btn btn-success hidden">Завершить</button>
+        </div>
       </div>
     </div>
-    <!-- Alerts-->
-    <div class='row justify-content-center pt-3'>
-      <div class='col-6'>
-              <div id='main-alert' class="alert alert-success text-center hidden" role="alert">
-                  Твои ответы отправлены! Выбирай следующий шаг на панели выше
-                  <button id="btn-done" class="btn btn-success hidden">Завершить</button>
-              </div>
-          </div>
-      </div>
-    <div>
-      {% block 'content' %}{% endblock  %}
+
+    <!-- Header -->
+    <div class="row ramka-6 header-row justify-content-center mb-3 py-3">
+        <div class="col justify-content-center header">
+            <h2 class='title align-self-center'>{{ title }}</h2>
+            {% comment %} <button type="button" class="btn btn-lg btn__help" data-bs-toggle="popover" data-bs-html="true" data-bs-title='Упражнение "Запоминаем"' data-bs-content="1. Step one.<br> 2. Step two." ><i class="bi bi-question-circle"></i></button> {% endcomment %}
+            {% csrf_token %}
+        </div>
     </div>
+
+    <!-- Content -->
+    {% block 'content' %}{% endblock  %}
+
+    <!-- Pagination -->
+    {% if step != 3 %}
+      <div class='row row-pagination mt-3'>
+        <div class='col'>
+          <nav aria-label="words">
+            <ul class="pagination justify-content-center">
+              <li id='prev_btn' class="page-item disabled">
+                <button type='button' class="page-link" href="#">Prev.</button>
+              </li>
+                {% for num in len %}
+                  <li id='page_{{num}}' class="page-item">
+                    <button type='button' class="page-link" href="#">{{num}}</button>
+                  </li>
+                {% endfor %}
+              <li id='next_btn' class="page-item">
+                <button type='button' class="page-link" href="#">Next</button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    {% endif %}
   </div>
 
   <!-- Bootstrap JS -->

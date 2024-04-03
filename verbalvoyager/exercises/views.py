@@ -20,6 +20,7 @@ User = get_user_model()
 
 @login_required
 def exercises_words(request, id, step):
+    titles = {1: 'Запоминаем', 2: 'Выбираем', 3: 'Расставляем', 4: 'Переводим'}
     user = User.objects.get(username=request.user.username)
 
     try:
@@ -36,6 +37,7 @@ def exercises_words(request, id, step):
     context = {
         'id': id,
         'step': step,
+        'title': titles[step],
         'words': words,
         'shuffled_translates': get_shuffled_translates(list(exercise.words.all())),
         'len': range(1, len(words) + 1)
@@ -125,6 +127,7 @@ def update(request, id):
 
 
 def get_api_for_words(words: list[Word]):
+    img_size = '300x300'
     result = []
 
     url = 'https://dictionary.skyeng.ru/api/public/v1/words/search?search=stone'
@@ -139,7 +142,7 @@ def get_api_for_words(words: list[Word]):
         translation = resp['meanings'][0]['translation']
         transcription = resp['meanings'][0]['transcription']
         image_url = resp['meanings'][0]['imageUrl']
-        image_url = image_url.replace('640x480', '250x250')
+        image_url = image_url.replace('640x480', img_size)
         sound_url = resp['meanings'][0]['soundUrl']
 
         result.append(

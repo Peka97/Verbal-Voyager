@@ -15,8 +15,10 @@ from django.shortcuts import redirect
 from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteView
 
 from pages.models import Project
-from exercises.models import Exercise
 from users.forms import RegistrationUserForm, CustomPasswordResetForm
+from exercises.models import Exercise
+from event_calendar.models import Lesson
+from event_calendar.forms import LessonForm
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -75,17 +77,17 @@ def user_profile(request):
     user = User.objects.get(username=request.user.username)
 
     if user.is_teacher():
-        lessons = []  # get_teacher_lessons(user)
+        lessons = get_teacher_lessons(user)
         calendar = get_calendar(lessons)
-        # lesson_form = LessonForm()
-        # lesson_form.fields['teacher'].initial = user
+        lesson_form = LessonForm()
+        lesson_form.fields['teacher'].initial = user
 
         context = {
             'events': lessons,
             'events_count_total': len(lessons),
             'calendar': calendar,
             'user_is_teacher': True,
-            'lesson_form':  None  # lesson_form
+            'lesson_form':  lesson_form
         }
         return render(request, 'users/profile.html', context)
     else:
@@ -93,19 +95,18 @@ def user_profile(request):
             student=user,
             is_active=True
         ).all())
-        # lessons = list(Lesson.objects.filter(
-        #     students=user_login).order_by('datetime').all()
-        # )
-        lessons = []
+        lessons = list(Lesson.objects.filter(
+            students=user).order_by('datetime').all()
+        )
         calendar = get_calendar(lessons)
-        # projects = get_projects(user)
+        projects = get_projects(user)
 
-        context['projects'] = []  # projects
+        context['projects'] = projects
         context['exercises'] = exercises
-        context['events'] = []  # lessons
-        context['events_count_total'] = 0  # len(lessons)
-        context['events_count_done'] = 0
-        # context['events_count_done'] =  len([lesson for lesson in lessons if lesson.status == 'D'])
+        context['events'] = lessons
+        context['events_count_total'] = len(lessons)
+        context['events_count_done'] = len(
+            [lesson for lesson in lessons if lesson.status == 'D'])
         context['calendar'] = calendar
 
         return render(request, 'users/profile.html', context)
@@ -159,24 +160,24 @@ def get_calendar(lessons: list[dict], tzname='Europe/Saratov'):
     return result
 
 
-# def get_teacher_lessons(user: User):
-#     lessons = []
-#     lesson_template = {
-#         'pk': 0,
-#         'type': 'personal',  # personal / group,
-#         'title': 'English',  # English / French / Spanish
-#         'datetime': None,
-#         'lessons': Lesson  # Lesson / list[Lesson]
-#     }
+def get_teacher_lessons(user: User):
+    lessons = []
+    lesson_template = {
+        'pk': 0,
+        'type': 'personal',  # personal / group,
+        'title': 'English',  # English / French / Spanish
+        'datetime': None,
+        'lessons': Lesson  # Lesson / list[Lesson]
+    }
 
-#     events_filter = Lesson.objects.filter(
-#         teacher=user).all().order_by('datetime')
-#     events = [
-#         Lesson.objects.get(pk=event.pk)
-#         for event in events_filter
-#     ]
+    events_filter = Lesson.objects.filter(
+        teacher=user).all().order_by('datetime')
+    events = [
+        Lesson.objects.get(pk=event.pk)
+        for event in events_filter
+    ]
 
-#     return events
+    return events
 
     # for event in events:
     #     events_datetime = [lesson['datetime'] for lesson in lessons]
@@ -184,7 +185,7 @@ def get_calendar(lessons: list[dict], tzname='Europe/Saratov'):
     #     if event.datetime in events_datetime:
     #         event_idx = events_datetime.index(event.datetime)
     #         lesson_info = lessons[event_idx]
-    #         lesson_info['type'] = 'group'
+    #         lesson_info['type'] = 'group'4
     #         if isinstance(lesson_info['lessons'], list):
     #             lesson_info['lessons'].append(event)
     #         else:

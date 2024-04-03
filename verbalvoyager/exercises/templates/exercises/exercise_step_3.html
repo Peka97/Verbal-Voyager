@@ -8,21 +8,9 @@
 
 {% block 'content' %}
 
-    <div class="row py-3 justify-content-center">
-        <div class="col-12 title ramka-6 w-50">
-            <h2 class='title'>Расставь по местам</h2>
-            {% csrf_token %}
-        </div>
-        <div class='row justify-content-center'>
-            <div class='col text-center'>
-                <button id='btn-send' type='submit' class='btn btn-warning hidden'>Закончить этап и отправить данные</button>
-            </div>
-        </div>
-    </div>
-
     <div class="row row-cols-2 justify-content-center words__place">
-        <div class="col-lg-2 col-md-4 col-sm-6 text-center words__col">
-            <ul id='words-list' class='words__list'>
+        <div class="col text-center words__col">
+            <ul id='words-list' class='text-end words__list'>
                 {% for word in words %}
                     <li id='word_{{word.id}}' class="word__item">
                         <p class="word__word"> {{ word.word }}</p>
@@ -30,8 +18,8 @@
                 {% endfor %}
             </ul>
         </div>
-        <div class="col-lg-2 col-md-4 col-sm-6 text-center translate__col">
-            <ul id='trans-list' class="translate__list">
+        <div class="col text-center translate__col">
+            <ul id='trans-list' class="text-start translate__list">
                 {% for trans_word in shuffled_translates %}
                     <li id='translate_{{ trans_word.id }}' class="translate__item">
                         <p class="translate__word"><i class="bi bi-list"></i> {{ trans_word.trans }}</p>
@@ -40,18 +28,16 @@
             </ul>
         </div>
     </div>
-    
-
-    <div class="row row-cols-2 justify-content-center text-center">
-        <div class="col-1">
+    <div class="row row-cols-2 justify-content-center text-center row-btn-answer">
+        <div class="col">
             <button id='btn-answer' class='btn btn__check'>Проверить</button>
         </div>
     </div>
 
     <!-- Alerts-->
-    <div class='row justify-content-center pt-3'>
-        <div class='col-3'>
-            <div class='alerts pt-3'>
+    <div class='row row-alerts justify-content-center pt-3'>
+        <div class='col'>
+            <div class='alerts'>
                 <div id='alert-success' class="alert alert-success text-center hidden" role="alert">
                     Верно! Так держать!
                 </div>

@@ -3,6 +3,23 @@ nav.header.navbar {
     border-bottom: 1px solid var(--color-violet-pastel-darker);
 }
 
+div.container-navbar {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    /* padding-left: 0 !important;
+    padding-right: 0 !important; */
+}
+
+button:active{
+    border: none !important;
+    outline: none !important;
+    decoration: none !important;
+    text-decoration:  none !important;
+    cursor: pointer !important;
+}
+
+button:focus { outline: 0 !important; }
+
 .header.nav-link {
     color: white;
     white-space: nowrap;
