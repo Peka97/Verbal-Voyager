@@ -31,7 +31,7 @@ class Lesson(models.Model):
     students = models.ManyToManyField(
         User, verbose_name="Ученики")
     teacher = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='lesson_teacher', null=True, default=User.objects.get(username='Elizabeth').pk)
+        User, on_delete=models.CASCADE, related_name='lesson_teacher', null=True)
 
     def __str__(self):
         return f'{self.pk} - {self.datetime} - {list(self.students.all())} - {self.title}'

@@ -4,7 +4,7 @@ from pathlib import Path
 from config import *
 
 
-config = DevConfig
+config = ProdConfig
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -127,33 +127,35 @@ EMAIL_TIMEOUT = 15
 EMAIL_HOST_USER = config.email_login
 EMAIL_HOST_PASSWORD = config.email_password
 
-# Loggings
+# Logs
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    "formatters": {
-        "verbose": {
-            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-            "style": "{",
+
+    'formatters': {
+        'console': {
+            'format': '%(name)-12s [%(levelname)-8s] %(name)s::%(module)s::%(lineno)s - %(message)s'
         },
-        "simple": {
-            "format": "{levelname} {message}",
-            "style": "{",
-        },
+        'file': {
+            'format': '%(asctime)s [%(levelname)-8s] %(name)s::%(module)s::%(lineno)s - %(message)s'
+        }
     },
     'handlers': {
+        'console': {
+            'level': 'WARNING',
+            'class': 'logging.StreamHandler',
+            'formatter': 'console',
+        },
         'file': {
-            'level': 'ERROR',
+            'level': 'WARNING',
             'class': 'logging.FileHandler',
-            'filename': '/home/peka97/Django-Lang-Site/lang_school/logs/django.log',
+            'formatter': 'file',
+            'filename': os.path.join(BASE_DIR, 'logs/django.log'),
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['file'],
-            'level': 'INFO',
-            'propagate': True,
-            'formatter': 'simple'
+            'handlers': ['console', 'file'],
         },
-    },
+    }
 }

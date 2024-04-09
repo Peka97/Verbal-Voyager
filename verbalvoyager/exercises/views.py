@@ -14,7 +14,12 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Exercise, Word, ExerciseResult
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
+# logger.level = logging.INFO
+# logger.addHandler(logging.FileHandler(
+#     '/home/peka97/verbalvoyager/Verbal-Voyager/verbalvoyager/logs/debug.log')
+# )
+
 User = get_user_model()
 
 
@@ -29,9 +34,17 @@ def exercises_words(request, id, step):
             student=user
         ).all())[0]
     except IndexError:
+        method = request.META['REQUEST_METHOD']
+        url = request.META['PATH_INFO']
+        user = request.user.username
+        msg = f"Forbidden: {method} - {url} - {user}"
+        logger.error(msg)
+
         raise PermissionDenied
 
     words = get_words(exercise)
+    logger.info(f'Word count: {len(words)}')
+    logger.info(f'Words: {words}')
 
     template_name = f'exercises/exercise_step_{step}.html'
     context = {
@@ -49,12 +62,18 @@ def exercises_words(request, id, step):
         for word, api_word in zip(context['words'], api_words):
             word['api'] = api_word
 
+    logger.info(f"Word count: {len(context['words'])}")
+    logger.info(f"Words: {context['words']}")
+
     return render(request, template_name, context)
 
 
 def get_words(exercise: list[Exercise]):  # list[Exercise]
     result = []
     words = list(exercise.words.all())
+
+    logger.info(f'Words len: {len(words)}')
+    logger.info(f'Words from DB: {words}')
 
     for idx, word in enumerate(words):
         if word.sentences:
@@ -136,7 +155,13 @@ def get_api_for_words(words: list[Word]):
 
     for word in words:
         params['search'] = word['word']
-        resp = requests.get(url, params, headers=headers).json()[0]
+        try:
+            resp = requests.get(url, params, headers=headers).json()[0]
+        except IndexError:
+            msg = f"Word: {word}.\nResp: {requests.get(url, params, headers=headers).text}."
+            logger.exception(msg)
+
+            continue
 
         word = resp['text']
         translation = resp['meanings'][0]['translation']
