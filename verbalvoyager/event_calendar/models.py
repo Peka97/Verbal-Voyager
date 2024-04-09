@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -11,6 +12,43 @@ logger.addHandler(logging.FileHandler(
 )
 
 User = get_user_model()
+
+class Course(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self) -> str:
+        return self.name
+
+    class Meta:
+        verbose_name = 'Курс'
+        verbose_name_plural = 'Курсы'
+
+
+class Review(models.Model):
+    course_name = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='course_name',
+        null=True
+    )
+    text = models.TextField(max_length=500)
+    from_user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='from_user'
+    )
+    created_at = models.DateTimeField(
+        editable=True,
+        null=True,
+        blank=True
+    )
+
+    def __str__(self) -> str:
+        return f'{self.pk} - {self.created_at.strftime("%d.%m.%Y")} - {self.course_name} - {self.from_user.first_name}'
+
+    class Meta:
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
 
 
 class Lesson(models.Model):
@@ -51,3 +89,58 @@ class Lesson(models.Model):
         verbose_name_plural = 'Занятия'
 
         ordering = ['-datetime']
+
+
+class ProjectType(models.Model):
+    type_name = models.CharField('Тип проекта', max_length=50)
+
+    def __str__(self):
+        return self.type_name
+
+    class Meta:
+        verbose_name = 'Тип проекта'
+        verbose_name_plural = 'Типы проектов'
+
+
+class Project(models.Model):
+    project_name = models.CharField(
+        max_length=50,
+    )
+    course_name = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='course'
+    )
+    type = models.ManyToManyField(
+        ProjectType,
+        verbose_name='Тип'
+    )
+    students = models.ManyToManyField(
+        User,
+        verbose_name='Студенты'
+    )
+    teacher = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='teacher', 
+        null=True
+    )
+    from_date = models.DateField(
+        null=False,
+        blank=False,
+    )
+    to_date = models.DateField(null=False,blank=False)
+    lesson_1 = models.DateTimeField(null=True,blank=True)
+    lesson_2 = models.DateTimeField(null=True,blank=True)
+    lesson_3 = models.DateTimeField(null=True,blank=True)
+    lesson_4 = models.DateTimeField(null=True,blank=True)
+    lesson_5 = models.DateTimeField(null=True,blank=True)
+    is_active = models.BooleanField(verbose_name='Активен', default=True)
+
+
+    def __str__(self):
+        return self.project_name
+
+    class Meta:
+        verbose_name = 'Проект'
+        verbose_name_plural = 'Проекты'

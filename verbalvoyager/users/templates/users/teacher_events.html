@@ -63,7 +63,9 @@
                                 {% endif %}
                                 <br>
                                 <i class="bi bi-people-fill" style='color: indigo'></i>
-                                Group name
+                                {% for student in event.students.all %}
+                                    {{ student.last_name }} |
+                                {% endfor %}
                             </div>
                             <div class="event-count">
                                 {% if event.status == 'P' %}

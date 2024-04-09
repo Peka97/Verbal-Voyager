@@ -6,7 +6,7 @@ from django.shortcuts import render, HttpResponse
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 
-from pages.models import Review, Course
+from event_calendar.models import Review, Course
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

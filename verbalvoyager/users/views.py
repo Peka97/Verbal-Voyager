@@ -14,10 +14,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteView
 
-from pages.models import Project
 from users.forms import RegistrationUserForm, CustomPasswordResetForm
 from exercises.models import Exercise
-from event_calendar.models import Lesson
+from event_calendar.models import Lesson, Project
 from event_calendar.forms import LessonForm
 
 logger = logging.getLogger(__name__)
@@ -161,15 +160,6 @@ def get_calendar(lessons: list[dict], tzname='Europe/Saratov'):
 
 
 def get_teacher_lessons(user: User):
-    lessons = []
-    lesson_template = {
-        'pk': 0,
-        'type': 'personal',  # personal / group,
-        'title': 'English',  # English / French / Spanish
-        'datetime': None,
-        'lessons': Lesson  # Lesson / list[Lesson]
-    }
-
     events_filter = Lesson.objects.filter(
         teacher=user).all().order_by('datetime')
     events = [
@@ -179,33 +169,9 @@ def get_teacher_lessons(user: User):
 
     return events
 
-    # for event in events:
-    #     events_datetime = [lesson['datetime'] for lesson in lessons]
-
-    #     if event.datetime in events_datetime:
-    #         event_idx = events_datetime.index(event.datetime)
-    #         lesson_info = lessons[event_idx]
-    #         lesson_info['type'] = 'group'4
-    #         if isinstance(lesson_info['lessons'], list):
-    #             lesson_info['lessons'].append(event)
-    #         else:
-    #             lesson_info['lessons'] = [
-    #                 lesson_info['lessons'], event
-    #             ]
-    #     else:
-    #         lesson_info = lesson_template.copy()
-    #         lesson_info['pk'] = event.pk
-    #         lesson_info['title'] = event.title
-    #         lesson_info['datetime'] = event.datetime
-    #         lesson_info['lessons'] = event
-    #         lessons.append(lesson_info)
-
-    # lessons.sort(key=lambda x: x['datetime'])
-    # return lessons
-
 
 def get_projects(user: User):
-    projects = Project.objects.filter(student=user).all()
+    projects = Project.objects.filter(students=user).all()
     return projects if projects else None
 
 
