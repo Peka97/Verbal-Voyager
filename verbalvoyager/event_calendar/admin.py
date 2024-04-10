@@ -89,42 +89,79 @@ class StudentsListFilter(admin.SimpleListFilter):
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
     form = LessonAdminForm
+    ordering = ('datetime', )
     filter_horizontal = ('students', )
-    list_display = ('pk', 'title', 'status', 'teacher', 'get_students')
-    list_display_links = ('pk', 'title')
+    list_display = ('datetime', 'title', 'status',
+                    'is_paid', 'teacher', 'get_students')
+    list_display_links = ('datetime', 'title')
     list_filter = [
         TeachersListFilter,
-        StudentsListFilter
+        StudentsListFilter,
+        'is_paid',
+        'status',
     ]
+    actions = ['set_pay', 'set_not_pay', 'set_done', 'set_miss', 'set_cancel']
     save_as = True
-    
+
+    @admin.action(description='Изменить статус на "Оплачено"')
+    def set_pay(self, request, queryset):
+        for obj in queryset:
+            obj.is_paid = True
+            obj.save()
+
+    @admin.action(description='Изменить статус на "Не оплачено"')
+    def set_not_pay(self, request, queryset):
+        for obj in queryset:
+            obj.is_paid = False
+            obj.save()
+
+    @admin.action(description='Проставить пропуски')
+    def set_miss(self, request, queryset):
+        for obj in queryset:
+            obj.status = 'M'
+            obj.save()
+
+    @admin.action(description='Отменить уроки')
+    def set_cancel(self, request, queryset):
+        for obj in queryset:
+            obj.status = 'C'
+            obj.save()
+
+    @admin.action(description='Закончить уроки')
+    def set_done(self, request, queryset):
+        for obj in queryset:
+            obj.status = 'D'
+            obj.save()
+
+
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     form = ProjectAdminForm
-    
+
     filter_horizontal = ('students', )
-    list_display = ('is_active', 'project_name', 'course_name', 'teacher', 'from_date', 'to_date')
+    list_display = ('is_active', 'project_name', 'course_name',
+                    'teacher', 'from_date', 'to_date')
     list_display_links = ('project_name', )
     list_filter = [
         TeachersListFilter,
-        StudentsListFilter
+        StudentsListFilter,
     ]
     actions = ['create_lessons', ]
 
     save_as = True
-    
+
     @admin.action(description='Распланировать занятия')
     def create_lessons(self, request, queryset):
         in_period = True
-        
+
         for project in queryset:
             students = project.students
             teacher = project.teacher
             from_date = project.from_date
             to_date = project.to_date
             days = []
-            
-            if project.lesson_1:                
+
+            if project.lesson_1:
                 days.append(project.lesson_1)
             if project.lesson_2:
                 days.append(project.lesson_2)
@@ -134,46 +171,50 @@ class ProjectAdmin(admin.ModelAdmin):
                 days.append(project.lesson_4)
             if project.lesson_5:
                 days.append(project.lesson_5)
-                
-            while in_period: 
-                self._create(days, students, teacher)
 
+            while in_period:
                 for idx, day in enumerate(days):
-                    days[idx] = day + timedelta(days=7)
-                    if not from_date < day.date() < to_date:
-                        in_period = False
-                        self._create(days, students, teacher)
-                        break
-        
-    def _create(self, days, students, teacher):
-        for day in days:
-            lesson, is_created = Lesson.objects.get_or_create(
-                datetime=day,
-                teacher=teacher
-            )
-            
-            if is_created:
-                for student in list(students.all()):
-                    logger.info(student)
-                    lesson.students.add(student)
-                lesson.save()
-            else:
-                logger.info('Lesson was not created')
-                lesson = Lesson.objects.filter(datetime=day, teacher=teacher)
-                
-                for student in list(students.all()):
-                    new_lesson = lesson.filter(students=student)
-                    logger.info(new_lesson)
-                    
-                    if not new_lesson:
-                        logger.info(f'{student} not in lesson')
-                        
-                        lesson = Lesson.objects.filter(datetime=day, teacher=teacher).first()
-                        lesson.students.add(student)
-                        lesson.save()
+                    logger.info(f"{from_date} {day.date()} {to_date}")
+                    logger.info(from_date < day.date() < to_date)
+
+                    if from_date <= day.date() <= to_date:
+                        self._create(day, students, teacher)
+                        days[idx] = day + timedelta(days=7)
                     else:
-                        lesson = new_lesson
-            
+                        in_period = False
+                        break
+
+    def _create(self, day, students, teacher):
+        logger.info(type(day))
+        logger.info(day)
+        lesson, is_created = Lesson.objects.get_or_create(
+            datetime=day,
+            teacher=teacher
+        )
+
+        if is_created:
+            for student in list(students.all()):
+                # logger.info(student)
+                lesson.students.add(student)
+            lesson.save()
+        else:
+            # logger.info('Lesson was not created')
+            lesson = Lesson.objects.filter(datetime=day, teacher=teacher)
+
+            for student in list(students.all()):
+                new_lesson = lesson.filter(students=student)
+                # logger.info(new_lesson)
+
+                if not new_lesson:
+                    # logger.info(f'{student} not in lesson')
+
+                    lesson = Lesson.objects.filter(
+                        datetime=day, teacher=teacher).first()
+                    lesson.students.add(student)
+                    lesson.save()
+                else:
+                    lesson = new_lesson
+
 
 admin.site.register(Course)
 admin.site.register(Review)

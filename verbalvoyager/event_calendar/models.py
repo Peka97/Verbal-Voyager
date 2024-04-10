@@ -13,6 +13,7 @@ logger.addHandler(logging.FileHandler(
 
 User = get_user_model()
 
+
 class Course(models.Model):
     name = models.CharField(max_length=50)
 
@@ -53,17 +54,17 @@ class Review(models.Model):
 
 class Lesson(models.Model):
     title = models.CharField(max_length=50, default='English')
-    description = models.TextField(max_length=255, null=True)
+    description = models.TextField(max_length=255, blank=True, null=True)
     datetime = models.DateTimeField()
-    is_paid = models.BooleanField(default=True)
+    is_paid = models.BooleanField(verbose_name="Оплачено", default=False)
     status = models.CharField(
-        max_length=10,
+        verbose_name="Статус",
         default='P',
         choices=[
-            ('P', 'planned'),
-            ('M', 'missed'),
-            ('D', 'done'),
-            ('C', 'canceled')
+            ('P', 'Запланировано'),
+            ('M', 'Пропущено'),
+            ('D', 'Завершено'),
+            ('C', 'Отменено')
         ]
     )
     students = models.ManyToManyField(
@@ -122,21 +123,20 @@ class Project(models.Model):
     teacher = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='teacher', 
+        related_name='teacher',
         null=True
     )
     from_date = models.DateField(
         null=False,
         blank=False,
     )
-    to_date = models.DateField(null=False,blank=False)
-    lesson_1 = models.DateTimeField(null=True,blank=True)
-    lesson_2 = models.DateTimeField(null=True,blank=True)
-    lesson_3 = models.DateTimeField(null=True,blank=True)
-    lesson_4 = models.DateTimeField(null=True,blank=True)
-    lesson_5 = models.DateTimeField(null=True,blank=True)
+    to_date = models.DateField(null=False, blank=False)
+    lesson_1 = models.DateTimeField(null=True, blank=True)
+    lesson_2 = models.DateTimeField(null=True, blank=True)
+    lesson_3 = models.DateTimeField(null=True, blank=True)
+    lesson_4 = models.DateTimeField(null=True, blank=True)
+    lesson_5 = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(verbose_name='Активен', default=True)
-
 
     def __str__(self):
         return self.project_name
