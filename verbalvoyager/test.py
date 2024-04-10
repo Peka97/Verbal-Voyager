@@ -5,18 +5,19 @@ import smtplib as smtp
 from .config import DevConfig
 
 
-login = DevConfig.email_login
-password = DevConfig.email_password
+# login = DevConfig.email_login
+# password = DevConfig.email_password
+# send_to = 'test@ya.ru'
+# subject = 'Theme'
+# text = 'Some text'
+# header = f'Subject:{subject}\n<h1>{text}</h1>'
 
 # server = smtp.SMTP('smtp.gmail.com', 587)
 # server.starttls()
 # server.login(login, password)
 
-# subject = 'Theme'
-# text = 'Some text'
-
-# err = server.sendmail(login, 'vk-vk.karasev@yandex.ru',
-#                       f'Subject:{subject}\n<h1>{text}</h1>')
+# err = server.sendmail(login, send_to,
+#                       header)
 # print(err)
 
 

@@ -101,7 +101,7 @@ if __name__ == '__main__':
 
     with open('/home/peka97/verbalvoyager/Verbal-Voyager/verbalvoyager/Слова для VV.csv', 'r') as words_file:
         reader = csv.reader(words_file, delimiter=';')
-        counter = 0
+        # counter = 0
 
         for line in reader:
             if len(line[0]) < 1 or len(line[1]) < 1:
@@ -109,8 +109,8 @@ if __name__ == '__main__':
 
             line = line[:2]
 
-            if counter > 10:
-                break
+            # if counter > 10:
+            #     break
 
             try:
                 word = line[0].strip(' ')
