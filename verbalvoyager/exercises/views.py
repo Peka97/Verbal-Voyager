@@ -15,15 +15,15 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import Exercise, Word, ExerciseResult
 
 logger = logging.getLogger(__name__)
-# logger.level = logging.INFO
-# logger.addHandler(logging.FileHandler(
-#     '/home/peka97/verbalvoyager/Verbal-Voyager/verbalvoyager/logs/debug.log')
-# )
+logger.level = logging.INFO
+logger.addHandler(logging.FileHandler(
+    '/home/peka97/verbalvoyager/Verbal-Voyager/verbalvoyager/logs/debug.log')
+)
 
 User = get_user_model()
 
 
-@login_required
+@login_required(login_url="/users/auth")
 def exercises_words(request, id, step):
     titles = {1: 'Запоминаем', 2: 'Выбираем', 3: 'Расставляем', 4: 'Переводим'}
     user = User.objects.get(username=request.user.username)
@@ -40,7 +40,7 @@ def exercises_words(request, id, step):
         msg = f"Forbidden: {method} - {url} - {user}"
         logger.error(msg)
 
-        raise PermissionDenied
+        return redirect('err_404')
 
     words = get_words(exercise)
     logger.info(f'Word count: {len(words)}')
@@ -56,11 +56,15 @@ def exercises_words(request, id, step):
         'len': range(1, len(words) + 1)
     }
 
-    if step == '1' or step == 1:
-        api_words = get_api_for_words(words)
+    if step == 1:
+        logger.info(context['words'][0])
+        if context['words'][0]['lang'] != 'eng':
+            pass
+        else:
+            api_words = get_api_for_words(words)
 
-        for word, api_word in zip(context['words'], api_words):
-            word['api'] = api_word
+            for word, api_word in zip(context['words'], api_words):
+                word['api'] = api_word
 
     logger.info(f"Word count: {len(context['words'])}")
     logger.info(f"Words: {context['words']}")
@@ -86,6 +90,7 @@ def get_words(exercise: list[Exercise]):  # list[Exercise]
 
         data = {
             'id': idx + 1,
+            'lang': word.lang,
             'word': word.word,
             'translate': word.translate,
             'sentences': sentences,

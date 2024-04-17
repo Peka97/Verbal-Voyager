@@ -31,11 +31,18 @@ User = get_user_model()
 def user_auth(request, **kwargs):
     context = {}
 
+    next = request.GET.get('next')
+
     if request.POST:
         username = request.POST.get('login')
         password = request.POST.get('password')
+
         user = authenticate(request, username=username, password=password)
-        if user:
+
+        if user and next:
+            login(request, user)
+            return redirect(next)
+        elif user:
             login(request, user)
             return redirect('')
         else:

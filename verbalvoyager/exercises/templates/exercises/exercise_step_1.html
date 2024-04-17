@@ -27,15 +27,21 @@
                     <div class="row content-row">
                         <div class="col content-col my-auto">
                             <div class="col text-center">
-                                <img class="bd-placeholder-img" src="{{ word.api.image_url }}" alt="Word Image">
+                                {% if word.api %}
+                                    <img class="bd-placeholder-img" src="{{ word.api.image_url }}" alt="Word Image">
+                                {% endif %}
                             </div>
                             <div class='mt-2 text-center'>
-                                <p class="text"> Transcription: {{ word.api.transcription }} </p>
+                                {% if word.api %}
+                                    <p class="text"> Transcription: {{ word.api.transcription }} </p>
+                                {% endif %}
                             </div>
                             <div class='mt-2 text-center'>
-                                <audio controls>
-                                    <source src="{{ word.api.sound_url }}">
-                                </audio>
+                                {% if word.api %}
+                                    <audio controls>
+                                        <source src="{{ word.api.sound_url }}">
+                                    </audio>
+                                {% endif %}
                             </div>
                             <ul class='mt-2 text-center'>
                                 {% for sentence in word.sentences %}

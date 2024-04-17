@@ -107,6 +107,8 @@ class ExerciseAdmin(admin.ModelAdmin):
 
 @admin.register(Word)
 class WordAdmin(admin.ModelAdmin):
+    list_display = ('lang', 'word', 'translate')
+    list_filter = ['lang', ]
     search_fields = ('word', 'translate')
 
 

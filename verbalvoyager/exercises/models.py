@@ -21,7 +21,7 @@ class Word(models.Model):
     sentences = models.TextField(max_length=500, null=True, blank=True)
 
     def __str__(self) -> str:
-        return f'{self.word} ({self.translate})'
+        return f'{self.lang} | {self.word} ({self.translate})'
 
     class Meta:
         verbose_name = 'Слово для изучения'

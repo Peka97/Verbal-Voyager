@@ -144,10 +144,20 @@ let max_page = Number(Array.from(paginator[0].children).slice(-2)[0].id.split('_
 let alert_success = document.getElementById('alert-success');
 let alert_danger = document.getElementById('alert-danger');
 let check_words = {}
+let btn_check = document.getElementById('btn-check')
+let input_field = document.getElementsByClassName('word__check')[0]
 
-document.getElementById('btn-check').onclick = (event) => {
+btn_check.onclick = (event) => {
     checkAnswer();
 }
+input_field.addEventListener('keypress', function (e) {
+    var key = e.which || e.keyCode;
+    
+    if (key === 13) { // код клавиши Enter
+        btn_check.click();
+    }
+});
+
 prev_btn.onclick = (event) => {prev_paginator_handler(event)};
 pages.forEach(el => {
     el.onclick = (event) => {paginator_handler(event)};
