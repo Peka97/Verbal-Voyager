@@ -104,6 +104,10 @@ function wordCheckHandlers() {
             else {
                 alert_danger.classList.remove('hidden')
                 alert_success.classList.add('hidden')
+
+                if (points > 1) {
+                    points--;
+                }
             }
         }        
     })
@@ -136,6 +140,8 @@ let words = Array.from(document.getElementsByClassName('word'))
 let paginator = Array.from(document.getElementsByClassName('pagination'))
 let pages = Array.from(paginator[0].children).slice(1, -1)
 let max_page = Number(Array.from(paginator[0].children).slice(-2)[0].id.split('_')[1])
+let points = words.length
+
 const prev_btn = document.getElementById('prev_btn')
 const next_btn = document.getElementById('next_btn')
 const alert_success = document.getElementById('alert-success');
@@ -162,10 +168,12 @@ next_btn.onclick = (event) => {
 }
 
 next_step.onclick = (event) => {
+    console.log('POST')
     let token = document.getElementsByName('csrfmiddlewaretoken')[0].defaultValue
-    let url = 'http://127.0.0.1:8000/exercises/update'
+    
     let ex_id = window.location.href.split('/').slice(-2, -1)[0]
-    let step = window.location.href.split('/').slice(-1)[0]
+    let step_num = window.location.href.split('/').slice(-1)[0]
+    let url = `https://verbal-voyager.ru/exercises/update/${ex_id}/step_${step_num}`
 
     fetch(url, {
             method: 'POST',
@@ -175,15 +183,15 @@ next_step.onclick = (event) => {
                 'X-CSRFToken': token,
             },
             body: JSON.stringify({
-                'exercise_id': ex_id,
-                'step' : step,
-                "value": pages.length,
+                'value': points,
             })
         }
     ).then(response => {
-        console.dir(response.status)
+        console.log(response.status)
         if (response.status != 200) {
-            console.log('Ошибка отправки данных на сервер');
+            console.log('Не удалось отправить данные');
+        }
+        else {
             event.preventDefault();
         }
     })

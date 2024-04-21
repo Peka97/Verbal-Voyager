@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
@@ -7,6 +9,12 @@ from django.utils.html import format_html
 from .models import Word, Exercise, ExerciseResult
 from .forms import ExerciseAdminForm
 
+
+logger = logging.getLogger(__name__)
+logger.level = logging.INFO
+logger.addHandler(logging.FileHandler(
+    '/home/peka97/verbalvoyager/Verbal-Voyager/verbalvoyager/logs/debug.log')
+)
 
 User = get_user_model()
 
@@ -41,9 +49,14 @@ class TeachersListFilter(admin.SimpleListFilter):
         `self.value()`.
         """
         if self.value():
-            return queryset.filter(
-                teacher=self.value()
-            )
+            if len(queryset) >= 1 and isinstance(queryset[0], ExerciseResult):
+                return queryset.filter(
+                    exercise__teacher=self.value()
+                )
+            else:
+                return queryset.filter(
+                    teacher=self.value()
+                )
 
 
 class StudentsListFilter(admin.SimpleListFilter):
@@ -75,9 +88,14 @@ class StudentsListFilter(admin.SimpleListFilter):
         `self.value()`.
         """
         if self.value():
-            return queryset.filter(
-                student=self.value()
-            )
+            if len(queryset) >= 1 and isinstance(queryset[0], ExerciseResult):
+                return queryset.filter(
+                    exercise__student=self.value()
+                )
+            else:
+                return queryset.filter(
+                    student=self.value()
+                )
 
 
 @admin.register(Exercise)
@@ -112,4 +130,12 @@ class WordAdmin(admin.ModelAdmin):
     search_fields = ('word', 'translate')
 
 
-admin.site.register(ExerciseResult)
+@admin.register(ExerciseResult)
+class ExerciseResultAdmin(admin.ModelAdmin):
+    list_display = ('get_ex_name', 'get_teacher', 'get_student',
+                    'step_1', 'step_2', 'step_3', 'step_4')
+    list_filter = [
+        TeachersListFilter,
+        StudentsListFilter,
+    ]
+    # search_fields = ('exercise.name')

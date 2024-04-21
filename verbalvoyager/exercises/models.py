@@ -45,6 +45,7 @@ class Exercise(models.Model):
         return format_html(' '.join(words))
 
     get_words.allow_tags = True
+    get_words.short_description = 'Слова'
 
     # def get_teachers(self):
     #     teachers = [user for user in User.objects.all() if user.groups.filter(name='Teacher').exists()]
@@ -69,19 +70,26 @@ class Exercise(models.Model):
 class ExerciseResult(models.Model):
     exercise = models.ForeignKey(
         Exercise, on_delete=models.CASCADE, related_name='exercise_result', null=True)
-    step = models.CharField(
-        max_length=25,
-        choices=[
-            ('1', 'Step 1'),
-            ('2', 'Step 2'),
-            ('3', 'Step 3'),
-            ('4', 'Step 4'),
-        ]
-    )
-    result = models.SmallIntegerField()
+    step_1 = models.SmallIntegerField(null=True, blank=True, default=None)
+    step_2 = models.SmallIntegerField(null=True, blank=True, default=None)
+    step_3 = models.SmallIntegerField(null=True, blank=True, default=None)
+    step_4 = models.SmallIntegerField(null=True, blank=True, default=None)
 
     def __str__(self) -> str:
-        return f'{self.exercise.student} - {self.exercise.id} - {self.step}'
+        return self.exercise.name
+
+    def get_student(self):
+        return self.exercise.student
+
+    def get_teacher(self):
+        return self.exercise.teacher
+
+    def get_ex_name(self):
+        return self.exercise.name
+
+    get_student.short_description = 'Студент'
+    get_teacher.short_description = 'Учитель'
+    get_ex_name.short_description = 'Название'
 
     class Meta:
         verbose_name = 'Результат упражнения'

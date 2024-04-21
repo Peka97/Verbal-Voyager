@@ -107,6 +107,8 @@ document.getElementById('page_1').classList.add('active', 'watched')
 let words = Array.from(document.getElementsByClassName('word__block'))
 let paginator = Array.from(document.getElementsByClassName('pagination'))
 let pages = Array.from(paginator[0].children).slice(1, -1)
+let points = words.length
+
 const max_page = Number(Array.from(paginator[0].children).slice(-2)[0].id.split('_')[1])
 const prev_btn = document.getElementById('prev_btn')
 const next_btn = document.getElementById('next_btn')
@@ -118,10 +120,12 @@ pages.forEach(el => {
 })
 next_btn.onclick = (event) => {next_paginator_handler(event)}
 next_step.onclick = (event) => {
+    console.log('POST')
     let token = document.getElementsByName('csrfmiddlewaretoken')[0].defaultValue
-    let url = 'http://127.0.0.1:8000/exercises/update'
+    
     let ex_id = window.location.href.split('/').slice(-2, -1)[0]
-    let step = window.location.href.split('/').slice(-1)[0]
+    let step_num = window.location.href.split('/').slice(-1)[0]
+    let url = `https://verbal-voyager.ru/exercises/update/${ex_id}/step_${step_num}`
 
     fetch(url, {
             method: 'POST',
@@ -131,15 +135,15 @@ next_step.onclick = (event) => {
                 'X-CSRFToken': token,
             },
             body: JSON.stringify({
-                'exercise_id': ex_id,
-                'step' : step,
-                "value": pages.length,
+                'value': points
             })
         }
     ).then(response => {
         console.log(response.status)
         if (response.status != 200) {
             console.log('Не удалось отправить данные');
+        }
+        else {
             event.preventDefault();
         }
     })

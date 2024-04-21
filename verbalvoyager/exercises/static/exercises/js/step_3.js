@@ -7,6 +7,7 @@ const next_step = document.getElementById('step_4')
 
 const tasksListElement = document.querySelector(`.translate__list`);
 const taskElements = tasksListElement.querySelectorAll(`.translate__item`);
+let points = words.length
 
 const getNextElement = (cursorPosition, currentElement) => {
   const currentElementCoord = currentElement.getBoundingClientRect();
@@ -115,32 +116,39 @@ function checkAnswer() {
     else {
         alert_danger.classList.remove('hidden')
         alert_success.classList.add('hidden')
+
+        if (points > 1) {
+          points--;
+        }
     }
 }
 
 next_step.onclick = (event) => {
-    let token = document.getElementsByName('csrfmiddlewaretoken')[0].defaultValue
-    let url = 'http://127.0.0.1:8000/exercises/update'
-    let ex_id = window.location.href.split('/').slice(-2, -1)[0]
-    let step = window.location.href.split('/').slice(-1)[0]
+  console.log('POST')
+  let token = document.getElementsByName('csrfmiddlewaretoken')[0].defaultValue
+  
+  let ex_id = window.location.href.split('/').slice(-2, -1)[0]
+  let step_num = window.location.href.split('/').slice(-1)[0]
+  let url = `https://verbal-voyager.ru/exercises/update/${ex_id}/step_${step_num}`
 
-    fetch(url, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'X-CSRFToken': token,
-            },
-            body: JSON.stringify({
-                'exercise_id': ex_id,
-                'step' : step,
-                "value": words.length,
-            })
-        }
-    ).then(response => {
-        if (response.status != 200) {
-          console.log('Не удалось отправить данные на сервер');
+  fetch(url, {
+          method: 'POST',
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'X-CSRFToken': token,
+          },
+          body: JSON.stringify({
+              'value': points,
+          })
+      }
+  ).then(response => {
+      console.log(response.status)
+      if (response.status != 200) {
+          console.log('Не удалось отправить данные');
+      }
+      else {
           event.preventDefault();
-        }
-    })
+      }
+  })
 }

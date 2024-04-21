@@ -43,8 +43,8 @@ def exercises_words(request, id, step):
         return redirect('err_404')
 
     words = get_words(exercise)
-    logger.info(f'Word count: {len(words)}')
-    logger.info(f'Words: {words}')
+    # logger.info(f'Word count: {len(words)}')
+    # logger.info(f'Words: {words}')
 
     template_name = f'exercises/exercise_step_{step}.html'
     context = {
@@ -57,7 +57,7 @@ def exercises_words(request, id, step):
     }
 
     if step == 1:
-        logger.info(context['words'][0])
+        # logger.info(context['words'][0])
         if context['words'][0]['lang'] != 'eng':
             pass
         else:
@@ -66,8 +66,8 @@ def exercises_words(request, id, step):
             for word, api_word in zip(context['words'], api_words):
                 word['api'] = api_word
 
-    logger.info(f"Word count: {len(context['words'])}")
-    logger.info(f"Words: {context['words']}")
+    # logger.info(f"Word count: {len(context['words'])}")
+    # logger.info(f"Words: {context['words']}")
 
     return render(request, template_name, context)
 
@@ -76,8 +76,8 @@ def get_words(exercise: list[Exercise]):  # list[Exercise]
     result = []
     words = list(exercise.words.all())
 
-    logger.info(f'Words len: {len(words)}')
-    logger.info(f'Words from DB: {words}')
+    # logger.info(f'Words len: {len(words)}')
+    # logger.info(f'Words from DB: {words}')
 
     for idx, word in enumerate(words):
         if word.sentences:
@@ -123,31 +123,27 @@ def get_translate_vars(words: list[Word], word: str):  # list[Word]
 
 
 @login_required
-def update(request, id):
+def update(request, ex_id, step_num):
     if request.method == 'POST':
-        # data = json.loads(request.body)
-        # exercise_id = data.get('exercise_id')
-        # step = data.get('step')
-        # value = data.get('value')
-        # obj, is_created = ExerciseResult.objects.get_or_create(
-        #     exercise=Exercise.objects.get(pk=exercise_id),
-        #     step=step,
-        #     result=value
-        # )
+        logger.info(
+            f'POST REQUEST:\n Ex:{ex_id} | {step_num} | {json.loads(request.body)}'
+        )
 
-        # if is_created:
-        #     try:
-        #         obj.save()
-        #     except Exception:
-        #         print('Ошибка добавления')
+        data = json.loads(request.body)
+        value = data.get('value')
 
-        exercise = Exercise.objects.get(pk=id)
-        exercise.is_active = False
-        exercise.save()
+        obj, _ = ExerciseResult.objects.get_or_create(
+            exercise=Exercise.objects.get(pk=ex_id),
+        )
+        obj.__dict__[step_num] = value
+        obj.save()
+
+        if step_num[-1] == '4':
+            exercise = Exercise.objects.get(pk=ex_id)
+            exercise.is_active = False
+            exercise.save()
 
         return redirect('profile')
-
-    return HttpResponse('Not POST method')
 
 
 def get_api_for_words(words: list[Word]):

@@ -10,5 +10,5 @@ handler500 = handler_500
 
 urlpatterns = [
     path('<int:id>/<int:step>', views.exercises_words, name='exercises_words'),
-    path('update/<int:id>', views.update, name='ex_update')
+    path('update/<int:ex_id>/<str:step_num>', views.update, name='ex_update')
 ]

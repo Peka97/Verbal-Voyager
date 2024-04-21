@@ -101,12 +101,16 @@ function checkAnswer() {
         console.log(user_input + ' != ' + translate)
         alert_success.classList.add('hidden');
         alert_danger.classList.remove('hidden');
+
+        if (points > 1) {
+            points--;
+        }
     }
 
     let check = check_all_words_true();
     
     if (check) {
-        done_btn.parentElement.parentElement.classList.remove('hidden')
+        done_btn.parentElement.classList.remove('hidden')
         document.getElementById('step_4').classList.remove('active');
         document.getElementById('step_4').classList.add('step-complete');
         document.getElementById('alert-done').classList.remove('hidden');
@@ -146,17 +150,23 @@ let alert_danger = document.getElementById('alert-danger');
 let check_words = {}
 let btn_check = document.getElementById('btn-check')
 let input_field = document.getElementsByClassName('word__check')[0]
+let input_fields = document.getElementsByClassName('word__check')
+let points = words.length
 
 btn_check.onclick = (event) => {
     checkAnswer();
 }
-input_field.addEventListener('keypress', function (e) {
-    var key = e.which || e.keyCode;
-    
-    if (key === 13) { // код клавиши Enter
-        btn_check.click();
-    }
-});
+
+Array.from(input_fields).forEach( (el) => set_keypress_event(el))
+
+function set_keypress_event (el) {
+    el.addEventListener('keypress', function (e) {
+        var key = e.which || e.keyCode;
+        
+        if (key === 13) { // код клавиши Enter
+            btn_check.click();
+        }});
+};
 
 prev_btn.onclick = (event) => {prev_paginator_handler(event)};
 pages.forEach(el => {
@@ -176,10 +186,12 @@ fill_check_words();
 const done_btn = document.getElementById('done-btn')
 
 done_btn.onclick = (event) => {
+    console.log('POST')
     let token = document.getElementsByName('csrfmiddlewaretoken')[0].defaultValue
-    let url = 'http://127.0.0.1:8000/exercises/update'
+    
     let ex_id = window.location.href.split('/').slice(-2, -1)[0]
-    let step = window.location.href.split('/').slice(-1)[0]
+    let step_num = window.location.href.split('/').slice(-1)[0]
+    let url = `https://verbal-voyager.ru/exercises/update/${ex_id}/step_${step_num}`
 
     fetch(url, {
             method: 'POST',
@@ -189,14 +201,15 @@ done_btn.onclick = (event) => {
                 'X-CSRFToken': token,
             },
             body: JSON.stringify({
-                'exercise_id': ex_id,
-                'step' : step,
-                "value": pages.length,
+                'value': points,
             })
         }
     ).then(response => {
+        console.log(response.status)
         if (response.status != 200) {
             console.log('Не удалось отправить данные');
+        }
+        else {
             event.preventDefault();
         }
     })
