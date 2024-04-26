@@ -4025,6 +4025,10 @@ input[type="button"].btn-block {
   .accordion > .card .card-header {
     margin-bottom: -1px; }
 
+.accordion-button::after {
+  margin-left: 5% !important;
+}
+
 .breadcrumb {
   display: -webkit-box;
   display: -ms-flexbox;

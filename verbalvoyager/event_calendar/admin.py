@@ -8,13 +8,16 @@ from .models import Lesson, Course, Review, ProjectType, Project
 from .forms import LessonAdminForm, ProjectAdminForm
 from django.contrib.auth import get_user_model
 
-User = get_user_model()
 
+log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 logger = logging.getLogger(__name__)
 logger.level = logging.INFO
-logger.addHandler(logging.FileHandler(
+handler = logging.FileHandler(
     '/home/peka97/verbalvoyager/Verbal-Voyager/verbalvoyager/logs/debug.log')
-)
+handler.setFormatter(logging.Formatter(log_format))
+logger.addHandler(handler)
+
+User = get_user_model()
 
 
 # Filters
@@ -163,16 +166,21 @@ class ProjectAdmin(admin.ModelAdmin):
 
             if project.lesson_1:
                 days.append(project.lesson_1)
+
             if project.lesson_2:
                 days.append(project.lesson_2)
+
             if project.lesson_3:
                 days.append(project.lesson_3)
+
             if project.lesson_4:
                 days.append(project.lesson_4)
+
             if project.lesson_5:
                 days.append(project.lesson_5)
 
             while in_period:
+
                 for idx, day in enumerate(days):
                     logger.info(f"{from_date} {day.date()} {to_date}")
                     logger.info(from_date < day.date() < to_date)
@@ -193,21 +201,18 @@ class ProjectAdmin(admin.ModelAdmin):
         )
 
         if is_created:
+
             for student in list(students.all()):
-                # logger.info(student)
                 lesson.students.add(student)
+
             lesson.save()
         else:
-            # logger.info('Lesson was not created')
             lesson = Lesson.objects.filter(datetime=day, teacher=teacher)
 
             for student in list(students.all()):
                 new_lesson = lesson.filter(students=student)
-                # logger.info(new_lesson)
 
                 if not new_lesson:
-                    # logger.info(f'{student} not in lesson')
-
                     lesson = Lesson.objects.filter(
                         datetime=day, teacher=teacher).first()
                     lesson.students.add(student)

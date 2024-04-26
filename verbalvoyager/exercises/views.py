@@ -14,23 +14,25 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Exercise, Word, ExerciseResult
 
+log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 logger = logging.getLogger(__name__)
 logger.level = logging.INFO
-logger.addHandler(logging.FileHandler(
+handler = logging.FileHandler(
     '/home/peka97/verbalvoyager/Verbal-Voyager/verbalvoyager/logs/debug.log')
-)
+handler.setFormatter(logging.Formatter(log_format))
+logger.addHandler(handler)
 
 User = get_user_model()
 
 
 @login_required(login_url="/users/auth")
-def exercises_words(request, id, step):
+def exercises_words(request, ex_id, step):
     titles = {1: 'Запоминаем', 2: 'Выбираем', 3: 'Расставляем', 4: 'Переводим'}
     user = User.objects.get(username=request.user.username)
 
     try:
         exercise = list(Exercise.objects.filter(
-            id=id,
+            pk=ex_id,
             student=user
         ).all())[0]
     except IndexError:
@@ -48,7 +50,7 @@ def exercises_words(request, id, step):
 
     template_name = f'exercises/exercise_step_{step}.html'
     context = {
-        'id': id,
+        'ex_id': ex_id,
         'step': step,
         'title': titles[step],
         'words': words,
@@ -80,11 +82,14 @@ def get_words(exercise: list[Exercise]):  # list[Exercise]
     # logger.info(f'Words from DB: {words}')
 
     for idx, word in enumerate(words):
+
         if word.sentences:
+
             if '\n' in word.sentences:
                 sentences = word.sentences.split('\n')
             else:
                 sentences = [word.sentences]
+
         else:
             sentences = word.sentences
 
@@ -156,29 +161,35 @@ def get_api_for_words(words: list[Word]):
 
     for word in words:
         params['search'] = word['word']
+
         try:
             resp = requests.get(url, params, headers=headers).json()[0]
         except IndexError:
-            msg = f"Word: {word}.\nResp: {requests.get(url, params, headers=headers).text}."
+            msg = f"\nWord: {word}.\nResp: {requests.get(url, params, headers=headers).text}."
             logger.exception(msg)
 
-            continue
-
-        word = resp['text']
-        translation = resp['meanings'][0]['translation']
-        transcription = resp['meanings'][0]['transcription']
-        image_url = resp['meanings'][0]['imageUrl']
-        image_url = image_url.replace('640x480', img_size)
-        sound_url = resp['meanings'][0]['soundUrl']
-
-        result.append(
-            {
-                'word': word,
-                'translation': translation,
-                'transcription': transcription,
-                'image_url': image_url,
-                'sound_url': sound_url
-            }
-        )
+            word_text = word['word']
+            word_translation = word['translate']
+            transcription = None
+            image_url = None
+            image_url = None
+            sound_url = None
+        else:
+            word_text = resp['text']
+            word_translation = resp['meanings'][0]['translation']
+            transcription = resp['meanings'][0]['transcription']
+            image_url = resp['meanings'][0]['imageUrl']
+            image_url = image_url.replace('640x480', img_size)
+            sound_url = resp['meanings'][0]['soundUrl']
+        finally:
+            result.append(
+                {
+                    'word': word_text,
+                    'translation': word_translation,
+                    'transcription': transcription,
+                    'image_url': image_url,
+                    'sound_url': sound_url
+                }
+            )
 
     return result

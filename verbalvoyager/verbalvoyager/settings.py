@@ -13,12 +13,12 @@ SECRET_KEY = config.SECRET_KEY
 DEBUG = config.DEBUG
 
 ALLOWED_HOSTS = [
-    '127.0.0.1', 'localhost', '', '::1', '158.160.153.27'
+    '127.0.0.1', 'localhost', '', '::1', '158.160.153.184'
 ]
 
 # CSRF
 CSRF_TRUSTED_ORIGINS = [
-    'http://verbal-voyager.ru', 'https://verbal-voyager.ru']
+    'http://verbal-voyager.ru', 'http://www.verbal-voyager.ru', 'https://verbal-voyager.ru', 'https://www.verbal-voyager.ru']
 
 # Application definition
 INSTALLED_APPS = [

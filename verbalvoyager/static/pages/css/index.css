@@ -33,13 +33,38 @@ a {
     font-weight: bold;
 }
 
-.carousel-caption {
+/* .carousel-caption {
     background-color: var(--color-blue-pastel-max-pale);
     border-radius: 5px;
+} */
+
+.carousel-item > img {
+    position: relative;
+    z-index: -1;
+}
+
+.carousel-caption::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+    display: flex;
+    width: 100%;
+
+    background-color: var(--color-blue-pastel-max-pale);
+    border-radius: 5px;
+    opacity: .7;
 }
 
 .carousel-control-prev, .carousel-control-next {
     background-color: var(--color-blue-pastel-pale);
+    opacity: .7;
+}
+
+.carousel-control-next-icon, .carousel-control-prev-icon {
+    width: 4rem;
+    height: 4rem;
 }
 
 .carousel-header {

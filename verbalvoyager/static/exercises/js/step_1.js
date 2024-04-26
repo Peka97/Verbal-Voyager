@@ -99,6 +99,8 @@ function checkAllPagesWatched() {
         document.getElementById('step_2').classList.remove('step-future', 'disabled')
         document.getElementById('step_2').classList.add('step-active', 'active', 'ramka-5')
         document.getElementById('main-alert').classList.remove('hidden')
+
+        send_points()
     }
 }
 
@@ -119,8 +121,9 @@ pages.forEach(el => {
     el.onclick = (event) => {paginator_handler(event)}
 })
 next_btn.onclick = (event) => {next_paginator_handler(event)}
-next_step.onclick = (event) => {
-    console.log('POST')
+
+function send_points() {
+    console.log('Отправка баллов...')
     let token = document.getElementsByName('csrfmiddlewaretoken')[0].defaultValue
     
     let ex_id = window.location.href.split('/').slice(-2, -1)[0]
@@ -141,10 +144,10 @@ next_step.onclick = (event) => {
     ).then(response => {
         console.log(response.status)
         if (response.status != 200) {
-            console.log('Не удалось отправить данные');
+            console.log('Не удалось отправить баллы');
         }
         else {
-            event.preventDefault();
+            console.log('Баллы отправлены')
         }
     })
 }

@@ -103,7 +103,9 @@ class ExerciseAdmin(admin.ModelAdmin):
     form = ExerciseAdminForm
 
     filter_horizontal = ('words', )
-    list_display = ('is_active', 'name', 'student', 'teacher', 'get_words')
+    list_display = (
+        'pk', 'name', 'is_active', 'student', 'teacher', 'get_words'
+    )
     list_display_links = ('name', )
     list_filter = [
         TeachersListFilter,

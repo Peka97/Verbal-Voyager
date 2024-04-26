@@ -22,12 +22,8 @@
             <!-- Done button -->
             <div class='row justify-content-center '>
                 <div class='col-3 pt-3 hidden text-center'>
-                    {% comment %} <form action="{% url "ex_update" id=id %}" method="post" class='text-center'> {% endcomment %}
-                        {% csrf_token %}
-                        <a id='done-btn' class="btn btn-success" href="{% url 'profile' %}" role="button" aria-disabled="false">Вернуться в Личный кабинет</a>
-
-                        {% comment %} <button id='done-btn_' type='submit' class='btn btn-success'>Вернуться в Личный кабинет</button> {% endcomment %}
-                    {% comment %} </form> {% endcomment %}
+                    {% csrf_token %}
+                    <a id='done-btn' class="btn btn-success" href="{% url 'profile' %}" role="button" aria-disabled="false">Вернуться в Личный кабинет</a>
                 </div>
             </div>
         </div>

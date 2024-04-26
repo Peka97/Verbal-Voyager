@@ -127,12 +127,44 @@ function checkAllPagesWatched() {
         document.getElementById('step_3').classList.remove('disabled')
         document.getElementById('step_3').classList.add('active', 'step_active', 'ramka-5')
         document.getElementById('main-alert').classList.remove('hidden')
+
+        send_points()
     }
 }
 
 function alertsHide() {
     alert_danger.classList.add('hidden')
     alert_success.classList.add('hidden')
+}
+
+function send_points() {
+    console.log('Отправка баллов...')
+    let token = document.getElementsByName('csrfmiddlewaretoken')[0].defaultValue
+    
+    let ex_id = window.location.href.split('/').slice(-2, -1)[0]
+    let step_num = window.location.href.split('/').slice(-1)[0]
+    let url = `https://verbal-voyager.ru/exercises/update/${ex_id}/step_${step_num}`
+
+    fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRFToken': token,
+            },
+            body: JSON.stringify({
+                'value': points
+            })
+        }
+    ).then(response => {
+        console.log(response.status)
+        if (response.status != 200) {
+            console.log('Не удалось отправить баллы');
+        }
+        else {
+            console.log('Баллы отправлены')
+        }
+    })
 }
 
 /* Vars */
@@ -165,36 +197,6 @@ next_btn.onclick = (event) => {
     alertsHide();
     nextPaginatorHandler(event);
     wordCheckHandlers();
-}
-
-next_step.onclick = (event) => {
-    console.log('POST')
-    let token = document.getElementsByName('csrfmiddlewaretoken')[0].defaultValue
-    
-    let ex_id = window.location.href.split('/').slice(-2, -1)[0]
-    let step_num = window.location.href.split('/').slice(-1)[0]
-    let url = `https://verbal-voyager.ru/exercises/update/${ex_id}/step_${step_num}`
-
-    fetch(url, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'X-CSRFToken': token,
-            },
-            body: JSON.stringify({
-                'value': points,
-            })
-        }
-    ).then(response => {
-        console.log(response.status)
-        if (response.status != 200) {
-            console.log('Не удалось отправить данные');
-        }
-        else {
-            event.preventDefault();
-        }
-    })
 }
 
 /* On start */

@@ -19,11 +19,13 @@ from exercises.models import Exercise
 from event_calendar.models import Lesson, Project
 from event_calendar.forms import LessonForm
 
+log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-logger.addHandler(logging.FileHandler(
+logger.level = logging.INFO
+handler = logging.FileHandler(
     '/home/peka97/verbalvoyager/Verbal-Voyager/verbalvoyager/logs/debug.log')
-)
+handler.setFormatter(logging.Formatter(log_format))
+logger.addHandler(handler)
 
 User = get_user_model()
 

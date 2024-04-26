@@ -27,17 +27,17 @@
                     <div class="row content-row">
                         <div class="col content-col my-auto">
                             <div class="col text-center">
-                                {% if word.api %}
+                                {% if word.api.image_url %}
                                     <img class="bd-placeholder-img" src="{{ word.api.image_url }}" alt="Word Image">
                                 {% endif %}
                             </div>
                             <div class='mt-2 text-center'>
-                                {% if word.api %}
+                                {% if word.api.transcription %}
                                     <p class="text"> Transcription: {{ word.api.transcription }} </p>
                                 {% endif %}
                             </div>
                             <div class='mt-2 text-center'>
-                                {% if word.api %}
+                                {% if word.api.sound_url %}
                                     <audio controls>
                                         <source src="{{ word.api.sound_url }}">
                                     </audio>
