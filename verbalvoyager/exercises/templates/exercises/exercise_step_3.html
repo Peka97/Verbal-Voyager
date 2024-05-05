@@ -7,49 +7,48 @@
 {% endblock  %}
 
 {% block 'content' %}
-
     <div class="row row-cols-2 justify-content-center words__place">
-        <div class="col text-center words__col">
-            <ul id='words-list' class='text-end words__list'>
+        <div class="col w-auto">
+            <div class='words_container pe-2' id="words">
                 {% for word in words %}
-                    <li id='word_{{word.id}}' class="word__item">
-                        <p class="word__word"> {{ word.word }}</p>
-                        </li>
+                    <div class='row word ms-auto' id='word_{{word.id}}'>
+                        <span>{{ word.word }}</span>
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
         </div>
-        <div class="col text-center translate__col">
-            <ul id='trans-list' class="text-start translate__list">
+        <div class="col w-auto">
+            <div class='translate_container' id="translate">
                 {% for trans_word in shuffled_translates %}
-                    <li id='translate_{{ trans_word.id }}' class="translate__item">
-                        <p class="translate__word"><i class="bi bi-list"></i> {{ trans_word.trans }}</p>
-                    </li>
+                    <div class='row translate' id='translate_{{ trans_word.id }}'>
+                        <span><i class="bi bi-list"></i> {{ trans_word.trans }}</span>
+                    </div>
                 {% endfor %}
-            </ul>
-        </div>
-    </div>
-    <div class="row row-cols-2 justify-content-center text-center row-btn-answer">
-        <div class="col">
-            <button id='btn-answer' class='btn btn__check'>Проверить</button>
-        </div>
-    </div>
-
-    <!-- Alerts-->
-    <div class='row row-alerts justify-content-center pt-3'>
-        <div class='col'>
-            <div class='alerts'>
-                <div id='alert-success' class="alert alert-success text-center hidden" role="alert">
-                    Верно! Так держать!
-                </div>
-                <div id='alert-danger' class="alert alert-danger text-center hidden" role="alert">
-                    Не верно! Подумай ещё
-                </div>
             </div>
         </div>
     </div>
+    <div class="row row-cols-2 justify-content-center text-center row-btn-answer">
+        <button type="button" class="btn btn__check" id="liveToastBtn">Проверить</button>
+
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="10000">
+            <div class="toast-header">
+                <img src="{% static 'pages/images/favicon.ico' %}" class="toast__ico rounded me-2" alt="verbal voyager icon">
+                <strong class="me-auto">Verbal Voyager</strong>
+                <small>11 мин назад</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Закрыть"></button>
+            </div>
+            <div class="toast-body" id="toast-body">
+                Привет, мир! Это тост-сообщение.
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock  %}
 
 {% block 'js' %}
-    <script src="{% static 'exercises/js/touch.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+    {% comment %} <script src="{% static 'exercises/js/touch.js' %}"></script> {% endcomment %}
     <script src="{% static 'exercises/js/step_3.js' %}"></script>
 {% endblock  %}

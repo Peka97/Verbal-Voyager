@@ -19,7 +19,7 @@ logger.addHandler(handler)
 User = get_user_model()
 
 
-def handler_403(request, exception):
+def handler_403(request, exception=None):
     context = {
         'title': 'Ошибка доступа: 403',
         'error_message': 'Доступ к этой странице ограничен.',
@@ -27,7 +27,7 @@ def handler_403(request, exception):
     return render(request, 'pages/error.html', context, status=403)
 
 
-def handler_404(request, exception):
+def handler_404(request, exception=None):
     context = {
         'title': 'Страница не найдена: 404',
         'error_message': 'К сожалению такая страница была не найдена.',
@@ -35,7 +35,7 @@ def handler_404(request, exception):
     return render(request, 'pages/error.html', context, status=404)
 
 
-def handler_500(request):
+def handler_500(request, exception=None):
     context = {
         'title': 'Ошибка сервера: 500',
         'error_message': 'Внутренняя ошибка сайта, вернитесь на главную страницу.',
@@ -101,8 +101,3 @@ def contacts(request):
 def faq(request):
     context = {}
     return render(request, 'pages/faq.html', context)
-
-
-def test(request):
-    context = {}
-    return render(request, 'pages/test.html', context)

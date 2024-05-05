@@ -12,7 +12,6 @@ function prev_paginator_handler(event) {
             prev_btn.classList.remove('disabled')
         }
         pages[new_page - 1].classList.add('watched');
-        alertsHide();
         update_paginator_by_number(new_page);
     }
 }
@@ -30,7 +29,6 @@ function next_paginator_handler(event) {
             next_btn.classList.remove('disabled')
         }
         pages[new_page - 1].classList.add('watched');
-        alertsHide();
         update_paginator_by_number(new_page);
     }   
 }
@@ -81,7 +79,6 @@ function paginator_handler(event) {
             el.parentElement.classList.add('hidden')
         }
     })
-    alertsHide();
 }
 
 function checkAnswer() {
@@ -93,14 +90,22 @@ function checkAnswer() {
 
     if (user_input == translate) {
         console.log(user_input + ' == ' + translate)
-        alert_success.classList.remove('hidden');
-        alert_danger.classList.add('hidden');
+        
+        if (toastTrigger) {
+            toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
+            toastBody.innerText = 'Правильно! Переходи к следующему слову.'
+            const toast = new bootstrap.Toast(toastLiveExample)
+            toast.show()
+          }
         check_words[word.id] = true;
     }
     else {
         console.log(user_input + ' != ' + translate)
-        alert_success.classList.add('hidden');
-        alert_danger.classList.remove('hidden');
+
+        toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
+        toastBody.innerText = 'Неправильно, подумай ещё раз.'
+        const toast = new bootstrap.Toast(toastLiveExample)
+        toast.show()
 
         if (points > 1) {
             points--;
@@ -113,15 +118,14 @@ function checkAnswer() {
         done_btn.parentElement.classList.remove('hidden')
         document.getElementById('step_4').classList.remove('active');
         document.getElementById('step_4').classList.add('step-complete');
-        document.getElementById('alert-done').classList.remove('hidden');
+        
+        toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
+        toastBody.innerText = 'Упражнение завершено! Переходи по кнопке в Личный кабинет'
+        const toast = new bootstrap.Toast(toastLiveExample)
+        toast.show()
 
         send_points()
     }
-}
-
-function alertsHide() {
-    alert_danger.classList.add('hidden');
-    alert_success.classList.add('hidden');
 }
 
 function fill_check_words() {
@@ -177,17 +181,14 @@ let prev_btn = document.getElementById('prev_btn');
 let next_btn = document.getElementById('next_btn');
 let pages = Array.from(paginator[0].children).slice(1, -1);
 let max_page = Number(Array.from(paginator[0].children).slice(-2)[0].id.split('_')[1]);
-let alert_success = document.getElementById('alert-success');
-let alert_danger = document.getElementById('alert-danger');
 let check_words = {}
-let btn_check = document.getElementById('btn-check')
 let input_field = document.getElementsByClassName('word__check')[0]
 let input_fields = document.getElementsByClassName('word__check')
 let points = words.length
+const step_1 = document.getElementById('step_1').classList.add('step-complete')
+const step_2 = document.getElementById('step_2').classList.add('step-complete')
+const step_3 = document.getElementById('step_3').classList.add('step-complete')
 
-btn_check.onclick = (event) => {
-    checkAnswer();
-}
 
 Array.from(input_fields).forEach( (el) => set_keypress_event(el))
 
@@ -196,7 +197,7 @@ function set_keypress_event (el) {
         var key = e.which || e.keyCode;
         
         if (key === 13) { // код клавиши Enter
-            btn_check.click();
+            toastTrigger.click();
         }});
 };
 
@@ -210,9 +211,19 @@ next_btn.onclick = (event) => {next_paginator_handler(event)};
 /* On start */
 document.getElementById('word_check_1').parentElement.classList.remove('hidden');
 document.getElementById('page_1').classList.add('active', 'watched');
-document.getElementById('step_1').classList.add('bg-success', 'text-light');
-document.getElementById('step_2').classList.add('bg-success', 'text-light');
-document.getElementById('step_3').classList.add('bg-success', 'text-light');
 fill_check_words();
 
 const done_btn = document.getElementById('done-btn')
+
+const toastTrigger = document.getElementById('liveToastBtn')
+const toastLiveExample = document.getElementById('liveToast')
+const toastBody = document.getElementById('toast-body')
+if (toastTrigger) {
+    toastTrigger.addEventListener('click', () => {
+      const toast = new bootstrap.Toast(toastLiveExample)
+      checkAnswer()
+  
+      toast.show()
+    })
+  }
+

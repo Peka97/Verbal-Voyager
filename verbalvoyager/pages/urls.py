@@ -5,10 +5,6 @@ from . import views
 from pages.views import handler_403, handler_404, handler_500
 
 
-handler403 = handler_403
-handler404 = handler_404
-handler500 = handler_500
-
 urlpatterns = [
     path('', views.index, name=''),
     path('admin/', admin.site.admin_view, name='admin'),
@@ -20,9 +16,7 @@ urlpatterns = [
     path('contacts', views.contacts, name='contacts'),
     path('faq', views.faq, name='faq'),
 
-    path('403', views.test, name='err_403'),
-    path('404', views.test, name='err_404'),
-    path('500', views.test, name='err_500'),
-
-    path('test', views.test, name='test'),
+    path('403', handler_403, name='err_403'),
+    path('404', handler_404, name='err_404'),
+    path('500', handler_500, name='err_500'),
 ]

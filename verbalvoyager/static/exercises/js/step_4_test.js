@@ -90,9 +90,7 @@ function checkAnswer() {
 
     if (user_input == translate) {
         console.log(user_input + ' == ' + translate)
-        
         if (toastTrigger) {
-            toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
             toastBody.innerText = 'Правильно! Переходи к следующему слову.'
             const toast = new bootstrap.Toast(toastLiveExample)
             toast.show()
@@ -102,7 +100,6 @@ function checkAnswer() {
     else {
         console.log(user_input + ' != ' + translate)
 
-        toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
         toastBody.innerText = 'Неправильно, подумай ещё раз.'
         const toast = new bootstrap.Toast(toastLiveExample)
         toast.show()
@@ -119,7 +116,6 @@ function checkAnswer() {
         document.getElementById('step_4').classList.remove('active');
         document.getElementById('step_4').classList.add('step-complete');
         
-        toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
         toastBody.innerText = 'Упражнение завершено! Переходи по кнопке в Личный кабинет'
         const toast = new bootstrap.Toast(toastLiveExample)
         toast.show()

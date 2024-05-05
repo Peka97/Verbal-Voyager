@@ -95,15 +95,20 @@ function wordCheckHandlers() {
             if (flag) {
                 let page_obj = document.getElementById(`page_${curr_page}`)
                 
-                alert_danger.classList.add('hidden')
-                alert_success.classList.remove('hidden')
                 page_obj.classList.add('watched');
 
-                checkAllPagesWatched();
+                if (checkAllPagesWatched() === false) {
+                    toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
+                    toastBody.innerText = 'Правильно! Переходи к следующему слову.'
+                    const toast = new bootstrap.Toast(toastLiveExample)
+                    toast.show()
+                };
             }
             else {
-                alert_danger.classList.remove('hidden')
-                alert_success.classList.add('hidden')
+                toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
+                toastBody.innerText = 'Неверно, подумай ещё раз.'
+                const toast = new bootstrap.Toast(toastLiveExample)
+                toast.show()
 
                 if (points > 1) {
                     points--;
@@ -122,19 +127,23 @@ function checkAllPagesWatched() {
     })
 
     if (result == true) {
+        glow.classList.remove('disabled')
+        stars.classList.remove('disabled')
+
+        toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
+        toastBody.innerText = 'Запомнил слова? Тогда переходи к следующему шагу!'
+        const toast = new bootstrap.Toast(toastLiveExample)
+        toast.show()
+
         document.getElementById('step_2').classList.remove('bg-warning', 'active')
         document.getElementById('step_2').classList.add('step-complete')
         document.getElementById('step_3').classList.remove('disabled')
-        document.getElementById('step_3').classList.add('active', 'step_active', 'ramka-5')
-        document.getElementById('main-alert').classList.remove('hidden')
+        document.getElementById('step_3').classList.add('next-btn', 'active')
 
         send_points()
     }
-}
 
-function alertsHide() {
-    alert_danger.classList.add('hidden')
-    alert_success.classList.add('hidden')
+    return result;
 }
 
 function send_points() {
@@ -168,7 +177,7 @@ function send_points() {
 }
 
 /* Vars */
-let words = Array.from(document.getElementsByClassName('word'))
+let words = Array.from(document.getElementsByClassName('word-check'))
 let paginator = Array.from(document.getElementsByClassName('pagination'))
 let pages = Array.from(paginator[0].children).slice(1, -1)
 let max_page = Number(Array.from(paginator[0].children).slice(-2)[0].id.split('_')[1])
@@ -176,25 +185,22 @@ let points = words.length
 
 const prev_btn = document.getElementById('prev_btn')
 const next_btn = document.getElementById('next_btn')
-const alert_success = document.getElementById('alert-success');
-const alert_danger = document.getElementById('alert-danger');
 const next_step = document.getElementById('step_3')
+const step_1 = document.getElementById('step_1').classList.add('step-complete')
+
 
 /* Handlers */
 prev_btn.onclick = (event) => {
-    alertsHide();
     prevPaginatorHandler(event);
     wordCheckHandlers();
 }
 pages.forEach(el => {
     el.onclick = (event) => {
-        alertsHide();
         paginatorHandler(event);
         wordCheckHandlers();
     }
 })
 next_btn.onclick = (event) => {
-    alertsHide();
     nextPaginatorHandler(event);
     wordCheckHandlers();
 }
@@ -204,4 +210,8 @@ document.getElementById('page_1').classList.add('active', 'watched');
 document.getElementById('step_1').classList.add('step-complete', 'text-light')
 wordCheckHandlers();
 
+const toastLiveExample = document.getElementById('liveToast')
+const toastBody = document.getElementById('toast-body')
 
+const stars = document.getElementById('step_3').children[1]
+const glow = document.getElementById('step_3').children[2]

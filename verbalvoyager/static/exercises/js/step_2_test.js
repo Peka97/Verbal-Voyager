@@ -98,14 +98,12 @@ function wordCheckHandlers() {
                 page_obj.classList.add('watched');
 
                 if (checkAllPagesWatched() === false) {
-                    toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
                     toastBody.innerText = 'Правильно! Переходи к следующему слову.'
                     const toast = new bootstrap.Toast(toastLiveExample)
                     toast.show()
                 };
             }
             else {
-                toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
                 toastBody.innerText = 'Неверно, подумай ещё раз.'
                 const toast = new bootstrap.Toast(toastLiveExample)
                 toast.show()
@@ -130,7 +128,6 @@ function checkAllPagesWatched() {
         glow.classList.remove('disabled')
         stars.classList.remove('disabled')
 
-        toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
         toastBody.innerText = 'Запомнил слова? Тогда переходи к следующему шагу!'
         const toast = new bootstrap.Toast(toastLiveExample)
         toast.show()
@@ -144,6 +141,11 @@ function checkAllPagesWatched() {
     }
 
     return result;
+}
+
+function alertsHide() {
+    alert_danger.classList.add('hidden')
+    alert_success.classList.add('hidden')
 }
 
 function send_points() {
@@ -191,16 +193,19 @@ const step_1 = document.getElementById('step_1').classList.add('step-complete')
 
 /* Handlers */
 prev_btn.onclick = (event) => {
+    alertsHide();
     prevPaginatorHandler(event);
     wordCheckHandlers();
 }
 pages.forEach(el => {
     el.onclick = (event) => {
+        alertsHide();
         paginatorHandler(event);
         wordCheckHandlers();
     }
 })
 next_btn.onclick = (event) => {
+    alertsHide();
     nextPaginatorHandler(event);
     wordCheckHandlers();
 }

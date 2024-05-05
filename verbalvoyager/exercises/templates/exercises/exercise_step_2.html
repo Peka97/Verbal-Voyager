@@ -10,7 +10,7 @@
 
     <!-- Words -->
     {% for word in words %}
-        <div id='word_check_{{word.id}}' class="row row-cols-1 justify-content-center word-check word {% if word.id != 1 %}hidden{% endif %}">
+        <div id='word_check_{{word.id}}' class="row row-cols-1 justify-content-center word-check {% if word.id != 1 %}hidden{% endif %}">
             <div class="col">
                 <p class="text text-center word-main">{{ word.word }}</p>
             </div>

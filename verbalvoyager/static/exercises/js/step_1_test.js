@@ -97,7 +97,6 @@ function checkAllPagesWatched() {
         glow.classList.remove('disabled')
         stars.classList.remove('disabled')
 
-        toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
         toastBody.innerText = 'Запомнил слова? Тогда переходи к следующему шагу!'
         const toast = new bootstrap.Toast(toastLiveExample)
         toast.show()

@@ -29,44 +29,77 @@
         <div class="col-12">
           <ul class="nav nav-tabs nav-fill">
             <li class="nav-item align-self-center px-auto">
-              <a id='step_1' class="nav-link {% if step == 1 %}active step-active {% elif step > 1 %} step-complete {% else %} step-future {% endif %} disabled" aria-disabled="true">
+              <a id='step_1' class="nav-link btn {% if step == 1 %}active step-active {% else %} step-future {% endif %} disabled" href={% url "exercises_words" ex_id=ex_id step=1 %} aria-disabled="true">
                 {% if step == 1 %}
-                  → Step 1 ←
-                {% elif step > 1 %}
-                  Step 1 ✔
+                  <strong>
+                    → Step 1 ←
+                  </strong>
                 {% else %}
-                  Step 1
+                  <strong>
+                    Step 1
+                  </strong>
                 {% endif %}
               </a>
             </li>
             <li class="nav-item align-self-center px-auto">
-              <a id='step_2' class="nav-link {% if step == 2 %}active step-active {% elif step > 2 %} step-complete {% else %} step-future {% endif %} disabled" href={% url "exercises_words" ex_id=ex_id step=2 %} aria-disabled="true">
+              <a id='step_2' class="nav-link btn {% if step == 2 %}active step-active {% else %} step-future {% endif %} disabled" href={% url "exercises_words" ex_id=ex_id step=2 %} aria-disabled="true">
                 {% if step == 2 %}
-                  → Step 2 ←
-                {% elif step > 2 %}
-                  Step 2 ✔
+                  <strong>
+                    → Step 2 ←
+                  </strong>
                 {% else %}
-                  Step 2 
+                  <strong>
+                    Step 2
+                  </strong>
+                  <div class="container-stars disabled">
+                    <div class="stars"></div>
+                  </div>
+                  <div class="glow disabled">
+                    <div class="circle"></div>
+                    <div class="circle"></div>
+                  </div>
                 {% endif %}
               </a>
             </li>
             <li class="nav-item align-self-center px-auto">
-              <a id='step_3' class="nav-link {% if step == 3 %}active step-active {% elif step > 3 %} step-complete {% else %} step-future {% endif %} disabled" href={% url "exercises_words" ex_id=ex_id step=3 %} aria-disabled="true">
-                {% if step == 3 %}
-                  → Step 3 ←
-                {% elif step > 3 %}
-                  Step 3 ✔
-                {% else %}
-                  Step 3
-                {% endif %}
-              </a>
+                <a id='step_3' class="nav-link btn {% if step == 3 %}active step-active {% else %} step-future {% endif %} disabled" href={% url "exercises_words" ex_id=ex_id step=3 %} aria-disabled="true">
+                  {% if step == 3 %}
+                    <strong>
+                      → Step 3 ←
+                    </strong>
+                  {% else %}
+                    <strong>
+                      Step 3
+                    </strong>
+                    <div class="container-stars disabled">
+                      <div class="stars"></div>
+                    </div>
+                  
+                    <div class="glow disabled">
+                      <div class="circle"></div>
+                      <div class="circle"></div>
+                    </div>
+                  {% endif %}
+                </a>
             </li>
             <li class="nav-item align-self-center px-auto">
-              <a id='step_4' class="nav-link {% if step == 4 %}active step-active {% else %} step-future {% endif %} disabled" href={% url "exercises_words" ex_id=ex_id step=4 %} aria-disabled="true">
+              <a id='step_4' class="nav-link btn {% if step == 4 %}active step-active {% else %} step-future {% endif %} disabled" href={% url "exercises_words" ex_id=ex_id step=4 %} aria-disabled="true">
                 {% if step == 4 %}
-                  → Step 4 ←
+                  <strong>
+                    → Step 4 ←
+                  </strong>
                 {% else %}
-                  Step 4
+                  <strong>
+                    Step 4
+                  </strong>
+                  <div class="container-stars disabled">
+                    <div class="stars"></div>
+                  </div>
+                
+                  <div class="glow disabled">
+                    <div class="circle_4"></div>
+                    <div class="circle_4"></div>
+                  </div>
                 {% endif %}
               </a>
             </li>
@@ -77,17 +110,6 @@
   </nav>
     
   <div class="container">
-
-    <!-- Main Alerts -->
-    <div class='row row-alerts justify-content-center pt-3'>
-      <div class='col'>
-        <div id='main-alert' class="alert alert-success text-center hidden" role="alert">
-          Твои результаты отправлены! Выбирай следующий шаг на панели выше
-          <button id="btn-done" class="btn btn-success hidden">Завершить</button>
-        </div>
-      </div>
-    </div>
-
     <!-- Header -->
     <div class="row ramka-6 header-row justify-content-center mb-3 py-3">
         <div class="col justify-content-center header">
@@ -99,6 +121,21 @@
 
     <!-- Content -->
     {% block 'content' %}{% endblock  %}
+
+    <!-- Toogle Alerts -->
+    <div class="toast-container bottom-0 end-0 p-3">
+      <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="10000">
+        <div class="toast-header">
+          <img src="{% static 'pages/images/favicon.ico' %}" class="toast__ico rounded me-2" alt="verbal voyager icon">
+          <strong class="me-auto">Verbal Voyager</strong>
+          <small><!-- 11 мин назад --></small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Закрыть"></button>
+        </div>
+        <div class="toast-body" id="toast-body">
+          Привет, мир! Это тост-сообщение.
+        </div>
+      </div>
+    </div>
 
     <!-- Pagination -->
     {% if step != 3 %}

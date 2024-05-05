@@ -1,98 +1,10 @@
-document.getElementById('step_1').classList.add('bg-success', 'text-light')
-document.getElementById('step_2').classList.add('bg-success', 'text-light')
-const alert_success = document.getElementById('alert-success')
-const alert_danger = document.getElementById('alert-danger')
-const words = Array(5)
+const step_1 = document.getElementById('step_1').classList.add('step-complete')
+const step_2 = document.getElementById('step_2').classList.add('step-complete')
+const words = document.getElementsByClassName('word__word')
 const next_step = document.getElementById('step_4')
 
-const tasksListElement = document.querySelector(`.translate__list`);
-const taskElements = tasksListElement.querySelectorAll(`.translate__item`);
 let points = words.length
 
-const getNextElement = (cursorPosition, currentElement) => {
-  const currentElementCoord = currentElement.getBoundingClientRect();
-  const currentElementCenter = currentElementCoord.y + currentElementCoord.height / 2;
-  
-  const nextElement = (cursorPosition < currentElementCenter) ?
-    currentElement :
-    currentElement.nextElementSibling;
-  
-  return nextElement;
-};
-
-document.getElementById('btn-answer').onclick = (event) => {
-    checkAnswer()
-}
-for (const task of taskElements) {
-  task.draggable = true;
-}
-
-tasksListElement.addEventListener(`dragstart`, (evt) => {
-  evt.target.classList.add(`selected`);
-});
-tasksListElement.addEventListener(`touchstart`, (evt) => {
-  evt.target.classList.add(`selected`);
-});
-
-tasksListElement.addEventListener(`dragover`, (evt) => {
-  evt.preventDefault();
-  
-  const activeElement = tasksListElement.querySelector(`.selected`);
-  const currentElement = evt.target;
-  const isMoveable = activeElement !== currentElement &&
-    currentElement.classList.contains(`translate__item`);
-    
-  if (!isMoveable) {
-    return;
-  }
-  
-  const nextElement = getNextElement(evt.clientY, currentElement);
-  
-  if (
-    nextElement && 
-    activeElement === nextElement.previousElementSibling ||
-    activeElement === nextElement
-  ) {
-    return;
-  }
-		
-	tasksListElement.insertBefore(activeElement, nextElement);
-});
-
-tasksListElement.addEventListener(`touchmove`, (evt) => {
-  
-});
-
-function move (evt) {
-  evt.preventDefault();
-  
-  const activeElement = tasksListElement.querySelector(`.selected`);
-  const currentElement = evt.target;
-  const isMoveable = activeElement !== currentElement &&
-    currentElement.classList.contains(`translate__item`);
-    
-  if (!isMoveable) {
-    return;
-  }
-  
-  const nextElement = getNextElement(evt.clientY, currentElement);
-  
-  if (
-    nextElement && 
-    activeElement === nextElement.previousElementSibling ||
-    activeElement === nextElement
-  ) {
-    return;
-  }
-	tasksListElement.insertBefore(activeElement, nextElement);
-}
-
-tasksListElement.addEventListener(`dragend`, (evt) => {
-  evt.target.classList.remove(`selected`);
-});
-tasksListElement.addEventListener(`touchend`, (evt) => {
-  evt.target.classList.remove(`selected`);
-});
 function send_points() {
   console.log('Отправка баллов...')
   let token = document.getElementsByName('csrfmiddlewaretoken')[0].defaultValue
@@ -123,8 +35,8 @@ function send_points() {
   })
 }
 function checkAnswer() {
-    let words = document.getElementById('words-list').children
-    let trans = document.getElementById('trans-list').children
+    let words = document.getElementById('words').children
+    let trans = document.getElementById('translate').children
     let result = true;
 
     for (let i = 0; i < words.length; i++) {
@@ -134,22 +46,49 @@ function checkAnswer() {
     }
     
     if (result) {
-        alert_danger.classList.add('hidden')
-        alert_success.classList.remove('hidden')
+        glow.classList.remove('disabled')
+        stars.classList.remove('disabled')
+
+        toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
+        toastBody.innerText = 'Верно, так держать! Можешь переходить к следующему шагу.'
+
         document.getElementById('step_3').classList.remove('bg-warning', 'active')
         document.getElementById('step_3').classList.add('step-complete')
         document.getElementById('step_4').classList.remove('disabled')
-        document.getElementById('step_4').classList.add('step-active', 'active', 'ramka-5')
-        document.getElementById('main-alert').classList.remove('hidden')
+        document.getElementById('step_4').classList.add('next-btn', 'active')
 
         send_points()
     }
     else {
-        alert_danger.classList.remove('hidden')
-        alert_success.classList.add('hidden')
+        toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
+        toastBody.innerText = 'Не верно, подумай ещё.'
 
         if (points > 1) {
           points--;
         }
     }
 }
+
+const dropItems = document.getElementById('translate')
+new Sortable(dropItems, {
+  animation: 150,
+  ghostClass: 'ghost',
+  chosenClass: "chosen",
+  dragClass: "sortable-drag"
+});
+
+const toastTrigger = document.getElementById('liveToastBtn')
+const toastLiveExample = document.getElementById('liveToast')
+const toastBody = document.getElementById('toast-body')
+
+if (toastTrigger) {
+  toastTrigger.addEventListener('click', () => {
+    const toast = new bootstrap.Toast(toastLiveExample)
+    checkAnswer()
+
+    toast.show()
+  })
+}
+
+const stars = document.getElementById('step_4').children[1]
+const glow = document.getElementById('step_4').children[2]

@@ -70,6 +70,8 @@ def exercises_words(request, ex_id, step):
 
     # logger.info(f"Word count: {len(context['words'])}")
     # logger.info(f"Words: {context['words']}")
+    # if request.user.username == 'peka97' and step == '3':
+    #     template_name = 'exercises/exercise_step_3_test.html'
 
     return render(request, template_name, context)
 

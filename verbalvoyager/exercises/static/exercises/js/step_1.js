@@ -94,11 +94,18 @@ function checkAllPagesWatched() {
     })
 
     if (result == true) {
+        glow.classList.remove('disabled')
+        stars.classList.remove('disabled')
+
+        toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
+        toastBody.innerText = 'Запомнил слова? Тогда переходи к следующему шагу!'
+        const toast = new bootstrap.Toast(toastLiveExample)
+        toast.show()
+
         document.getElementById('step_1').classList.remove('active', 'step-active')
         document.getElementById('step_1').classList.add('step-complete')
         document.getElementById('step_2').classList.remove('step-future', 'disabled')
-        document.getElementById('step_2').classList.add('step-active', 'active', 'ramka-5')
-        document.getElementById('main-alert').classList.remove('hidden')
+        document.getElementById('step_2').classList.add('next-btn', 'active')
 
         send_points()
     }
@@ -157,3 +164,8 @@ var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
   return new bootstrap.Popover(popoverTriggerEl)
 })
 
+const toastLiveExample = document.getElementById('liveToast')
+const toastBody = document.getElementById('toast-body')
+
+const stars = document.getElementById('step_2').children[1]
+const glow = document.getElementById('step_2').children[2]

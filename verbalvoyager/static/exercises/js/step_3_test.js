@@ -49,7 +49,6 @@ function checkAnswer() {
         glow.classList.remove('disabled')
         stars.classList.remove('disabled')
 
-        toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
         toastBody.innerText = 'Верно, так держать! Можешь переходить к следующему шагу.'
 
         document.getElementById('step_3').classList.remove('bg-warning', 'active')
@@ -60,8 +59,8 @@ function checkAnswer() {
         send_points()
     }
     else {
-        toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '10000'
         toastBody.innerText = 'Не верно, подумай ещё.'
+
 
         if (points > 1) {
           points--;
