@@ -580,7 +580,7 @@
   }
   
   .next-btn:not(.disabled):hover {
-    transform: scale(1.1)
+    transform: scale(1.05)
   }
   
   .next-btn:not(.disabled):active {
@@ -685,4 +685,5 @@
 
   .container-stars.disabled, .glow.disabled {
     visibility: hidden !important;
+    width: 0;
   }
