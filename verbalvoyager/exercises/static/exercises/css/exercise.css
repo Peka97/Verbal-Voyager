@@ -121,13 +121,14 @@
     /* padding: 50px 50px 50px 50px; */
   }
   
-  @media (max-width: 425px) {
+  @media (max-width: 426px) {
     h2.title {
       font-size: 20px !important;
     }
     div.row.words, .title {
       font-size: 20px !important;
     }
+    div.row,
     div.row.nav-row,
     div.row-alerts,
     div.row.words,
@@ -301,7 +302,7 @@
    }
   
   
-  @media screen and (max-width: 320px) {
+  @media screen and (max-width: 376px) {
     div.words__place, div.container {
       margin-right: 0 !important;
       margin-left: 0 !important;
@@ -313,6 +314,9 @@
       margin-left: 0 !important;
       padding-right: 0 !important;
       padding-left: 0 !important;
+    }
+    div.row.word {
+      font-size: 10px;
     }
   }
   

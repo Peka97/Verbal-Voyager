@@ -92,7 +92,7 @@ class StudentsListFilter(admin.SimpleListFilter):
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
     form = LessonAdminForm
-    ordering = ('datetime', )
+    ordering = ('-datetime', )
     filter_horizontal = ('students', )
     list_display = ('datetime', 'title', 'status',
                     'is_paid', 'teacher', 'get_students')
@@ -100,6 +100,7 @@ class LessonAdmin(admin.ModelAdmin):
     list_filter = [
         TeachersListFilter,
         StudentsListFilter,
+        'datetime',
         'is_paid',
         'status',
     ]

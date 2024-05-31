@@ -1,9 +1,15 @@
+from typing import Any
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ObjectDoesNotExist
 
 
 class User(AbstractUser):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self._meta.get_field('email').__dict__['_unique'] = True
+        self._meta.get_field('email').__dict__['null'] = True
+
     def is_teacher(self):
         try:
             return self.groups.filter(name='Teacher').exists()

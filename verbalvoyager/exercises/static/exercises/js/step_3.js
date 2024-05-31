@@ -1,9 +1,11 @@
 const step_1 = document.getElementById('step_1').classList.add('step-complete')
 const step_2 = document.getElementById('step_2').classList.add('step-complete')
-const words = document.getElementsByClassName('word__word')
+const words = document.getElementsByClassName('word')
 const next_step = document.getElementById('step_4')
 
 let points = words.length
+console.dir(words)
+console.log(points)
 
 function send_points() {
   console.log('Отправка баллов...')
