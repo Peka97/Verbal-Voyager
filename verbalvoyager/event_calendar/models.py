@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.FileHandler(
-    '/home/peka97/verbalvoyager/Verbal-Voyager/verbalvoyager/logs/debug.log')
+    '/home/peka97/Verbal-Voyager/verbalvoyager/logs/debug.log')
 )
 
 User = get_user_model()
@@ -59,6 +59,7 @@ class Lesson(models.Model):
     is_paid = models.BooleanField(verbose_name="Оплачено", default=False)
     status = models.CharField(
         verbose_name="Статус",
+        max_length=20,
         default='P',
         choices=[
             ('P', 'Запланировано'),

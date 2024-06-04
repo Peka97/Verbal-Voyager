@@ -4,7 +4,7 @@ from pathlib import Path
 from config import *
 
 
-config = ProdConfig
+config = DevConfig
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -68,18 +68,18 @@ TEMPLATES = [
 WSGI_APPLICATION = 'verbalvoyager.wsgi.application'
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'verbalvoyager',
+    #     'USER': 'django',
+    #     'PASSWORD': 'gG19011997gG',
+    #     'HOST': config.psql_host,
+    #     'PORT': '5432'
+    # },
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'verbalvoyager',
-        'USER': 'django',
-        'PASSWORD': 'gG19011997gG',
-        'HOST': 'localhost',
-        'PORT': ''
-    },
-    # 'test': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 

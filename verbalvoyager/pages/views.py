@@ -12,7 +12,7 @@ log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcN
 logger = logging.getLogger(__name__)
 logger.level = logging.INFO
 handler = logging.FileHandler(
-    '/home/peka97/verbalvoyager/Verbal-Voyager/verbalvoyager/logs/debug.log')
+    '/home/peka97/Verbal-Voyager/verbalvoyager/logs/debug.log')
 handler.setFormatter(logging.Formatter(log_format))
 logger.addHandler(handler)
 

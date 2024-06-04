@@ -13,7 +13,7 @@ from .forms import ExerciseAdminForm
 logger = logging.getLogger(__name__)
 logger.level = logging.INFO
 logger.addHandler(logging.FileHandler(
-    '/home/peka97/verbalvoyager/Verbal-Voyager/verbalvoyager/logs/debug.log')
+    '/home/peka97/Verbal-Voyager/verbalvoyager/logs/debug.log')
 )
 
 User = get_user_model()

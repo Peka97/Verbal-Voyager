@@ -29,7 +29,7 @@ class Word(models.Model):
 
 
 class Exercise(models.Model):
-    name = models.CharField(default=None, blank=True,
+    name = models.CharField(default=None, blank=True, max_length=50,
                             verbose_name='Название упражнения')
     words = models.ManyToManyField(Word, verbose_name="Слова")
     student = models.ForeignKey(

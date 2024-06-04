@@ -1,0 +1,2050 @@
+[
+    {
+      "model": "event_calendar.course",
+      "pk": 1,
+      "fields": {
+        "name": "Английский язык"
+      }
+    },
+    {
+      "model": "event_calendar.course",
+      "pk": 2,
+      "fields": {
+        "name": "Французский язык"
+      }
+    },
+    {
+      "model": "event_calendar.course",
+      "pk": 3,
+      "fields": {
+        "name": "Испанский язык"
+      }
+    },
+    {
+      "model": "event_calendar.review",
+      "pk": 1,
+      "fields": {
+        "course_name": 2,
+        "text": "Занимаюсь с Лизой французским языком с начала этого учебного года. Очень грамотный и добрый преподаватель. Не жалею, что выбрала её. Учим язык по песням, фильмам и подкастам. Планирую продолжать заниматься с ней по краней мере ещё один учебный год. С ней чувствуешь, что французский язык - это не сложно и интересно! Merci beacoup à vous, Liza",
+        "from_user": 6,
+        "created_at": "2023-04-09T17:42:55"
+      }
+    },
+    {
+      "model": "event_calendar.review",
+      "pk": 2,
+      "fields": {
+        "course_name": 1,
+        "text": "Очень понравились занятия с Елизаветой!\r\nВо-первых, что супер круто, так это то, что с самого начала, с первого урока, вы начнете разговаривать на английском, что безумно ценно для изучения языка. Это ускоряет работу твоего мозга на усвоение информации на другом языке, неудобном для него. Во вторых, уроки всегда очень интересные, несут в себе интерактивные игры. Нравится атмосфера и настрой занятий. Большое спасибо!",
+        "from_user": 7,
+        "created_at": "2023-02-19T17:43:24"
+      }
+    },
+    {
+      "model": "event_calendar.review",
+      "pk": 3,
+      "fields": {
+        "course_name": 1,
+        "text": "Хочу сказать вам большое спасибо за то, что прививаете детям интерес к другим языкам. Моя дочь в этом году ходила заниматься с большим удовольствием, в то время как предыдущий год приходилось уговаривать.\r\nИ главное я вижу у своего ребенка явный прогресс. Она делает самостоятельно домашнее задание, пусть иногда и с ошибками, зато сама. Она стала лучше формировать фразы и пополнила словарный запас. Ей нравится учить слова в приложении.",
+        "from_user": 8,
+        "created_at": "2023-10-02T17:43:45"
+      }
+    },
+    {
+      "model": "event_calendar.review",
+      "pk": 4,
+      "fields": {
+        "course_name": 1,
+        "text": "Очень благодарны Елизавете за ее занятия. Моему ребенку не просто дается обучение, а обучение английскому языку особенно. За прошедший год мы сменили двух преподавателей, потому что учеба не давалась, дочка сильно переживала, интереса к занятиям не возникало, только страх и сопротивление. Когда стали заниматься с Елизаветой, все поменялось. Дочка перестала бояться, стал возникать интерес к занятиям и к языку, ребенок занимается с удовольствием, а это самое главное. Спасибо большое преподавателю,",
+        "from_user": 9,
+        "created_at": "2023-01-25T17:46:47"
+      }
+    },
+    {
+      "model": "event_calendar.review",
+      "pk": 5,
+      "fields": {
+        "course_name": 1,
+        "text": "С Елизаветой занимались более 2 лет. Это спокойный, грамотный и требовательный педагог. В то же время урок проводит так,что ребёнок с интересом участвует в процессе обучения. Планируем продолжать наши уроки. Очень рекомендую.",
+        "from_user": 11,
+        "created_at": "2024-03-10T17:47:18"
+      }
+    },
+    {
+      "model": "event_calendar.review",
+      "pk": 6,
+      "fields": {
+        "course_name": 1,
+        "text": "Спасибо вам!!!\r\nУля всегда с удовольствием занимается, я ей предлагала сократить, когда в школе начался английский , она говорит, нет, хочу 2 раза и еще хочу французский)",
+        "from_user": 10,
+        "created_at": "2022-06-12T17:52:26"
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 106,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-08T18:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          13
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 107,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-10T17:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          13
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 108,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-15T18:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          13
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 109,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-17T17:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          13
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 110,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-22T18:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          13
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 111,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-24T17:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          13
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 112,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-29T18:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          13
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 113,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-01T17:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          13
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 114,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-06T18:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          13
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 115,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-08T17:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          13
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 116,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-13T18:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          13
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 117,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-15T17:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          13
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 118,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-20T18:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          13
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 119,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-22T17:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          13
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 120,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-27T18:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          13
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 121,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-29T17:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          13
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 122,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-09T10:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          16
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 123,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-11T10:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          16
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 124,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-16T10:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          16
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 125,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-18T10:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          16
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 126,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-23T10:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          16
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 127,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-25T10:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          16
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 128,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-30T10:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          16
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 129,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-02T10:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          16
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 130,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-07T10:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          16
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 131,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-09T10:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          16
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 132,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-14T10:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          16
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 133,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-16T10:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          16
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 134,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-21T10:00:00",
+        "is_paid": true,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          16
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 135,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-23T10:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          16
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 136,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-28T10:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          16
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 137,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-30T10:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          16
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 138,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-08T19:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          5
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 139,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-12T16:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          5
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 140,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-15T19:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          5
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 141,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-19T16:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          5
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 142,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-22T19:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          5
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 143,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-26T16:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          5
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 144,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-29T19:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          5
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 145,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-03T16:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          5
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 146,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-06T19:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          5
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 147,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-10T16:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          5
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 148,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-13T19:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          5
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 149,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-17T16:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          5
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 150,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-20T19:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          5
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 151,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-24T16:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          5
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 152,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-27T19:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          5
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 153,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-31T16:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          5
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 154,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-10T16:15:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          14
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 155,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-12T18:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          14
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 156,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-17T16:15:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          14
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 157,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-19T18:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          14
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 158,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-24T16:15:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          14
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 159,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-26T18:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          14
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 160,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-01T16:15:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          14
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 161,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-03T18:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          14
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 162,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-08T16:15:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          14
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 163,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-10T18:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          14
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 164,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-15T16:15:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          14
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 165,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-17T18:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          14
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 166,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-22T16:15:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          14
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 167,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-24T18:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          14
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 168,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-29T16:15:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          14
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 169,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-31T18:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          14
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 170,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-10T14:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          17
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 171,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-12T14:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          17
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 172,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-17T14:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          17
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 173,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-19T14:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          17
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 174,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-24T14:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          17
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 175,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-26T14:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          17
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 176,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-01T14:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          17
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 177,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-03T14:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          17
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 178,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-08T14:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          17
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 179,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-10T14:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          17
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 180,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-15T14:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          17
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 181,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-17T14:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          17
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 182,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-22T14:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          17
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 183,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-24T14:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          17
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 184,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-29T14:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          17
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 185,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-31T14:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          17
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 186,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-16T10:05:00",
+        "is_paid": true,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          18
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 187,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-18T10:05:00",
+        "is_paid": true,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          18
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 190,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-30T10:05:00",
+        "is_paid": true,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          18
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 191,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-02T10:05:00",
+        "is_paid": true,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          18
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 192,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-07T10:05:00",
+        "is_paid": true,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          18
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 193,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-09T10:05:00",
+        "is_paid": true,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          18
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 194,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-14T10:05:00",
+        "is_paid": true,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          18
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 195,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-16T10:05:00",
+        "is_paid": true,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          18
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 196,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-21T10:05:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          18
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 197,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-23T10:05:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          18
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 198,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-28T10:05:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          18
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 199,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-30T10:05:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          18
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 200,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-22T15:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          24
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 201,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-24T13:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          24
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 202,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-29T15:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          24
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 203,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-01T13:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          24
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 204,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-06T15:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          24
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 205,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-08T13:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          24
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 206,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-13T15:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          24
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 207,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-15T13:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          24
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 208,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-20T15:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          24
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 209,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-22T13:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          24
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 210,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-27T15:00:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          24
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 211,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-29T13:30:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          24
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 212,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-16T15:15:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          20
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 213,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-19T15:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          20
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 214,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-23T15:15:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          20
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 215,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-26T15:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          20
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 216,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-04-30T15:15:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          20
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 217,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-03T15:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          20
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 218,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-07T15:15:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          20
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 219,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-10T15:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          20
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 220,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-14T15:15:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          20
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 221,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-17T15:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          20
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 222,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-21T15:15:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          20
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 223,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-24T15:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          20
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 224,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-28T15:15:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          20
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.lesson",
+      "pk": 225,
+      "fields": {
+        "title": "English",
+        "description": null,
+        "datetime": "2024-05-31T15:45:00",
+        "is_paid": false,
+        "status": "P",
+        "teacher": 4,
+        "students": [
+          20
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.projecttype",
+      "pk": 1,
+      "fields": {
+        "type_name": "Групповой"
+      }
+    },
+    {
+      "model": "event_calendar.projecttype",
+      "pk": 2,
+      "fields": {
+        "type_name": "Одиночный"
+      }
+    },
+    {
+      "model": "event_calendar.projecttype",
+      "pk": 3,
+      "fields": {
+        "type_name": "Онлайн"
+      }
+    },
+    {
+      "model": "event_calendar.projecttype",
+      "pk": 4,
+      "fields": {
+        "type_name": "Оффлайн"
+      }
+    },
+    {
+      "model": "event_calendar.project",
+      "pk": 5,
+      "fields": {
+        "project_name": "Маша",
+        "course_name": 1,
+        "teacher": 4,
+        "from_date": "2024-04-09",
+        "to_date": "2024-05-31",
+        "lesson_1": "2024-04-09T10:00:00",
+        "lesson_2": "2024-04-11T10:00:00",
+        "lesson_3": null,
+        "lesson_4": null,
+        "lesson_5": null,
+        "is_active": true,
+        "type": [
+          2,
+          3
+        ],
+        "students": [
+          16
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.project",
+      "pk": 6,
+      "fields": {
+        "project_name": "Мила",
+        "course_name": 1,
+        "teacher": 4,
+        "from_date": "2024-04-08",
+        "to_date": "2024-05-31",
+        "lesson_1": "2024-04-08T19:30:00",
+        "lesson_2": "2024-04-12T16:45:00",
+        "lesson_3": null,
+        "lesson_4": null,
+        "lesson_5": null,
+        "is_active": true,
+        "type": [
+          2,
+          3
+        ],
+        "students": [
+          5
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.project",
+      "pk": 7,
+      "fields": {
+        "project_name": "Вика",
+        "course_name": 1,
+        "teacher": 4,
+        "from_date": "2024-04-08",
+        "to_date": "2024-05-31",
+        "lesson_1": "2024-04-10T16:15:00",
+        "lesson_2": "2024-04-12T18:30:00",
+        "lesson_3": null,
+        "lesson_4": null,
+        "lesson_5": null,
+        "is_active": true,
+        "type": [
+          2,
+          3
+        ],
+        "students": [
+          14
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.project",
+      "pk": 8,
+      "fields": {
+        "project_name": "Аделина",
+        "course_name": 2,
+        "teacher": 4,
+        "from_date": "2024-04-08",
+        "to_date": "2024-05-31",
+        "lesson_1": "2024-04-10T14:45:00",
+        "lesson_2": "2024-04-12T14:45:00",
+        "lesson_3": null,
+        "lesson_4": null,
+        "lesson_5": null,
+        "is_active": true,
+        "type": [
+          2,
+          4
+        ],
+        "students": [
+          17
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.project",
+      "pk": 9,
+      "fields": {
+        "project_name": "Алиса",
+        "course_name": 1,
+        "teacher": 4,
+        "from_date": "2024-04-16",
+        "to_date": "2024-06-01",
+        "lesson_1": "2024-04-16T10:05:00",
+        "lesson_2": "2024-04-18T10:05:00",
+        "lesson_3": null,
+        "lesson_4": null,
+        "lesson_5": null,
+        "is_active": true,
+        "type": [
+          2,
+          3
+        ],
+        "students": [
+          18
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.project",
+      "pk": 10,
+      "fields": {
+        "project_name": "Зюма",
+        "course_name": 1,
+        "teacher": 4,
+        "from_date": "2024-04-22",
+        "to_date": "2024-06-01",
+        "lesson_1": "2024-04-22T15:00:00",
+        "lesson_2": "2024-04-24T13:30:00",
+        "lesson_3": null,
+        "lesson_4": null,
+        "lesson_5": null,
+        "is_active": true,
+        "type": [
+          2,
+          4
+        ],
+        "students": [
+          24
+        ]
+      }
+    },
+    {
+      "model": "event_calendar.project",
+      "pk": 11,
+      "fields": {
+        "project_name": "Степан",
+        "course_name": 1,
+        "teacher": 4,
+        "from_date": "2024-04-15",
+        "to_date": "2024-06-01",
+        "lesson_1": "2024-04-16T15:15:00",
+        "lesson_2": "2024-04-19T15:45:00",
+        "lesson_3": null,
+        "lesson_4": null,
+        "lesson_5": null,
+        "is_active": true,
+        "type": [
+          2,
+          3
+        ],
+        "students": [
+          20
+        ]
+      }
+    }
+    ]
+    
