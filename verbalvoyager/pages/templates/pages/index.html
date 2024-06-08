@@ -1,4 +1,4 @@
-{% extends 'pages/base.html' %}
+{% extends 'pages/extends/base.html' %}
 {% load static %}
 
 {% block title %} Главная {% endblock  %}
@@ -23,7 +23,7 @@
             </div>
             <div class="px-3">
               <p class="lead my-3">Открыть новые возможности для коммуникации, обогатить знания о других культурах, помочь лучше понять наш мир - всё это и не только помогает изучение нового для вас языка!</p>
-              <a class="btn mb-5 text-end disabled" href="{% url 'portfolio' %}" role="button" aria-disabled="true">Подробнее</a>
+              <a class="btn btn-default mb-5 text-end disabled" href="{% url 'portfolio' %}" role="button" aria-disabled="true">Подробнее</a>
             </div>
           </div>
         </div> 
@@ -31,7 +31,7 @@
     </div>
     
     <!-- Caruosel -->
-    {% include 'pages/carousel.html' %}
+    {% include 'pages/includes/carousel.html' %}
 
     <!-- Cards -->
     <div class="album py-2">
@@ -46,7 +46,7 @@
               </div>
               <div class="card-footer d-flex justify-content-between align-items-center">
                 <span>95 учеников</span>
-                <a class="btn disabled" href="{% url 'english' %}" role="button" aria-disabled="true">Записаться</a>
+                <a class="btn btn-default disabled" href="{% url 'english' %}" role="button" aria-disabled="true">Записаться</a>
               </div>
             </div>
           </div>
@@ -59,7 +59,7 @@
               </div>
               <div class="card-footer d-flex justify-content-between align-items-center">
                 <span>66 учеников</span>
-                <a class="btn disabled" href="{% url 'french' %}" role="button" aria-disabled="true">Записаться</a>
+                <a class="btn btn-default disabled" href="{% url 'french' %}" role="button" aria-disabled="true">Записаться</a>
               </div>
             </div>
           </div>
@@ -72,7 +72,7 @@
               </div>
               <div class="card-footer d-flex justify-content-between align-items-center">
                 <span>30 учеников</span>
-                <a class="btn disabled" href="{% url 'spanish' %}" role="button" aria-disabled="true">Записаться</a>
+                <a class="btn btn-default disabled" href="{% url 'spanish' %}" role="button" aria-disabled="true">Записаться</a>
               </div>
             </div>
           </div>
@@ -91,7 +91,7 @@
               <h3 class="mb-0">Featured post</h3>
               <div class="mb-1 text-body-secondary blog-date">Nov 12</div>
               <p class="card-text mb-auto">{% lorem 1 b random %}</p>
-              <a class="blog-link btn" href="#" role="button">Перейти к статье</a>
+              <a class="blog-link btn btn-default" href="#" role="button">Перейти к статье</a>
             </div>
             <div class="col-auto p-4 d-none d-lg-block m-auto">
               <img src="http://placehold.it/400x500/2c3e50/3498db&text=No Photo" class="bd-placeholder-img" width="200" height="250" alt="Third Slide Image">
@@ -105,7 +105,7 @@
               <h3 class="mb-0">Featured post</h3>
               <div class="mb-1 text-body-secondary blog-date">Nov 12</div>
               <p class="card-text mb-auto">{% lorem 1 b random %}</p>
-              <a class="blog-link btn" href="#" role="button">Перейти к статье</a>
+              <a class="blog-link btn btn-default" href="#" role="button">Перейти к статье</a>
             </div>
             <div class="col-auto p-4 d-none d-lg-block m-auto">
               <img src="http://placehold.it/400x500/2c3e50/3498db&text=No Photo" class="blog-link bd-placeholder-img" width="200" height="250" alt="Third Slide Image">

@@ -1,26 +1,3 @@
-{% comment %} {% extends 'pages/base.html' %}
-{% load static %}
-
-{% block title %} {{ title }} {% endblock  %}
-{% block 'style' %}
-  <link rel="stylesheet" href="{% static 'pages/css/error.css' %}">
-{% endblock  %}
-
-{% block content %}
-    <div class="error">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-7 text-center">
-                    <img src="{% static 'pages/images/error_img.jpeg' %}" alt="image 404">
-                    <h2><b>404</b> Страница не найдена</h2>
-                    <p>Посетите главную страницу <br> возможно, вы найдёте её</p>
-                    <a class="btn mb-5 text-end" href="{% url '' %}" role="button" aria-disabled="true">На главную</a>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock content %} {% endcomment %}
-
 {% load static %}
 
 <!doctype html>

@@ -163,4 +163,4 @@ cython_debug/
 config.py
 test.py
 *test.py
-*/users/fixtures/
+*/*/fixtures/
