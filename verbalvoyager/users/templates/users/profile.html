@@ -31,7 +31,12 @@
 				<!-- Services -->
 				<div class="row justify-content-center mx-0">
 					<!-- Calendar -->
-					{% include "event_calendar/calendar.html" %}
+					<div class='body-calendar'>
+						<div class="container calendar-page-container">
+							{% include "event_calendar/includes/calendar.html" %}
+							{% include "event_calendar/includes/notifications.html" %}
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
