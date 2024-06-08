@@ -12,13 +12,14 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 
+from verbalvoyager.settings import DEBUG_LOGGING_FP
+
 from .models import Exercise, Word, ExerciseResult
 
 log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 logger = logging.getLogger(__name__)
 logger.level = logging.INFO
-handler = logging.FileHandler(
-    '/home/peka97/Verbal-Voyager/verbalvoyager/logs/debug.log')
+handler = logging.FileHandler(DEBUG_LOGGING_FP)
 handler.setFormatter(logging.Formatter(log_format))
 logger.addHandler(handler)
 

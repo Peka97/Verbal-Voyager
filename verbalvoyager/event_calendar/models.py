@@ -4,12 +4,12 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth import get_user_model
 
+from verbalvoyager.settings import DEBUG_LOGGING_FP
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-logger.addHandler(logging.FileHandler(
-    '/home/peka97/Verbal-Voyager/verbalvoyager/logs/debug.log')
-)
+logger.addHandler(logging.FileHandler(DEBUG_LOGGING_FP))
 
 User = get_user_model()
 

@@ -71,8 +71,7 @@ body {
     width: 100px;
 }
 
-.btn {
-    width: max-content;
+/* .btn {
     color: white;
     background-color: var(--color-violet-pastel-dark);
     border: var(--color-violet-pastel-darker) solid 1px;
@@ -82,6 +81,55 @@ body {
     color: black !important;
     background-color: var(--color-violet-pastel-paler);
     border-color: var(--color-violet-pastel-darker);
+} */
+
+/* Default buttons */
+.btn-default {
+    display: inline-block;
+    background-color: var(--color-violet-pastel-dark);
+    max-width: 60%;
+    width: max-content;
+    position: relative;
+    overflow: hidden;
+    border: var(--color-violet-pastel-darker) solid 1px;
+    transition: color .5s;
+    z-index: 1;
+    font-size: 17px;
+    border-radius: 6px;
+    font-weight: 500;
+    color: white;
+}
+   
+.btn-default:before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    border-color: var(--color-violet-pastel-darker);
+    background: var(--color-violet-pastel-paler);
+    height: 250px;
+    width: 300px;
+    border-radius: 50%;
+}
+
+.btn-default:hover {
+    color: black !important;
+    border-color: var(--color-violet-pastel-darker);
+}
+
+.btn-default:before {
+    top: 100%;
+    left: 100%;
+    transition: all .9s;
+}
+
+.btn-default:hover:before {
+    top: -100px;
+    left: -100px;
+}
+
+.btn-default:active:before {
+    background: var(--color-blue-pastel-pale);
+    transition: background 0s;
 }
 
 ul.errorlist {

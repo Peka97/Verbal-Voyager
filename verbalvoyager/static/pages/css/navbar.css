@@ -10,6 +10,17 @@ div.container-navbar {
     padding-right: 0 !important; */
 }
 
+button.navbar-toggler {
+    border: 0px;
+}
+
+button.navbar-toggler:focus {
+    outline: 0 !important;
+    outline-style:none !important;
+    outline-width:0 !important;
+    box-shadow: none !important;
+}
+
 button:active{
     border: none !important;
     outline: none !important;
@@ -69,4 +80,17 @@ button:focus { outline: 0 !important; }
     border: var(--color-violet-pastel-pale) solid 1px;
     border-radius: 50%;
     scale: 1.1;
+}
+
+
+@media (max-width: 350px) {
+    #user_panel {
+        padding: 4px 0px !important;
+    } 
+    #user_panel, #auth, #sign_up {
+        font-size: 12px !important;
+    }
+    #sign_up {
+        margin-right: 0px !important;
+    }
 }

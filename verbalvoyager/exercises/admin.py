@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.utils.html import format_html
 
+from verbalvoyager.settings import DEBUG_LOGGING_FP
+
 
 from .models import Word, Exercise, ExerciseResult
 from .forms import ExerciseAdminForm
@@ -12,9 +14,7 @@ from .forms import ExerciseAdminForm
 
 logger = logging.getLogger(__name__)
 logger.level = logging.INFO
-logger.addHandler(logging.FileHandler(
-    '/home/peka97/Verbal-Voyager/verbalvoyager/logs/debug.log')
-)
+logger.addHandler(logging.FileHandler(DEBUG_LOGGING_FP))
 
 User = get_user_model()
 
