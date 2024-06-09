@@ -142,12 +142,12 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'WARNING',
+            'level': 'ERROR',
             'class': 'logging.StreamHandler',
             'formatter': 'console',
         },
         'file': {
-            'level': 'WARNING',
+            'level': 'ERROR',
             'class': 'logging.FileHandler',
             'formatter': 'file',
             'filename': os.path.join(BASE_DIR, 'logs/django.log'),
