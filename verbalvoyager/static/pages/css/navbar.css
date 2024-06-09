@@ -10,6 +10,17 @@ div.container-navbar {
     padding-right: 0 !important; */
 }
 
+button.navbar-toggler {
+    border: 0px;
+}
+
+button.navbar-toggler:focus {
+    outline: 0 !important;
+    outline-style:none !important;
+    outline-width:0 !important;
+    box-shadow: none !important;
+}
+
 button:active{
     border: none !important;
     outline: none !important;
@@ -69,4 +80,78 @@ button:focus { outline: 0 !important; }
     border: var(--color-violet-pastel-pale) solid 1px;
     border-radius: 50%;
     scale: 1.1;
+}
+
+
+@media (max-width: 360px) {
+    #user_panel {
+        padding: 4px 0px !important;
+    } 
+    #user_panel, #auth, #sign_up {
+        font-size: 10px !important;
+    }
+    #sign_up {
+        margin-right: 0px !important;
+    }
+}
+
+/* Default buttons */
+.btn-default {
+    /* font-family: inherit; */
+    display: inline-block;
+    background-color: var(--color-violet-pastel-dark);
+    /* width: 8em;
+    height: 2.6em;
+    line-height: 2.5em; */
+    /* margin: 20px; */
+    position: relative;
+    overflow: hidden;
+    border: var(--color-violet-pastel-darker) solid 1px;
+    transition: color .5s;
+    z-index: 1;
+    font-size: 17px;
+    border-radius: 6px;
+    font-weight: 500;
+    color: white;
+}
+   
+.btn-default:before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    border-color: var(--color-violet-pastel-darker);
+    background: var(--color-violet-pastel-paler);
+    height: 250px;
+    width: 300px;
+    border-radius: 50%;
+}
+
+.btn-default:hover {
+    color: black !important;
+    /* background-color: var(--color-violet-pastel-paler); */
+    border-color: var(--color-violet-pastel-darker);
+}
+
+.btn-default:focus {
+    
+}
+
+.btn-default:before {
+    top: 100%;
+    left: 100%;
+    transition: all .9s;
+}
+
+.btn-default:hover:before {
+    top: -100px;
+    left: -100px;
+}
+
+.btn-default:active:before {
+    background: var(--color-blue-pastel-pale);
+    transition: background 0s;
+}
+
+i#list-nav-toggler.hidden, i#chevron-nav-toggler.hidden {
+    display: none;
 }

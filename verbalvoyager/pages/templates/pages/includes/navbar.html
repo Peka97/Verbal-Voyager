@@ -4,8 +4,10 @@
   <div class="container container-navbar">
     <div class="row">
       <div class="col-md-8">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
+        <button id='nav-toggler' class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          {% comment %} <span class="navbar-toggler-icon"></span> {% endcomment %}
+          <i id="list-nav-toggler" class="bi bi-list"></i>
+          <i id="chevron-nav-toggler" class="bi bi-chevron-down hidden"></i>
         </button>        
         <div class="collapse navbar-collapse my-2" id="navbarSupportedContent">
           <ul class="header navbar-nav m-auto mb-lg-0">

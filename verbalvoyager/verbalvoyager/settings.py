@@ -4,13 +4,13 @@ from pathlib import Path
 from config import *
 
 
-config = DevConfig
+config = ProdConfig
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config.SECRET_KEY
 
-DEBUG = config.DEBUG
+DEBUG = True
 
 ALLOWED_HOSTS = [
     '127.0.0.1', 'localhost', '', '::1', '158.160.153.184'
@@ -67,20 +67,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'verbalvoyager.wsgi.application'
 
-DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'verbalvoyager',
-    #     'USER': 'django',
-    #     'PASSWORD': 'gG19011997gG',
-    #     'HOST': config.psql_host,
-    #     'PORT': '5432'
-    # },
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if not config.DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'verbalvoyager',
+            'USER': 'django',
+            'PASSWORD': 'gG19011997gG',
+            'HOST': 'localhost',
+            'PORT': ''
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Authentication
@@ -107,7 +111,6 @@ LOGOUT_REDIRECT_URL = '/'
 LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'Europe/Saratov'
-# USE_I18N = True
 USE_TZ = False
 
 
@@ -159,3 +162,4 @@ LOGGING = {
         },
     }
 }
+DEBUG_LOGGING_FP = config.DEBUG_LOGGING_FP

@@ -67,12 +67,11 @@ div.tab-content {
 .profile.nav-tabs {
     padding-left: 5px;
     padding-top: 5px;
-    padding-bottom: 1px;
 }
 
 .profile.nav-item {
     margin-right: 5px;
-    margin-bottom: -3px;
+    /* margin-bottom: -3px; */
     background-color: var(--color-violet-pastel-main) !important;
     border-radius: 5px 5px 0px 0px;
 }
@@ -88,7 +87,6 @@ div.tab-content {
     color: var(--color-violet-pastel-darker) !important;
     background-color: white !important;
     border-color: white !important;
-    border-bottom: none;
 }
 
 /* Общее */
@@ -257,8 +255,6 @@ h4.notification-title {
     }
 }
 
-
-
 div.notifications {
     background-color: var(--color-violet-pastel-dark);
 }
@@ -279,7 +275,6 @@ a.ex_name:hover {
     color: var(--color-violet-pastel-dark);
 }
 
-
 @media (max-width: 350px) {
     .row>* .col-12>* .col-xl-9>* .calendar-col>* {
         padding-left: 0px !important;
@@ -287,9 +282,9 @@ a.ex_name:hover {
         margin-left: 0px !important;
         margin-right: 0px !important;
     }
-}
-
-@media (max-width: 350px) {
+    .icon-list .icon-content {
+        margin: 0px 3px;
+    }
     .months-table .days-table {
         border-collapse: collapse  !important;
     }

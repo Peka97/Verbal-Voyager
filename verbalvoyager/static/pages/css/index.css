@@ -1,16 +1,3 @@
-.btn {
-    width: max-content;
-    color: white;
-    background-color: var(--color-violet-pastel-dark);
-    border: var(--color-violet-pastel-darker) solid 1px;
-}
-
-.btn:hover {
-    color: black !important;
-    background-color: var(--color-violet-pastel-paler);
-    border-color: var(--color-violet-pastel-darker);
-}
-
 a {
     color: white;
     text-decoration: none;
