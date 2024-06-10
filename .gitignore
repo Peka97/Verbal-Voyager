@@ -164,3 +164,4 @@ config.py
 test.py
 *test.py
 */*/fixtures/
+load_fixtures_data.sh

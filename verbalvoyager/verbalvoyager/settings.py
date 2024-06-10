@@ -4,7 +4,7 @@ from pathlib import Path
 from config import *
 
 
-config = ProdConfig
+config = DevConfig
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -14,6 +14,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '127.0.0.1', 'localhost', '', '::1', '158.160.153.184'
+]
+INTERNAL_IPS = [
+    '127.0.0.1',
 ]
 
 # CSRF
@@ -29,6 +32,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # Libraries
 
     # Created
     'users',
@@ -46,6 +51,16 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if config.DEBUG:
+    INSTALLED_APPS = [
+        *INSTALLED_APPS,
+        'debug_toolbar',
+    ]
+    MIDDLEWARE = [
+        *MIDDLEWARE,
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    ]
 
 ROOT_URLCONF = 'verbalvoyager.urls'
 
@@ -73,7 +88,7 @@ if not config.DEBUG:
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'verbalvoyager',
             'USER': 'django',
-            'PASSWORD': 'gG19011997gG',
+            'PASSWORD': config.psql_pswd,
             'HOST': 'localhost',
             'PORT': ''
         }

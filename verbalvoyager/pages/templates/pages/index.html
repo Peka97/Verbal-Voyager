@@ -120,14 +120,14 @@
       {% if reviews %}
         <h2 class="featurette-heading py-3 fw-normal lh-1 text-center">Ваши отзывы</h2>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 px-1">
-          {% for review in reviews  %}
+          {% for review in reviews %}
             <div class="review-card-not-even px-2 mb-3 col-xl-4 col-md-12">
               <div class="d-flex flex-column">
                 <div class="d-flex flex-column p-4 pb-0 h-100 align-items-center justify-content-center review-card">
                   <img class='avatar rounded-circle' src="{% static "users/images/default_avatar.png" %}" width="140" height="140" alt="User photo">
-                    <h2 class="fw-normal">{{ review.from_user.first_name }}</h2>
-                    <small class="text-body-secondary">{{review.course_name}}</small>
-                    <small class="text-body-secondary">{{review.date}}</small>
+                    <h2 class="fw-normal">{{ review.from_user__first_name }}</h2>
+                    <small class="text-body-secondary">{{review.course__name}}</small>
+                    <small class="text-body-secondary">{{review.created_at}}</small>
                   <hr class='review-hr w-100'>
                   <p class='review-text'>{{review.text }}</p>
                 </div>

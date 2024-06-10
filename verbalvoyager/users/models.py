@@ -33,3 +33,6 @@ class User(AbstractUser):
 
     def get_students(self):
         return self.objects.filter(groups__name__in=['Student'])
+    
+    def __str__(self):
+        return f'{self.last_name} {self.first_name}'

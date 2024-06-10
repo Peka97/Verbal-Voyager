@@ -73,7 +73,7 @@
 			<div class='event-name px-3'>Занятий сегодня нет</div>
 		</div>
 		{% if events %}
-			{% if user.is_teacher %}
+			{% if user_is_teacher %}
 				{% include 'users/includes/teacher_events.html' %}
 			{% else %}
 				{% include 'users/includes/student_events.html' %}
