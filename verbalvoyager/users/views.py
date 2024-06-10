@@ -80,31 +80,35 @@ def user_logout(request):
 
 @login_required(login_url="/users/auth")
 def user_profile(request):
-    context = {}
-
-    user = User.objects.get(username=request.user.username)
+    user = request.user
 
     if user.is_teacher():
-        lessons = get_teacher_lessons(user)
-        calendar = get_calendar(lessons)
-        lesson_form = LessonForm()
-        lesson_form.fields['teacher'].initial = user
-
         context = {
-            'events': lessons,
-            'events_count_total': len(lessons),
-            'calendar': calendar,
             'user_is_teacher': True,
-            'lesson_form':  lesson_form
         }
+        lessons = list(Lesson.objects.filter(teacher=user.pk).order_by('datetime').all().prefetch_related('students'))
+        calendar = get_calendar(lessons)
+        
+        # Форма отключена за ненадобностью
+        # lesson_form = LessonForm()
+        # lesson_form.fields['teacher'].initial = user
+        # context['lesson_form'] = lesson_form
+        
+        context['events'] = lessons
+        context['events_count_total'] = len(lessons)
+        context['calendar'] = calendar
+
         return render(request, 'users/profile.html', context)
     else:
+        context = {
+            'user_is_teacher': False,
+        }
         exercises = list(Exercise.objects.filter(
-            student=user,
+            student=user.pk,
             is_active=True
         ).all())
         lessons = list(Lesson.objects.filter(
-            students=user).order_by('datetime').all()
+            students=user).order_by('datetime').select_related('teacher').all()
         )
         calendar = get_calendar(lessons)
         projects = get_projects(user)
@@ -166,17 +170,6 @@ def get_calendar(lessons: list[dict], tzname='Europe/Saratov'):
         day_idx += 1
 
     return result
-
-
-def get_teacher_lessons(user: User):
-    events_filter = Lesson.objects.filter(
-        teacher=user).all().order_by('datetime')
-    events = [
-        Lesson.objects.get(pk=event.pk)
-        for event in events_filter
-    ]
-
-    return events
 
 
 def get_projects(user: User):

@@ -15,7 +15,7 @@ User = get_user_model()
 
 
 class Course(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, blank=False, null=False)
 
     def __str__(self) -> str:
         return self.name
@@ -26,17 +26,18 @@ class Course(models.Model):
 
 
 class Review(models.Model):
-    course_name = models.ForeignKey(
+    course = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
-        related_name='course_name',
-        null=True
+        related_name='reviews',
+        blank=False,
+        null=False
     )
     text = models.TextField(max_length=500)
     from_user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='from_user'
+        related_name='review_from_user'
     )
     created_at = models.DateTimeField(
         editable=True,
@@ -45,7 +46,7 @@ class Review(models.Model):
     )
 
     def __str__(self) -> str:
-        return f'{self.pk} - {self.created_at.strftime("%d.%m.%Y")} - {self.course_name} - {self.from_user.first_name}'
+        return f'{self.pk} - {self.created_at.strftime("%d.%m.%Y")} - {self.course.name} - {self.from_user.first_name}'
 
     class Meta:
         verbose_name = 'Отзыв'
@@ -69,9 +70,9 @@ class Lesson(models.Model):
         ]
     )
     students = models.ManyToManyField(
-        User, verbose_name="Ученики")
+        User, related_name='student_lessons', verbose_name="Ученики")
     teacher = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='lesson_teacher', null=True)
+        User, on_delete=models.CASCADE, related_name='teacher_lessons', null=True)
 
     def __str__(self):
         return f'{self.pk} - {self.datetime} - {list(self.students.all())} - {self.title}'
@@ -108,10 +109,12 @@ class Project(models.Model):
     project_name = models.CharField(
         max_length=50,
     )
-    course_name = models.ForeignKey(
+    course = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
-        related_name='course'
+        related_name='projects',
+        blank=False,
+        null=False
     )
     type = models.ManyToManyField(
         ProjectType,
