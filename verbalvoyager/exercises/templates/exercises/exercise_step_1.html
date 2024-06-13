@@ -26,11 +26,28 @@
                 <div class='word-card mt-2'>
                     <div class="row content-row">
                         <div class="col content-col my-auto">
-                            <div class="col text-center">
-                                {% if word.api.image_url %}
-                                    <img class="bd-placeholder-img" src="{{ word.api.image_url }}" alt="Word Image">
-                                {% endif %}
+                            <div class='row cols-row-2'>
+                                <div class="col col-xs-12 col-md-7 text-center">
+                                    {% if word.api.image_url %}
+                                        <img class="bd-placeholder-img word__image" src="{{ word.api.image_url }}" alt="Word Image">
+                                    {% endif %}
+                                </div>
+                                <div class="col col-xs-12 col-md-5 text-center">
+                                    {% if word.api.another_means %}
+                                        <ul class="list__another_means">
+                                            <p class="text word__title_mean">Другие значения:</p>
+                                            {% for another_mean in word.api.another_means %}
+                                                <li>
+                                                    <p class="text word__mean">{{ another_mean|capfirst }}</p>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <p class="text word__title_mean">У слова только одно значение</p>
+                                    {% endif %}
+                                </div>
                             </div>
+                            <hr>
                             <div class='mt-2 text-center'>
                                 {% if word.api.transcription %}
                                     <p class="text"> Transcription: {{ word.api.transcription }} </p>
@@ -38,18 +55,20 @@
                             </div>
                             <div class='mt-2 text-center'>
                                 {% if word.api.sound_url %}
-                                    <audio controls>
+                                    <audio class='word__audio' controls>
                                         <source src="{{ word.api.sound_url }}">
                                     </audio>
                                 {% endif %}
                             </div>
-                            <ul class='mt-2 text-center'>
-                                {% for sentence in word.sentences %}
-                                    <li>
-                                        <p class="text">{{ sentence }}</p>
-                                    </li>
-                                {% endfor %}
-                            </ul>
+                            {% if word.sentences %}
+                                <ul class='mt-2 text-center'>
+                                    {% for sentence in word.sentences %}
+                                        <li>
+                                            <p class="text">{{ sentence }}</p>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

@@ -162,15 +162,32 @@ def get_api_for_words(words: list[Word]):
             word_translation = word['translate']
             transcription = None
             image_url = None
-            image_url = None
+            another_means = []
             sound_url = None
         else:
             word_text = resp['text']
             word_translation = resp['meanings'][0]['translation']
             transcription = resp['meanings'][0]['transcription']
-            image_url = resp['meanings'][0]['imageUrl']
-            image_url = image_url.replace('640x480', img_size)
+
+            for mean in resp['meanings']:
+                resp_translation = mean['translation']['text'].lower().replace('ё', 'е')
+                word_translation = word['translate'].lower().replace('ё', 'е')
+                
+                if resp_translation == word_translation or \
+                    resp_translation in word_translation:
+                    image_url = mean['imageUrl'] #image_url.replace('640x480', img_size)
+                    break
+            else:
+                image_url = None
+            
+            another_means = set([
+                mean['translation']['text'].lower().replace('ё', 'е')
+                for mean in resp['meanings'] 
+                if mean['translation']['text'].lower().replace('ё', 'е') != word['translate'].lower().replace('ё', 'е')
+                ])
             sound_url = resp['meanings'][0]['soundUrl']
+            
+            logger.info(resp)
         finally:
             result.append(
                 {
@@ -178,6 +195,7 @@ def get_api_for_words(words: list[Word]):
                     'translation': word_translation,
                     'transcription': transcription,
                     'image_url': image_url,
+                    'another_means': another_means,
                     'sound_url': sound_url
                 }
             )
