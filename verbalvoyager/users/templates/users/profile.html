@@ -2,13 +2,14 @@
 {% load static %}
 {% load tz %}
 
-{% block title %}Главная{% endblock  %}
+{% block title %}Профиль{% endblock  %}
 
 {% block 'style' %}
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
 	<link rel="stylesheet" href="{% static 'event_calendar/css/calendar.css' %}">
 	<link rel="stylesheet" href="{% static 'users/css/profile.css' %}">
+
 {% endblock  %}
 
 {% block content %}
@@ -114,11 +115,10 @@
 {% endblock content %}
 
 {% block 'js' %}
-	<script src="{% static 'pages/js/jquery.min.js' %}"></script>
-    <script src="{% static 'pages/js/popper.js' %}"></script>
-    <script src="{% static 'pages/js/bootstrap.min.js' %}"></script>
-	<script src="{% static 'pages/js/main.js' %}"></script>
-
+	<!-- JQuery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<!-- Custom JS -->
+	<script src="{% static 'event_calendar/js/main.js' %}"></script>
 	<script>
 		// Timezone settings
 		const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;

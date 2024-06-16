@@ -109,7 +109,6 @@ function get_card_warn () {
     
     tags_without_warn_class.forEach( (tag) => {
         let card = tag.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
-        console.dir(card)
         let card_date = card.attributes.name.value
         result.push(card_date)
     }
