@@ -49,7 +49,7 @@
           </a>
           <ul class="header dropdown-menu dropdown-menu-end text-small shadow" style="">
             <li><a class="header dropdown-item" href="{% url 'profile' %}">Профиль</a></li>
-            {% if user.is_teacher %}
+            {% if user_is_teacher or user.is_teacher %}
               <li><hr class="dropdown-divider"></li>
               <li><a class="header dropdown-item" href="{% url 'admin' %}">Администрирование</a></li>
             {% endif %}

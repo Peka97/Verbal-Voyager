@@ -31,13 +31,22 @@
 
     <div class="row row-cols-1 justify-content-center text-center ">
         {% for word in words %}
-            <div class="col hidden">
+            <div id="word_check_{{word.id}}" class="col word_check hidden">
+                <p class="word-translate"> {{ word.translate }} </p>
+                    
+                <div class="form-floating pb-2">
+                    <input id='{{word.word}}' type="text" name="translate" class="form-control word__check" id="floatingInput" placeholder='"{{word.translate}}" переводится как...'>
+                    <label for="floatingInput">"{{word.translate}}" переводится как...</label>
+                </div>
+            </div>
 
+
+            {% comment %} <div class="col hidden">
                 <div id="word_check_{{word.id}}" class="word_check ">
                     <p class="word-translate"> {{ word.translate }} </p>
                     <input id='{{word.word}}' type="text" name="translate" placeholder='"{{word.translate}}" переводится как...' class="word__check">
                 </div>
-            </div>
+            </div> {% endcomment %}
         {% endfor %}
         <button type="button" class="btn btn__check" id="liveToastBtn">Проверить</button>
     </div>

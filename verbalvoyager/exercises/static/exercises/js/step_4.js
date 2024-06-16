@@ -44,10 +44,10 @@ function update_paginator_by_number(number) {
     })
     words.forEach(el => {
         if (el.id == `word_check_${number}`){
-            el.parentElement.classList.remove('hidden');
+            el.classList.remove('hidden');
         }
         else {
-            el.parentElement.classList.add('hidden')
+            el.classList.add('hidden')
         }
     })
 }
@@ -73,10 +73,10 @@ function paginator_handler(event) {
     }
     words.forEach(el => {
         if (el.id == `word_check_${curr_word}`){
-            el.parentElement.classList.remove('hidden');
+            el.classList.remove('hidden');
         }
         else {
-            el.parentElement.classList.add('hidden')
+            el.classList.add('hidden')
         }
     })
 }
@@ -84,8 +84,8 @@ function paginator_handler(event) {
 function checkAnswer() {
     let curr_page = Number(Array.from(document.getElementsByClassName('page-item active'))[0].id.split('_')[1]);
     let word = document.getElementById(`word_check_${curr_page}`);
-    let user_input = String(word.children[1].value).toLowerCase();
-    let translate = String(word.children[1].id).toLowerCase();
+    let user_input = String(word.children[1].children[0].value).toLowerCase();
+    let translate = String(word.children[1].children[0].id).toLowerCase();
     console.log('Ввод пользователя: ' + user_input)
 
     if (user_input == translate) {
@@ -209,7 +209,7 @@ next_btn.onclick = (event) => {next_paginator_handler(event)};
 
 
 /* On start */
-document.getElementById('word_check_1').parentElement.classList.remove('hidden');
+document.getElementById('word_check_1').classList.remove('hidden');
 document.getElementById('page_1').classList.add('active', 'watched');
 fill_check_words();
 

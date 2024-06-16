@@ -45,27 +45,19 @@ def handler_500(request, exception=None):
 
 def index(request):
     context = {}
-
-    courses = [course for course in Course.objects.all()]
-
-    reviews = list(Review.objects.all())
-    shuffle(reviews)
-    reviews = reviews[:3]
+    
+    user = request.user
+    courses = list(Course.objects.all())
+    reviews = list(Review.objects.order_by('?').values('course__name', 'text', 'created_at', 'from_user__first_name')[:3])
 
     for review in reviews:
-        review.date = f'{review.created_at.day}.{review.created_at.month}.{review.created_at.year}'
+        review['created_at'] = review['created_at'].strftime("%d.%m.%Y")
 
-    try:
-        user = User.objects.get(username=request.user.username)
-    except ObjectDoesNotExist:
-        user = None
-
+    context['user'] = user
     context['courses'] = courses
     context['reviews'] = reviews
-    context['user'] = user
 
     return render(request, 'pages/index.html', context)
-    # return HttpResponse('Index Page OK')
 
 
 def english_course(request):

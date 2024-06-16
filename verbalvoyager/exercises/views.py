@@ -29,60 +29,47 @@ User = get_user_model()
 @login_required(login_url="/users/auth")
 def exercises_words(request, ex_id, step):
     titles = {1: 'Запоминаем', 2: 'Выбираем', 3: 'Расставляем', 4: 'Переводим'}
-    user = User.objects.get(username=request.user.username)
-
+    user = request.user
+    
     try:
-        exercise = list(Exercise.objects.filter(
+        exercise = Exercise.objects.get(
             pk=ex_id,
             student=user
-        ).all())[0]
+        )
     except IndexError:
         method = request.META['REQUEST_METHOD']
         url = request.META['PATH_INFO']
-        user = request.user.username
         msg = f"Forbidden: {method} - {url} - {user}"
         logger.error(msg)
 
         return redirect('err_404')
 
-    words = get_words(exercise)
-    # logger.info(f'Word count: {len(words)}')
-    # logger.info(f'Words: {words}')
+    words_obj = list(exercise.words.all())
+    words = get_words(words_obj)
 
     template_name = f'exercises/exercise_step_{step}.html'
     context = {
         'ex_id': ex_id,
         'step': step,
         'title': titles[step],
-        'words': words,
-        'shuffled_translates': get_shuffled_translates(list(exercise.words.all())),
+        'words': get_words(words_obj),
+        'shuffled_translates': get_shuffled_translates(words_obj),
         'len': range(1, len(words) + 1)
     }
 
     if step == 1:
-        # logger.info(context['words'][0])
-        if context['words'][0]['lang'] != 'eng':
-            pass
-        else:
+        
+        if context['words'][0]['lang'] == 'eng':
             api_words = get_api_for_words(words)
 
             for word, api_word in zip(context['words'], api_words):
                 word['api'] = api_word
 
-    # logger.info(f"Word count: {len(context['words'])}")
-    # logger.info(f"Words: {context['words']}")
-    # if request.user.username == 'peka97' and step == '3':
-    #     template_name = 'exercises/exercise_step_3_test.html'
-
     return render(request, template_name, context)
 
 
-def get_words(exercise: list[Exercise]):  # list[Exercise]
+def get_words(words: list[Exercise]):
     result = []
-    words = list(exercise.words.all())
-
-    # logger.info(f'Words len: {len(words)}')
-    # logger.info(f'Words from DB: {words}')
 
     for idx, word in enumerate(words):
 
@@ -109,14 +96,14 @@ def get_words(exercise: list[Exercise]):  # list[Exercise]
     return result
 
 
-def get_shuffled_translates(words: list[Word]) -> list[dict]:  # list[Word]
+def get_shuffled_translates(words: list[Word]) -> list[dict]:
     translates = [{'id': idx + 1, 'trans': word.translate}
                   for idx, word in enumerate(words)]
     shuffle(translates)
     return translates
 
 
-def get_translate_vars(words: list[Word], word: str):  # list[Word]
+def get_translate_vars(words: list[Word], word: str):
     ex_words = [word.translate for word in words]
     del ex_words[ex_words.index(word.translate)]
 
@@ -175,15 +162,32 @@ def get_api_for_words(words: list[Word]):
             word_translation = word['translate']
             transcription = None
             image_url = None
-            image_url = None
+            another_means = []
             sound_url = None
         else:
             word_text = resp['text']
             word_translation = resp['meanings'][0]['translation']
             transcription = resp['meanings'][0]['transcription']
-            image_url = resp['meanings'][0]['imageUrl']
-            image_url = image_url.replace('640x480', img_size)
+
+            for mean in resp['meanings']:
+                resp_translation = mean['translation']['text'].lower().replace('ё', 'е')
+                word_translation = word['translate'].lower().replace('ё', 'е')
+                
+                if resp_translation == word_translation or \
+                    resp_translation in word_translation:
+                    image_url = mean['imageUrl'] #image_url.replace('640x480', img_size)
+                    break
+            else:
+                image_url = None
+            
+            another_means = set([
+                mean['translation']['text'].lower().replace('ё', 'е')
+                for mean in resp['meanings'] 
+                if mean['translation']['text'].lower().replace('ё', 'е') != word['translate'].lower().replace('ё', 'е')
+                ])
             sound_url = resp['meanings'][0]['soundUrl']
+            
+            logger.info(resp)
         finally:
             result.append(
                 {
@@ -191,6 +195,7 @@ def get_api_for_words(words: list[Word]):
                     'translation': word_translation,
                     'transcription': transcription,
                     'image_url': image_url,
+                    'another_means': another_means,
                     'sound_url': sound_url
                 }
             )

@@ -8,20 +8,24 @@
 
 {% block 'content' %}
     <div class="row row-cols-2 justify-content-center words__place">
-        <div class="col w-auto">
+        <div class="col words_col w-auto">
             <div class='words_container pe-2' id="words">
                 {% for word in words %}
-                    <div class='row word ms-auto' id='word_{{word.id}}'>
-                        <span>{{ word.word }}</span>
+                    <div class='row word ms-auto w-auto' id='word_{{word.id}}'>
+                        <div class='col'>
+                            <span>{{ word.word }}</span>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
         </div>
-        <div class="col w-auto">
+        <div class="col translate_col w-auto">
             <div class='translate_container' id="translate">
                 {% for trans_word in shuffled_translates %}
-                    <div class='row translate' id='translate_{{ trans_word.id }}'>
-                        <span><i class="bi bi-list"></i> {{ trans_word.trans }}</span>
+                    <div class='row translate w-auto' id='translate_{{ trans_word.id }}'>
+                        <div class='col'>
+                            <span><i class="bi bi-list"></i> {{ trans_word.trans }}</span>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
