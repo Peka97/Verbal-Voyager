@@ -9,7 +9,6 @@
 
 {% block 'content' %}
     
-
     <!-- Words -->
     {% for word in words %}
         <div id='word_{{word.id}}' class="row justify-content-center word__block {% if word.id != 1 %}hidden{% endif %}">
@@ -21,7 +20,6 @@
                     <div class="col align-self-center mx-1 word_translate__col">
                         <p class="step_one__word_translate">{{word.translate}}</p>
                     </div>
-                    <!-- <p class="text w-50 mx-auto text-center word-main">{{ word.word }}  {{ word.translate }}</p> -->
                 </div>
                 <div class='word-card mt-2'>
                     <div class="row content-row">
@@ -33,42 +31,78 @@
                                     {% endif %}
                                 </div>
                                 <div class="col col-xs-12 col-md-5 text-center">
-                                    {% if word.api.another_means %}
-                                        <ul class="list__another_means">
-                                            <p class="text word__title_mean">Другие значения:</p>
-                                            {% for another_mean in word.api.another_means %}
-                                                <li>
-                                                    <p class="text word__mean">{{ another_mean|capfirst }}</p>
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    {% else %}
-                                        <p class="text word__title_mean">У слова только одно значение</p>
-                                    {% endif %}
+                                    <div class='mt-2 text-center'>
+                                        {% if word.api.transcription %}
+                                            <p class="text"> Transcription: {{ word.api.transcription }} </p>
+                                        {% endif %}
+                                    </div>
+                                    <div class='mt-2 text-center'>
+                                        {% if word.api.sound_url %}
+                                            <audio class='word__audio' controls>
+                                                <source src="{{ word.api.sound_url }}">
+                                            </audio>
+                                        {% endif %}
+                                    </div>
+                                    <div class="accordion" id="accordion_word_{{word.id}}">
+                                        <div class="accordion-item">
+                                            {% if word.api.another_means %}
+                                                <h2 class="accordion-header">
+                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_means_{{word.id}}" aria-expanded="false" aria-controls="collapse_means_{{word.id}}">
+                                                        Другие значения
+                                                    </button>
+                                                </h2>
+                                                <div id="collapse_means_{{word.id}}" class="accordion-collapse collapse" data-bs-parent="#accordion_word_{{word.id}}">
+                                                    <div class="accordion-body">
+                                                        <ul class="list__another_means">
+                                                            <p class="text word__title_mean"></p>
+                                                            {% for another_mean in word.api.another_means %}
+                                                                <li>
+                                                                    <p class="text word__mean">{{ another_mean|capfirst }}</p>
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <h2 class="accordion-header">
+                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_means_{{word.id}}" aria-expanded="false" aria-controls="collapse_means_{{word.id}}" disabled>
+                                                        У слова только одно значение
+                                                    </button>
+                                                </h2>
+                                            {% endif %}
+                                        </div>
+                                        <div class="accordion-item">
+                                            {% if word.sentences %}
+                                                <h2 class="accordion-header">
+                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_sentences_{{word.id}}" aria-expanded="false" aria-controls="collapse_sentences_{{word.id}}">
+                                                        Примеры с предложениями
+                                                    </button>
+                                                </h2>
+                                                <div id="collapse_sentences_{{word.id}}" class="accordion-collapse collapse" data-bs-parent="#accordion_word_{{word.id}}">
+                                                    <div class="accordion-body">
+                                                        <ul class="list__another_means">
+                                                            <p class="text word__title_mean"></p>
+                                                            <ul class='mt-2 text-center'>
+                                                                {% for sentence in word.sentences %}
+                                                                    <li>
+                                                                        <p class="text word__sentence">{{ sentence }}</p>
+                                                                    </li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <h2 class="accordion-header">
+                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" disabled>
+                                                        Примеров с предложениями нет
+                                                    </button>
+                                                </h2>
+                                            {% endif %}
+                                        </div> 
+                                    </div>
                                 </div>
                             </div>
-                            <hr>
-                            <div class='mt-2 text-center'>
-                                {% if word.api.transcription %}
-                                    <p class="text"> Transcription: {{ word.api.transcription }} </p>
-                                {% endif %}
-                            </div>
-                            <div class='mt-2 text-center'>
-                                {% if word.api.sound_url %}
-                                    <audio class='word__audio' controls>
-                                        <source src="{{ word.api.sound_url }}">
-                                    </audio>
-                                {% endif %}
-                            </div>
-                            {% if word.sentences %}
-                                <ul class='mt-2 text-center'>
-                                    {% for sentence in word.sentences %}
-                                        <li>
-                                            <p class="text">{{ sentence }}</p>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
