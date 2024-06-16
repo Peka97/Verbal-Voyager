@@ -26,17 +26,17 @@ class Course(models.Model):
 
 
 class Review(models.Model):
-    course_name = models.ForeignKey(
+    course = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
-        related_name='course_name',
+        related_name='review_course',
         null=True
     )
     text = models.TextField(max_length=500)
     from_user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='from_user'
+        related_name='review_from_user'
     )
     created_at = models.DateTimeField(
         editable=True,
@@ -105,13 +105,13 @@ class ProjectType(models.Model):
 
 
 class Project(models.Model):
-    project_name = models.CharField(
+    project = models.CharField(
         max_length=50,
     )
-    course_name = models.ForeignKey(
+    course = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
-        related_name='course'
+        related_name='project_course'
     )
     type = models.ManyToManyField(
         ProjectType,
@@ -124,7 +124,7 @@ class Project(models.Model):
     teacher = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='teacher',
+        related_name='project_teacher',
         null=True
     )
     from_date = models.DateField(
