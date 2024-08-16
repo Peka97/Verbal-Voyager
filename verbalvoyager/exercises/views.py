@@ -31,18 +31,7 @@ def exercises_words(request, ex_id, step):
     titles = {1: 'Запоминаем', 2: 'Выбираем', 3: 'Расставляем', 4: 'Переводим'}
     user = request.user
 
-    try:
-        exercise = Exercise.objects.get(
-            pk=ex_id,
-            student=user
-        )
-    except IndexError:
-        method = request.META['REQUEST_METHOD']
-        url = request.META['PATH_INFO']
-        msg = f"Forbidden: {method} - {url} - {user}"
-        logger.error(msg)
-
-        return redirect('err_404')
+    exercise = get_object_or_404(Exercise, pk=ex_id, student=user)
 
     words_obj = list(exercise.words.all())
     words = get_words(words_obj)
@@ -72,19 +61,8 @@ def exercises_words(request, ex_id, step):
 def exercises_dialog(request, ex_id):
     user = request.user
 
-    try:
-        dialog = Dialog.objects.get(
-            pk=ex_id,
-            student=user
-        )
-        messages = list(filter(lambda s: len(s) > 1, dialog.text.split('\n')))
-    except IndexError:
-        method = request.META['REQUEST_METHOD']
-        url = request.META['PATH_INFO']
-        msg = f"Forbidden: {method} - {url} - {user}"
-        logger.error(msg)
-
-        return redirect('err_404')
+    dialog = get_object_or_404(Dialog, pk=ex_id, student=user)
+    messages = list(filter(lambda s: len(s) > 1, dialog.text.split('\n')))
 
     scene = messages[0] if messages[0].startswith('Scene:') else None
     text = messages[1:] if scene else messages
