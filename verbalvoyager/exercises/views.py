@@ -187,30 +187,6 @@ def exercises_dialog_update(request, ex_id):
         data = json.loads(request.body)
         value = data.get('value')
 
-        obj, _ = ExerciseResult.objects.get_or_create(
-            exercise=Exercise.objects.get(pk=ex_id),
-        )
-        obj.__dict__[step_num] = value
-        obj.save()
-
-        if step_num[-1] == '4':
-            exercise = Exercise.objects.get(pk=ex_id)
-            exercise.is_active = False
-            exercise.save()
-
-        return redirect('profile')
-
-
-@login_required
-def exercises_dialog_update(request, ex_id):
-    if request.method == 'POST':
-        logger.info(
-            f'POST REQUEST:\n Ex Dialog:{ex_id} | {json.loads(request.body)}'
-        )
-
-        data = json.loads(request.body)
-        value = data.get('value')
-
         # obj, _ = ExerciseResult.objects.get_or_create(
         #     exercise=Exercise.objects.get(pk=ex_id),
         # )

@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.utils.html import format_html
+from django.core.exceptions import ValidationError
 
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
@@ -156,6 +157,7 @@ class DialogAdmin(admin.ModelAdmin):
         StudentsListFilter,
         'is_active'
     ]
+
     def clean(self):
         cleaned_data = super(DialogAdminForm, self).clean()
         field_value = cleaned_data.get('field_name')

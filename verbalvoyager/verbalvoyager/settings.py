@@ -82,7 +82,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'verbalvoyager.wsgi.application'
 
-if not config.DEBUG:
+if config.DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -93,14 +100,6 @@ if not config.DEBUG:
             'PORT': ''
         }
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-
 
 # Authentication
 AUTH_USER_MODEL = 'users.User'

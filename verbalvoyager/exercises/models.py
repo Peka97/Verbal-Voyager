@@ -103,9 +103,13 @@ class Dialog(models.Model):
     text = models.TextField(blank=False, null=True, verbose_name='Текст')
     words = models.ManyToManyField(Word, verbose_name="Слова")
     student = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='dialog_student', 
+        User, on_delete=models.CASCADE, related_name='dialog_student',
         null=True, verbose_name='Ученик')
     teacher = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='dialog_teacher', 
+        User, on_delete=models.CASCADE, related_name='dialog_teacher',
         null=True, verbose_name="Учитель")
     is_active = models.BooleanField(default=True, verbose_name="Активен")
+
+    class Meta:
+        verbose_name = 'Диалог'
+        verbose_name_plural = 'Диалоги'

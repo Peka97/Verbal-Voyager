@@ -13,7 +13,7 @@ handler404 = handler_404
 handler500 = handler_500
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls, name='admin'),
 
     path('', include('pages.urls'), name='main'),
     path('users/', include('users.urls')),
