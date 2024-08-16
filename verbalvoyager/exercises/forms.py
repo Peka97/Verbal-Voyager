@@ -2,6 +2,7 @@ import logging
 
 from django import forms
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 
 from .models import Exercise
 
@@ -43,3 +44,25 @@ class ExerciseAdminForm(forms.ModelForm):
             username='Elizabeth')
         self.fields['student'].queryset = User.objects.filter(
             groups__name__in=['Student'])
+
+class DialogAdminForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(DialogAdminForm, self).__init__(*args, **kwargs)
+        self.fields['teacher'].queryset = User.objects.filter(
+            groups__name__in=['Teacher'])
+        self.fields['teacher'].initial = User.objects.get(
+            username='Elizabeth')
+        self.fields['student'].queryset = User.objects.filter(
+            groups__name__in=['Student'])
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        
+        text = self.cleaned_data["text"]
+        words = self.cleaned_data["words"]
+        
+        for word in words:
+            if word.word.lower() not in text.lower():
+                raise ValidationError(f'Word "{word.word}" not in text.')
+            
+        return cleaned_data

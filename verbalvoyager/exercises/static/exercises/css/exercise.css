@@ -39,6 +39,16 @@
     --color-blue-pastel-max-pale: #D9D9F4;
 }
 
+<<<<<<< HEAD
+=======
+.toast-container {
+  position: fixed; /* Фиксирует позицию контейнера */
+  bottom: 20px; /* Отступ от нижнего края экрана */
+  right: 20px; /* Отступ от правого края экрана */
+  z-index: 1000; /* Устанавливает уровень z-index, чтобы тоасты были поверх других элементов */
+}
+
+>>>>>>> origin/dev
 nav.navbar {
   background-color: var(--color-violet-pastel-pale) !important;
   --bs-navbar-padding-y: 0 !important;
@@ -135,7 +145,11 @@ button.btn__help {
   div.row.nav-row,
   div.row-alerts,
   div.row.words,
+<<<<<<< HEAD
   div.word__block,
+=======
+  div.word-block,
+>>>>>>> origin/dev
   div.row-pagination,
   div.row.word-check,
   div.row.words__place,

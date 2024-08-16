@@ -8,8 +8,8 @@ from django.utils.html import format_html
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
 
-from .models import Word, Exercise, ExerciseResult
-from .forms import ExerciseAdminForm
+from .models import Word, Exercise, ExerciseResult, Dialog
+from .forms import ExerciseAdminForm, DialogAdminForm
 
 
 logger = logging.getLogger(__name__)
@@ -141,3 +141,23 @@ class ExerciseResultAdmin(admin.ModelAdmin):
         StudentsListFilter,
     ]
     # search_fields = ('exercise.name')
+
+
+@admin.register(Dialog)
+class DialogAdmin(admin.ModelAdmin):
+    form = DialogAdminForm
+    filter_horizontal = ('words', )
+    list_display = (
+        'pk', 'name', 'is_active', 'student', 'teacher',
+    )
+    list_display_links = ('name', )
+    list_filter = [
+        TeachersListFilter,
+        StudentsListFilter,
+        'is_active'
+    ]
+    def clean(self):
+        cleaned_data = super(DialogAdminForm, self).clean()
+        field_value = cleaned_data.get('field_name')
+        if not field_value:
+            raise ValidationError('No value for field_name')

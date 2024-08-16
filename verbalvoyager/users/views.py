@@ -15,7 +15,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteView
 
 from users.forms import RegistrationUserForm, CustomPasswordResetForm
-from exercises.models import Exercise
+from exercises.models import Exercise, Dialog
 from event_calendar.models import Lesson, Project
 from event_calendar.forms import LessonForm
 from verbalvoyager.settings import DEBUG_LOGGING_FP
@@ -105,6 +105,13 @@ def user_profile(request):
         }
         exercises = list(Exercise.objects.filter(
             student=user.pk,
+<<<<<<< HEAD
+=======
+            is_active=True
+        ).all())
+        dialogs = list(Dialog.objects.filter(
+            student=user.pk,
+>>>>>>> origin/dev
             is_active=True
         ).all())
         lessons = list(Lesson.objects.filter(
@@ -115,6 +122,7 @@ def user_profile(request):
 
         context['projects'] = projects
         context['exercises'] = exercises
+        context['dialogs'] = dialogs
         context['events'] = lessons
         context['events_count_total'] = len(lessons)
         context['events_count_done'] = len(

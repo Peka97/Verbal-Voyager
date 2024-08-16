@@ -1,20 +1,34 @@
-/* Pagination */
-function prev_paginator_handler(event) {
-    next_btn.classList.remove('disabled')
+import { showToast } from './modules/toast_notification.js';
+import { toNextStep } from './modules/next_step.js';
+import { pagination, updatePagination } from './modules/pagination.js';
+import { send_points } from './modules/send_points.js';
 
-    let curr_page = Number(Array.from(document.getElementsByClassName('page-item active'))[0].id.split('_')[1])
-    if (curr_page > 1) {
-        let new_page = curr_page - 1 
-        if (new_page == 1){
-            prev_btn.classList.add('disabled')
+pagination.forEach(el => {
+    el.onclick = (event) => {
+        updatePagination(event);
+        checkAllWordsWatched(event);
+    };
+});
+let words = [...document.getElementsByClassName('word__block')];
+let points = words.length;
+words[0].classList.add('watched');
+
+// Код для подсказок рядом с названием шага упражнения.
+// let popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+// let popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+//     return new bootstrap.Popover(popoverTriggerEl);
+// });
+
+function checkAllWordsWatched (event) {
+    let current_word_block = document.querySelector('div.word__block:not(.hidden)');
+    current_word_block.classList.add('watched');
+
+    for (let i=0; i < words.length; i++) {
+        if (!words[i].classList.contains('watched')) {
+            return false;
         }
-        else {
-            prev_btn.classList.remove('disabled')
-        }
-        pages[new_page - 1].classList.add('watched');
-        update_paginator_by_number(new_page);
-        checkAllPagesWatched();
     }
+<<<<<<< HEAD
 
     document.body.scrollIntoView({behavior: "smooth",});
 }
@@ -173,3 +187,10 @@ const toastBody = document.getElementById('toast-body')
 
 const stars = document.getElementById('step_2').children[1]
 const glow = document.getElementById('step_2').children[2]
+=======
+    showToast('Запомнил слова? Тогда переходи к следующему шагу!');
+    send_points('words', points);
+    toNextStep(1);
+    return true;
+}
+>>>>>>> origin/dev

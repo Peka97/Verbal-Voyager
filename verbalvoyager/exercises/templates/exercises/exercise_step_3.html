@@ -1,4 +1,4 @@
-{% extends "exercises/extends/base.html" %}
+{% extends "exercises/includes/words.html" %}
 {% load static %}
 
 {% block title %}Exercise | Step {{step}}{% endblock  %}
@@ -6,9 +6,13 @@
     <link rel="stylesheet" href="{% static 'exercises/css/exercise.css' %}">
 {% endblock  %}
 
-{% block 'content' %}
+{% block 'words' %}
     <div class="row row-cols-2 justify-content-center words__place">
+<<<<<<< HEAD
         <div class="col words_col w-auto">
+=======
+        <div class="col words_col w-auto word__block">
+>>>>>>> origin/dev
             <div class='words_container pe-2' id="words">
                 {% for word in words %}
                     <div class='row word ms-auto w-auto' id='word_{{word.id}}'>
@@ -24,7 +28,11 @@
                 {% for trans_word in shuffled_translates %}
                     <div class='row translate w-auto' id='translate_{{ trans_word.id }}'>
                         <div class='col'>
+<<<<<<< HEAD
                             <span><i class="bi bi-list"></i> {{ trans_word.trans }}</span>
+=======
+                            <span><i class="bi bi-list"></i>{{ trans_word.trans }}</span>
+>>>>>>> origin/dev
                         </div>
                     </div>
                 {% endfor %}
@@ -39,7 +47,6 @@
 
 {% block 'js' %}
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-
-    {% comment %} <script src="{% static 'exercises/js/touch.js' %}"></script> {% endcomment %}
-    <script src="{% static 'exercises/js/step_3.js' %}"></script>
+    
+    <script type="module" src="{% static 'exercises/js/step_3.js' %}"></script>
 {% endblock  %}

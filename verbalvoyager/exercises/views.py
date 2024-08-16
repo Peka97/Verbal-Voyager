@@ -14,7 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
-from .models import Exercise, Word, ExerciseResult
+from .models import Exercise, Word, ExerciseResult, Dialog
 
 log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 logger = logging.getLogger(__name__)
@@ -30,10 +30,20 @@ User = get_user_model()
 def exercises_words(request, ex_id, step):
     titles = {1: 'Запоминаем', 2: 'Выбираем', 3: 'Расставляем', 4: 'Переводим'}
     user = request.user
+<<<<<<< HEAD
 
     try:
         exercise = get_object_or_404(Exercise, pk=ex_id, student=user)
     except Http404:
+=======
+    
+    try:
+        exercise = Exercise.objects.get(
+            pk=ex_id,
+            student=user
+        )
+    except IndexError:
+>>>>>>> origin/dev
         method = request.META['REQUEST_METHOD']
         url = request.META['PATH_INFO']
         msg = f"Forbidden: {method} - {url} - {user}"
@@ -55,7 +65,11 @@ def exercises_words(request, ex_id, step):
     }
 
     if step == 1:
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin/dev
         if context['words'][0]['lang'] == 'eng':
             api_words = get_api_for_words(words)
 
@@ -65,6 +79,43 @@ def exercises_words(request, ex_id, step):
     return render(request, template_name, context)
 
 
+<<<<<<< HEAD
+=======
+@login_required(login_url="/users/auth")
+def exercises_dialog(request, ex_id):
+    user = request.user
+    
+    try:
+        dialog = Dialog.objects.get(
+            pk=ex_id,
+            student=user
+        )
+        messages = list(filter(lambda s: len(s) > 1, dialog.text.split('\n')))
+    except IndexError:
+        method = request.META['REQUEST_METHOD']
+        url = request.META['PATH_INFO']
+        msg = f"Forbidden: {method} - {url} - {user}"
+        logger.error(msg)
+
+        return redirect('err_404')
+    
+    scene = messages[0] if messages[0].startswith('Scene:') else None
+    text = messages[1:] if scene else messages
+    name_1 = text[0][:text[0].index(':')]
+    name_2 = text[1][:text[1].index(':')]
+    text = [message.removeprefix(f"{name_1}: ").removeprefix(f"{name_2}: ") for message in text]
+    words = dialog.words.all()
+    
+    context = {
+        'scene': scene,
+        'text': text,
+        'words': get_words(words),
+        'name_1': name_1,
+        'name_2': name_2,
+    }
+    return render(request, 'exercises/dialog.html', context)
+
+>>>>>>> origin/dev
 def get_words(words: list[Exercise]):
     result = []
 
@@ -115,10 +166,33 @@ def get_translate_vars(words: list[Word], word: str):
 
 
 @login_required
-def update(request, ex_id, step_num):
+def exercises_words_update(request, ex_id, step_num):
     if request.method == 'POST':
         logger.info(
-            f'POST REQUEST:\n Ex:{ex_id} | {step_num} | {json.loads(request.body)}'
+            f'POST REQUEST:\n Ex Words:{ex_id} | {step_num} | {json.loads(request.body)}'
+        )
+
+        data = json.loads(request.body)
+        value = data.get('value')
+
+        obj, _ = ExerciseResult.objects.get_or_create(
+            exercise=Exercise.objects.get(pk=ex_id),
+        )
+        obj.__dict__[step_num] = value
+        obj.save()
+
+        if step_num[-1] == '4':
+            exercise = Exercise.objects.get(pk=ex_id)
+            exercise.is_active = False
+            exercise.save()
+
+        return redirect('profile')
+
+@login_required
+def exercises_dialog_update(request, ex_id):
+    if request.method == 'POST':
+        logger.info(
+            f'POST REQUEST:\n Ex Dialog:{ex_id} | {json.loads(request.body)}'
         )
 
         data = json.loads(request.body)
@@ -167,6 +241,7 @@ def get_api_for_words(words: list[Word]):
             transcription = resp['meanings'][0]['transcription']
 
             for mean in resp['meanings']:
+<<<<<<< HEAD
                 resp_translation = mean['translation']['text'].lower().replace(
                     'ё', 'е')
                 word_translation = word['translate'].lower().replace('ё', 'е')
@@ -186,6 +261,25 @@ def get_api_for_words(words: list[Word]):
             ])
             sound_url = resp['meanings'][0]['soundUrl']
 
+=======
+                resp_translation = mean['translation']['text'].lower().replace('ё', 'е')
+                word_translation = word['translate'].lower().replace('ё', 'е')
+                
+                if resp_translation == word_translation or \
+                    resp_translation in word_translation:
+                    image_url = mean['imageUrl'] #image_url.replace('640x480', img_size)
+                    break
+            else:
+                image_url = None
+            
+            another_means = set([
+                mean['translation']['text'].lower().replace('ё', 'е')
+                for mean in resp['meanings'] 
+                if mean['translation']['text'].lower().replace('ё', 'е') != word['translate'].lower().replace('ё', 'е')
+                ])
+            sound_url = resp['meanings'][0]['soundUrl']
+            
+>>>>>>> origin/dev
             logger.info(resp)
         finally:
             result.append(

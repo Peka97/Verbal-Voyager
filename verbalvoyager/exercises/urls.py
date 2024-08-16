@@ -9,6 +9,9 @@ handler404 = handler_404
 handler500 = handler_500
 
 urlpatterns = [
-    path('<int:ex_id>/<int:step>', views.exercises_words, name='exercises_words'),
-    path('update/<int:ex_id>/<str:step_num>', views.update, name='ex_update')
+    path('words/<int:ex_id>/<int:step>', views.exercises_words, name='exercises_words'),
+    path('words/update/<int:ex_id>/<str:step_num>', views.exercises_words_update, name='exercises_words_update'),
+    path('dialog/<int:ex_id>', views.exercises_dialog, name='exercises_dialog'),
+    path('dialog/update/<int:ex_id>', views.exercises_dialog_update, name='exercises_dialog_update'),
+
 ]
