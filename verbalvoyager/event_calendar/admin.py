@@ -144,11 +144,7 @@ class ProjectAdmin(admin.ModelAdmin):
     form = ProjectAdminForm
 
     filter_horizontal = ('students', )
-<<<<<<< HEAD
     list_display = ('is_active', 'project', 'course',
-=======
-    list_display = ('is_active', 'project_name', 'course',
->>>>>>> origin/dev
                     'teacher', 'from_date', 'to_date')
     list_display_links = ('project', )
     list_filter = [

@@ -86,14 +86,15 @@ def user_profile(request):
         context = {
             'user_is_teacher': True,
         }
-        lessons = list(Lesson.objects.filter(teacher=user.pk).order_by('datetime').all().prefetch_related('students'))
+        lessons = list(Lesson.objects.filter(teacher=user.pk).order_by(
+            'datetime').all().prefetch_related('students'))
         calendar = get_calendar(lessons)
-        
+
         # Форма отключена за ненадобностью
         # lesson_form = LessonForm()
         # lesson_form.fields['teacher'].initial = user
         # context['lesson_form'] = lesson_form
-        
+
         context['events'] = lessons
         context['events_count_total'] = len(lessons)
         context['calendar'] = calendar
@@ -105,13 +106,10 @@ def user_profile(request):
         }
         exercises = list(Exercise.objects.filter(
             student=user.pk,
-<<<<<<< HEAD
-=======
             is_active=True
         ).all())
         dialogs = list(Dialog.objects.filter(
             student=user.pk,
->>>>>>> origin/dev
             is_active=True
         ).all())
         lessons = list(Lesson.objects.filter(

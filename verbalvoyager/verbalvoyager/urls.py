@@ -14,7 +14,7 @@ handler500 = handler_500
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
+
     path('', include('pages.urls'), name='main'),
     path('users/', include('users.urls')),
     path('exercises/', include('exercises.urls')),
@@ -24,8 +24,4 @@ if config.DEBUG:
     urlpatterns = [
         *urlpatterns,
         path("__debug__/", include("debug_toolbar.urls")),
-<<<<<<< HEAD
     ]
-=======
-    ]
->>>>>>> origin/dev

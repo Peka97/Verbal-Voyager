@@ -166,7 +166,4 @@ test.py
 */*/fixtures/
 migrations/
 load_fixtures_data.sh
-<<<<<<< HEAD
 requirements.txt
-=======
->>>>>>> origin/dev
