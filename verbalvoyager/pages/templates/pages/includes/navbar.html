@@ -51,7 +51,7 @@
             <li><a class="header dropdown-item" href="{% url 'profile' %}">Профиль</a></li>
             {% if user_is_teacher or user.is_teacher %}
               <li><hr class="dropdown-divider"></li>
-              <li><a class="header dropdown-item" href="{% url 'admin' %}">Администрирование</a></li>
+              {% comment %} <li><a class="header dropdown-item" href="{% url 'admin' %}">Администрирование</a></li> {% endcomment %}
             {% endif %}
             <li><hr class="dropdown-divider"></li>
             <li><a class="header dropdown-item" href="{% url 'logout' %}">Выйти</a></li>

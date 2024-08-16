@@ -14,6 +14,7 @@ handler500 = handler_500
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
     path('', include('pages.urls'), name='main'),
     path('users/', include('users.urls')),
     path('exercises/', include('exercises.urls')),

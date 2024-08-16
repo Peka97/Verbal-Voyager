@@ -14,7 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
-from .models import Exercise, Word, ExerciseResult
+from .models import Exercise, Word, ExerciseResult, Dialog
 
 log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 logger = logging.getLogger(__name__)
@@ -68,6 +68,40 @@ def exercises_words(request, ex_id, step):
     return render(request, template_name, context)
 
 
+@login_required(login_url="/users/auth")
+def exercises_dialog(request, ex_id):
+    user = request.user
+    
+    try:
+        dialog = Dialog.objects.get(
+            pk=ex_id,
+            student=user
+        )
+        messages = list(filter(lambda s: len(s) > 1, dialog.text.split('\n')))
+    except IndexError:
+        method = request.META['REQUEST_METHOD']
+        url = request.META['PATH_INFO']
+        msg = f"Forbidden: {method} - {url} - {user}"
+        logger.error(msg)
+
+        return redirect('err_404')
+    
+    scene = messages[0] if messages[0].startswith('Scene:') else None
+    text = messages[1:] if scene else messages
+    name_1 = text[0][:text[0].index(':')]
+    name_2 = text[1][:text[1].index(':')]
+    text = [message.removeprefix(f"{name_1}: ").removeprefix(f"{name_2}: ") for message in text]
+    words = dialog.words.all()
+    
+    context = {
+        'scene': scene,
+        'text': text,
+        'words': get_words(words),
+        'name_1': name_1,
+        'name_2': name_2,
+    }
+    return render(request, 'exercises/dialog.html', context)
+
 def get_words(words: list[Exercise]):
     result = []
 
@@ -118,10 +152,33 @@ def get_translate_vars(words: list[Word], word: str):
 
 
 @login_required
-def update(request, ex_id, step_num):
+def exercises_words_update(request, ex_id, step_num):
     if request.method == 'POST':
         logger.info(
-            f'POST REQUEST:\n Ex:{ex_id} | {step_num} | {json.loads(request.body)}'
+            f'POST REQUEST:\n Ex Words:{ex_id} | {step_num} | {json.loads(request.body)}'
+        )
+
+        data = json.loads(request.body)
+        value = data.get('value')
+
+        obj, _ = ExerciseResult.objects.get_or_create(
+            exercise=Exercise.objects.get(pk=ex_id),
+        )
+        obj.__dict__[step_num] = value
+        obj.save()
+
+        if step_num[-1] == '4':
+            exercise = Exercise.objects.get(pk=ex_id)
+            exercise.is_active = False
+            exercise.save()
+
+        return redirect('profile')
+
+@login_required
+def exercises_dialog_update(request, ex_id):
+    if request.method == 'POST':
+        logger.info(
+            f'POST REQUEST:\n Ex Dialog:{ex_id} | {json.loads(request.body)}'
         )
 
         data = json.loads(request.body)

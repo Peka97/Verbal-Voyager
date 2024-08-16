@@ -1,4 +1,4 @@
-{% extends "exercises/extends/base.html" %}
+{% extends "exercises/includes/words.html" %}
 {% load static %}
 
 {% block title %}Exercise | Step {{step}}{% endblock  %}
@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="{% static 'exercises/css/exercise.css' %}">
 {% endblock  %}
 
-{% block 'content' %}
+{% block 'words' %}
     <!-- Title -->
     <div class="row py-3 justify-content-center">
             <!-- Alerts-->
@@ -31,7 +31,7 @@
 
     <div class="row row-cols-1 justify-content-center text-center ">
         {% for word in words %}
-            <div id="word_check_{{word.id}}" class="col word_check hidden">
+            <div id="word_{{word.id}}" class="col word_check word__block hidden">
                 <p class="word-translate"> {{ word.translate }} </p>
                     
                 <div class="form-floating pb-2">
@@ -53,5 +53,5 @@
 {% endblock  %}
 
 {% block 'js' %}
-    <script src="{% static 'exercises/js/step_4.js' %}"></script>
+    <script type="module" src="{% static 'exercises/js/step_4.js' %}"></script>
 {% endblock  %}

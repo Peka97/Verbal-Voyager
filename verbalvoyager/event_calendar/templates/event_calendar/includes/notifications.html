@@ -10,4 +10,14 @@
         </div>
         {% endfor %}
     {% endif %}
+    {% if dialogs %}
+        {% for dialog in dialogs %}
+        <div class="row notification notification-exercise p-3">
+            <p class='text-start my-auto'>
+                Новый диалог - 
+                <a href={% url "exercises_dialog" ex_id=dialog.pk %} class="ex_name"> {{ dialog.name }} </a>
+            </p>
+        </div>
+        {% endfor %}
+    {% endif %}
 </div>

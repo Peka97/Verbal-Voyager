@@ -1,0 +1,52 @@
+{% extends "exercises/extends/base.html" %}
+{% load static %}
+
+{% block 'title' %} Exercise Dialog | Step {{step}}{% endblock  %}
+{% block 'meta' %}
+    <meta id="names" data-name-1="{{name_1}}" data-name-2="{{name_2}}">
+    <meta id="words-length" data-words-length="{{words|length}}">
+    {% for word in words %}
+        <meta id="word_{{word.id}}" data-word="{{word.word}}" data-translate="{{word.translate}}">
+    {% endfor %}
+{% endblock 'meta' %}
+{% block 'style' %}
+    <link rel="stylesheet" href="{% static 'pages/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/exercise.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/dialog.css' %}">
+
+    <link rel="stylesheet" href="{% static 'exercises/css/dropdown.css' %}">    
+{% endblock  %}
+
+{% block 'content' %}
+<div class="container wrapper">
+    <div class='row scene-container'>
+        <div class='col-9 scene-text'>
+            {{ scene }}
+        </div>
+        <div class="col-3 hidden">
+            <div class='btn-wrapper'>
+                <a id='done-btn' class="btn btn-default" href="{% url 'profile' %}" role="button">В личный кабинет</a>
+            </div>
+        </div>
+    </div>
+    {% for message in text %}
+    <div class='row message-container'>
+        <div class='row message-row'>
+            <div class='col-1 avatar-container'>
+                <img class='avatar' width='50' height='50' src="{% static "users/images/default_avatar.png" %}" alt="User photo">
+            </div>
+            <div class='col-11 text-container'>
+                <div class='message'>
+                    {{ message }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+
+{% block 'js' %}
+    <script type="module" src="{% static 'exercises/js/dialog.js' %}"></script>
+{% endblock  %}

@@ -30,8 +30,8 @@ class Review(models.Model):
         Course,
         on_delete=models.CASCADE,
         related_name='reviews',
-        blank=False,
-        null=False
+        blank=True,
+        null=True,
     )
     text = models.TextField(max_length=500)
     from_user = models.ForeignKey(

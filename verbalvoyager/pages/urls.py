@@ -7,7 +7,6 @@ from pages.views import handler_403, handler_404, handler_500
 
 urlpatterns = [
     path('', views.index, name=''),
-    path('admin/', admin.site.admin_view, name='admin'),
     path('english', views.english_course, name='english'),
     path('french', views.french_course, name='french'),
     path('spanish', views.spanish_course, name='spanish'),

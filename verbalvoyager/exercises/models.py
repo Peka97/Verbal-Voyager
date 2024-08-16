@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.html import format_html
+from django.core.exceptions import ValidationError
 
 
 User = get_user_model()
@@ -94,3 +95,17 @@ class ExerciseResult(models.Model):
     class Meta:
         verbose_name = 'Результат упражнения'
         verbose_name_plural = 'Результаты упражнений'
+
+
+class Dialog(models.Model):
+    name = models.CharField(default=None, blank=True, max_length=50,
+                            verbose_name='Название упражнения')
+    text = models.TextField(blank=False, null=True, verbose_name='Текст')
+    words = models.ManyToManyField(Word, verbose_name="Слова")
+    student = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='dialog_student', 
+        null=True, verbose_name='Ученик')
+    teacher = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='dialog_teacher', 
+        null=True, verbose_name="Учитель")
+    is_active = models.BooleanField(default=True, verbose_name="Активен")
