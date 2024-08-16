@@ -164,7 +164,7 @@ config.py
 test.py
 *test.py
 */*/fixtures/
-*/migrations/*
+migrations/
 load_fixtures_data.sh
 <<<<<<< HEAD
 requirements.txt
