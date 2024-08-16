@@ -3,11 +3,11 @@ import requests
 import logging
 from random import sample, shuffle
 
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.core.exceptions import PermissionDenied
 from django.http.response import Http404
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -30,13 +30,10 @@ User = get_user_model()
 def exercises_words(request, ex_id, step):
     titles = {1: 'Запоминаем', 2: 'Выбираем', 3: 'Расставляем', 4: 'Переводим'}
     user = request.user
-    
+
     try:
-        exercise = Exercise.objects.get(
-            pk=ex_id,
-            student=user
-        )
-    except IndexError:
+        exercise = get_object_or_404(Exercise, pk=ex_id, student=user)
+    except Http404:
         method = request.META['REQUEST_METHOD']
         url = request.META['PATH_INFO']
         msg = f"Forbidden: {method} - {url} - {user}"
@@ -58,7 +55,7 @@ def exercises_words(request, ex_id, step):
     }
 
     if step == 1:
-        
+
         if context['words'][0]['lang'] == 'eng':
             api_words = get_api_for_words(words)
 
@@ -170,23 +167,25 @@ def get_api_for_words(words: list[Word]):
             transcription = resp['meanings'][0]['transcription']
 
             for mean in resp['meanings']:
-                resp_translation = mean['translation']['text'].lower().replace('ё', 'е')
+                resp_translation = mean['translation']['text'].lower().replace(
+                    'ё', 'е')
                 word_translation = word['translate'].lower().replace('ё', 'е')
-                
+
                 if resp_translation == word_translation or \
-                    resp_translation in word_translation:
-                    image_url = mean['imageUrl'] #image_url.replace('640x480', img_size)
+                        resp_translation in word_translation:
+                    # image_url.replace('640x480', img_size)
+                    image_url = mean['imageUrl']
                     break
             else:
                 image_url = None
-            
+
             another_means = set([
                 mean['translation']['text'].lower().replace('ё', 'е')
-                for mean in resp['meanings'] 
+                for mean in resp['meanings']
                 if mean['translation']['text'].lower().replace('ё', 'е') != word['translate'].lower().replace('ё', 'е')
-                ])
+            ])
             sound_url = resp['meanings'][0]['soundUrl']
-            
+
             logger.info(resp)
         finally:
             result.append(

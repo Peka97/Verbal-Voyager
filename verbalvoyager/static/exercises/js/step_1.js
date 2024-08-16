@@ -15,6 +15,8 @@ function prev_paginator_handler(event) {
         update_paginator_by_number(new_page);
         checkAllPagesWatched();
     }
+
+    document.body.scrollIntoView({behavior: "smooth",});
 }
 
 function next_paginator_handler(event) {
@@ -32,7 +34,9 @@ function next_paginator_handler(event) {
         pages[new_page - 1].classList.add('watched');
         update_paginator_by_number(new_page);
         checkAllPagesWatched();
-    }   
+    }
+
+    document.body.scrollIntoView({behavior: "smooth",});
 }
 
 function update_paginator_by_number(number) {

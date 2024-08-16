@@ -7,7 +7,7 @@ from django.views.generic import RedirectView
 from verbalvoyager.settings import config
 from pages.views import handler_403, handler_404, handler_500
 
-
+# TODO: rename handler_\d+ to error_\d+_view
 handler403 = handler_403
 handler404 = handler_404
 handler500 = handler_500

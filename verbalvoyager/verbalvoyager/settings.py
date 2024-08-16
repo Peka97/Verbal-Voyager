@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config.SECRET_KEY
 
-DEBUG = True
+DEBUG = config.DEBUG
 
 ALLOWED_HOSTS = [
     '127.0.0.1', 'localhost', '', '::1', '158.160.153.184'
