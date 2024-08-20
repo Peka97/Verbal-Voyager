@@ -3,6 +3,7 @@ document.getElementById('page_1').classList.add('active');
 
 const prev_btn = document.getElementById('prev_btn');
 const next_btn = document.getElementById('next_btn');
+const last_page_num = [...document.getElementsByClassName('page-item')].length - 2
 
 
 export function updatePagination(event) {
@@ -26,10 +27,13 @@ export function updatePagination(event) {
     } else {
         page_li.classList.add('active')
     }
+
     if (page_num == 1) {
+        next_btn.classList.remove('disabled')
         prev_btn.classList.add('disabled')
-    } else if (page_num == 5) {
+    } else if (page_num == last_page_num) {
         next_btn.classList.add('disabled')
+        prev_btn.classList.remove('disabled')
     } else {
         prev_btn.classList.remove('disabled')
         next_btn.classList.remove('disabled')

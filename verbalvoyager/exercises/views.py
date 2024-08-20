@@ -14,7 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
-from .models import Exercise, Word, ExerciseResult, Dialog
+from .models import Word, ExerciseWords, ExerciseDialog, ExerciseResult
 
 log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ def exercises_words(request, ex_id, step):
     titles = {1: 'Запоминаем', 2: 'Выбираем', 3: 'Расставляем', 4: 'Переводим'}
     user = request.user
 
-    exercise = get_object_or_404(Exercise, pk=ex_id, student=user)
+    exercise = get_object_or_404(ExerciseWords, pk=ex_id, student=user)
 
     words_obj = list(exercise.words.all())
     words = get_words(words_obj)
@@ -61,7 +61,7 @@ def exercises_words(request, ex_id, step):
 def exercises_dialog(request, ex_id):
     user = request.user
 
-    dialog = get_object_or_404(Dialog, pk=ex_id, student=user)
+    dialog = get_object_or_404(ExerciseDialog, pk=ex_id, student=user)
     messages = list(filter(lambda s: len(s) > 1, dialog.text.split('\n')))
 
     scene = messages[0] if messages[0].startswith('Scene:') else None
@@ -82,7 +82,7 @@ def exercises_dialog(request, ex_id):
     return render(request, 'exercises/dialog.html', context)
 
 
-def get_words(words: list[Exercise]):
+def get_words(words: list[ExerciseWords]):
     result = []
 
     for idx, word in enumerate(words):
@@ -134,21 +134,21 @@ def get_translate_vars(words: list[Word], word: str):
 @login_required
 def exercises_words_update(request, ex_id, step_num):
     if request.method == 'POST':
-        logger.info(
-            f'POST REQUEST:\n Ex Words:{ex_id} | {step_num} | {json.loads(request.body)}'
-        )
-
         data = json.loads(request.body)
+
+        logger.info(
+            f'POST REQUEST:\n Ex Dialog:{ex_id} | {data}'
+        )
         value = data.get('value')
 
         obj, _ = ExerciseResult.objects.get_or_create(
-            exercise=Exercise.objects.get(pk=ex_id),
+            words=ExerciseWords.objects.get(pk=ex_id),
         )
         obj.__dict__[step_num] = value
         obj.save()
 
         if step_num[-1] == '4':
-            exercise = Exercise.objects.get(pk=ex_id)
+            exercise = ExerciseWords.objects.get(pk=ex_id)
             exercise.is_active = False
             exercise.save()
 
@@ -158,23 +158,22 @@ def exercises_words_update(request, ex_id, step_num):
 @login_required
 def exercises_dialog_update(request, ex_id):
     if request.method == 'POST':
+        data = json.loads(request.body)
+
         logger.info(
-            f'POST REQUEST:\n Ex Dialog:{ex_id} | {json.loads(request.body)}'
+            f'POST REQUEST:\n Ex Dialog:{ex_id} | {data}'
         )
 
-        data = json.loads(request.body)
         value = data.get('value')
+        obj, _ = ExerciseResult.objects.get_or_create(
+            dialog=ExerciseDialog.objects.get(pk=ex_id),
+        )
+        obj.__dict__['step_1'] = value
+        obj.save()
 
-        # obj, _ = ExerciseResult.objects.get_or_create(
-        #     exercise=Exercise.objects.get(pk=ex_id),
-        # )
-        # obj.__dict__[step_num] = value
-        # obj.save()
-
-        # if step_num[-1] == '4':
-        #     exercise = Exercise.objects.get(pk=ex_id)
-        #     exercise.is_active = False
-        #     exercise.save()
+        dialog = ExerciseDialog.objects.get(pk=ex_id)
+        dialog.is_active = False
+        dialog.save()
 
         return redirect('profile')
 

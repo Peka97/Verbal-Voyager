@@ -25,28 +25,36 @@ updateWordCheckHandlers();
 
 function updateWordCheckHandlers() {
     let curr_page = Number(Array.from(document.getElementsByClassName('page-item active'))[0].id.split('_')[1])
-    let translates = Array.from(document.getElementById(`word_${curr_page}`).children).slice(1, )
+    // let translates = Array.from(document.getElementById(`word_${curr_page}`).children).slice(1, )
+    let translates = [... document.getElementsByClassName('word__block')]
 
     translates.forEach(el => {
-        let btn = Array.from(el.children)[0];
-        let flag = Array.from(btn.classList).includes('answer');
-        btn.onclick = () => {
-            if (flag) {
-                let current_word_block = document.querySelector('div.word__block:not(.hidden)');
-                current_word_block.classList.add('watched');
+        let btns_div = [...el.children].slice(1, )
 
-                if (!checkAllWordsWatched()) {
-                    showToast('Правильно! Переходи к следующему слову.');
-                };
-            }
-            else {
-                showToast('Неверно, подумай ещё раз.');
-
-                if (points > 1) {
-                    points--;
+        btns_div.forEach(btn_div => {
+            let btn = btn_div.firstElementChild
+            
+            btn.onclick = () => {
+                if ([...btn.classList].includes('answer')) {
+                    console.log('answer')
+                    let current_word_block = document.querySelector('div.word__block:not(.hidden)');
+                    current_word_block.classList.add('watched');
+    
+                    if (!checkAllWordsWatched()) {
+                        console.log('Не все слова просмотрены')
+                        showToast('Правильно! Переходи к следующему слову.');
+                    };
                 }
-            }
-        }        
+                else {
+                    console.log('Не answer')
+                    showToast('Неверно, подумай ещё раз.');
+    
+                    if (points > 1) {
+                        points--;
+                    }
+                }
+            }        
+        })
     })
 }
 

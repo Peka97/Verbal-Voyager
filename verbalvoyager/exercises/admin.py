@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
 
-from .models import Word, Exercise, ExerciseResult, Dialog
+from .models import Word, ExerciseWords, ExerciseDialog, ExerciseResult
 from .forms import ExerciseAdminForm, DialogAdminForm
 
 
@@ -99,7 +99,7 @@ class StudentsListFilter(admin.SimpleListFilter):
                 )
 
 
-@admin.register(Exercise)
+@admin.register(ExerciseWords)
 class ExerciseAdmin(admin.ModelAdmin):
     form = ExerciseAdminForm
 
@@ -144,7 +144,7 @@ class ExerciseResultAdmin(admin.ModelAdmin):
     # search_fields = ('exercise.name')
 
 
-@admin.register(Dialog)
+@admin.register(ExerciseDialog)
 class DialogAdmin(admin.ModelAdmin):
     form = DialogAdminForm
     filter_horizontal = ('words', )

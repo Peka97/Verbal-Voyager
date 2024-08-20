@@ -214,6 +214,7 @@ body {
 
 .btn-default:hover {
   border-color: #5c71b2;
+  color: white !important;
 }
 
 .btn-default:focus {

@@ -131,5 +131,5 @@ function allWordsCorrect() {
 
     send_points('dialog', points);
     showToast('Отлично! Теперь прочитай получившийся текст и после можешь возвращаться в личный кабинет по кнопке выше.');
-    document.getElementById('done-btn').parentElement.classList.remove('hidden');
+    document.getElementById('done-btn').parentElement.parentElement.classList.remove('hidden');
 }

@@ -1,16 +1,25 @@
 export function send_points(ex_type, points) {
+    console.log('Enter')
     let token = document.getElementsByName('csrfmiddlewaretoken')[0].defaultValue;
     if (!token) {return};
-
-    let ex_id = window.location.href.split('/').slice(-2, -1)[0];
-    let step_num = window.location.href.split('/').slice(-1)[0];
+    console.log('Have token')
+    
+    let url;
     if (ex_type === 'words') {
-        let url = `https://verbal-voyager.ru/exercises/${ex_type}/update/${ex_id}/step_${step_num}`;
+        let ex_id = window.location.href.split('/').slice(-2)[0];
+        let step_num = window.location.href.split('/').slice(-1)[0];
+        url = `https://verbal-voyager.ru/exercises/${ex_type}/update/${ex_id}/step_${step_num}`;
     } else if (ex_type === 'dialog') {
-        let url = `https://verbal-voyager.ru/exercises/${ex_type}/update/${ex_id}}`;
+        let ex_id = window.location.href.split('/').slice(-1)[0];
+        console.log(ex_id);
+        url = `https://verbal-voyager.ru/exercises/${ex_type}/update/${ex_id}`;
+        console.log(url);
     } else {
+        console.log('Exit')
         return;
     }
+    console.log(url)
+
     let data = {
         method: 'POST',
         headers: {
@@ -25,9 +34,13 @@ export function send_points(ex_type, points) {
 
     fetch(url, data).then(resp => {
         if (!resp.ok) {
+            console.log('not ok')
+            console.dir(resp)
+
             return;
         }
         else {
+            console.log('ok')
             return;
         }
     }).catch (err => {
