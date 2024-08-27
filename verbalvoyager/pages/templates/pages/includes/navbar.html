@@ -13,7 +13,7 @@
           <ul class="header navbar-nav m-auto mb-lg-0">
             <li>
               <a href='{% url "" %}' class="header nav-link py-0 pe-3">
-                <img class='header logo' src="{% static 'pages/images/logo.png' %}" alt="logo">
+                <img class='header logo' src="{% static 'pages/images/logo_mini.png' %}" alt="logo">
               </a>
             </li>
             <li class="header nav-item dropdown">
@@ -58,8 +58,8 @@
           </ul>
         </div>
       {% else %}
-        <a id='auth' class="btn btn-default me-2" href="{% url 'auth' %}" role="button">Войти</a>
-        <a id='sign_up' class="btn btn-default me-2" href="{% url 'sign_up' %}" role="button">Зарегистрироваться</a>
+        <a id='auth' class="btn-default me-2" href="{% url 'auth' %}" role="button">Войти</a>
+        <a id='sign_up' class="btn-default me-2" href="{% url 'sign_up' %}" role="button">Зарегистрироваться</a>
       {% endif %}
     </div>
   </div>

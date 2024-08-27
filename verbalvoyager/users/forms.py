@@ -10,23 +10,14 @@ User = get_user_model()
 class RegistrationUserForm(UserCreationForm):
     first_name = forms.CharField(
         max_length=50,
-        widget=forms.TextInput(
-            {'class': 'form-control'}
-        ),
         label='Имя'
     )
     last_name = forms.CharField(
         max_length=50,
-        widget=forms.TextInput(
-            {'class': 'form-control'}
-        ),
         label='Фамилия'
     )
     email = forms.CharField(
         max_length=50,
-        widget=forms.TextInput(
-            {'class': 'form-control'}
-        ),
         label='Адрес электронной почты'
     )
 
@@ -45,8 +36,8 @@ class RegistrationUserForm(UserCreationForm):
         super(UserCreationForm, self).__init__(*args, **kwargs)
 
         for field in self.fields:
-            self.fields[field].widget.attrs['class'] = 'form-control'
-            self.fields[field].widget.attrs['placeholder'] = field
+            self.fields[field].widget.attrs['class'] = 'input'
+            # self.fields[field].widget.attrs['placeholder'] = field
 
 
 class CustomPasswordResetForm(PasswordResetForm):
