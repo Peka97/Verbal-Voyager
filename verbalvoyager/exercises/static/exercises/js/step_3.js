@@ -4,14 +4,14 @@ import { send_points } from './modules/send_points.js';
 
 document.getElementById('step_1').classList.add('step-complete')
 document.getElementById('step_2').classList.add('step-complete')
-const dropItems = document.getElementById('translate')
+const dropItems = document.getElementById('translates')
 new Sortable(dropItems, {
   animation: 150,
   ghostClass: 'ghost',
   chosenClass: "chosen",
   dragClass: "sortable-drag"
 });
-let points = [... document.getElementsByClassName('word')];
+let points = [... document.getElementsByClassName('word')].length;
 const toastTrigger = document.getElementById('liveToastBtn');
 
 if (toastTrigger) {
@@ -28,7 +28,7 @@ if (toastTrigger) {
 
 function checkAnswer (event) {
     let words = document.getElementById('words').children
-    let trans = document.getElementById('translate').children
+    let trans = document.getElementById('translates').children
 
     for (let i = 0; i < words.length; i++) {
         if (words[i].id.slice(-1) != trans[i].id.slice(-1)) {

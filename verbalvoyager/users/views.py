@@ -16,7 +16,7 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteVi
 
 from users.forms import RegistrationUserForm, CustomPasswordResetForm
 from exercises.models import ExerciseWords, ExerciseDialog
-from event_calendar.models import Lesson, Project
+from event_calendar.models import Lesson, Project, Course
 from event_calendar.forms import LessonForm
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
@@ -98,6 +98,7 @@ def user_logout(request):
 @login_required(login_url="/users/auth")
 def user_profile(request):
     user = request.user
+    courses = list(Course.objects.all())
 
     if user.is_teacher():
         context = {
@@ -115,8 +116,6 @@ def user_profile(request):
         context['events'] = lessons
         context['events_count_total'] = len(lessons)
         context['calendar'] = calendar
-
-        return render(request, 'users/profile.html', context)
     else:
         context = {
             'user_is_teacher': False,
@@ -144,7 +143,8 @@ def user_profile(request):
             [lesson for lesson in lessons if lesson.status == 'D'])
         context['calendar'] = calendar
 
-        return render(request, 'users/profile.html', context)
+    context['courses'] = courses
+    return render(request, 'users/profile.html', context)
 
 
 def get_calendar(lessons: list[dict], tzname='Europe/Saratov'):
@@ -202,8 +202,12 @@ def get_projects(user: User):
 
 class CustomPasswordResetView(PasswordResetView):
     form_class = CustomPasswordResetForm
-    template_name = 'users/password_reset_form.html'
-    success_url = ''
+    from_email = 'verbal-voyager@gmail.com'
+    extra_email_context = {
+        'site_name': 'Verbal Voyager',
+        'domain': 'verbal-voyager.ru',
+        'protocol': 'https'
+    }
 
 
 class CustomPasswordResetCompleteView(PasswordResetCompleteView):

@@ -1,43 +1,3 @@
-:root {
-    --color-white-warm: #EDE2D1;
-
-    --color-brown: #A25E1B;
-    --color-brown-pale: #D08F4E;
-    --color-brown-paler: #D1A071;
-    --color-creme: #eec8a5;
-    --color-brown-dark: #693909;
-    --color-brown-darker: #371805;
-
-    /* Exersices */
-    /* --color-ex-violet-main: #8106A9;
-    --color-ex-violet-dark: #68237F;
-    --color-ex-violet-darker: #54026E;
-    --color-ex-violet-pale: #AF3BD4;
-    --color-ex-violet-paler: #B964D4;
-    --color-ex-violet-max-pale: #D9A6EA; */
-    
-    --color-violet-pastel-main: #A17DD0;
-    --color-violet-pastel-dark: #816D9C;
-    --color-violet-pastel-darker: #512987;
-    --color-violet-pastel-pale: #C0A2E8;
-    --color-violet-pastel-paler: #CBB5E8;
-    --color-violet-pastel-max-pale: #E3D6F3;
-
-    --color-pink-pastel-main: #CC73CC;
-    --color-pink-pastel-dark: #996799;
-    --color-pink-pastel-darker: #852585;
-    --color-pink-pastel-pale: #E59AE5;
-    --color-pink-pastel-paler: #E5AEE5;
-    --color-pink-pastel-max-pale: #F2D2F2;
-
-    --color-blue-pastel-main: #8585D3;
-    --color-blue-pastel-dark: #72729E;
-    --color-blue-pastel-darker: #2B2B89;
-    --color-blue-pastel-pale: #A8A8E9;
-    --color-blue-pastel-paler: #BABAE9;
-    --color-blue-pastel-max-pale: #D9D9F4;
-}
-
 body {
     max-height: 100vh;
     max-width: 100vw;
@@ -50,11 +10,6 @@ body {
     background-image: url('../../pages/images/top_banner_space_full.png');
     background-repeat: no-repeat;
     background-size: cover;
-}
-
-a {
-    color: white;
-    text-decoration: none;
 }
 
 .container {
@@ -161,7 +116,8 @@ ul.errorlist {
    
    
    .input {
-    font-size: calc(.6rem + 1vw);
+    margin-top: 2rem;
+    font-size: 1rem;
     display: block;
     border: none;
     border-bottom: .1rem white solid;
@@ -188,7 +144,6 @@ ul.errorlist {
    
    label {
     color: white;
-    font-size: 1rem;
     font-weight: normal;
     position: absolute;
     pointer-events: none;
@@ -209,7 +164,7 @@ ul.errorlist {
 
     ~ label {
         top: -0.4rem;
-        font-size: .8rem;
+        font-size: 1rem;
         color: var(--amber-a400);
     }
    }
@@ -235,10 +190,12 @@ ul.errorlist {
    
    .bar:before {
     left: 50%;
+    margin-top: 2rem;
    }
    
    .bar:after {
     right: 50%;
+    margin-top: 2rem;
    }
    
    .input:focus ~ .bar:before, .input:focus ~ .bar:after {
@@ -305,7 +262,7 @@ ul.errorlist {
     position: absolute;
     z-index: -1;
     height: 20rem;
-    width: 35rem;
+    width: 40rem;
 
     background: var(--indigo-500);
     border-radius: 50%;
@@ -640,11 +597,20 @@ ul.errorlist {
     .auth-wrap, .sign-up-wrap, .btn-container > button {
         font-size: calc(.6rem + 1vw);
     }
+
 }
 @media (max-width: 426px) {
     .container {
         width: 90vw;
         height: 90vh;
+    }
+
+    input {
+      font-size: 1.2rem;
+    }
+
+    label {
+      font-size: 1.5rem;
     }
 }
 @media (max-width: 320px) {

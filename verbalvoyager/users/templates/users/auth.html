@@ -1,6 +1,6 @@
 {% load static %}
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -72,6 +72,9 @@
                                     <label>Пароль</label>
                                 </div>
                             </div>
+                            <a href="{% url 'reset_password' %}">
+                                Забыли пароль?
+                            </a>
                         </div>
                         <div class="row btn-container">
                             <button class="btn btn-lg btn-default" type="auth">Войти</button>

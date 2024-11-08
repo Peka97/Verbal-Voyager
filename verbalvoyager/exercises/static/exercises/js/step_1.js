@@ -9,15 +9,11 @@ pagination.forEach(el => {
         checkAllWordsWatched(event);
     };
 });
+
+let allWordsWatched = false;
 let words = [...document.getElementsByClassName('word__block')];
 let points = words.length;
 words[0].classList.add('watched');
-
-// Код для подсказок рядом с названием шага упражнения.
-// let popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-// let popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-//     return new bootstrap.Popover(popoverTriggerEl);
-// });
 
 function checkAllWordsWatched (event) {
     let current_word_block = document.querySelector('div.word__block:not(.hidden)');
@@ -28,8 +24,24 @@ function checkAllWordsWatched (event) {
             return false;
         }
     }
-    showToast('Запомнил слова? Тогда переходи к следующему шагу!');
-    send_points('words', points);
-    toNextStep(1);
+    if (!allWordsWatched) {
+        showToast('Запомнил слова? Тогда переходи к следующему шагу!');
+        send_points('words', points);
+        toNextStep(1);
+        allWordsWatched = true;
+    }
+    
     return true;
 }
+
+const allAudio = [...document.getElementsByClassName('sound__wrap')];
+allAudio.forEach(block => {
+    block.firstElementChild.addEventListener('click', (e) => {
+        let audio = block.lastElementChild;
+        if (audio.paused) {
+            audio.play();
+        } else {
+            audio.pause();
+        }
+    });
+});

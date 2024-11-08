@@ -35,4 +35,7 @@ class User(AbstractUser):
         return self.objects.filter(groups__name__in=['Student'])
     
     def __str__(self):
-        return f'{self.last_name} {self.first_name}'
+        if self.last_name and self.first_name:
+            return f'{self.last_name} {self.first_name}'
+        
+        return self.username

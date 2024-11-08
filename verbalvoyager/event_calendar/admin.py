@@ -107,6 +107,14 @@ class LessonAdmin(admin.ModelAdmin):
     ]
     actions = ['set_pay', 'set_not_pay', 'set_done', 'set_miss', 'set_cancel']
     save_as = True
+    
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(LessonAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['teacher'].initial = request.user
+        form.base_fields['teacher'].queryset = User.objects.filter(groups__name__in=['Teacher'])
+        form.base_fields['students'].queryset = User.objects.filter(groups__name__in=['Student'])
+        
+        return form
 
     @admin.action(description='Изменить статус на "Оплачено"')
     def set_pay(self, request, queryset):
@@ -143,7 +151,7 @@ class LessonAdmin(admin.ModelAdmin):
 class ProjectAdmin(admin.ModelAdmin):
     form = ProjectAdminForm
 
-    filter_horizontal = ('students', )
+    filter_horizontal = ('students', 'type')
     list_display = ('is_active', 'project', 'course',
                     'teacher', 'from_date', 'to_date')
     list_display_links = ('project', )
@@ -154,6 +162,14 @@ class ProjectAdmin(admin.ModelAdmin):
     actions = ['create_lessons', ]
 
     save_as = True
+    
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(ProjectAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['teacher'].initial = request.user
+        form.base_fields['teacher'].queryset = User.objects.filter(groups__name__in=['Teacher'])
+        form.base_fields['students'].queryset = User.objects.filter(groups__name__in=['Student'])
+        
+        return form
 
     @admin.action(description='Распланировать занятия')
     def create_lessons(self, request, queryset):
@@ -222,7 +238,11 @@ class ProjectAdmin(admin.ModelAdmin):
                 else:
                     lesson = new_lesson
 
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('get_created_at', 'from_user', 'course', 'text')
+
 
 admin.site.register(Course)
-admin.site.register(Review)
+# admin.site.register(Review)
 admin.site.register(ProjectType)

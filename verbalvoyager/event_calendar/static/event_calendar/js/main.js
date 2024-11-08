@@ -248,7 +248,7 @@ function show_events(day, month, year) {
         }
         )
         empty_card.classList.remove('hidden');
-        $(empty_card).css({ "border-left": "10px solid #FF1744" });
+        // $(empty_card).css({ "border-left": "10px solid #FF1744" });
 
         // Go through and add each event as a card to the events container
         

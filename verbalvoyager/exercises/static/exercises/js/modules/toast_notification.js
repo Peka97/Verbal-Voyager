@@ -1,6 +1,6 @@
 
 export function showToast (text) {
-    const toastDelay = 10000
+    const toastDelay = 5000
     const favicon = document.getElementById('favicon');
     // let toastLiveExample = document.getElementById('liveToast');
     // toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '15000';

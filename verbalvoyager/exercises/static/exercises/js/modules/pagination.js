@@ -1,4 +1,4 @@
-export let pagination = [...document.getElementsByClassName('pagination')];
+export let pagination = [...document.querySelector('ul.pagination').children];
 document.getElementById('page_1').classList.add('active');
 
 const prev_btn = document.getElementById('prev_btn');
@@ -7,6 +7,8 @@ const last_page_num = [...document.getElementsByClassName('page-item')].length -
 
 
 export function updatePagination(event) {
+    if (event.target.classList.contains('disabled')) {return false};
+    
     let current_word_block = document.querySelector('div.word__block:not(.hidden)');
     let page_li = event.target.parentElement;
     let page_num = page_li.id.slice(page_li.id.indexOf('_') + 1);
@@ -38,10 +40,9 @@ export function updatePagination(event) {
         prev_btn.classList.remove('disabled')
         next_btn.classList.remove('disabled')
     }
-    
+
     let new_page = document.getElementById(`word_${page_num}`)
     if (new_page) {
-        let current_word_block = document.querySelector('div.word__block:not(.hidden)');
         current_word_block.classList.add('hidden')
         new_page.classList.remove('hidden')
     }    

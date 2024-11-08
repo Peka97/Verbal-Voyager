@@ -10,4 +10,5 @@ export function toNextStep(current_step) {
 
     document.getElementById(`step_${current_step + 1}`).children[1].classList.remove('disabled'); // stars
     document.getElementById(`step_${current_step + 1}`).children[2].classList.remove('disabled'); // glow
+    console.dir(document.getElementById(`step_${current_step + 1}`).children[1]);
 }

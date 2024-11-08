@@ -1,21 +1,29 @@
-<div class="notifications col">
-    <h4 class="notification-title text-center py-3">Уведомления</h4>
+<div class="col notifications">
+    <h4 class="notification-title">Уведомления</h4>
+    {% if not exercises and not dialog %}
+        <div class="row notification">
+            <p class='notification-text'>
+                Новых уведомлений пока что нет
+            </p>
+        </div>
+    {% endif %}
+
     {% if exercises %}
         {% for ex in exercises %}
-        <div class="row notification notification-exercise p-3">
-            <p class='text-start my-auto'>
-                Новое упражнение - 
-                <a href={% url "exercises_words" ex_id=ex.pk step=1 %} class="ex_name"> {{ ex.name }} </a>
+        <div class="row notification">
+            <p class='notification-text'>
+                <i class="bi bi-bell-fill"></i> Новое упражнение:
+                <a href={% url "exercises_words" ex_id=ex.pk step=1 %} class="ex_name"><i class="bi bi-file-earmark-word"></i> {{ ex.name }}</a>
             </p>
         </div>
         {% endfor %}
     {% endif %}
     {% if dialogs %}
         {% for dialog in dialogs %}
-        <div class="row notification notification-exercise p-3">
-            <p class='text-start my-auto'>
-                Новый диалог - 
-                <a href={% url "exercises_dialog" ex_id=dialog.pk %} class="ex_name"> {{ dialog.name }} </a>
+        <div class="row notification">
+            <p class='notification-text'>
+                <i class="bi bi-bell-fill"></i> Новое упражнение:
+                <a href={% url "exercises_dialog" ex_id=dialog.pk %} class="ex_name"><i class="bi bi-chat-left-text"></i> {{ dialog.name }}</a>
             </p>
         </div>
         {% endfor %}

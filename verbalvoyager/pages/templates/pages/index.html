@@ -10,25 +10,25 @@
   <!-- Preview  -->
   <div class="text-body-emphasis preview-container">
     <div class="row">
-      <div class="banner-col col-5">
-        <img src="{% static "pages/images/top_banner_Liza.png" %}" class="banner img-fluid" alt="Photo">
+      <div class="banner-col col">
+        <img src="{% static "pages/images/top_banner_Liza_low_crop.png" %}" class="banner img-fluid" alt="Photo">
       </div>
-      <div class="text-col col-5">
+      <div class="text-col col">
         <div class="preview-header">
           <p>Взлетай к новым вершинам языкового мастерства!</p>
         </div>
         <div class="preview-text">
           <p>Забудь о границах - исследуй бескрайние просторы языков с нашими интерактивными курсами. Мы создали увлекательные упражнения, которые помогут тебе овладеть языком, как космонавт осваивает тайны космоса. Готовься к встрече с новыми культурами и покоряй новые языковые территории!</p>
-          <a class="btn-default" href="{% url 'portfolio' %}" role="button" aria-disabled="true">Подробнее</a>
+          <a class="btn-default" href="{% url 'contacts' %}" role="button" aria-disabled="true">Подробнее</a>
         </div>
       </div>
     </div>
   </div>
 
-  <div class='container'>
-    <!-- Caruosel -->
-    {% include 'pages/includes/carousel.html' %}
+  <!-- Caruosel -->
+  {% include 'pages/includes/carousel.html' %}
 
+  <div class='container'>
     <!-- Cards -->
     <div class="album py-2">
       <div class='container py-2'>

@@ -101,9 +101,9 @@ class StudentsListFilter(admin.SimpleListFilter):
 
 @admin.register(ExerciseWords)
 class ExerciseAdmin(admin.ModelAdmin):
-    form = ExerciseAdminForm
-
     filter_horizontal = ('words', )
+    search_fields = ('teacher__username', )
+    autocomplete_fields = ('student', )
     list_display = (
         'pk', 'name', 'is_active', 'student', 'teacher', 'get_words'
     )
@@ -113,7 +113,6 @@ class ExerciseAdmin(admin.ModelAdmin):
         StudentsListFilter,
         'is_active'
     ]
-    search_fields = ('teacher__username', )
     save_as = True
     actions = ['make_active', 'make_inactive']
 
@@ -124,6 +123,14 @@ class ExerciseAdmin(admin.ModelAdmin):
     @admin.action(description='Деактивировать')
     def make_inactive(self, request, queryset):
         queryset.update(is_active=False)
+        
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(ExerciseAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['teacher'].initial = request.user
+        form.base_fields['teacher'].queryset = User.objects.filter(groups__name__in=['Teacher'])
+        form.base_fields['student'].queryset = User.objects.filter(groups__name__in=['Student'])
+        
+        return form
 
 
 @admin.register(Word)
@@ -141,12 +148,14 @@ class ExerciseResultAdmin(admin.ModelAdmin):
         TeachersListFilter,
         StudentsListFilter,
     ]
-    # search_fields = ('exercise.name')
 
 
 @admin.register(ExerciseDialog)
 class DialogAdmin(admin.ModelAdmin):
     form = DialogAdminForm
+    search_fields = ['student', ]
+    autocomplete_fields = ('student', )
+
     filter_horizontal = ('words', )
     list_display = (
         'pk', 'name', 'is_active', 'student', 'teacher',
@@ -157,6 +166,14 @@ class DialogAdmin(admin.ModelAdmin):
         StudentsListFilter,
         'is_active'
     ]
+    
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(DialogAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['teacher'].initial = request.user
+        form.base_fields['teacher'].queryset = User.objects.filter(groups__name__in=['Teacher'])
+        form.base_fields['student'].queryset = User.objects.filter(groups__name__in=['Student'])
+        
+        return form
 
     def clean(self):
         cleaned_data = super(DialogAdminForm, self).clean()

@@ -1,13 +1,13 @@
 
-<div class="row justify-content-center">
-	<div class="col text-center">
+<div class="row calendar-heading">
+	<div class="col">
 		<h2 class="heading-section profile__title">Календарь</h2>
 	</div>
 </div>
-<div class="row row-cols-2">
+<div class="row row-cols-2 calendar-wrap">
 	<div class="col-12 col-xl-9 calendar-col">
-			<div class="content calendar-container calendar-content">
-				<div class="calendar mx-auto"> 
+			<div class="content calendar-container">
+				<div class="calendar"> 
 					<div class="year-header"> 
 						<span class="left-button fa fa-chevron-left" id="prev"> </span> 
 						<span class="year" id="label"></span> 
@@ -53,7 +53,7 @@
 				</div>
 			</div>
 	<!-- Events -->
-	<div class="events-container px-3">
+	<div class="events-container">
 		{% comment %} <div class="dialog" id="dialog">
 			<h2 class="dialog-header"> Новое событие </h2>
 			<form class="form" id="form" action="{% url "add_event"%}" method="post">
