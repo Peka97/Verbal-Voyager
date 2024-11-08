@@ -168,8 +168,8 @@ body::after {
         font-size: 1.2rem;
     }
 
-    .preview-container > .row {
-        /* align-items: center; */
+    .preview-container {
+        height: 80vh !important;
     }
 
     .banner-col {

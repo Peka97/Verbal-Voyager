@@ -93,7 +93,7 @@ body>.words__container {
             }
 
             .word_input__block {
-                max-width: 40vw;
+                max-width: 80vw;
                 margin: auto;
 
                 input {
@@ -196,6 +196,10 @@ body>.words__container {
     .bi.bi-rocket-takeoff::before {
         line-height: 1.5em !important;
     }
+    
+    .page-item:not(#prev_btn, #next_btn) {
+        display: none !important;
+      }
 }
 
 @media (max-width: 321px) {

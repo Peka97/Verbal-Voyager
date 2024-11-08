@@ -1,5 +1,6 @@
 body {
   background-color: #20365e;
+  margin: 0 1rem;
 }
 
 .toast-container {
@@ -26,7 +27,7 @@ body {
   div.wrapper {
     font-size: 100%;
     background-color: #161c2a;
-    border-radius: 5%;
+    border-radius: 2rem;
     padding: 2rem 0rem;
   }
   
@@ -39,7 +40,7 @@ body {
   }
   
   .wrapper {
-    margin-top: 100px;
+    margin-top: 10vh;
   }
   
   .wrapper ul.message__list {
@@ -147,7 +148,7 @@ body {
 }
 
 .scene-container {
-  padding: 1rem 0rem;
+  padding: 1rem;
 }
 
 .scene-text {
@@ -160,11 +161,11 @@ body {
 }
 
 .message-container:nth-child(odd) {
-  padding-left: 10rem;
+  padding-left: 10vw;
 }
 
 .message-container:nth-child(even) {
-  padding-right: 10rem;
+  padding-right: 10vw;
 }
 
 .text-container {
@@ -235,4 +236,20 @@ body {
 .btn-default:active:before {
   background: #20365e;
   transition: background 0s;
+}
+
+.message-row {
+  .avatar-container {
+    margin: .5rem;
+    padding: 0 !important;
+    max-width: fit-content;
+  }
+
+  .text-container {
+    max-width: 80vw !important;
+  }
+}
+
+#done-btn {
+  max-width: fit-content;
 }
