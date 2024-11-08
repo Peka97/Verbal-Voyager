@@ -49,6 +49,7 @@ class ExerciseAdminForm(forms.ModelForm):
 class DialogAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(DialogAdminForm, self).__init__(*args, **kwargs)
+        logger.error(self.fields)
         self.fields['teacher'].queryset = User.objects.filter(
             groups__name__in=['Teacher'])
         self.fields['teacher'].initial = User.objects.get(

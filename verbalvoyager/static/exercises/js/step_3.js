@@ -11,7 +11,7 @@ new Sortable(dropItems, {
   chosenClass: "chosen",
   dragClass: "sortable-drag"
 });
-let points = [... document.getElementsByClassName('word')];
+let points = [... document.getElementsByClassName('word')].length;
 const toastTrigger = document.getElementById('liveToastBtn');
 
 if (toastTrigger) {

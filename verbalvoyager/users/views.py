@@ -185,8 +185,12 @@ def get_projects(user: User):
 
 class CustomPasswordResetView(PasswordResetView):
     form_class = CustomPasswordResetForm
-    template_name = 'users/password_reset_form.html'
-    success_url = ''
+    from_email = 'verbal-voyager@gmail.com'
+    extra_email_context = {
+        'site_name': 'Verbal Voyager',
+        'domain': 'verbal-voyager.ru',
+        'protocol': 'https'
+    }
 
 
 class CustomPasswordResetCompleteView(PasswordResetCompleteView):

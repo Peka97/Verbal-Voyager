@@ -136,7 +136,7 @@ def exercises_words_update(request, ex_id, step_num):
     if request.method == 'POST':
         data = json.loads(request.body)
 
-        logger.info(
+        logger.error(
             f'POST REQUEST:\n Ex Dialog:{ex_id} | {data}'
         )
         value = data.get('value')
