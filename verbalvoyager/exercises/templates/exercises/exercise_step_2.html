@@ -3,24 +3,27 @@
 
 {% block 'title' %} Exercise | Step {{step}}{% endblock  %}
 {% block 'style' %}
-    <link rel="stylesheet" href="{% static 'exercises/css/exercise.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/step_base.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/step_2.css' %}">
 {% endblock  %}
 
 {% block 'words' %}
 
     <!-- Words -->
     {% for word in words %}
-        <div id='word_{{word.id}}' class="row row-cols-1 justify-content-center word-check word__block {% if word.id != 1 %}hidden{% endif %}">
+        <div id='word_{{word.id}}' class="row row-cols-1 justify-content-center word-check word__block {% if word.id != 1 %}hidden{% endif %} hidden-anim">
             <div class="col">
-                <p class="text text-center word-main">{{ word.word }}</p>
+                <p class="text text-center word__main">{{ word.word }}</p>
             </div>
-            {% for var in word.translate_vars %}
-                <div class="col text-center pb-1">
-                    <button type=button class='btn btn-default word-variant text-black {% if word.translate == var %} answer {% endif %}'>
-                        {{ var }}
-                    </button>
-                </div>
-            {% endfor %}
+            <div class="translate__list"> 
+                {% for var in word.translate_vars %}
+                    <div class="col text-center word__variant__wrap">
+                        <button type=button class='btn btn-default word__variant {% if word.translate == var %} answer {% endif %}'>
+                            <p>{{ var }}</p>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     {% endfor %}
 

@@ -9,11 +9,11 @@
           <i id="list-nav-toggler" class="bi bi-list"></i>
           <i id="chevron-nav-toggler" class="bi bi-chevron-down hidden"></i>
         </button>        
-        <div class="collapse navbar-collapse my-2" id="navbarSupportedContent">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="header navbar-nav m-auto mb-lg-0">
-            <li>
-              <a href='{% url "" %}' class="header nav-link py-0 pe-3">
-                <img class='header logo' src="{% static 'pages/images/logo.png' %}" alt="logo">
+            <li class="logo">
+              <a href='{% url "" %}' class="header nav-link">
+                <img class='header logo' src="{% static 'pages/images/logo_mini.png' %}" alt="logo">
               </a>
             </li>
             <li class="header nav-item dropdown">
@@ -22,7 +22,9 @@
               </a>
               <ul class="header dropdown-menu">
                 {% for course in courses %}
-                  <li><a class="header dropdown-item" href="{% url 'english' %}">{{ course.name }}</a></li>
+                  <li>
+                    <a class="header dropdown-item" href="{% url 'english' %}">{{ course.name }}</a>
+                  </li>
                 {% endfor %}
               </ul>
             </li>
@@ -34,18 +36,18 @@
         </div>
       </div>
     </div>
-    <div id="user_panel" class="navbar align-self-start">
+    <div id="user_panel" class="navbar">
       {% if user.is_authenticated %}
-        <div class="dropdown pt-2">
+        <div class="dropdown">
           <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <span class='px-2 text-light'>
+            <span class='username'>
               {% if user.first_name %}
                 {{ user.last_name }} {{ user.first_name }}
               {% else %}
                 {{ user.username}}
               {% endif %}
             </span>
-            <img class='avatar rounded-circle' src="{% static "users/images/default_avatar.png" %}" width="32" height="32" alt="User photo">
+            <img class='avatar rounded-circle' src="{% static "users/images/default_avatar.png" %}" alt="User photo">
           </a>
           <ul class="header dropdown-menu dropdown-menu-end text-small shadow" style="">
             <li><a class="header dropdown-item" href="{% url 'profile' %}">Профиль</a></li>
@@ -58,8 +60,8 @@
           </ul>
         </div>
       {% else %}
-        <a id='auth' class="btn btn-default me-2" href="{% url 'auth' %}" role="button">Войти</a>
-        <a id='sign_up' class="btn btn-default me-2" href="{% url 'sign_up' %}" role="button">Зарегистрироваться</a>
+        <a id='auth' class="btn-default me-2" href="{% url 'auth' %}" role="button">Войти</a>
+        <a id='sign_up' class="btn-default me-2" href="{% url 'sign_up' %}" role="button">Зарегистрироваться</a>
       {% endif %}
     </div>
   </div>

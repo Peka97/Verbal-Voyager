@@ -16,7 +16,7 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteVi
 
 from users.forms import RegistrationUserForm, CustomPasswordResetForm
 from exercises.models import ExerciseWords, ExerciseDialog
-from event_calendar.models import Lesson, Project
+from event_calendar.models import Lesson, Project, Course
 from event_calendar.forms import LessonForm
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
@@ -31,25 +31,42 @@ User = get_user_model()
 
 
 def user_auth(request, **kwargs):
-    context = {}
+    context = {
+        'form': RegistrationUserForm(),
+        'auth_show': True
+    }
 
     next = request.GET.get('next')
 
     if request.POST:
-        username = request.POST.get('login')
-        password = request.POST.get('password')
+        
+        # Регистрация
+        if request.POST.get('username'):
+            form = RegistrationUserForm(request.POST)
+            
+            if form.is_valid():
+                user = form.save(commit=False)
+                user.save()
+                
+                login(request, user)
+                return redirect('')
+            else:
+                context['form'] = form
+                context['auth_show'] = False
+        
+        # Авторизация
+        elif request.POST.get('login'):
+            username = request.POST.get('login')
+            password = request.POST.get('password')
 
-        user = authenticate(request, username=username, password=password)
+            user = authenticate(request, username=username, password=password)
 
-        if user and next:
-            login(request, user)
-            return redirect(next)
-        elif user:
-            login(request, user)
-            return redirect('')
-        else:
-            context = {'error': 'Неправильный логин или пароль'}
-
+            if user:
+                login(request, user)
+                return redirect(next) if next else redirect('')
+            else:
+                context['auth_error'] = 'Неправильное имя пользователя или пароль'
+        
     return render(request, 'users/auth.html', context)
 
 
@@ -81,6 +98,7 @@ def user_logout(request):
 @login_required(login_url="/users/auth")
 def user_profile(request):
     user = request.user
+    courses = list(Course.objects.all())
 
     if user.is_teacher():
         context = {
@@ -98,8 +116,6 @@ def user_profile(request):
         context['events'] = lessons
         context['events_count_total'] = len(lessons)
         context['calendar'] = calendar
-
-        return render(request, 'users/profile.html', context)
     else:
         context = {
             'user_is_teacher': False,
@@ -127,7 +143,8 @@ def user_profile(request):
             [lesson for lesson in lessons if lesson.status == 'D'])
         context['calendar'] = calendar
 
-        return render(request, 'users/profile.html', context)
+    context['courses'] = courses
+    return render(request, 'users/profile.html', context)
 
 
 def get_calendar(lessons: list[dict], tzname='Europe/Saratov'):

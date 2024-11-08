@@ -7,32 +7,28 @@
 {% endblock  %}
 
 {% block content %}
-  <div class='container'>
-
-    <!-- Preview  -->
-    <div class='container mt-5'>
-      <div class="text-body-emphasis preview-container">
-        <div class="row row-cols-2 row-cols-sm-1 justify-content-center">
-          <div class='col-8 col-sm-8 col-md-4 col-xl-4 pt-2 align-self-end'>
-            <img src="{% static 'pages/images/main_photo.png' %}" width='300' class="img-fluid w-auto" alt='Photo'>
-          </div>
-          <div class="col-12 col-sm-12 col-md-8 col-xl-6 align-self-center preview-text">
-            <div class="preview-header p-2">
-              <h1 class="preview-header-text-main display-5 text-end text-uppercase">Здравствуйте</h1>
-              <h5 class="preview-header-text-secondary text-end">Я - преподаватель иностранных языков</h5>
-            </div>
-            <div class="px-3">
-              <p class="lead my-3">Открыть новые возможности для коммуникации, обогатить знания о других культурах, помочь лучше понять наш мир - всё это и не только помогает изучение нового для вас языка!</p>
-              <a class="btn btn-default mb-5 text-end disabled" href="{% url 'portfolio' %}" role="button" aria-disabled="true">Подробнее</a>
-            </div>
-          </div>
-        </div> 
+  <!-- Preview  -->
+  <div class="text-body-emphasis preview-container">
+    <div class="row">
+      <div class="banner-col col">
+        <img src="{% static "pages/images/top_banner_Liza_low_crop.png" %}" class="banner img-fluid" alt="Photo">
+      </div>
+      <div class="text-col col">
+        <div class="preview-header">
+          <p>Взлетай к новым вершинам языкового мастерства!</p>
+        </div>
+        <div class="preview-text">
+          <p>Забудь о границах - исследуй бескрайние просторы языков с нашими интерактивными курсами. Мы создали увлекательные упражнения, которые помогут тебе овладеть языком, как космонавт осваивает тайны космоса. Готовься к встрече с новыми культурами и покоряй новые языковые территории!</p>
+          <a class="btn-default" href="{% url 'contacts' %}" role="button" aria-disabled="true">Подробнее</a>
+        </div>
       </div>
     </div>
-    
-    <!-- Caruosel -->
-    {% include 'pages/includes/carousel.html' %}
+  </div>
 
+  <!-- Caruosel -->
+  {% include 'pages/includes/carousel.html' %}
+
+  <div class='container'>
     <!-- Cards -->
     <div class="album py-2">
       <div class='container py-2'>
@@ -46,7 +42,7 @@
               </div>
               <div class="card-footer d-flex justify-content-between align-items-center">
                 <span>95 учеников</span>
-                <a class="btn btn-default disabled" href="{% url 'english' %}" role="button" aria-disabled="true">Записаться</a>
+                <a class="btn-default disabled" href="{% url 'english' %}" role="button" aria-disabled="true">Записаться</a>
               </div>
             </div>
           </div>
@@ -59,7 +55,7 @@
               </div>
               <div class="card-footer d-flex justify-content-between align-items-center">
                 <span>66 учеников</span>
-                <a class="btn btn-default disabled" href="{% url 'french' %}" role="button" aria-disabled="true">Записаться</a>
+                <a class="btn-default disabled" href="{% url 'french' %}" role="button" aria-disabled="true">Записаться</a>
               </div>
             </div>
           </div>
@@ -72,7 +68,7 @@
               </div>
               <div class="card-footer d-flex justify-content-between align-items-center">
                 <span>30 учеников</span>
-                <a class="btn btn-default disabled" href="{% url 'spanish' %}" role="button" aria-disabled="true">Записаться</a>
+                <a class="btn-default disabled" href="{% url 'spanish' %}" role="button" aria-disabled="true">Записаться</a>
               </div>
             </div>
           </div>
@@ -91,7 +87,7 @@
               <h3 class="mb-0">Featured post</h3>
               <div class="mb-1 text-body-secondary blog-date">Nov 12</div>
               <p class="card-text mb-auto">{% lorem 1 b random %}</p>
-              <a class="blog-link btn btn-default" href="#" role="button">Перейти к статье</a>
+              <a class="blog-link btn-default" href="#" role="button">Перейти к статье</a>
             </div>
             <div class="col-auto p-4 d-none d-lg-block m-auto">
               <img src="http://placehold.it/400x500/2c3e50/3498db&text=No Photo" class="bd-placeholder-img" width="200" height="250" alt="Third Slide Image">
@@ -105,7 +101,7 @@
               <h3 class="mb-0">Featured post</h3>
               <div class="mb-1 text-body-secondary blog-date">Nov 12</div>
               <p class="card-text mb-auto">{% lorem 1 b random %}</p>
-              <a class="blog-link btn btn-default" href="#" role="button">Перейти к статье</a>
+              <a class="blog-link btn-default" href="#" role="button">Перейти к статье</a>
             </div>
             <div class="col-auto p-4 d-none d-lg-block m-auto">
               <img src="http://placehold.it/400x500/2c3e50/3498db&text=No Photo" class="blog-link bd-placeholder-img" width="200" height="250" alt="Third Slide Image">
@@ -118,14 +114,14 @@
     <!-- Reviews -->
     <div class="container reviews-container my-4">
       {% if reviews %}
-        <h2 class="featurette-heading py-3 fw-normal lh-1 text-center">Ваши отзывы</h2>
+        <h2 class="featurette-heading py-3 fw-normal lh-1 text-center text-white">Ваши отзывы</h2>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 px-1">
           {% for review in reviews %}
             <div class="review-card-not-even px-2 mb-3 col-xl-4 col-md-12">
               <div class="d-flex flex-column">
                 <div class="d-flex flex-column p-4 pb-0 h-100 align-items-center justify-content-center review-card">
                   <img class='avatar rounded-circle' src="{% static "users/images/default_avatar.png" %}" width="140" height="140" alt="User photo">
-                    <h2 class="fw-normal">{{ review.from_user__first_name }}</h2>
+                    <h2 class="fw-normal review__title">{{ review.from_user__first_name }}</h2>
                     <small class="text-body-secondary">{{review.course__name}}</small>
                     <small class="text-body-secondary">{{review.created_at}}</small>
                   <hr class='review-hr w-100'>

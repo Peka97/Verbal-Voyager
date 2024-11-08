@@ -13,11 +13,14 @@ pagination.forEach(el => {
 function checkAnswer() {
     let curr_page = Number(Array.from(document.getElementsByClassName('page-item active'))[0].id.split('_')[1]);
     let word = document.getElementById(`word_${curr_page}`);
-    let user_input = String(word.children[1].children[0].value).toLowerCase();
-    let translate = String(word.children[1].children[0].id).toLowerCase();
+    let input_el = word.children[1].children[0]
+    let user_input = String(input_el.value).toLowerCase();
+    let translate = String(input_el.id).toLowerCase();
 
     if (user_input == translate) {
         check_words[word.id] = true;
+        input_el.classList.add('correct');
+        input_el.classList.remove('wrong');
  
         if (!checkAllAnswersTrue()) {
             showToast('Правильно! Переходи к следующему слову.');
@@ -25,6 +28,9 @@ function checkAnswer() {
     }
     else {
         showToast('Неправильно, подумай ещё раз.');
+        input_el.classList.remove('correct');
+        input_el.classList.add('wrong');
+
         if (points > 1) {
             points--;
         }

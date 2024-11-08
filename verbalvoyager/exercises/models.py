@@ -8,9 +8,16 @@ User = get_user_model()
 
 
 class Word(models.Model):
-    word = models.CharField(max_length=50)
-    translate = models.CharField(max_length=255)
+    word = models.CharField(
+        verbose_name='Слово в оригинале',
+        max_length=50
+        )
+    translate = models.CharField(
+        verbose_name='Перевод на русский',
+        max_length=255
+        )
     lang = models.CharField(
+        verbose_name='Язык оригинала',
         max_length=10,
         default='eng',
         choices=[
@@ -19,14 +26,21 @@ class Word(models.Model):
             ('sp', 'Spanish')
         ]
     )
-    sentences = models.TextField(max_length=500, null=True, blank=True)
+    sentences = models.TextField(
+        verbose_name='Примеры употребления',
+        max_length=500, 
+        null=True, 
+        blank=True,
+        help_text='Напишите одно и или несколько предложений, разделяя их переносом строки.'
+        )
 
     def __str__(self) -> str:
         return f'{self.lang} | {self.word} ({self.translate})'
 
     class Meta:
-        verbose_name = 'База слов'
-        verbose_name_plural = 'База слов'
+        verbose_name = 'Слово'
+        verbose_name_plural = 'Слова'
+        ordering = ['word']
 
 
 class ExerciseWords(models.Model):
@@ -49,10 +63,6 @@ class ExerciseWords(models.Model):
     get_words.allow_tags = True
     get_words.short_description = 'Упражнение "Слова"'
 
-    # def get_teachers(self):
-    #     teachers = [user for user in User.objects.all() if user.groups.filter(name='Teacher').exists()]
-    #     return ' '.join(teachers)
-
     def save(self, *args, **kwargs):
         if not self.name:
             student_exercises_count = len(
@@ -62,11 +72,12 @@ class ExerciseWords(models.Model):
 
     def __str__(self) -> str:
         status = 'Active' if self.is_active else 'Done'
-        return f"{self.pk} - {self.student.last_name} {self.student.first_name} - {status}"
+        return f"{self.pk} - {self.student} - {status}"
 
     class Meta:
         verbose_name = 'Упражнение "Слова"'
         verbose_name_plural = 'Упражнения "Слова"'
+        ordering = ['-is_active']
 
 
 class ExerciseDialog(models.Model):
@@ -104,6 +115,7 @@ class ExerciseDialog(models.Model):
     class Meta:
         verbose_name = 'Упражнение "Диалог"'
         verbose_name_plural = 'Упражнения "Диалог"'
+        ordering = ['-is_active']
 
 
 class ExerciseResult(models.Model):
