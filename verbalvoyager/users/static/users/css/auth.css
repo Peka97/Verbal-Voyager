@@ -154,7 +154,7 @@ ul.errorlist {
     -webkit-transition: 0.2s ease all;
    }
    
-   .input:focus, .input:valid {
+   .input:focus {
     caret-color: var(--amber-a400);
     border: none;
     transition: 0.2s ease all;

@@ -60,8 +60,8 @@
           </ul>
         </div>
       {% else %}
-        <a id='auth' class="btn-default me-2" href="{% url 'auth' %}" role="button">Войти</a>
-        <a id='sign_up' class="btn-default me-2" href="{% url 'sign_up' %}" role="button">Зарегистрироваться</a>
+        <a id='auth' class="btn-default me-2" href="{% url 'auth' %}" role="button">Начать путешествие</a>
+        {% comment %} <a id='sign_up' class="btn-default me-2" href="{% url 'sign_up' %}" role="button">Зарегистрироваться</a> {% endcomment %}
       {% endif %}
     </div>
   </div>
