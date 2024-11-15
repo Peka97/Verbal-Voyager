@@ -121,6 +121,41 @@ class Lesson(models.Model):
         ordering = ['-datetime']
 
 
+class Task(models.Model):
+    task_name = models.CharField(
+        max_length=50,
+        verbose_name='Название задачи'
+    )
+    points = models.SmallIntegerField(
+        verbose_name='Баллы',
+        default=1,
+    )
+    is_complete = models.BooleanField(
+        verbose_name='Задача завершена',
+        default=False,
+    )
+    student = models.ForeignKey(
+        User,
+        verbose_name='Студент',
+        on_delete=models.CASCADE,
+        related_name='tasks',
+    )
+    
+    def save(self, *args, **kwargs):
+        projects = Project.objects.filter(tasks=self.pk)
+        for project in projects:
+            project.save()
+        
+        super().save(*args, **kwargs)
+        
+    
+    def __str__(self):
+        return self.task_name
+    
+    class Meta:
+        verbose_name = 'Задача проекта'
+        verbose_name_plural = 'Задачи проекта'
+
 class ProjectType(models.Model):
     type_name = models.CharField('Тип проекта', max_length=50)
 
@@ -161,12 +196,12 @@ class Project(models.Model):
         null=True
     )
     from_date = models.DateField(
-        verbose_name='Дата начала курса',
+        verbose_name='Дата начала',
         null=False,
         blank=False,
     )
     to_date = models.DateField(
-        verbose_name='Дата окончания курса',
+        verbose_name='Дата окончания',
         null=False,
         blank=False
         )
@@ -197,13 +232,46 @@ class Project(models.Model):
         blank=True
         )
     is_active = models.BooleanField(
-        verbose_name='Статус активности', 
+        verbose_name='Статус', 
         default=True
         )
-
+    tasks = models.ManyToManyField(
+        Task,
+        verbose_name='Задачи проекта',
+    )
+    progress = models.SmallIntegerField(
+        verbose_name='Прогресс проекта',
+        default=0,
+        auto_created=True,
+        help_text='От 0 до 100'
+    )
+    
+    def set_progress(self):
+        if self.tasks.count() > 0:
+            self.progress = self.tasks.filter(is_complete=False).count() * 100 / self.tasks.count()
+        else:
+            self.progress = 0
+    
+    def save(self, *args, **kwargs):
+        self.set_progress()
+        super().save(*args, **kwargs)
+    
+    def get_students(self):
+        try:
+            students = [f'{student.last_name} {student.first_name}' for student in list(
+                self.students.all())]
+            return ', '.join(students)
+        except Exception as err:
+            logger.error(err)
+            return self.student
+        
+    get_students.short_description = students.verbose_name
+        
     def __str__(self):
         return self.project
 
     class Meta:
         verbose_name = 'Проект'
         verbose_name_plural = 'Проекты'
+
+

@@ -25,3 +25,9 @@ if config.DEBUG:
         *urlpatterns,
         path("__debug__/", include("debug_toolbar.urls")),
     ]
+
+if config.admin_tools_enabled:
+    urlpatterns = [
+        *urlpatterns,
+        path('admin_tools/', include('admin_tools.urls')),
+    ]

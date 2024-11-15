@@ -4,7 +4,7 @@ from pathlib import Path
 from config import *
 
 
-config = ProdConfig
+config = DevConfig
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -77,8 +77,25 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
         },
+        
     },
 ]
+
+# Enable Django Admin Tools
+if config.admin_tools_enabled:
+    INSTALLED_APPS = [
+        'admin_tools',
+        'admin_tools.theming',
+        'admin_tools.menu',
+        'admin_tools.dashboard',
+    ] + INSTALLED_APPS
+    
+    TEMPLATES[0]['APP_DIRS'] = False
+    TEMPLATES[0]['OPTIONS']['loaders'] = [
+            'admin_tools.template_loaders.Loader',
+            'django.template.loaders.filesystem.Loader',
+            'django.template.loaders.app_directories.Loader',
+        ]
 
 WSGI_APPLICATION = 'verbalvoyager.wsgi.application'
 

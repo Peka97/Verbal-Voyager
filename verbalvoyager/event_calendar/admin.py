@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
-from .models import Lesson, Course, Review, ProjectType, Project
+from .models import Lesson, Course, Review, ProjectType, Project, Task
 from .forms import LessonAdminForm, ProjectAdminForm
 from django.contrib.auth import get_user_model
 
@@ -146,14 +146,33 @@ class LessonAdmin(admin.ModelAdmin):
             obj.status = 'D'
             obj.save()
 
-
+@admin.register(Task)
+class TaskAdmin(admin.ModelAdmin):
+    list_display = ('task_name', 'points', 'student', 'is_complete')
+    list_filter = (
+        StudentsListFilter,
+    )
+    actions = ('set_complete', 'unset_complete')
+    @admin.action(description='Завершить задачу')
+    def set_complete(self, request, queryset):
+        for task in queryset:
+            task.is_complete = True
+            task.save()
+    
+    @admin.action(description='Возобновить задачу')
+    def unset_complete(self, request, queryset):
+        for task in queryset:
+            task.is_complete = False
+            task.save()
+    
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     form = ProjectAdminForm
 
-    filter_horizontal = ('students', 'type')
+    filter_horizontal = ('students', 'type', 'tasks')
+    readonly_fields = ('progress', )
     list_display = ('is_active', 'project', 'course',
-                    'teacher', 'from_date', 'to_date')
+                    'teacher', 'get_students', 'from_date', 'to_date', 'progress')
     list_display_links = ('project', )
     list_filter = [
         TeachersListFilter,
@@ -211,8 +230,6 @@ class ProjectAdmin(admin.ModelAdmin):
                         break
 
     def _create(self, day, students, teacher):
-        logger.info(type(day))
-        logger.info(day)
         lesson, is_created = Lesson.objects.get_or_create(
             datetime=day,
             teacher=teacher
@@ -242,7 +259,5 @@ class ProjectAdmin(admin.ModelAdmin):
 class ReviewAdmin(admin.ModelAdmin):
     list_display = ('get_created_at', 'from_user', 'course', 'text')
 
-
 admin.site.register(Course)
-# admin.site.register(Review)
 admin.site.register(ProjectType)
