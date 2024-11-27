@@ -16,7 +16,7 @@
                             {% endif %}
                             <br>
                             <i class="bi bi-mortarboard-fill"></i>
-                            {{ event.teacher.last_name }} {{ event.teacher.first_name }}
+                            {{ event.teacher_id.last_name }} {{ event.teacher_id.first_name }}
                         </div>
                         <div class="event-info">
                             {% if event.status == 'P' %}
@@ -40,7 +40,12 @@
                 <div id="flush-collapse{{ event.pk }}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                     <div class="accordion-body"> 
                         <span style='font-weight: lighter; color: indigo'>HW: </span>
-                        {{ event.description }}
+                        {% if event.description %}
+                            {{ event.description }}
+                        {% else %}
+                            -
+                        {% endif %}
+                        
                     </div>
                 </div>
             </div>

@@ -3,6 +3,8 @@ from datetime import datetime
 
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.db.models.signals import pre_save, post_save, m2m_changed, pre_delete
+from django.dispatch import receiver
 
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
@@ -63,6 +65,38 @@ class Review(models.Model):
         verbose_name_plural = 'Отзывы'
 
 
+class LessonTask(models.Model):
+    name = models.CharField(
+        max_length=50,
+        verbose_name='Название задачи'
+    )
+    points = models.SmallIntegerField(
+        verbose_name='Баллы',
+        default=1,
+    )
+    is_complete = models.BooleanField(
+        verbose_name='Задача завершена',
+        default=False,
+    )
+    student_id = models.ForeignKey(
+        User,
+        verbose_name='Студент',
+        on_delete=models.CASCADE,
+        related_name='lesson_tasks',
+    )
+    is_protected = models.BooleanField(
+        verbose_name='Защитить от удаления',
+        default=False,
+        help_text="По умолчанию при удалении занятия привязанные к нему задачи удаляются из базы данных. Включите, чтобы избежать подобной ситуации."
+    )
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Задача урока'
+        verbose_name_plural = 'Задачи урока'
+        
 class Lesson(models.Model):
     title = models.CharField(
         verbose_name='Название урока',
@@ -93,12 +127,18 @@ class Lesson(models.Model):
     )
     students = models.ManyToManyField(
         User, related_name='student_lessons', verbose_name="Ученики")
-    teacher = models.ForeignKey(
+    teacher_id = models.ForeignKey(
         User, 
         verbose_name="Учитель",
         on_delete=models.CASCADE, 
         related_name='teacher_lessons', 
         null=True)
+    tasks = models.ManyToManyField(
+        LessonTask,
+        related_name='lesson_tasks',
+        verbose_name='Задачи урока',
+        blank=True,
+    )
 
     def __str__(self):
         return f'{self.pk} - {self.datetime} - {list(self.students.all())} - {self.title}'
@@ -120,9 +160,13 @@ class Lesson(models.Model):
 
         ordering = ['-datetime']
 
+@receiver(pre_delete, sender=Lesson)
+def pre_delete_lesson_delete_tasks(sender, instance, **kwargs):
+    [task.delete() for task in instance.tasks.all() if not task.protected]
+    
 
-class Task(models.Model):
-    task_name = models.CharField(
+class ProjectTask(models.Model):
+    name = models.CharField(
         max_length=50,
         verbose_name='Название задачи'
     )
@@ -130,15 +174,15 @@ class Task(models.Model):
         verbose_name='Баллы',
         default=1,
     )
-    is_complete = models.BooleanField(
+    is_completed = models.BooleanField(
         verbose_name='Задача завершена',
         default=False,
     )
-    student = models.ForeignKey(
+    student_id = models.ForeignKey(
         User,
         verbose_name='Студент',
         on_delete=models.CASCADE,
-        related_name='tasks',
+        related_name='project_tasks',
     )
     
     def save(self, *args, **kwargs):
@@ -157,7 +201,7 @@ class Task(models.Model):
         verbose_name_plural = 'Задачи проекта'
 
 class ProjectType(models.Model):
-    type_name = models.CharField('Тип проекта', max_length=50)
+    name = models.CharField('Тип проекта', max_length=50)
 
     def __str__(self):
         return self.type_name
@@ -168,11 +212,11 @@ class ProjectType(models.Model):
 
 
 class Project(models.Model):
-    project = models.CharField(
+    name = models.CharField(
         max_length=50,
         verbose_name="Название проекта",
     )
-    course = models.ForeignKey(
+    course_id = models.ForeignKey(
         Course,
         verbose_name='Тип курса',
         on_delete=models.CASCADE,
@@ -180,7 +224,7 @@ class Project(models.Model):
         blank=False,
         null=False
     )
-    type = models.ManyToManyField(
+    types = models.ManyToManyField(
         ProjectType,
         verbose_name='Тип проекта'
     )
@@ -188,7 +232,7 @@ class Project(models.Model):
         User,
         verbose_name='Студенты'
     )
-    teacher = models.ForeignKey(
+    teacher_id = models.ForeignKey(
         User,
         verbose_name='Учитель',
         on_delete=models.CASCADE,
@@ -236,7 +280,7 @@ class Project(models.Model):
         default=True
         )
     tasks = models.ManyToManyField(
-        Task,
+        ProjectTask,
         verbose_name='Задачи проекта',
     )
     progress = models.SmallIntegerField(
@@ -251,10 +295,6 @@ class Project(models.Model):
             self.progress = self.tasks.filter(is_complete=False).count() * 100 / self.tasks.count()
         else:
             self.progress = 0
-    
-    def save(self, *args, **kwargs):
-        self.set_progress()
-        super().save(*args, **kwargs)
     
     def get_students(self):
         try:

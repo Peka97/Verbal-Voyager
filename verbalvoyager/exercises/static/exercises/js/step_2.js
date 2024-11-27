@@ -17,9 +17,6 @@ let points = words.length;
 updateWordCheckHandlers();
 
 let wordBlocks = [... document.getElementsByClassName('word__block')]
-console.dir(wordBlocks);
-
-
 
 function updateWordCheckHandlers() {
     let curr_page = Number(Array.from(document.getElementsByClassName('page-item active'))[0].id.split('_')[1])
