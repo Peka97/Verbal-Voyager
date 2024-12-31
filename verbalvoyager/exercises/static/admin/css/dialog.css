@@ -1,0 +1,5 @@
+.disabled-link {
+    pointer-events: none;  /* Отключаем клик */
+    opacity: 0.5;         /* Делаем полупрозрачной */
+    color: gray;          /* Делаем серый цвет */
+}

@@ -27,6 +27,11 @@ class User(AbstractUser):
             return True if self.username == 'admin' else False
         except ObjectDoesNotExist:
             return False
+        
+    def get_groups(self):
+        return tuple(self.groups.all())
+    
+    get_groups.short_description = 'Группы пользователя'
 
     def get_teachers(self):
         return self.objects.filter(groups__name__in=['Teacher'])

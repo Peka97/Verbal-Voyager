@@ -14,4 +14,6 @@ urlpatterns = [
     path('dialog/<int:ex_id>', views.exercises_dialog, name='exercises_dialog'),
     path('dialog/update/<int:ex_id>', views.exercises_dialog_update, name='exercises_dialog_update'),
 
+    path('dialog/json/generate_dialog', views.generate_dialog_view, name='filter_lessons_by_student'),
+
 ]

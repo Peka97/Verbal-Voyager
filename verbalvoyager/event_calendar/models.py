@@ -3,6 +3,7 @@ from datetime import datetime
 
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.db.models.signals import pre_save, post_save, m2m_changed, pre_delete
 from django.dispatch import receiver
 
@@ -33,8 +34,8 @@ class Review(models.Model):
         verbose_name='Название курса',
         on_delete=models.CASCADE,
         related_name='reviews',
-        blank=True,
-        null=True,
+        blank=True,  # TODO: remove?
+        null=True, # TODO: remove?
     )
     text = models.TextField(
         verbose_name='Отзыв',
@@ -49,12 +50,13 @@ class Review(models.Model):
     created_at = models.DateTimeField(
         verbose_name='Дата создания',
         editable=True,
-        null=True,
-        blank=True
+        null=True, # TODO: remove?
+        blank=True # TODO: remove?
     )
     
     def get_created_at(self):
         return self.created_at.strftime("%d.%m.%Y")
+    
     get_created_at.short_description = 'Дата создания'
 
     def __str__(self) -> str:
@@ -63,53 +65,73 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
-
-
-class LessonTask(models.Model):
+    
+class BaseLessonTask(models.Model):
     name = models.CharField(
         max_length=50,
-        verbose_name='Название задачи'
+        verbose_name='Название обычного задания'
+    )
+    def __str__(self) -> str:
+        return f"{self.name} [id:{self.pk}]"
+    
+    class Meta:
+        verbose_name = 'Обычное задание'
+        verbose_name_plural = 'Обычные задания'
+        
+class LessonTask(models.Model):
+    base_name = models.ForeignKey(
+        BaseLessonTask,
+        on_delete=models.CASCADE,
+        related_name='task_basename',
+        blank=True,
+        null=True,
+        verbose_name='Обычное задание',
+        help_text="Выберите обычное задание из предложенных. Поле с уникальным заданием необходимо оставить пустым."
+    )
+    custom_name = models.CharField(
+        max_length=150,
+        blank=True,
+        null=True,
+        verbose_name='Уникальное задание',
+        help_text="Напишите уникальное задание. Поле с обычным заданием необходимо оставить пустым."
     )
     points = models.SmallIntegerField(
         verbose_name='Баллы',
         default=1,
     )
-    is_complete = models.BooleanField(
+    is_completed = models.BooleanField(
         verbose_name='Задача завершена',
         default=False,
     )
-    student_id = models.ForeignKey(
-        User,
-        verbose_name='Студент',
+    lesson_id = models.ForeignKey(
+        'Lesson',
+        verbose_name='Урок',
         on_delete=models.CASCADE,
-        related_name='lesson_tasks',
-    )
-    is_protected = models.BooleanField(
-        verbose_name='Защитить от удаления',
-        default=False,
-        help_text="По умолчанию при удалении занятия привязанные к нему задачи удаляются из базы данных. Включите, чтобы избежать подобной ситуации."
+        related_name='task_lesson',
+        blank=True,
+        null=True
     )
     
+    def get_name(self):
+        name = self.base_name.name if self.base_name else self.custom_name or 'Имя не задано'
+        return f"{name} [Lesson: {self.lesson_id}]"
+    
     def __str__(self):
-        return self.name
+        return self.get_name()
+    
+    get_name.short_description = 'Название'
     
     class Meta:
         verbose_name = 'Задача урока'
         verbose_name_plural = 'Задачи урока'
-        
+    
 class Lesson(models.Model):
     title = models.CharField(
         verbose_name='Название урока',
         max_length=50, 
         default='English',
         help_text="Поле заполняется автоматически, если остаётся пустым"
-        )
-    description = models.TextField(
-        verbose_name='Описание урока',
-        max_length=255, 
-        blank=True, 
-        null=True
-        )
+    )
     datetime = models.DateTimeField(
         verbose_name='Дата и время урока'
     )
@@ -126,13 +148,19 @@ class Lesson(models.Model):
         ]
     )
     students = models.ManyToManyField(
-        User, related_name='student_lessons', verbose_name="Ученики")
+        User,
+        related_name='student_lessons',
+        limit_choices_to={'groups__name__in': ['Student', ]},
+        verbose_name="Ученики"
+    )
     teacher_id = models.ForeignKey(
         User, 
         verbose_name="Учитель",
+        limit_choices_to={'groups__name__in': ['Teacher', ]},
         on_delete=models.CASCADE, 
         related_name='teacher_lessons', 
-        null=True)
+        null=True
+    )
     tasks = models.ManyToManyField(
         LessonTask,
         related_name='lesson_tasks',
@@ -141,16 +169,16 @@ class Lesson(models.Model):
     )
 
     def __str__(self):
-        return f'{self.pk} - {self.datetime} - {list(self.students.all())} - {self.title}'
+        return f"{self.datetime.strftime('%d.%m.%Y %H:%M')} | {self.get_students()} [{self.title}]"
 
     def get_students(self):
         try:
-            students = [f'{student.last_name} {student.first_name}' for student in list(
+            students = [f'{student.last_name} {student.first_name}' for student in tuple(
                 self.students.all())]
             return ', '.join(students)
         except Exception as err:
             logger.error(err)
-            return self.student
+            return self.students
         
     get_students.short_description = students.verbose_name
 
@@ -159,10 +187,6 @@ class Lesson(models.Model):
         verbose_name_plural = 'Занятия'
 
         ordering = ['-datetime']
-
-@receiver(pre_delete, sender=Lesson)
-def pre_delete_lesson_delete_tasks(sender, instance, **kwargs):
-    [task.delete() for task in instance.tasks.all() if not task.protected]
     
 
 class ProjectTask(models.Model):
@@ -178,11 +202,13 @@ class ProjectTask(models.Model):
         verbose_name='Задача завершена',
         default=False,
     )
-    student_id = models.ForeignKey(
-        User,
-        verbose_name='Студент',
+    project_id = models.ForeignKey(
+        'Project',
+        verbose_name='Проект',
         on_delete=models.CASCADE,
-        related_name='project_tasks',
+        related_name='task_project',
+        blank=True,
+        null=True
     )
     
     def save(self, *args, **kwargs):
@@ -194,7 +220,7 @@ class ProjectTask(models.Model):
         
     
     def __str__(self):
-        return self.task_name
+        return f"{self.name} [Project: {self.project_id}]"
     
     class Meta:
         verbose_name = 'Задача проекта'
@@ -204,7 +230,7 @@ class ProjectType(models.Model):
     name = models.CharField('Тип проекта', max_length=50)
 
     def __str__(self):
-        return self.type_name
+        return self.name
 
     class Meta:
         verbose_name = 'Тип проекта'
@@ -230,13 +256,16 @@ class Project(models.Model):
     )
     students = models.ManyToManyField(
         User,
-        verbose_name='Студенты'
+        verbose_name='Студенты',
+        limit_choices_to={'groups__name__in': ['Student', ]},
+
     )
     teacher_id = models.ForeignKey(
         User,
         verbose_name='Учитель',
         on_delete=models.CASCADE,
         related_name='project_teacher',
+        limit_choices_to={'groups__name__in': ['Teacher', ]},
         null=True
     )
     from_date = models.DateField(
@@ -253,7 +282,6 @@ class Project(models.Model):
         verbose_name='Время первого урока в неделе',
         null=True, 
         blank=True,
-        help_text='Укажите в каждом следующем поле в какой ближайший день на неделе и в какое время будет урок.',
         )
     lesson_2 = models.DateTimeField(
         verbose_name='Время второго урока в неделе',
@@ -292,13 +320,13 @@ class Project(models.Model):
     
     def set_progress(self):
         if self.tasks.count() > 0:
-            self.progress = self.tasks.filter(is_complete=False).count() * 100 / self.tasks.count()
+            self.progress = self.tasks.filter(is_completed=False).count() * 100 / self.tasks.count()
         else:
             self.progress = 0
     
     def get_students(self):
         try:
-            students = [f'{student.last_name} {student.first_name}' for student in list(
+            students = [f'{student.last_name} {student.first_name}' for student in tuple(
                 self.students.all())]
             return ', '.join(students)
         except Exception as err:
@@ -308,7 +336,7 @@ class Project(models.Model):
     get_students.short_description = students.verbose_name
         
     def __str__(self):
-        return self.project
+        return self.name
 
     class Meta:
         verbose_name = 'Проект'

@@ -49,9 +49,19 @@ class ExerciseWords(models.Model):
                             help_text="Поле заполняется автоматически, если остаётся пустым")
     words = models.ManyToManyField(Word, verbose_name="Слова")
     student = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='words_student', null=True, verbose_name='Ученик')
+        User, on_delete=models.CASCADE, 
+        related_name='words_student', 
+        limit_choices_to={'groups__name__in': ['Student', ]},
+        null=True, 
+        verbose_name='Ученик'
+        )
     teacher = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='words_teacher', null=True, verbose_name="Учитель")
+        User, on_delete=models.CASCADE, 
+        related_name='words_teacher',
+        limit_choices_to={'groups__name__in': ['Teacher', ]},
+        null=True,
+        verbose_name="Учитель"
+        )
     is_active = models.BooleanField(default=True, verbose_name="Активен")
 
     def get_words(self):
@@ -61,12 +71,11 @@ class ExerciseWords(models.Model):
         return format_html(' '.join(words))
 
     get_words.allow_tags = True
-    get_words.short_description = 'Упражнение "Слова"'
+    get_words.short_description = 'Слова в упражнении'
 
     def save(self, *args, **kwargs):
         if not self.name:
-            student_exercises_count = len(
-                list(ExerciseWords.objects.filter(student=self.student).all()))
+            student_exercises_count = ExerciseWords.objects.filter(student=self.student).count()
             self.name = f"Words {student_exercises_count + 1}"
         super(ExerciseWords, self).save(*args, **kwargs)
 
@@ -94,19 +103,33 @@ class ExerciseDialog(models.Model):
                             """)
     words = models.ManyToManyField(Word, verbose_name="Слова")
     student = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='dialog_student',
+        User, on_delete=models.CASCADE, 
+        related_name='dialog_student',
+        limit_choices_to={'groups__name__in': ['Student', ]},
         null=True, verbose_name='Ученик')
     teacher = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='dialog_teacher',
-        null=True, verbose_name="Учитель")
+        User,
+        on_delete=models.CASCADE,
+        related_name='dialog_teacher',
+        limit_choices_to={'groups__name__in': ['Teacher', ]},
+        null=True,
+        verbose_name="Учитель")
     is_active = models.BooleanField(default=True, verbose_name="Активен")
 
     def save(self, *args, **kwargs):
         if not self.name:
-            student_exercises_count = len(
-                list(ExerciseDialog.objects.filter(student=self.student).all()))
+            student_exercises_count = ExerciseDialog.objects.filter(student=self.student).count()
             self.name = f"Dialog {student_exercises_count + 1}"
         super(ExerciseDialog, self).save(*args, **kwargs)
+        
+    def get_words(self):
+        words = [
+            f'{word.word} - {word.translate}<br>' for word in self.words.all()
+        ]
+        return format_html(' '.join(words))
+    
+    get_words.allow_tags = True
+    get_words.short_description = 'Слова в упражнении'
 
     def __str__(self) -> str:
         status = 'Active' if self.is_active else 'Done'
@@ -117,53 +140,61 @@ class ExerciseDialog(models.Model):
         verbose_name_plural = 'Упражнения "Диалог"'
         ordering = ['-is_active']
 
-
-class ExerciseResult(models.Model):
+class ExerciseWordsResult(models.Model):
     words = models.ForeignKey(
         ExerciseWords, on_delete=models.CASCADE, related_name='words_result', null=True, blank=True)
-    dialog = models.ForeignKey(
-        ExerciseDialog, on_delete=models.CASCADE, related_name='dialog_result', null=True, blank=True)
     step_1 = models.SmallIntegerField(null=True, blank=True, default=None)
     step_2 = models.SmallIntegerField(null=True, blank=True, default=None)
     step_3 = models.SmallIntegerField(null=True, blank=True, default=None)
     step_4 = models.SmallIntegerField(null=True, blank=True, default=None)
-
-    def __str__(self) -> str:
-        if self.words:
-            return self.words.name
-        elif self.dialog:
-            return self.dialog.name
-        else:
-            return 'Unknown'
-
+    
     def get_student(self):
         if self.words:
             return self.words.student
-        elif self.dialog:
-            return self.dialog.student
-        else:
-            return 'Unknown'
+        return 'Unknown'
 
     def get_teacher(self):
         if self.words:
             return self.words.teacher
-        elif self.dialog:
-            return self.dialog.teacher
-        else:
-            return 'Unknown'
+        return 'Unknown'
 
     def get_ex_name(self):
         if self.words:
             return self.words.name
-        elif self.dialog:
-            return self.dialog.name
-        else:
-            return 'Unknown'
+        return 'Unknown'
 
     get_student.short_description = 'Студент'
     get_teacher.short_description = 'Учитель'
     get_ex_name.short_description = 'Название'
 
     class Meta:
-        verbose_name = 'Результат упражнения'
-        verbose_name_plural = 'Результаты упражнений'
+        verbose_name = 'Результат упражнения "Слова"'
+        verbose_name_plural = 'Результаты упражнений "Слова"'
+    
+class ExerciseDialogResult(models.Model):
+    dialog = models.ForeignKey(
+        ExerciseDialog, on_delete=models.CASCADE, related_name='dialog_result', null=True, blank=True)
+    points = models.SmallIntegerField()
+    
+    def get_student(self):
+        if self.dialog:
+            return self.dialog.student
+        return 'Unknown'
+
+    def get_teacher(self):
+        if self.dialog:
+            return self.dialog.teacher
+        return 'Unknown'
+
+    def get_ex_name(self):
+        if self.dialog:
+            return self.dialog.name
+        return 'Unknown'
+
+    get_student.short_description = 'Студент'
+    get_teacher.short_description = 'Учитель'
+    get_ex_name.short_description = 'Название'
+
+    class Meta:
+        verbose_name = 'Результат упражнения "Диалог"'
+        verbose_name_plural = 'Результаты упражнений "Диалог"'

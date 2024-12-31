@@ -1,14 +1,22 @@
+# -*- coding: utf-8 -*-
+
 import logging
 from datetime import datetime, timedelta
 
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
+from django.urls import path, reverse
+from django.http import JsonResponse
+from django.core.serializers.json import DjangoJSONEncoder
+
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
-from .models import Lesson, Course, Review, ProjectType, Project, ProjectTask, LessonTask
+from .models import Lesson, Course, Review, ProjectType, Project, ProjectTask, BaseLessonTask, LessonTask
 from .forms import LessonAdminForm, ProjectAdminForm
 from django.contrib.auth import get_user_model
+from django.contrib import messages
+from django.utils.translation import ngettext
 
 
 log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
@@ -53,12 +61,18 @@ class StudentsListFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         return queryset.filter(students=self.value()) if self.value() else None
 
-
+class LessonTaskInline(admin.TabularInline):
+    model = LessonTask
+    
+class ProjectTaskInline(admin.TabularInline):
+    model = ProjectTask
+    
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
     form = LessonAdminForm
     ordering = ('-datetime', )
-    filter_horizontal = ('students', 'tasks')
+    search_fields = ['student_id', 'lesson_id']
+    filter_horizontal = ('students', 'tasks',)
     list_display = ('datetime', 'title', 'status',
                     'is_paid', 'teacher_id', 'get_students')
     list_display_links = ('datetime', 'title')
@@ -71,6 +85,28 @@ class LessonAdmin(admin.ModelAdmin):
     ]
     actions = ['set_pay', 'set_not_pay', 'set_done', 'set_miss', 'set_cancel']
     save_as = True
+    inlines = [
+        LessonTaskInline,
+    ]
+    
+    fieldsets = (
+        ('Lesson Info', {            
+            'fields': (('title', 'datetime'), 'students', ),
+        }),
+        ('Lesson options', {
+            'classes': ('collapse', ),
+            'fields': (('status','is_paid', ), 'teacher_id'),
+        })
+    )
+    
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related('teacher_id').prefetch_related('students', 'tasks')
+    
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == "tasks":
+            kwargs["queryset"] = LessonTask.objects.all().prefetch_related('student_id')
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
     
     def get_form(self, request, obj=None, **kwargs):
         form = super(LessonAdmin, self).get_form(request, obj, **kwargs)
@@ -79,28 +115,6 @@ class LessonAdmin(admin.ModelAdmin):
         form.base_fields['students'].queryset = User.objects.filter(groups__name__in=['Student'])
         
         return form
-    
-    def save_related(self, request, form, formsets, change):
-        cleaned_data = form.cleaned_data
-        tasks = cleaned_data.get('tasks')
-        
-        homework_task = tasks.filter(
-            name='Выполнить домашнее задание',
-            points=1,
-        )
-        
-        if not homework_task.exists():
-            students = cleaned_data.get('students')
-            
-            for student in students:
-                new_task = LessonTask.objects.create(
-                        name='Выполнить домашнее задание',
-                        points=1,
-                        student_id=student
-                        )
-                cleaned_data['tasks'] = tasks.union(LessonTask.objects.filter(pk=new_task.pk))        
-        
-        super(LessonAdmin, self).save_related(request, form, formsets, change)
     
     def get_actions(self, request):
         actions = super().get_actions(request)
@@ -144,49 +158,107 @@ class LessonAdmin(admin.ModelAdmin):
                 obj.status = 'D'
                 obj.save()
 
+
+
 @admin.register(ProjectTask)
 class ProjectTaskAdmin(admin.ModelAdmin):
-    list_display = ('name', 'points', 'student_id', 'is_completed')
+    search_fields = ('project_id', )
+    autocomplete_fields = ('project_id', )
+    list_display = ('name', 'points', 'project_id', 'is_completed')
     list_filter = (
         StudentsListFilter,
     )
     actions = ('set_complete', 'unset_complete')
+    fieldsets = (
+        (u'Task type', {
+            'fields': ('name',),
+        }),
+        ('Task target', {
+            'description': 'Выбери проект, на которое необходимо добавить задание.',
+            'fields': ('project_id', ),
+        }),
+        ('Task options', {
+            'classes': ('collapse', ),
+            'description': 'Выбери опции заданий.',
+            'fields': (('points', 'is_completed'),),
+        })
+    )
+        
     @admin.action(description='Завершить задачу')
     def set_complete(self, request, queryset):
         for task in queryset:
-            task.is_complete = True
+            task.is_completed = True
             task.save()
     
     @admin.action(description='Возобновить задачу')
     def unset_complete(self, request, queryset):
         for task in queryset:
-            task.is_complete = False
+            task.is_completed = False
             task.save()
+@admin.register(BaseLessonTask)
+class BaseLessonTaskAdmin(admin.ModelAdmin):
+    list_display = ('name', )
 
 @admin.register(LessonTask)
 class LessonTaskAdmin(admin.ModelAdmin):
-    list_display = ('name', 'points', 'student_id', 'is_complete')
+    autocomplete_fields = ('lesson_id', )
+    list_display = ('get_name', 'points', 'lesson_id', 'is_completed')
     list_filter = (
         StudentsListFilter,
     )
     actions = ('set_complete', 'unset_complete')
     
+    fieldsets = (
+        (u'Task type', {
+            'description': 'Выбери один из представленных типов заданий.',
+            'fields': ('base_name','custom_name'),
+        }),
+        ('Task target', {
+            'description': 'Выбери урок, на которое необходимо добавить задание.',
+            'fields': ('lesson_id',),
+        }),
+        ('Task options', {
+            'classes': ('collapse', ),
+            'fields': (('points', 'is_completed'),),
+        })
+    )
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "lesson_id":
+            kwargs["queryset"] = Lesson.objects.prefetch_related('students').all()
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
+    # def get_urls(self):
+    #     urls = super().get_urls()
+    #     my_urls = [
+    #         path('event_calendar/json/filter_lessons_by_student', self.admin_json_view, name='filter_lessons_by_student'),
+    #     ]
+    #     return my_urls + urls
+    
+    # def admin_json_view(self, request):
+    #     if request.method == 'GET':
+    #         student_id = request.GET.get('student_id')
+    #         lessons = Lesson.objects.filter(student_id=student_id).values('id','title')
+    #         return JsonResponse(list(lessons), safe=False, encoder=DjangoJSONEncoder)
+    
     @admin.action(description='Завершить задачу')
     def set_complete(self, request, queryset):
         for task in queryset:
-            task.is_complete = True
+            task.is_completed = True
             task.save()
     
     @admin.action(description='Возобновить задачу')
     def unset_complete(self, request, queryset):
         for task in queryset:
-            task.is_complete = False
+            task.is_completed = False
             task.save()
+    # class Media:
+    #     js = ['admin/js/filter_lessons_by_student.js', ]
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     form = ProjectAdminForm
 
+    search_fields = ['student_id', 'project_id']
     filter_horizontal = ('students', 'types', 'tasks')
     readonly_fields = ('progress', )
     list_display = ('is_active', 'name', 'course_id',
@@ -199,6 +271,40 @@ class ProjectAdmin(admin.ModelAdmin):
     actions = ['create_lessons', ]
 
     save_as = True
+    inlines = [
+        ProjectTaskInline,
+    ]
+    
+    fieldsets = (
+        (u'Project type', {
+            'description': 'Укажи название проекта, его курс и тип.',
+            'fields': ('name','course_id', 'types'),
+        }),
+        ('Project target', {
+            'description': 'Выбери студента и учителя, к которым относится проект.',
+            'fields': ('students', 'teacher_id'),
+        }),
+        ('Project date', {
+            'description': 'Выбери даты начала и окончания проекта. Затем, в соответствии с кратностью занятий в неделю, укажи даты ближайших занятий.',
+            'fields': (
+                ('from_date', 'to_date'),
+                'lesson_1', 'lesson_2', 'lesson_3', 'lesson_4', 'lesson_5'
+            )
+        }),
+        ('Project options', {
+            'classes': ('collapse', ),
+            'fields': ('is_active',),
+        })
+    )
+    
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related('teacher_id', 'course_id').prefetch_related('students')
+    
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+      if db_field.name == "tasks":
+            kwargs["queryset"] = ProjectTask.objects.all().prefetch_related('student_id')
+      return super().formfield_for_manytomany(db_field, request, **kwargs)
     
     def get_form(self, request, obj=None, **kwargs):
         form = super(ProjectAdmin, self).get_form(request, obj, **kwargs)
@@ -208,9 +314,10 @@ class ProjectAdmin(admin.ModelAdmin):
         
         return form
 
-    @admin.action(description='Распланировать занятия')
+    @admin.action(description='Распланировать занятия (+ добавить домашнее задание)')
     def create_lessons(self, request, queryset):
         in_period = True
+        lessons_created_count = 0
 
         for project in queryset:
             students = project.students
@@ -238,52 +345,56 @@ class ProjectAdmin(admin.ModelAdmin):
 
                 for idx, day in enumerate(days):
                     if from_date <= day.date() <= to_date:
-                        self._create(day, students, teacher)
+                        is_created = self._create(day, students, teacher)
+                        
+                        if is_created:
+                            lessons_created_count += 1 
+                            
                         days[idx] = day + timedelta(days=7)
                     else:
                         in_period = False
                         break
+        
+        self.message_user(
+            request,
+            ngettext(
+                "%d уроков успешно добавлено!",
+                "%d урок успешно добавлен!",
+                lessons_created_count,
+            )
+            % lessons_created_count,
+            messages.SUCCESS,
+        )
 
     def _create(self, day, students, teacher):
         lesson, is_created = Lesson.objects.get_or_create(
             datetime=day,
-            teacher_id=teacher
+            teacher_id=teacher,
         )
-        
+        [lesson.students.add(student) for student in students.all()]
         if is_created:
-
-            for student in list(students.all()):
-                lesson.students.add(student)
-                
-                homework_task = LessonTask.objects.create(
-                    name='Выполнить домашнее задание',
+            base_homework_task, _ = BaseLessonTask.objects.get_or_create(
+                name='Выполнить домашнее задание'
+                )
+            homework_task, _ = LessonTask.objects.get_or_create(
+                    base_name=base_homework_task,
+                    lesson_id=lesson,
                     points=1,
-                    student=student
-                    )
-            
-                lesson.tasks.add(homework_task)
-
-            lesson.save()
-        else:
-            lesson = Lesson.objects.filter(datetime=day, teacher_id=teacher)
-
-            for student in list(students.all()):
-                new_lesson = lesson.filter(students=student)
-
-                if not new_lesson:
-                    lesson = Lesson.objects.filter(
-                        datetime=day, teacher_id=teacher).first()
-                    lesson.students.add(student)
-                    
-                else:
-                    lesson = new_lesson
-                
+                    is_completed=False,
+                )
+            if is_created:
+                lesson.tasks.add(homework_task.pk)
                 lesson.save()
-
-
+                return True
+        
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('get_created_at', 'from_user', 'course', 'text')
+    list_display = ('course', 'from_user', 'text', 'created_at')
+    
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related('course', 'from_user')
+    
 
 admin.site.register(Course)
 admin.site.register(ProjectType)

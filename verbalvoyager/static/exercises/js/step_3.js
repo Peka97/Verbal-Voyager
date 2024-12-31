@@ -31,7 +31,7 @@ function checkAnswer (event) {
     let trans = document.getElementById('translates').children
 
     for (let i = 0; i < words.length; i++) {
-        if (words[i].id.slice(-1) != trans[i].id.slice(-1)) {
+        if (words[i].id.slice(-1) !== trans[i].id.slice(-1)) {
             showToast('Неверно, подумай ещё раз.');
 
             if (points > 1) {

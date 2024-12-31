@@ -146,7 +146,7 @@ USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
@@ -195,3 +195,4 @@ LOGGING = {
     }
 }
 DEBUG_LOGGING_FP = config.DEBUG_LOGGING_FP
+OPENAI_API_KEY = config.OPENAI_API_KEY

@@ -11,10 +11,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
+
 
 from verbalvoyager.settings import DEBUG_LOGGING_FP
+from .utils import generate_dialog
 
-from .models import Word, ExerciseWords, ExerciseDialog, ExerciseResult
+from .models import Word, ExerciseWords, ExerciseDialog, ExerciseWordsResult, ExerciseDialogResult
 
 log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 logger = logging.getLogger(__name__)
@@ -170,7 +173,7 @@ def exercises_words_update(request, ex_id, step_num):
         )
         value = data.get('value')
 
-        obj, _ = ExerciseResult.objects.get_or_create(
+        obj, _ = ExerciseWordsResult.objects.get_or_create(
             words=ExerciseWords.objects.get(pk=ex_id),
         )
         obj.__dict__[step_num] = value
@@ -194,7 +197,7 @@ def exercises_dialog_update(request, ex_id):
         )
 
         value = data.get('value')
-        obj, _ = ExerciseResult.objects.get_or_create(
+        obj, _ = ExerciseDialogResult.objects.get_or_create(
             dialog=ExerciseDialog.objects.get(pk=ex_id),
         )
         obj.__dict__['step_1'] = value
@@ -269,3 +272,18 @@ def get_api_for_words(words: list[Word]):
             )
 
     return result
+
+def generate_dialog_view(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            words = data.get('words')
+            print(words)
+            # Тут ваша логика обработки слов (пример)
+            result = f"Обработано: {', '.join(words)}" # Возвращаем обработанные слова
+            dialog_text = generate_dialog(words, sentence_num=6, level="B2")
+            return JsonResponse({'result': dialog_text})
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
