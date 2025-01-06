@@ -50,8 +50,8 @@ class Review(models.Model):
     created_at = models.DateTimeField(
         verbose_name='Дата создания',
         editable=True,
-        null=True, # TODO: remove?
-        blank=True # TODO: remove?
+        null=True,
+        blank=True
     )
     
     def get_created_at(self):
@@ -107,7 +107,15 @@ class LessonTask(models.Model):
         'Lesson',
         verbose_name='Урок',
         on_delete=models.CASCADE,
-        related_name='task_lesson',
+        related_name='lesson_tasks',
+        blank=True,
+        null=True
+    )
+    lesson_new_id = models.ForeignKey(
+        'LessonNew',
+        verbose_name='Урок (new)',
+        on_delete=models.CASCADE,
+        related_name='lesson_new_tasks',
         blank=True,
         null=True
     )
@@ -161,30 +169,80 @@ class Lesson(models.Model):
         related_name='teacher_lessons', 
         null=True
     )
-    tasks = models.ManyToManyField(
-        LessonTask,
-        related_name='lesson_tasks',
-        verbose_name='Задачи урока',
-        blank=True,
-    )
 
     def __str__(self):
         return f"{self.datetime.strftime('%d.%m.%Y %H:%M')} | {self.get_students()} [{self.title}]"
 
     def get_students(self):
-        try:
-            students = [f'{student.last_name} {student.first_name}' for student in tuple(
-                self.students.all())]
-            return ', '.join(students)
-        except Exception as err:
-            logger.error(err)
-            return self.students
+        # try:
+        #     students = [f'{student.last_name} {student.first_name}' for student in tuple(
+        #         self.students.all())]
+        #     return ', '.join(students)
+        # except Exception as err:
+        #     logger.error(err)
+        return self.students
         
     get_students.short_description = students.verbose_name
 
     class Meta:
         verbose_name = 'Занятие'
         verbose_name_plural = 'Занятия'
+
+        ordering = ['datetime']
+
+class LessonNew(models.Model):
+    title = models.CharField(
+        verbose_name='Название урока',
+        max_length=50, 
+        default='English',
+        help_text="Поле заполняется автоматически, если остаётся пустым"
+    )
+    datetime = models.DateTimeField(
+        verbose_name='Дата и время урока'
+    )
+    is_paid = models.BooleanField(verbose_name="Статус оплаты", default=False)
+    status = models.CharField(
+        verbose_name="Статус урока",
+        max_length=20,
+        default='P',
+        choices=[
+            ('P', 'Запланировано'),
+            ('M', 'Пропущено'),
+            ('D', 'Завершено'),
+            ('C', 'Отменено')
+        ]
+    )
+    student_id = models.ForeignKey(
+        User,
+        related_name='lessons_new_student',
+        limit_choices_to={'groups__name__in': ['Student', ]},
+        on_delete=models.CASCADE,
+        verbose_name="Ученики",
+        null=True
+    )
+    teacher_id = models.ForeignKey(
+        User, 
+        verbose_name="Учитель",
+        limit_choices_to={'groups__name__in': ['Teacher', ]},
+        on_delete=models.CASCADE, 
+        related_name='lessons_new_teacher', 
+        null=True
+    )
+    project_id = models.ForeignKey(
+        'Project',
+        verbose_name='Проект',
+        on_delete=models.CASCADE,
+        related_name='lessons_new_project',
+        blank=True,
+        null=True
+    )
+
+    # def __str__(self):
+    #     return f"{self.datetime.strftime('%d.%m.%Y %H:%M')} | {self.get_students()} [{self.title}]"
+
+    class Meta:
+        verbose_name = 'Занятие (new)'
+        verbose_name_plural = 'Занятия (new)'
 
         ordering = ['-datetime']
     
@@ -206,7 +264,7 @@ class ProjectTask(models.Model):
         'Project',
         verbose_name='Проект',
         on_delete=models.CASCADE,
-        related_name='task_project',
+        related_name='project_task',
         blank=True,
         null=True
     )
@@ -258,7 +316,6 @@ class Project(models.Model):
         User,
         verbose_name='Студенты',
         limit_choices_to={'groups__name__in': ['Student', ]},
-
     )
     teacher_id = models.ForeignKey(
         User,
@@ -307,10 +364,10 @@ class Project(models.Model):
         verbose_name='Статус', 
         default=True
         )
-    tasks = models.ManyToManyField(
-        ProjectTask,
-        verbose_name='Задачи проекта',
-    )
+    # tasks = models.ManyToManyField(
+    #     ProjectTask,
+    #     verbose_name='Задачи проекта',
+    # )
     progress = models.SmallIntegerField(
         verbose_name='Прогресс проекта',
         default=0,

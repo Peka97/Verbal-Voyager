@@ -1,4 +1,4 @@
-{% for event in events %}
+{% comment %} {% for event in events %}
     {% with event.students.all as students %}
         {% if students.count < 2 %}
             <div name='{{ event.datetime.day }}.{{ event.datetime.month }}.{{ event.datetime.year }}' class="event-card">
@@ -43,7 +43,24 @@
                         </h2>
                         <div id="flush-collapse{{ event.pk }}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                             <div class="accordion-body"> 
-                                <span style='font-weight: lighter; color: indigo'>HW: </span>{{ event.description }}
+                                {% with event.lesson_tasks.all as tasks %}
+                                    {% if tasks %}
+                                        <span style='font-weight: lighter; color: indigo'>Tasks: </span>
+                                        <ul>
+                                            {% for task in tasks %}
+                                                {% if task.base_name %}
+                                                    <li>{{ task.base_name }}</li>
+                                                {% elif task.custom_name %}
+                                                    <li>{{ task.custom_name }}</li>
+                                                {% endif %}
+                                                    
+                                                {% endfor %}
+                                        </ul>
+                                        {% else %}
+                                            <span style='font-weight: lighter; color: indigo'>Tasks: </span>
+                                            -
+                                    {% endif %}
+                                {% endwith %}
                             </div>
                         </div>
                     </div>
@@ -96,8 +113,24 @@
                                             {{ student.last_name }} {{ student.first_name }}
                                         </span>
                                         <div class='event-name'> 
-                                            <span style='font-weight: lighter; color: indigo'>HW: </span>
-                                            {{ lesson.description }}
+                                            {% with event.lesson_tasks.all as tasks %}
+                                                {% if tasks %}
+                                                    <span style='font-weight: lighter; color: indigo'>Tasks: </span>
+                                                    <ul>
+                                                        {% for task in tasks %}
+                                                            {% if task.base_name %}
+                                                                <li>{{ task.base_name }}</li>
+                                                            {% elif task.custom_name %}
+                                                                <li>{{ task.custom_name }}</li>
+                                                            {% endif %}
+                                                                
+                                                            {% endfor %}
+                                                    </ul>
+                                                    {% else %}
+                                                        <span style='font-weight: lighter; color: indigo'>Tasks: </span>
+                                                        -
+                                                {% endif %}
+                                            {% endwith %}
                                         </div>
                                         <hr class='border-primary p-0 m-0'>
                                     </div>
@@ -108,5 +141,121 @@
                 </div>
             </div>
         {% endif %}
+    {% endwith %}
+{% endfor %} {% endcomment %}
+{% comment %} {% for event in events %}
+    {{ events|first }}
+{% endfor %}  {% endcomment %}
+{% comment %} {% with event=events|first %}
+    {% with lesson=events|first %}
+        {{ lesson }}
+    {% endwith %}
+{% endwith %} {% endcomment %}
+{% load filters %}
+
+{% for event in events %}
+
+    {% with lesson=event|first %}
+        <div name="{{ lesson.datetime.day }}.{{ lesson.datetime.month }}.{{ lesson.datetime.year }}" class="event-card">
+            <div class="accordion accordion-flush" id="accordionFlushExample">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ lesson.pk }}" aria-expanded="false" aria-controls="flush-collapse{{ lesson.pk }}">
+                            <div class="event-name"> 
+                                {% if lesson.datetime.minute < 10 %}
+                                    {% with prefix=0 %}
+                                        {{ lesson.datetime.hour }}:{{ prefix }}{{ lesson.datetime.minute}} (SRT)
+                                    {% endwith %}
+                                {% else %}
+                                    {% with prefix="" %}
+                                        {{ lesson.datetime.hour }}:{{ prefix }}{{ lesson.datetime.minute}} (SRT)
+                                    {% endwith %}
+                                {% endif %}
+                                <br>
+                                
+                                {% with tags=lesson.project_id.types.all|type_names_to_list %}
+                                    {% if "Персональный" in tags %}
+                                        <i class="bi bi-person-fill" style='color: indigo'></i>
+                                    {% else %}
+                                        <i class="bi bi-people-fill" style='color: indigo'></i>
+                                    {% endif %}
+
+                                    {% if "Онлайн" in tags %}
+                                        <i class="bi bi-laptop" style='color: indigo'></i>
+                                    {% else %}
+                                        <i class="bi bi-door-open" style='color: indigo'></i>
+                                    {% endif %}
+                                {% endwith %}
+
+                                {{ event|join_student_names }}
+                            </div>
+                            <div class="event-count pr-2">
+                                {% if lesson.status == 'P' %}
+                                    <i class="bi bi-clock text-warning"></i> 
+                                {% elif lesson.status == 'C' %}
+                                    <i class="bi bi-x-circle text-danger"></i>
+                                {% else %}
+                                    <i class="bi bi-check-circle text-success"></i> 
+                                {% endif %}
+
+                                {% if lesson.is_paid %}
+                                    <i class="bi bi-wallet text-success"></i>
+                                {% else %}
+                                    <i class="bi bi-wallet text-danger"></i> 
+                                {% endif %}
+                                <br>
+                                {{ lesson.title }}
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="flush-collapse{{ lesson.pk }}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                        <div class="accordion-body">
+                            {% if event|length > 1 %}
+                                {% for lsn in event %}
+                                    {% with lsn.lesson_new_tasks.all as tasks %}
+                                        {% if tasks %}
+                                            <span class='task-header' style='font-weight: lighter; color: indigo'>Tasks: </span>
+                                            <span class='task-student-name'>{{ lsn.student_id }}</span>
+                                            <ul>
+                                                {% for task in tasks %}
+                                                    {% if task.base_name %}
+                                                        <li>{{ task.base_name }}</li>
+                                                    {% elif task.custom_name %}
+                                                        <li>{{ task.custom_name }}</li>
+                                                    {% endif %}
+                                                        
+                                                    {% endfor %}
+                                            </ul>
+                                            {% else %}
+                                                <span style='font-weight: lighter; color: indigo'>Tasks: </span>
+                                                -
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endfor %}
+                            {% else %}
+                                {% with lsn.lesson_new_tasks.all as tasks %}
+                                    {% if tasks %}
+                                        <span class='task-header' style='font-weight: lighter; color: indigo'>Tasks: </span>
+                                        <ul>
+                                            {% for task in tasks %}
+                                                {% if task.base_name %}
+                                                    <li>{{ task.base_name }}</li>
+                                                {% elif task.custom_name %}
+                                                    <li>{{ task.custom_name }}</li>
+                                                {% endif %}
+                                                    
+                                                {% endfor %}
+                                        </ul>
+                                        {% else %}
+                                            <span style='font-weight: lighter; color: indigo'>Tasks: </span>
+                                            заданий нет
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% endwith %}
 {% endfor %}

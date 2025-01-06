@@ -392,6 +392,15 @@ div.tab-content {
                             .accordion-header {
                                 font-family: "Lato", Arial, sans-serif;
                             }
+
+                            .task-header, .task-student-name {
+                                font-weight: lighter;
+                                color: indigo;
+                            }
+
+                            .task-student-name {
+                                opacity: .5;
+                            }
                         }
 
                         .accordion-button:not(.collapsed) {
@@ -399,9 +408,16 @@ div.tab-content {
                             background-color: var(--indigo-50);
                             box-shadow: inset 0 calc(-1* var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color);
                         }
+                        .accordion-button::after {
+                            margin-left: 1vw !important;
+                        }
 
                         .event-name {
                             margin-right: 1rem;
+                        }
+
+                        .event-count {
+                            margin-left: auto;
                         }
                     }
                 }

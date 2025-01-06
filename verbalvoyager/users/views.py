@@ -1,3 +1,4 @@
+from collections import defaultdict
 import logging
 from datetime import datetime
 from calendar import monthrange
@@ -16,7 +17,7 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteVi
 
 from users.forms import RegistrationUserForm, CustomPasswordResetForm
 from exercises.models import ExerciseWords, ExerciseDialog
-from event_calendar.models import Lesson, Project, Course
+from event_calendar.models import Lesson, LessonNew, Project, Course
 from event_calendar.forms import LessonForm
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
@@ -103,32 +104,47 @@ def user_profile(request):
     }
     
     if context['user_is_teacher']:
-        lessons = list(Lesson.objects.filter(teacher_id=user.pk).order_by(
-            'datetime').all().prefetch_related('students'))
+        projects = Project.objects.filter(teacher_id=user, is_active=True).values_list('pk', flat=True).all()
+        lessons_new = LessonNew.objects.filter(
+            project_id__in=tuple(projects)
+            ).prefetch_related('lesson_new_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
+        lessons = defaultdict(list)
+        
+        for lesson in lessons_new:
+            lessons[lesson.datetime].append(lesson)
 
-        context['events'] = lessons
-        context['events_count_total'] = len(lessons)
     else:
-        lessons = list(Lesson.objects.filter(
-            students=user).order_by('datetime').select_related('teacher_id').all()
-        )
-
+        lessons = Lesson.objects.filter(
+            students=user
+            ).prefetch_related('lesson_tasks').select_related('teacher_id').all()
+        
+        projects = Project.objects.filter(students=user, is_active=True).values_list('pk', flat=True).all()
+        # lessons_new = LessonNew.objects.filter(
+        #     project_id__in=tuple(projects)
+        #     ).prefetch_related(
+        #         'student_id', 'lesson_new_tasks'
+        #         ).select_related('teacher_id').all()
+        lessons_new = LessonNew.objects.filter(
+            project_id__in=tuple(projects)
+            ).distinct('datetime').all()
         context['projects'] = Project.objects.filter(students=user).all()
-        context['exercises'] = list(ExerciseWords.objects.filter(
+        context['exercises'] = ExerciseWords.objects.filter(
             student=user.pk,
             is_active=True
-        ).all())
-        context['dialogs'] = list(ExerciseDialog.objects.filter(
+        ).all()
+        context['dialogs'] = ExerciseDialog.objects.filter(
             student=user.pk,
             is_active=True
-        ).all())
-        context['events'] = lessons
-        context['events_count_total'] = len(lessons)
-        context['events_count_done'] = len(
-            [lesson for lesson in lessons if lesson.status == 'D']
-        )
-
+        ).all()
+    
+        
+    context['events'] = tuple(lessons.values())
+    # print(lessons.values()[0])
+    # context['new_events'] = lessons_new
+    # context['events_count_total'] = len(lessons)
+    # context['events_count_done'] = lessons.filter(status='D').count()
     context['courses'] = list(Course.objects.all())
+    
     return render(request, 'users/profile.html', context)
 
 class CustomPasswordResetView(PasswordResetView):

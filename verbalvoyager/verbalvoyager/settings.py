@@ -100,10 +100,20 @@ if config.admin_tools_enabled:
 WSGI_APPLICATION = 'verbalvoyager.wsgi.application'
 
 if config.DEBUG:
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.sqlite3',
+    #         'NAME': BASE_DIR / 'db.sqlite3',
+    #     }
+    # }
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'verbalvoyagertest',
+            'USER': 'django',
+            'PASSWORD': 'django',
+            'HOST': 'localhost',
+            'PORT': '5432'
         }
     }
 else:
@@ -117,6 +127,7 @@ else:
             'PORT': ''
         }
     }
+    
 
 # Authentication
 AUTH_USER_MODEL = 'users.User'

@@ -101,23 +101,33 @@ class StudentsListFilter(admin.SimpleListFilter):
                     student=self.value()
                 )
 
-
 @admin.register(ExerciseWords)
 class ExerciseAdmin(admin.ModelAdmin):
     filter_horizontal = ('words', )
     search_fields = ('teacher__username', )
     autocomplete_fields = ('student', )
     list_display = (
-        'pk', 'name', 'is_active', 'student', 'teacher', 'get_words'
+        'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access',
     )
     list_display_links = ('name', )
     list_filter = [
+        'is_active',
+        'external_access',
         TeachersListFilter,
         StudentsListFilter,
-        'is_active'
     ]
     save_as = True
     actions = ['make_active', 'make_inactive']
+    
+    fieldsets = (
+        ('ExerciseWord Main', {            
+            'fields': (('name', 'student'), 'words',  ),
+        }),
+        ('ExerciseWord Options', {
+            'classes': ('collapse', ),
+            'fields': ('teacher', 'is_active', 'external_access'),
+        })
+    )
     
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -145,6 +155,15 @@ class WordAdmin(admin.ModelAdmin):
     list_display = ('lang', 'word', 'translate')
     list_filter = ['lang', ]
     search_fields = ('word', 'translate')
+    fieldsets = (
+        ('Word Main', {            
+            'fields': ('lang', ('word', 'translate'), ),
+        }),
+        ('Word Extra', {
+            'classes': ('collapse', ),
+            'fields': ('sentences', ),
+        })
+    )
 
 
 @admin.register(ExerciseWordsResult)
@@ -180,14 +199,25 @@ class DialogAdmin(admin.ModelAdmin):
     autocomplete_fields = ('student', )
     filter_horizontal = ('words', )
     list_display = (
-        'pk', 'name', 'is_active', 'student', 'teacher', 'get_words',
+        'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access',
     )
     list_display_links = ('name', )
     list_filter = [
+        'is_active',
+        'external_access',
         TeachersListFilter,
         StudentsListFilter,
-        'is_active'
     ]
+    fieldsets = (
+        ('ExerciseDialog Main', {            
+            'fields': (('name', 'student'), 'words', 'text'),
+        }),
+        ('ExerciseDialog Options', {
+            'classes': ('collapse', ),
+            'fields': ('teacher', 'is_active', 'external_access'),
+        })
+    )
+    
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.select_related('student', 'teacher').prefetch_related('words')
@@ -206,7 +236,7 @@ class DialogAdmin(admin.ModelAdmin):
             raise ValidationError('No value for field_name')
     
     class Media:
-        js = ['admin/js/generate_dialog.js', ]
+        js = ['admin/js/generate_dialog_text.js',]
         css = {
                 'all': ('admin/css/dialog.css', )
             }

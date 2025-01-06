@@ -29,19 +29,20 @@
             <a id='done-btn' class="btn btn-success" href="{% url 'profile' %}" role="button" aria-disabled="false">Вернуться в Личный кабинет</a>
         </div>
     </div>
-    {% for message in text %}
-    <div class='row message-container'>
-        <div class='row message-row'>
-            <div class='col avatar-container'>
-                <img class='avatar' width='50' height='50' src="{% static "users/images/default_avatar.png" %}" alt="User photo">
-            </div>
-            <div class='col text-container'>
-                <div class='message'>
-                    {{ message }}
+    {% for message in messages %}
+        <div class='row message-container'>
+            <div class='row message-row'>
+                <div class='col avatar-container'>
+                    <img class='avatar' width='50' height='50' src="{% static "users/images/default_avatar.png" %}" alt="User photo">
+                    <span class='person-name'>{{ message.from }}</span>
+                </div>
+                <div class='col text-container'>
+                    <div class='message'>
+                        {{ message.text }}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     {% endfor %}
 </div>
 {% endblock %}

@@ -9,20 +9,20 @@ class CustomUserAdmin(UserAdmin):
         'username', 'last_name', 'first_name', 'get_groups', 'email',
     )
     fieldsets = (
-        ('Person Info', {'fields': ('first_name', 'last_name', 'email')}),
-        ('Permissions', {'fields': ('groups', )}),
-        ('Credentials',
+        ('User Info', {'fields': ('first_name', 'last_name', 'email')}),
+        ('User Permissions', {'fields': ('groups', )}),
+        ('User Credentials',
             {
                 'classes': ('collapse',),
                 'fields': ('username', 'password',)
             }
          ),
-        ('Advanced Permissions', {
+        ('User Advanced Permissions', {
             'classes': ('collapse',),
             'fields': ('is_staff', 'is_superuser', 'user_permissions')
             }
          ),
-        ('Important dates', 
+        ('User Dates', 
             {
                 'classes': ('collapse',),
                 'fields': ('last_login', 'date_joined')

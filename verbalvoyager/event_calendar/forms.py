@@ -67,6 +67,14 @@ class LessonAdminForm(forms.ModelForm):
         self.fields['students'].queryset = User.objects.filter(
             groups__name__in=['Student'])
 
+class LessonNewAdminForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(LessonNewAdminForm, self).__init__(*args, **kwargs)
+        self.fields['teacher_id'].queryset = User.objects.filter(
+            groups__name__in=['Teacher'])
+        self.fields['student_id'].queryset = User.objects.filter(
+            groups__name__in=['Student'])
+
 class ProjectForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectForm, self).__init__(*args, **kwargs)

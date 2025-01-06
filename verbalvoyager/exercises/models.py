@@ -63,6 +63,11 @@ class ExerciseWords(models.Model):
         verbose_name="Учитель"
         )
     is_active = models.BooleanField(default=True, verbose_name="Активен")
+    external_access = models.BooleanField(
+        verbose_name='Внешний доступ к упражнению',
+        default=False,
+        help_text='Если установлено, любой может получить доступ к упражнению без регистрации или авторизации',
+    )
 
     def get_words(self):
         words = [
@@ -115,6 +120,11 @@ class ExerciseDialog(models.Model):
         null=True,
         verbose_name="Учитель")
     is_active = models.BooleanField(default=True, verbose_name="Активен")
+    external_access = models.BooleanField(
+        verbose_name='Внешний доступ к упражнению',
+        default=False,
+        help_text='Если установлено, любой может получить доступ к упражнению без регистрации или авторизации',
+    )
 
     def save(self, *args, **kwargs):
         if not self.name:
