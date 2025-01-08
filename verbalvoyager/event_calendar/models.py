@@ -72,6 +72,9 @@ class BaseLessonTask(models.Model):
         verbose_name='Название обычного задания'
     )
     def __str__(self) -> str:
+        return self.name
+    
+    def __repr__(self) -> str:
         return f"{self.name} [id:{self.pk}]"
     
     class Meta:
@@ -122,10 +125,13 @@ class LessonTask(models.Model):
     
     def get_name(self):
         name = self.base_name.name if self.base_name else self.custom_name or 'Имя не задано'
-        return f"{name} [Lesson: {self.lesson_id}]"
+        return name
     
     def __str__(self):
         return self.get_name()
+    
+    def __repr__(self):
+        return f"{self.get_name()} [Lesson: {self.pk}]"
     
     get_name.short_description = 'Название'
     

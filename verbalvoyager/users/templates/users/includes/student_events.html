@@ -1,3 +1,5 @@
+{% load filters %}
+
 {% for event in events %}
     <div name='{{ event.datetime.day }}.{{ event.datetime.month }}.{{ event.datetime.year }}' class="event-card">
         <div class="accordion accordion-flush" id="accordionFlushExample">
@@ -5,6 +7,21 @@
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ event.pk }}" aria-expanded="false" aria-controls="flush-collapse{{ event.pk }}">
                         <div class="event-name"> 
+
+                            {% with tags=event.project_id.types.all|type_names_to_list %}
+                                {% if "Персональный" in tags %}
+                                    <i class="bi bi-person-fill" style='color: indigo'></i>
+                                {% else %}
+                                    <i class="bi bi-people-fill" style='color: indigo'></i>
+                                {% endif %}
+
+                                {% if "Онлайн" in tags %}
+                                    <i class="bi bi-laptop" style='color: indigo'></i>
+                                {% else %}
+                                    <i class="bi bi-door-open" style='color: indigo'></i>
+                                {% endif %}
+                            {% endwith %}
+
                             {% if event.datetime.minute < 10 %}
                                 {% with prefix=0 %}
                                     {{ event.datetime.hour }}:{{ prefix }}{{ event.datetime.minute}} (SRT)
@@ -14,8 +31,10 @@
                                     {{ event.datetime.hour }}:{{ prefix }}{{ event.datetime.minute}} (SRT)
                                 {% endwith %}
                             {% endif %}
+
                             <br>
-                            <i class="bi bi-mortarboard-fill"></i>
+
+                            <i class="bi bi-mortarboard-fill" style='color: indigo'></i>
                             {{ event.teacher_id.last_name }} {{ event.teacher_id.first_name }}
                         </div>
                         <div class="event-info">
@@ -32,30 +51,33 @@
                             {% else %}
                                 <i class="bi bi-wallet text-danger"></i> 
                             {% endif %}
+
                             <br>
+
                             {{ event.title }}
-                            {{ event.tasks.all }}
                         </div>
                     </button>
                 </h2>
                 <div id="flush-collapse{{ event.pk }}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                     <div class="accordion-body">
-                        {% with event.lesson_tasks.all as tasks %}
+                        {% with event.lesson_new_tasks.all as tasks %}
+                            <span class='task-header' style='font-weight: lighter; color: indigo'>Tasks: </span>
+                            
                             {% if tasks %}
-                                <span style='font-weight: lighter; color: indigo'>Tasks: </span>
-                                <ul>
+                                <div id='checklist'>
                                     {% for task in tasks %}
-                                        {% if task.base_name %}
-                                            <li>{{ task.base_name }}</li>
-                                        {% elif task.custom_name %}
-                                            <li>{{ task.custom_name }}</li>
-                                        {% endif %}
-                                            
-                                        {% endfor %}
-                                </ul>
-                                {% else %}
-                                    <span style='font-weight: lighter; color: indigo'>Tasks: </span>
-                                    -
+                                        <input disabled {% if task.is_completed %} checked {% endif %} value="1" name="r" type="checkbox" id="{{ task.pk }}">
+                                        <label for="{{ task.pk }}">
+                                            {% if task.base_name %}
+                                                {{ task.base_name }}
+                                            {% elif task.custom_name %}
+                                                {{ task.custom_name }}
+                                            {% endif %}
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <span class="not-tasks"> заданий нет </span>
                             {% endif %}
                         {% endwith %}
                     </div>

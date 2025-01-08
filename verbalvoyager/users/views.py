@@ -112,7 +112,8 @@ def user_profile(request):
         
         for lesson in lessons_new:
             lessons[lesson.datetime].append(lesson)
-
+            
+        lessons = tuple(lessons.values())
     else:
         lessons = Lesson.objects.filter(
             students=user
@@ -124,9 +125,11 @@ def user_profile(request):
         #     ).prefetch_related(
         #         'student_id', 'lesson_new_tasks'
         #         ).select_related('teacher_id').all()
-        lessons_new = LessonNew.objects.filter(
-            project_id__in=tuple(projects)
-            ).distinct('datetime').all()
+        lessons = LessonNew.objects.filter(
+            project_id__in=tuple(projects),
+            student_id=user,
+            ).prefetch_related('lesson_new_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
+        pprint(lessons)
         context['projects'] = Project.objects.filter(students=user).all()
         context['exercises'] = ExerciseWords.objects.filter(
             student=user.pk,
@@ -138,7 +141,7 @@ def user_profile(request):
         ).all()
     
         
-    context['events'] = tuple(lessons.values())
+    context['events'] = lessons
     # print(lessons.values()[0])
     # context['new_events'] = lessons_new
     # context['events_count_total'] = len(lessons)
