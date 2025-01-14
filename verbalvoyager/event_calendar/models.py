@@ -6,6 +6,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db.models.signals import pre_save, post_save, m2m_changed, pre_delete
 from django.dispatch import receiver
+from django.urls import reverse
+from django.contrib.admin.utils import quote
 
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
@@ -242,6 +244,9 @@ class LessonNew(models.Model):
         blank=True,
         null=True
     )
+    
+    def get_admin_edit_url(self):
+        return reverse(f'admin:{self._meta.app_label}_{self._meta.model_name}_change', args=[quote(self.pk)])
 
     # def __str__(self):
     #     return f"{self.datetime.strftime('%d.%m.%Y %H:%M')} | {self.get_students()} [{self.title}]"

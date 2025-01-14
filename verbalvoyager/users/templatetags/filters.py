@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django import template
 
 register = template.Library()
@@ -14,3 +16,11 @@ def join_student_names(value):
             for lesson in value
          ]
     )
+
+@register.filter(name="time")
+def time(value):
+    return f"{value.hour:02}:{value.minute:02}"
+
+@register.filter(name="less_that_one_day")
+def less_that_one_day(value):
+    return value - timedelta(days=1) <= datetime.today()

@@ -97,8 +97,9 @@ function init_calendar(date) {
 function get_card_warn () {
     let result = Array()
     let tags_without_warn_class = Array()
-    let dang_tags = Array.from(document.getElementsByClassName('bi text-danger'))
-    let warn_tags = Array.from(document.getElementsByClassName('bi text-warning'))
+    // let dang_tags = Array.from(document.getElementsByClassName('bi text-danger'))
+    let dang_tags = Array();
+    let warn_tags = Array.from(document.getElementsByClassName('bi-exclamation-triangle'))
 
     dang_tags.forEach( (tag) => {
         tags_without_warn_class.push(tag)

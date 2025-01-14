@@ -3,21 +3,17 @@
 {% for event in events %}
 
     {% with lesson=event|first %}
-        <div name="{{ lesson.datetime.day }}.{{ lesson.datetime.month }}.{{ lesson.datetime.year }}" class="event-card">
+        <div class="event-card" name="{{ lesson.datetime.day }}.{{ lesson.datetime.month }}.{{ lesson.datetime.year }}">
             <div class="accordion accordion-flush" id="accordionFlushExample">
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ lesson.pk }}" aria-expanded="false" aria-controls="flush-collapse{{ lesson.pk }}">
                             <div class="event-name">
+                                
+                                {{ lesson.datetime|time }} (SRT)
 
-                                {% if lesson.datetime.minute < 10 %}
-                                    {% with prefix=0 %}
-                                        {{ lesson.datetime.hour }}:{{ prefix }}{{ lesson.datetime.minute}} (SRT)
-                                    {% endwith %}
-                                {% else %}
-                                    {% with prefix="" %}
-                                        {{ lesson.datetime.hour }}:{{ prefix }}{{ lesson.datetime.minute}} (SRT)
-                                    {% endwith %}
+                                {% if not lesson.is_paid and lesson.status != 'M' and lesson.datetime|less_that_one_day %}
+                                    <i class="bi bi-exclamation-triangle"></i>
                                 {% endif %}
 
                                 <br>
@@ -40,71 +36,105 @@
                                 {{ event|join_student_names }}
 
                             </div>
-                            <div class="event-count pr-2">
-                                {% if lesson.status == 'P' %}
-                                    <i class="bi bi-clock text-warning"></i> 
-                                {% elif lesson.status == 'C' %}
-                                    <i class="bi bi-x-circle text-danger"></i>
-                                {% else %}
-                                    <i class="bi bi-check-circle text-success"></i> 
-                                {% endif %}
-
-                                {% if lesson.is_paid %}
-                                    <i class="bi bi-wallet text-success"></i>
-                                {% else %}
-                                    <i class="bi bi-wallet text-danger"></i> 
-                                {% endif %}
-                                <br>
+                            <div class="event-count">
                                 {{ lesson.title }}
                             </div>
                         </button>
                     </h2>
                     <div id="flush-collapse{{ lesson.pk }}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                         <div class="accordion-body">
-
                             {% if event|length > 1 %}
                                 {% for lsn in event %}
-                                    {% with lsn.lesson_new_tasks.all as tasks %}
-                                        <span class='task-header' style='font-weight: lighter; color: indigo'>Tasks: </span>
-                                        <span class='task-student-name'>{{ lsn.student_id }}</span>
+                                    <div class="lesson-info">
+                                        
+                                        {% with lsn.lesson_new_tasks.all as tasks %}
 
-                                        {% if tasks %}
-                                            <div id='checklist'>
-                                                {% for task in tasks %}
-                                                    <input {% if task.is_completed %} checked {% endif %} value="1" name="task" type="checkbox" id="{{ task.pk }}">
-                                                    <label for="{{ task.pk }}">
-                                                        {% if task.base_name %}
-                                                            {{ task.base_name }}
-                                                        {% elif task.custom_name %}
-                                                            {{ task.custom_name }}
-                                                        {% endif %}
-                                                    </label>
-                                                {% endfor %}
-                                            </div>
-                                        {% else %}
-                                            <span class="not-tasks"> заданий нет </span>
-                                        {% endif %}
-                                    {% endwith %}
+                                        <div id="{{ lsn.pk }}" class="event-count event-status-changer pr-2">
+                                            <span class='task-student-name'>{{ lsn.student_id }}</span>
+
+                                            {% if lesson.status == 'P' %}
+                                                <i class="bi bi-clock" name="planed"></i> 
+                                            {% elif lesson.status == 'C' %}
+                                                <i class="bi bi-x-circle" name="cancel"></i>
+                                            {% elif lesson.status == 'M' %}
+                                                <i class="bi bi-person-x" name="missing"></i>
+                                            {% else %}
+                                                <i class="bi bi-check-circle" name="done"></i> 
+                                            {% endif %}
+                                            
+                                            <i class="bi bi-wallet {% if lesson.is_paid %} paid {% else %} not-paid {% endif %}"></i>
+                                        </div>
+                                            <span class='task-header' style='font-weight: lighter; color: indigo'>Tasks: </span>
+
+                                            {% if tasks %}
+                                                <div id='checklist'>
+                                                    {% for task in tasks %}
+                                                        <input {% if task.is_completed %} checked {% endif %} name="task" type="checkbox" id="{{ task.pk }}">
+                                                        <label for="{{ task.pk }}">
+                                                            {% if task.base_name %}
+                                                                {{ task.base_name }}
+                                                            {% elif task.custom_name %}
+                                                                {{ task.custom_name }}
+                                                            {% endif %}
+                                                        </label>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                <span class="not-tasks"> заданий нет </span>
+                                            {% endif %}
+                                        {% endwith %}
+
+                                        <div id="panel-edit-event" class="button-panel panel-lesson">
+                                            <a id="btn-edit-event" class="event-button edit-button" href="{{ lsn.get_admin_edit_url }}">
+                                                <i class="bi bi-pen-fill edit-icon"></i>
+                                            </a>
+                                        </div>
+                                    </div>
                                 {% endfor %}
+                                
                             {% else %}
                                 {% with lesson.lesson_new_tasks.all as tasks %}
-                                    <span class='task-header' style='font-weight: lighter; color: indigo'>Tasks: </span>
+                                    <div class="lesson-info">
+                                        <div id="{{ lesson.pk }}" class="event-count event-status-changer pr-2">
+                                            <span class='task-student-name'>{{ lsn.student_id }}</span>
 
-                                    {% if tasks %}
-                                        <ul>
-                                            {% for task in tasks %}
-                                                {% if task.base_name %}
-                                                    <li>{{ task.base_name }}</li>
-                                                {% elif task.custom_name %}
-                                                    <li>{{ task.custom_name }}</li>
-                                                {% endif %}
-                                                    
-                                            {% endfor %}
-                                        </ul>
-                                    {% else %}
-                                        заданий нет
-                                    {% endif %}
-                                {% endwith %}
+                                            {% if lesson.status == 'P' %}
+                                                <i class="bi bi-clock" name="planed"></i> 
+                                            {% elif lesson.status == 'C' %}
+                                                <i class="bi bi-x-circle" name="cancel"></i>
+                                            {% elif lesson.status == 'M' %}
+                                                <i class="bi bi-person-x" name="missing"></i>
+                                            {% else %}
+                                                <i class="bi bi-check-circle" name="done"></i> 
+                                            {% endif %}
+                                            
+                                            <i class="bi bi-wallet {% if lesson.is_paid %} paid {% else %} not-paid {% endif %}"></i>
+
+                                        </div>
+                                        <span class='task-header' style='font-weight: lighter; color: indigo'>Tasks: </span>
+
+                                        {% if tasks %}
+                                            <ul>
+                                                {% for task in tasks %}
+                                                    {% if task.base_name %}
+                                                        <li>{{ task.base_name }}</li>
+                                                    {% elif task.custom_name %}
+                                                        <li>{{ task.custom_name }}</li>
+                                                    {% endif %}
+                                                        
+                                                {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            заданий нет
+                                        {% endif %}
+                                    {% endwith %}
+
+                                    <div id="panel-edit-event" class="button-panel panel-lesson">
+                                        <a id="btn-edit-event" class="event-button edit-button" href="{{ lesson.get_admin_edit_url }}">
+                                            <i class="bi bi-pen-fill edit-icon"></i>
+                                        </a>
+                                    </div>
+                                </div>
                             {% endif %}
                         </div>
                     </div>
