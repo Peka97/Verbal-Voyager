@@ -2,6 +2,7 @@ import { showToast } from './modules/toast_notification.js';
 import { toNextStep } from './modules/next_step.js';
 import { pagination, updatePagination } from './modules/pagination.js';
 import { send_points } from './modules/send_points.js';
+import { logging } from './modules/logging.js';
 
 pagination.forEach(el => {
     el.onclick = (event) => {
@@ -17,10 +18,11 @@ function checkAnswer() {
     let user_input = String(input_el.value).toLowerCase();
     let translate = String(input_el.id).toLowerCase();
 
-    if (user_input == translate) {
+    if (user_input === translate) {
         check_words[word.id] = true;
         input_el.classList.add('correct');
         input_el.classList.remove('wrong');
+        logging(user_input, translate, 'correct');
  
         if (!checkAllAnswersTrue()) {
             showToast('Правильно! Переходи к следующему слову.');
@@ -30,6 +32,7 @@ function checkAnswer() {
         showToast('Неправильно, подумай ещё раз.');
         input_el.classList.remove('correct');
         input_el.classList.add('wrong');
+        logging(user_input, translate, 'wrong');
 
         if (points > 1) {
             points--;
@@ -52,7 +55,7 @@ function fillCheckWords() {
 
 function checkAllAnswersTrue() {
     for (let key in check_words) {
-        if (check_words[key] != true) {
+        if (check_words[key] !== true) {
             return false;
         }
     }
