@@ -11,10 +11,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
+
 
 from verbalvoyager.settings import DEBUG_LOGGING_FP
+from .utils import generate_dialog
 
-from .models import Word, ExerciseWords, ExerciseDialog, ExerciseResult
+from .models import Word, ExerciseWords, ExerciseDialog, ExerciseWordsResult, ExerciseDialogResult
 
 log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 logger = logging.getLogger(__name__)
@@ -26,7 +29,6 @@ logger.addHandler(handler)
 User = get_user_model()
 
 
-@login_required(login_url="/users/auth")
 def exercises_words(request, ex_id, step):
     titles = {1: 'Запоминаем', 2: 'Выбираем', 3: 'Расставляем', 4: 'Переводим'}
     popover_data = {
@@ -57,9 +59,14 @@ def exercises_words(request, ex_id, step):
             'В данном упражнении ввод не чувствителен к регистру, а значит можешь написать слово и с маленькой, и с большой буквы (даже если все буквы будут маленькими или большими). Главное - проверить насколько ты хорошо теперь умеешь использовать полученные знания.'
         }
     }
-    user = request.user
 
-    exercise = get_object_or_404(ExerciseWords, pk=ex_id, student=user)
+    exercise = get_object_or_404(ExerciseWords, pk=ex_id)
+    
+    if not request.user.is_teacher() and not exercise.external_access:
+        if not request.user.is_authenticated:
+            return redirect(f"/users/auth?next={request.path}")
+        if exercise.student != request.user:
+            raise Http404("Запрашиваемый объект не найден")
 
     words_obj = list(exercise.words.all())
     words = get_words(words_obj)
@@ -85,31 +92,36 @@ def exercises_words(request, ex_id, step):
 
     return render(request, template_name, context)
 
-
-@login_required(login_url="/users/auth")
 def exercises_dialog(request, ex_id):
-    user = request.user
+    dialog = get_object_or_404(ExerciseDialog, pk=ex_id)
+    
+    if not request.user.is_teacher() and not dialog.external_access:
+        if not request.user.is_authenticated:
+            return redirect(f"/users/auth?next={request.path}")
+        if dialog.student != request.user:
+            raise Http404("Запрашиваемый объект не найден")
+    
+    raw_dialog = list(filter(lambda s: len(s) > 1, dialog.text.split('\n')))
 
-    dialog = get_object_or_404(ExerciseDialog, pk=ex_id, student=user)
-    messages = list(filter(lambda s: len(s) > 1, dialog.text.split('\n')))
-
-    scene = messages[0] if messages[0].startswith('Scene:') else None
-    text = messages[1:] if scene else messages
-    name_1 = text[0][:text[0].index(':')]
-    name_2 = text[1][:text[1].index(':')]
-    text = [message.removeprefix(f"{name_1}: ").removeprefix(
-        f"{name_2}: ") for message in text]
+    scene = raw_dialog[0] if raw_dialog[0].startswith('Scene:') or raw_dialog[0].startswith('Situation:') else None
+    raw_text = raw_dialog[1:] if scene else raw_dialog
+    messages = []
+    for message in raw_text:
+        person_name, message_text = message.split(':', 1)
+        messages.append(
+            {
+                'from': person_name,
+                'text': message_text
+            }
+        )
     words = dialog.words.all()
 
     context = {
         'scene': scene,
-        'text': text,
+        'messages': messages,
         'words': get_words(words),
-        'name_1': name_1,
-        'name_2': name_2,
     }
     return render(request, 'exercises/dialog.html', context)
-
 
 def get_words(words: list[ExerciseWords]):
     result = []
@@ -170,7 +182,7 @@ def exercises_words_update(request, ex_id, step_num):
         )
         value = data.get('value')
 
-        obj, _ = ExerciseResult.objects.get_or_create(
+        obj, _ = ExerciseWordsResult.objects.get_or_create(
             words=ExerciseWords.objects.get(pk=ex_id),
         )
         obj.__dict__[step_num] = value
@@ -194,7 +206,7 @@ def exercises_dialog_update(request, ex_id):
         )
 
         value = data.get('value')
-        obj, _ = ExerciseResult.objects.get_or_create(
+        obj, _ = ExerciseDialogResult.objects.get_or_create(
             dialog=ExerciseDialog.objects.get(pk=ex_id),
         )
         obj.__dict__['step_1'] = value
@@ -208,7 +220,7 @@ def exercises_dialog_update(request, ex_id):
 
 
 def get_api_for_words(words: list[Word]):
-    img_size = '300x300'
+    # img_size = '300x300'
     result = []
 
     url = 'https://dictionary.skyeng.ru/api/public/v1/words/search?search=stone'
@@ -270,6 +282,7 @@ def get_api_for_words(words: list[Word]):
 
     return result
 
+<<<<<<< HEAD
 
 @login_required
 def logging(request, ex_id, step_num):
@@ -287,3 +300,17 @@ def logging(request, ex_id, step_num):
             )
 
     return HttpResponse({'status': 200})
+=======
+def generate_dialog_view(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            words = data.get('words')
+            dialog_text = generate_dialog(words, sentence_num=6, level="B2")
+            dialog_text = dialog_text.replace('**', '')
+            return JsonResponse({'result': dialog_text})
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+>>>>>>> origin/dev

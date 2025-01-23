@@ -2,12 +2,15 @@
 {% load static %}
 {% load tz %}
 
+{% comment %} {% load filters %} {% endcomment %}
+
 {% block title %}Профиль{% endblock  %}
 
 {% block 'style' %}
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
 
 	<link rel="stylesheet" href="{% static 'users/css/profile.css' %}">
+	<link rel="stylesheet" href="{% static 'users/css/checkbox.css' %}">
 {% endblock  %}
 
 {% block content %}
@@ -116,7 +119,9 @@
 	<!-- JQuery -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	<!-- Custom JS -->
+	<script src="{% static 'pages/js/popovers_on.js' %}"></script>
 	<script src="{% static 'event_calendar/js/main.js' %}"></script>
+	<script type="module" src="{% static 'users/js/calendar_send_event_update.js' %}"></script>
 	<script>
 		// Timezone settings
 		const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;

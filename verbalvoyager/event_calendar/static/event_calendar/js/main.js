@@ -39,6 +39,7 @@ function init_calendar(date) {
     var event_days = Array()
     var re = /^\d{1,2}.\d{1,2}.\d{2,4}$/
     var cards_warn = get_card_warn()
+    var cards_dang = get_card_dang()
 
     cards.forEach( (card) => {
         card.classList.add('hidden')
@@ -78,6 +79,9 @@ function init_calendar(date) {
             if(event_days.includes(full_day) && cards_warn.includes(full_day)) {
                 curr_date.addClass("event-date-warn");
             }
+            if(event_days.includes(full_day) && cards_dang.includes(full_day)) {
+                curr_date.addClass("event-date-dang");
+            }
             if (event_days.includes(full_day)) {
                 curr_date.addClass("event-date");
             }
@@ -97,15 +101,37 @@ function init_calendar(date) {
 function get_card_warn () {
     let result = Array()
     let tags_without_warn_class = Array()
-    let dang_tags = Array.from(document.getElementsByClassName('bi text-danger'))
-    let warn_tags = Array.from(document.getElementsByClassName('bi text-warning'))
+    // let dang_tags = [...document.getElementsByClassName('bi-exclamation-octagon')];
+    let warn_tags = [...document.getElementsByClassName('bi-exclamation-triangle')];
+
+    // dang_tags.forEach( (tag) => {
+    //     tags_without_warn_class.push(tag)
+    // })
+    warn_tags.forEach( (tag) => {
+        tags_without_warn_class.push(tag)
+    })
+    
+    tags_without_warn_class.forEach( (tag) => {
+        let card = tag.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
+        let card_date = card.attributes.name.value
+        result.push(card_date)
+    }
+    )
+    return result
+}
+
+function get_card_dang () {
+    let result = Array()
+    let tags_without_warn_class = Array()
+    let dang_tags = [...document.getElementsByClassName('bi-exclamation-octagon')];
+    // let warn_tags = [...document.getElementsByClassName('bi-exclamation-triangle')];
 
     dang_tags.forEach( (tag) => {
         tags_without_warn_class.push(tag)
     })
-    warn_tags.forEach( (tag) => {
-        tags_without_warn_class.push(tag)
-    })
+    // warn_tags.forEach( (tag) => {
+    //     tags_without_warn_class.push(tag)
+    // })
     
     tags_without_warn_class.forEach( (tag) => {
         let card = tag.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
@@ -283,115 +309,8 @@ function check_events(day, month, year) {
 }
 
 // Given data for events in JSON format
-
-
 var event_data = {
-    "events": [
-        {"occasion": " Some text ",
-        "invited_count": 120,
-        "year": 2023,
-        "month": 8,
-        "day": 23,
-        "cancelled": false},
-    {
-        "occasion": " Repeated Test Event ",
-        "invited_count": 120,
-        "year": 2023,
-        "month": 8,
-        "day": 23,
-        "cancelled": true
-    },
-    {
-        "occasion": " Repeated Test Event ",
-        "invited_count": 120,
-        "year": 2020,
-        "month": 5,
-        "day": 10,
-        "cancelled": true
-    },
-        {
-        "occasion": " Repeated Test Event ",
-        "invited_count": 120,
-        "year": 2020,
-        "month": 5,
-        "day": 10,
-        "cancelled": true
-    },
-    {
-        "occasion": " Repeated Test Event ",
-        "invited_count": 120,
-        "year": 2020,
-        "month": 5,
-        "day": 10
-    },
-        {
-        "occasion": " Repeated Test Event ",
-        "invited_count": 120,
-        "year": 2020,
-        "month": 5,
-        "day": 10,
-        "cancelled": true
-    },
-    {
-        "occasion": " Repeated Test Event ",
-        "invited_count": 120,
-        "year": 2020,
-        "month": 5,
-        "day": 10
-    },
-        {
-        "occasion": " Repeated Test Event ",
-        "invited_count": 120,
-        "year": 2020,
-        "month": 5,
-        "day": 10,
-        "cancelled": true
-    },
-    {
-        "occasion": " Repeated Test Event ",
-        "invited_count": 120,
-        "year": 2020,
-        "month": 5,
-        "day": 10
-    },
-        {
-        "occasion": " Repeated Test Event ",
-        "invited_count": 120,
-        "year": 2020,
-        "month": 5,
-        "day": 10,
-        "cancelled": true
-    },
-    {
-        "occasion": " Repeated Test Event ",
-        "invited_count": 120,
-        "year": 2020,
-        "month": 5,
-        "day": 10
-    },
-    {
-        "occasion": " Test Event",
-        "invited_count": 120,
-        "year": 2020,
-        "month": 5,
-        "day": 11
-    }
-    ]
+    "events": []
 };
-
-const months = [ 
-    "January", 
-    "February", 
-    "March", 
-    "April", 
-    "May", 
-    "June", 
-    "July", 
-    "August", 
-    "September", 
-    "October", 
-    "November", 
-    "December" 
-];
 
 })(jQuery);

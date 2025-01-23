@@ -307,7 +307,7 @@ div.tab-content {
                                 position: relative;
                             }
 
-                            .table-date:not(.active-date):hover {
+                            .table-date:not(.active-date, .nil):hover {
                                 border-color: var(--indigo-300);
                             }
 
@@ -343,6 +343,7 @@ div.tab-content {
                             .active-date {
                                 color: white;
                                 background-color: var(--indigo-700);
+                                opacity: 1 !important;
                             }
                         }
                     }

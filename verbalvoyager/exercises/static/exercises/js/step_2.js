@@ -1,4 +1,4 @@
-import { showToast } from './modules/toast_notification.js';
+import { showToast } from '/static/pages/js/modules/toast_notification.js';
 import { toNextStep } from './modules/next_step.js';
 import { pagination, updatePagination } from './modules/pagination.js';
 import { send_points } from './modules/send_points.js';
@@ -17,9 +17,6 @@ let points = words.length;
 updateWordCheckHandlers();
 
 let wordBlocks = [... document.getElementsByClassName('word__block')]
-console.dir(wordBlocks);
-
-
 
 function updateWordCheckHandlers() {
     let curr_page = Number(Array.from(document.getElementsByClassName('page-item active'))[0].id.split('_')[1])

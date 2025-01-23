@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.forms import ModelForm
 from django.contrib.auth import get_user_model
 
-from .models import Lesson, ProjectType
+from .models import Lesson, ProjectType, LessonTask
 
 
 User = get_user_model()
@@ -58,28 +58,27 @@ class LessonForm(ModelForm):
         model = Lesson
         fields = "__all__"
         exclude = ("datetime", )
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super(LessonForm, self).__init__(*args, **kwargs)
-
-        for field in self.fields:
-            pass
-            # if field == 'is_paid':
-            #     continue
-            # self.fields[field].widget.attrs['class'] = 'form-control'
-            # self.fields[field].widget.attrs['placeholder'] = field
-
-
+            
 class LessonAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(LessonAdminForm, self).__init__(*args, **kwargs)
-        self.fields['teacher'].queryset = User.objects.filter(
+        self.fields['teacher_id'].queryset = User.objects.filter(
             groups__name__in=['Teacher'])
         self.fields['students'].queryset = User.objects.filter(
             groups__name__in=['Student'])
 
+class LessonAdminForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(LessonAdminForm, self).__init__(*args, **kwargs)
+        self.fields['teacher_id'].queryset = User.objects.filter(
+            groups__name__in=['Teacher'])
+        self.fields['student_id'].queryset = User.objects.filter(
+            groups__name__in=['Student'])
 
 class ProjectForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ProjectForm, self).__init__(*args, **kwargs)
+    
     students = forms.ModelChoiceField(
         queryset=User.objects.exclude(username__startswith='_') &
         User.objects.exclude(username__startswith='test_') &
@@ -95,9 +94,9 @@ class ProjectForm(forms.ModelForm):
 class ProjectAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectAdminForm, self).__init__(*args, **kwargs)
-        self.fields['teacher'].queryset = User.objects.filter(
+        self.fields['teacher_id'].queryset = User.objects.filter(
             groups__name__in=['Teacher'])
-        self.fields['teacher'].initial = User.objects.get(
+        self.fields['teacher_id'].initial = User.objects.get(
             username='Elizabeth')
         self.fields['students'].queryset = User.objects.filter(
             groups__name__in=['Student'])

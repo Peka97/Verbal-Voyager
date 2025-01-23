@@ -1,3 +1,4 @@
+from collections import defaultdict
 import logging
 from datetime import datetime
 from calendar import monthrange
@@ -98,107 +99,50 @@ def user_logout(request):
 @login_required(login_url="/users/auth")
 def user_profile(request):
     user = request.user
-    courses = list(Course.objects.all())
-
-    if user.is_teacher():
-        context = {
-            'user_is_teacher': True,
-        }
-        lessons = list(Lesson.objects.filter(teacher=user.pk).order_by(
-            'datetime').all().prefetch_related('students'))
-        calendar = get_calendar(lessons)
-
-        # Форма отключена за ненадобностью
-        # lesson_form = LessonForm()
-        # lesson_form.fields['teacher'].initial = user
-        # context['lesson_form'] = lesson_form
-
-        context['events'] = lessons
-        context['events_count_total'] = len(lessons)
-        context['calendar'] = calendar
+    context = {
+        'user_is_teacher': user.is_teacher()
+    }
+    
+    if context['user_is_teacher']:
+        projects = Project.objects.filter(teacher_id=user).values_list('pk', flat=True).all()
+        lessons_new = Lesson.objects.filter(
+            project_id__in=tuple(projects)
+            ).prefetch_related('lesson_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
+        lessons = defaultdict(list)
+        
+        for lesson in lessons_new:
+            lessons[lesson.datetime].append(lesson)
+        
+        lessons = tuple(lessons.values())
     else:
-        context = {
-            'user_is_teacher': False,
-        }
-        exercises = list(ExerciseWords.objects.filter(
-            student=user.pk,
-            is_active=True
-        ).all())
-        dialogs = list(ExerciseDialog.objects.filter(
-            student=user.pk,
-            is_active=True
-        ).all())
-        lessons = list(Lesson.objects.filter(
-            students=user).order_by('datetime').select_related('teacher').all()
-        )
-        calendar = get_calendar(lessons)
-        projects = get_projects(user)
-
+        lessons = Lesson.objects.filter(
+            student_id=user
+            ).prefetch_related('lesson_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
+        
+        projects = Project.objects.filter(students=user).values_list('pk', flat=True).all()
+        # lessons = Lesson.objects.filter(
+        #     project_id__in=tuple(projects),
+        #     student_id=user,
+        #     ).prefetch_related('lesson_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
         context['projects'] = projects
-        context['exercises'] = exercises
-        context['dialogs'] = dialogs
-        context['events'] = lessons
-        context['events_count_total'] = len(lessons)
-        context['events_count_done'] = len(
-            [lesson for lesson in lessons if lesson.status == 'D'])
-        context['calendar'] = calendar
-
-    context['courses'] = courses
+        context['exercises'] = ExerciseWords.objects.filter(
+            student=user.pk,
+            is_active=True
+        ).all()
+        context['dialogs'] = ExerciseDialog.objects.filter(
+            student=user.pk,
+            is_active=True
+        ).all()
+        
+    context['events'] = lessons
+    # print(tuple(lessons)[0].lesson_tasks)
+    # print(lessons.values()[0])
+    # context['new_events'] = lessons_new
+    # context['events_count_total'] = len(lessons)
+    # context['events_count_done'] = lessons.filter(status='D').count()
+    context['courses'] = tuple(Course.objects.all())
+    
     return render(request, 'users/profile.html', context)
-
-
-def get_calendar(lessons: list[dict], tzname='Europe/Saratov'):
-    current_cell = 0
-    day_idx = 0
-
-    result = '<tr class="table-row"></tr>'
-    today = datetime.now(pytz.timezone(tzname))
-    weekday_start_month = datetime(today.year, today.month, 1).weekday()
-    days = monthrange(today.year, today.month)
-    days_range = range(days[0], days[1] + 1)
-
-    result += '<tr class="table-row"></tr>'
-
-    for _ in range(weekday_start_month):
-        result += '<td class="table-date nil"></td>'
-        current_cell += 1
-
-    while True:
-        if current_cell == 7:
-            current_cell = 0
-            result += '</tr><tr class="table-row">'
-
-        try:
-            current_day = days_range[day_idx]
-        except IndexError:
-            result += '</tr>'
-            break
-
-        class_name = 'table-date'
-
-        if current_day == today.day:
-            class_name += ' active-date'
-
-        for lesson in lessons:
-            if isinstance(lesson, dict):
-                if lesson['datetime'].day == current_day:
-                    class_name += ' event-date'
-            else:
-                if lesson.datetime.day == current_day:
-                    class_name += ' event-date'
-
-        result += f'<td class="{class_name}">{current_day}</td>'
-
-        current_cell += 1
-        day_idx += 1
-
-    return result
-
-
-def get_projects(user: User):
-    projects = Project.objects.filter(students=user).all()
-    return projects if projects else None
-
 
 class CustomPasswordResetView(PasswordResetView):
     form_class = CustomPasswordResetForm

@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 
-# urlpatterns = [
-#     path('', views.calendar, name='calendar'),
-#     path('add', views.add_event, name='add_event')
-# ]
+urlpatterns = [
+    path('json/filter_lessons_by_student/<int:student_id>', views.filter_lessons_by_student, name='filter_lessons_by_student'),
+    path('json/update/', views.update, name='update'),
+]

@@ -18,4 +18,6 @@ urlpatterns = [
          name='exercises_dialog_update'),
     path('logging/<int:ex_id>/<str:step_num>', views.logging, name='logging'),
 
+    path('dialog/json/generate_dialog', views.generate_dialog_view, name='filter_lessons_by_student'),
+
 ]
