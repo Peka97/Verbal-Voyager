@@ -165,7 +165,7 @@ def exercises_words_update(request, ex_id, step_num):
     if request.method == 'POST':
         data = json.loads(request.body)
 
-        logger.error(
+        logger.info(
             f'POST REQUEST:\n Ex Dialog:{ex_id} | {data}'
         )
         value = data.get('value')
@@ -219,9 +219,10 @@ def get_api_for_words(words: list[Word]):
         params['search'] = word['word']
 
         try:
-            resp = requests.get(url, params, headers=headers).json()[0]
+            resp = requests.get(url, params, headers=headers)
+            resp_json = resp.json()[0]
         except IndexError:
-            msg = f"\nWord: {word}.\nResp: {requests.get(url, params, headers=headers).text}."
+            msg = f"\nWord: {word}.\nResp: {resp.text}."
             logger.exception(msg)
 
             word_text = word['word']
@@ -231,11 +232,11 @@ def get_api_for_words(words: list[Word]):
             another_means = []
             sound_url = None
         else:
-            word_text = resp['text']
-            word_translation = resp['meanings'][0]['translation']
-            transcription = resp['meanings'][0]['transcription']
+            word_text = resp_json['text']
+            word_translation = resp_json['meanings'][0]['translation']
+            transcription = resp_json['meanings'][0]['transcription']
 
-            for mean in resp['meanings']:
+            for mean in resp_json['meanings']:
                 resp_translation = mean['translation']['text'].lower().replace(
                     'ё', 'е')
                 word_translation = word['translate'].lower().replace('ё', 'е')
@@ -250,12 +251,11 @@ def get_api_for_words(words: list[Word]):
 
             another_means = set([
                 mean['translation']['text'].lower().replace('ё', 'е')
-                for mean in resp['meanings']
+                for mean in resp_json['meanings']
                 if mean['translation']['text'].lower().replace('ё', 'е') != word['translate'].lower().replace('ё', 'е')
             ])
-            sound_url = resp['meanings'][0]['soundUrl']
+            sound_url = resp_json['meanings'][0]['soundUrl']
 
-            # logger.info(resp)
         finally:
             result.append(
                 {
