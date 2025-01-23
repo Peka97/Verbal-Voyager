@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.forms.models import model_to_dict
 from django.db import transaction
-from .models import Lesson, LessonNew, LessonTask, ProjectTask
+from .models import Lesson, LessonTask, ProjectTask
 
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
@@ -25,6 +25,7 @@ def filter_lessons_by_student(request, student_id):
 
 def update(request):
     data = json.loads(request.body)
+    
     if data.get('tasks'):
         tasks_obj = LessonTask.objects.filter(pk__in=data['tasks'].keys()).all()
         tasks = {task.pk: task for task in tasks_obj}
@@ -38,21 +39,21 @@ def update(request):
             LessonTask.objects.bulk_update(tasks.values(), ('is_completed',))
     
     if data.get('lessons'):
-        lesson_obj = LessonNew.objects.filter(pk__in=data['lessons'].keys()).all()
+        lesson_obj = Lesson.objects.filter(pk__in=data['lessons'].keys()).all()
         lessons = {lesson.pk: lesson for lesson in lesson_obj}
         
         for lesson_pk, lesson_status in data['lessons'].items():
-            updated_lesson= lessons.get(int(lesson_pk))
+            updated_lesson = lessons.get(int(lesson_pk))
             
             if updated_lesson:
                 
                 if lesson_status.get('performing') is not None:
-                    updated_lesson.status = lesson_status['performing'][0].upper()
+                    updated_lesson.status = lesson_status['performing']
                 if lesson_status.get('payment') is not None:
                     updated_lesson.is_paid = lesson_status['payment']
         
         with transaction.atomic():
-            LessonNew.objects.bulk_update(lessons.values(), ('status', 'is_paid',))
+            Lesson.objects.bulk_update(lessons.values(), ('status', 'is_paid',))
             
         
     return JsonResponse({'status': 'OK'})

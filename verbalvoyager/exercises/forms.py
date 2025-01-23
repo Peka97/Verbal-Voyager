@@ -35,16 +35,16 @@ class ExerciseForm(forms.ModelForm):
     )
 
 
-class ExerciseAdminForm(forms.ModelForm):
+class ExerciseWordsAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(ExerciseAdminForm, self).__init__(*args, **kwargs)
+        super(ExerciseWordsAdminForm, self).__init__(*args, **kwargs)
         self.fields['teacher'].queryset = User.objects.filter(
             groups__name__in=['Teacher'])
         self.fields['student'].queryset = User.objects.filter(
             groups__name__in=['Student'])
 
 
-class DialogAdminForm(forms.ModelForm):
+class ExerciseDialogAdminForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
 

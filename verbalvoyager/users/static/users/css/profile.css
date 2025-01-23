@@ -343,6 +343,10 @@ div.tab-content {
                                 background-color: var(--amber-a700);
                             }
 
+                            .event-date-dang::after {
+                                background-color: var(--red-a700);
+                            }
+
                             .active-date {
                                 color: white;
                                 background-color: var(--indigo-700);
@@ -398,6 +402,7 @@ div.tab-content {
 
                             .accordion-body, .lesson-info {
                                 position: relative;
+                                margin-bottom: .8rem;
                             }
 
                             .task-header, .task-student-name {
@@ -433,7 +438,7 @@ div.tab-content {
                             color: var(--green-a700);
                         }
 
-                        .bi-wallet.not-paid, .bi-x-circle, .bi-person-x {
+                        .bi-wallet.not-paid, .bi-x-circle, .bi-person-x, .bi-exclamation-octagon {
                             color: var(--red-a700);
                         }
 

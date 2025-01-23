@@ -68,37 +68,37 @@ class Review(models.Model):
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
     
-class BaseLessonTask(models.Model):
-    name = models.CharField(
-        max_length=50,
-        verbose_name='Название обычного задания'
-    )
-    def __str__(self) -> str:
-        return self.name
+# class BaseLessonTask(models.Model):
+#     name = models.CharField(
+#         max_length=50,
+#         verbose_name='Название обычного задания'
+#     )
+#     def __str__(self) -> str:
+#         return self.name
     
-    def __repr__(self) -> str:
-        return f"{self.name} [id:{self.pk}]"
+#     def __repr__(self) -> str:
+#         return f"{self.name} [id:{self.pk}]"
     
-    class Meta:
-        verbose_name = 'Обычное задание'
-        verbose_name_plural = 'Обычные задания'
+#     class Meta:
+#         verbose_name = 'Обычное задание'
+#         verbose_name_plural = 'Обычные задания'
         
 class LessonTask(models.Model):
-    base_name = models.ForeignKey(
-        BaseLessonTask,
-        on_delete=models.CASCADE,
-        related_name='task_basename',
-        blank=True,
-        null=True,
-        verbose_name='Обычное задание',
-        help_text="Выберите обычное задание из предложенных. Поле с уникальным заданием необходимо оставить пустым."
-    )
-    custom_name = models.CharField(
+    # base_name = models.ForeignKey(
+    #     BaseLessonTask,
+    #     on_delete=models.CASCADE,
+    #     related_name='task_basename',
+    #     blank=True,
+    #     null=True,
+    #     verbose_name='Обычное задание',
+    #     help_text="Выберите обычное задание из предложенных. Поле с уникальным заданием необходимо оставить пустым."
+    # )
+    name = models.CharField(
         max_length=150,
         blank=True,
         null=True,
-        verbose_name='Уникальное задание',
-        help_text="Напишите уникальное задание. Поле с обычным заданием необходимо оставить пустым."
+        verbose_name='Имя задания урока',
+        help_text="Опиши задание, которое необходимо выполнить ученику."
     )
     points = models.SmallIntegerField(
         verbose_name='Баллы',
@@ -108,6 +108,14 @@ class LessonTask(models.Model):
         verbose_name='Задача завершена',
         default=False,
     )
+    # lesson_id = models.ForeignKey(
+    #     'Lesson',
+    #     verbose_name='Урок',
+    #     on_delete=models.CASCADE,
+    #     related_name='lesson_tasks',
+    #     blank=True,
+    #     null=True
+    # )
     lesson_id = models.ForeignKey(
         'Lesson',
         verbose_name='Урок',
@@ -116,89 +124,74 @@ class LessonTask(models.Model):
         blank=True,
         null=True
     )
-    lesson_new_id = models.ForeignKey(
-        'LessonNew',
-        verbose_name='Урок (new)',
-        on_delete=models.CASCADE,
-        related_name='lesson_new_tasks',
-        blank=True,
-        null=True
-    )
-    
-    def get_name(self):
-        name = self.base_name.name if self.base_name else self.custom_name or 'Имя не задано'
-        return name
     
     def __str__(self):
-        return self.get_name()
+        return self.name if self.name else 'None'
     
     def __repr__(self):
-        return f"{self.get_name()} [Lesson: {self.pk}]"
-    
-    get_name.short_description = 'Название'
-    
+        return f"{self.__str__()} [Lesson: {self.pk}]"
     class Meta:
         verbose_name = 'Задача урока'
         verbose_name_plural = 'Задачи урока'
     
-class Lesson(models.Model):
-    title = models.CharField(
-        verbose_name='Название урока',
-        max_length=50, 
-        default='English',
-        help_text="Поле заполняется автоматически, если остаётся пустым"
-    )
-    datetime = models.DateTimeField(
-        verbose_name='Дата и время урока'
-    )
-    is_paid = models.BooleanField(verbose_name="Статус оплаты", default=False)
-    status = models.CharField(
-        verbose_name="Статус урока",
-        max_length=20,
-        default='P',
-        choices=[
-            ('P', 'Запланировано'),
-            ('M', 'Пропущено'),
-            ('D', 'Завершено'),
-            ('C', 'Отменено')
-        ]
-    )
-    students = models.ManyToManyField(
-        User,
-        related_name='student_lessons',
-        limit_choices_to={'groups__name__in': ['Student', ]},
-        verbose_name="Ученики"
-    )
-    teacher_id = models.ForeignKey(
-        User, 
-        verbose_name="Учитель",
-        limit_choices_to={'groups__name__in': ['Teacher', ]},
-        on_delete=models.CASCADE, 
-        related_name='teacher_lessons', 
-        null=True
-    )
+# class Lesson(models.Model):
+#     title = models.CharField(
+#         verbose_name='Название урока',
+#         max_length=50, 
+#         default='English',
+#         help_text="Поле заполняется автоматически, если остаётся пустым"
+#     )
+#     datetime = models.DateTimeField(
+#         verbose_name='Дата и время урока'
+#     )
+#     is_paid = models.BooleanField(verbose_name="Статус оплаты", default=False)
+#     status = models.CharField(
+#         verbose_name="Статус урока",
+#         max_length=20,
+#         default='P',
+#         choices=[
+#             ('P', 'Запланировано'),
+#             ('M', 'Пропущено'),
+#             ('D', 'Завершено'),
+#             ('C', 'Отменено')
+#         ]
+#     )
+#     students = models.ManyToManyField(
+#         User,
+#         related_name='student_lessons',
+#         limit_choices_to={'groups__name__in': ['Student', ]},
+#         verbose_name="Ученики"
+#     )
+#     teacher_id = models.ForeignKey(
+#         User, 
+#         verbose_name="Учитель",
+#         limit_choices_to={'groups__name__in': ['Teacher', ]},
+#         on_delete=models.CASCADE, 
+#         related_name='teacher_lessons', 
+#         null=True
+#     )
 
-    def __str__(self):
-        return f"{self.datetime.strftime('%d.%m.%Y %H:%M')} | {self.get_students()} [{self.title}]"
+#     def __str__(self):
+#         return f"{self.datetime.strftime('%d.%m.%Y %H:%M')} | {self.get_students()} [{self.title}]"
 
-    def get_students(self):
-        # try:
-        #     students = [f'{student.last_name} {student.first_name}' for student in tuple(
-        #         self.students.all())]
-        #     return ', '.join(students)
-        # except Exception as err:
-        #     logger.error(err)
-        return self.students
+#     def get_students(self):
+#         # try:
+#         #     students = [f'{student.last_name} {student.first_name}' for student in tuple(
+#         #         self.students.all())]
+#         #     return ', '.join(students)
+#         # except Exception as err:
+#         #     logger.error(err)
+#         return self.students
         
-    get_students.short_description = students.verbose_name
+#     get_students.short_description = students.verbose_name
 
-    class Meta:
-        verbose_name = 'Занятие'
-        verbose_name_plural = 'Занятия'
+#     class Meta:
+#         verbose_name = 'Занятие'
+#         verbose_name_plural = 'Занятия'
 
-        ordering = ['datetime']
+#         ordering = ['datetime']
 
-class LessonNew(models.Model):
+class Lesson(models.Model):
     title = models.CharField(
         verbose_name='Название урока',
         max_length=50, 
@@ -252,8 +245,8 @@ class LessonNew(models.Model):
     #     return f"{self.datetime.strftime('%d.%m.%Y %H:%M')} | {self.get_students()} [{self.title}]"
 
     class Meta:
-        verbose_name = 'Занятие (new)'
-        verbose_name_plural = 'Занятия (new)'
+        verbose_name = 'Занятие'
+        verbose_name_plural = 'Занятия'
 
         ordering = ['-datetime']
     

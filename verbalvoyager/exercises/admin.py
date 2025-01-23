@@ -9,11 +9,12 @@ from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from django.urls import path
 from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
 
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
 from .models import Word, ExerciseWords, ExerciseDialog, ExerciseWordsResult, ExerciseDialogResult
-from .forms import ExerciseAdminForm, DialogAdminForm
+from .forms import ExerciseWordsAdminForm, ExerciseDialogAdminForm
 
 
 logger = logging.getLogger(__name__)
@@ -102,12 +103,12 @@ class StudentsListFilter(admin.SimpleListFilter):
                 )
 
 @admin.register(ExerciseWords)
-class ExerciseAdmin(admin.ModelAdmin):
+class ExerciseWordsAdmin(admin.ModelAdmin):
     filter_horizontal = ('words', )
     search_fields = ('teacher__username', )
     autocomplete_fields = ('student', )
     list_display = (
-        'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access',
+        'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access', 'source_link',
     )
     list_display_links = ('name', )
     list_filter = [
@@ -129,6 +130,10 @@ class ExerciseAdmin(admin.ModelAdmin):
         })
     )
     
+    def source_link(self, obj):
+        return mark_safe(f'<a href={obj.get_url()}>Перейти<a>')
+    source_link.short_description = 'Ссылка на упражнение'
+    
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.select_related('student', 'teacher').prefetch_related('words')
@@ -142,7 +147,7 @@ class ExerciseAdmin(admin.ModelAdmin):
         queryset.update(is_active=False)
         
     def get_form(self, request, obj=None, **kwargs):
-        form = super(ExerciseAdmin, self).get_form(request, obj, **kwargs)
+        form = super(ExerciseWordsAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields['teacher'].initial = request.user
         form.base_fields['teacher'].queryset = User.objects.filter(groups__name__in=['Teacher'])
         form.base_fields['student'].queryset = User.objects.filter(groups__name__in=['Student'])
@@ -193,13 +198,13 @@ class ExerciseDialogResultAdmin(admin.ModelAdmin):
 
 
 @admin.register(ExerciseDialog)
-class DialogAdmin(admin.ModelAdmin):
-    form = DialogAdminForm
+class ExerciseDialogAdmin(admin.ModelAdmin):
+    form = ExerciseDialogAdminForm
     search_fields = ['student', ]
     autocomplete_fields = ('student', )
     filter_horizontal = ('words', )
     list_display = (
-        'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access',
+        'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access', 'source_link',
     )
     list_display_links = ('name', )
     list_filter = [
@@ -218,12 +223,16 @@ class DialogAdmin(admin.ModelAdmin):
         })
     )
     
+    def source_link(self, obj):
+        return mark_safe(f'<a href={obj.get_url()}>Перейти<a>')
+    source_link.short_description = 'Ссылка на упражнение'
+    
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.select_related('student', 'teacher').prefetch_related('words')
     
     def get_form(self, request, obj=None, **kwargs):
-        form = super(DialogAdmin, self).get_form(request, obj, **kwargs)
+        form = super(ExerciseDialogAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields['teacher'].initial = request.user
         form.base_fields['teacher'].queryset = User.objects.filter(groups__name__in=['Teacher', ])
         

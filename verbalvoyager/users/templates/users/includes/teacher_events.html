@@ -12,10 +12,26 @@
                                 
                                 {{ lesson.datetime|time }} (SRT)
 
-                                {% if not lesson.is_paid and lesson.status != 'M' and lesson.datetime|less_that_one_day %}
-                                    <i class="bi bi-exclamation-triangle"></i>
-                                {% endif %}
+                                {% if event|length > 1 %}
+                                    {% for lsn in event %}
+                                        {% if lsn|teacher_warn_lesson %}
+                                            <i class="bi bi-exclamation-triangle"></i>
+                                        {% endif %}
 
+                                        {% if lsn|teacher_dang_lesson %}
+                                            <i class="bi bi-exclamation-octagon"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    {% if lesson|teacher_warn_lesson %}
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                    {% endif %}
+
+                                    {% if lesson|teacher_dang_lesson %}
+                                        <i class="bi bi-exclamation-octagon"></i>
+                                    {% endif %}
+                                {% endif %}
+                                
                                 <br>
                                 
                                 {% with tags=lesson.project_id.types.all|type_names_to_list %}
@@ -47,22 +63,22 @@
                                 {% for lsn in event %}
                                     <div class="lesson-info">
                                         
-                                        {% with lsn.lesson_new_tasks.all as tasks %}
+                                        {% with lsn.lesson_tasks.all as tasks %}
 
                                         <div id="{{ lsn.pk }}" class="event-count event-status-changer pr-2">
                                             <span class='task-student-name'>{{ lsn.student_id }}</span>
 
-                                            {% if lesson.status == 'P' %}
-                                                <i class="bi bi-clock" name="planed"></i> 
-                                            {% elif lesson.status == 'C' %}
-                                                <i class="bi bi-x-circle" name="cancel"></i>
-                                            {% elif lesson.status == 'M' %}
-                                                <i class="bi bi-person-x" name="missing"></i>
+                                            {% if lsn.status == 'P' %}
+                                                <i class="bi bi-clock" name={{lsn.status}}></i> 
+                                            {% elif lsn.status == 'C' %}
+                                                <i class="bi bi-x-circle" name={{lsn.status}}></i>
+                                            {% elif lsn.status == 'M' %}
+                                                <i class="bi bi-person-x" name={{lsn.status}}></i>
                                             {% else %}
-                                                <i class="bi bi-check-circle" name="done"></i> 
+                                                <i class="bi bi-check-circle" name={{lsn.status}}></i> 
                                             {% endif %}
                                             
-                                            <i class="bi bi-wallet {% if lesson.is_paid %} paid {% else %} not-paid {% endif %}"></i>
+                                            <i class="bi bi-wallet {% if lsn.is_paid %} paid {% else %} not-paid {% endif %}"></i>
                                         </div>
                                             <span class='task-header' style='font-weight: lighter; color: indigo'>Tasks: </span>
 
@@ -71,11 +87,7 @@
                                                     {% for task in tasks %}
                                                         <input {% if task.is_completed %} checked {% endif %} name="task" type="checkbox" id="{{ task.pk }}">
                                                         <label for="{{ task.pk }}">
-                                                            {% if task.base_name %}
-                                                                {{ task.base_name }}
-                                                            {% elif task.custom_name %}
-                                                                {{ task.custom_name }}
-                                                            {% endif %}
+                                                            {{ task.name }}
                                                         </label>
                                                     {% endfor %}
                                                 </div>
@@ -93,19 +105,19 @@
                                 {% endfor %}
                                 
                             {% else %}
-                                {% with lesson.lesson_new_tasks.all as tasks %}
+                                {% with lesson.lesson_tasks.all as tasks %}
                                     <div class="lesson-info">
                                         <div id="{{ lesson.pk }}" class="event-count event-status-changer pr-2">
                                             <span class='task-student-name'>{{ lsn.student_id }}</span>
 
                                             {% if lesson.status == 'P' %}
-                                                <i class="bi bi-clock" name="planed"></i> 
+                                                <i class="bi bi-clock" name={{lsn.status}}></i> 
                                             {% elif lesson.status == 'C' %}
-                                                <i class="bi bi-x-circle" name="cancel"></i>
+                                                <i class="bi bi-x-circle" name={{lsn.status}}></i>
                                             {% elif lesson.status == 'M' %}
-                                                <i class="bi bi-person-x" name="missing"></i>
+                                                <i class="bi bi-person-x" name={{lsn.status}}></i>
                                             {% else %}
-                                                <i class="bi bi-check-circle" name="done"></i> 
+                                                <i class="bi bi-check-circle" name={{lsn.status}}></i> 
                                             {% endif %}
                                             
                                             <i class="bi bi-wallet {% if lesson.is_paid %} paid {% else %} not-paid {% endif %}"></i>
@@ -114,18 +126,16 @@
                                         <span class='task-header' style='font-weight: lighter; color: indigo'>Tasks: </span>
 
                                         {% if tasks %}
-                                            <ul>
+                                            <div id='checklist'>
                                                 {% for task in tasks %}
-                                                    {% if task.base_name %}
-                                                        <li>{{ task.base_name }}</li>
-                                                    {% elif task.custom_name %}
-                                                        <li>{{ task.custom_name }}</li>
-                                                    {% endif %}
-                                                        
+                                                    <input {% if task.is_completed %} checked {% endif %} name="task" type="checkbox" id="{{ task.pk }}">
+                                                    <label for="{{ task.pk }}">
+                                                        {{ task.name }}
+                                                    </label>
                                                 {% endfor %}
-                                            </ul>
+                                            </div>
                                         {% else %}
-                                            заданий нет
+                                            <span class="not-tasks"> заданий нет </span>
                                         {% endif %}
                                     {% endwith %}
 

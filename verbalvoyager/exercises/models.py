@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.urls import reverse
 from django.utils.html import format_html
 from django.core.exceptions import ValidationError
 
@@ -77,6 +78,14 @@ class ExerciseWords(models.Model):
 
     get_words.allow_tags = True
     get_words.short_description = 'Слова в упражнении'
+    
+    def get_absolute_url(self):
+        return reverse("exercises_words", kwargs={"ex_id": self.pk, "step": 1})
+    
+    def get_url(self):
+        return 'https://verbal-voyager.ru' + self.get_absolute_url()
+    get_words.get_url = 'Ссылка на упражнение'
+    
 
     def save(self, *args, **kwargs):
         if not self.name:
@@ -140,6 +149,12 @@ class ExerciseDialog(models.Model):
     
     get_words.allow_tags = True
     get_words.short_description = 'Слова в упражнении'
+    
+    def get_absolute_url(self):
+        return reverse("exercises_dialog", kwargs={"ex_id": self.pk})
+    
+    def get_url(self):
+        return 'https://verbal-voyager.ru' + self.get_absolute_url()
 
     def __str__(self) -> str:
         status = 'Active' if self.is_active else 'Done'

@@ -32,6 +32,14 @@
                                 {% endwith %}
                             {% endif %}
 
+                            {% if event|student_warn_lesson %}
+                                <i class="bi bi-exclamation-triangle"></i>
+                            {% endif %}
+
+                            {% if event|student_dang_lesson %}
+                                <i class="bi bi-exclamation-octagon"></i>
+                            {% endif %}
+
                             <br>
 
                             <i class="bi bi-mortarboard-fill" style='color: indigo'></i>
@@ -60,7 +68,7 @@
                 </h2>
                 <div id="flush-collapse{{ event.pk }}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                     <div class="accordion-body">
-                        {% with event.lesson_new_tasks.all as tasks %}
+                        {% with event.lesson_tasks.all as tasks %}
                             <span class='task-header' style='font-weight: lighter; color: indigo'>Tasks: </span>
                             
                             {% if tasks %}
@@ -68,11 +76,7 @@
                                     {% for task in tasks %}
                                         <input disabled {% if task.is_completed %} checked {% endif %} value="1" name="r" type="checkbox" id="{{ task.pk }}">
                                         <label for="{{ task.pk }}">
-                                            {% if task.base_name %}
-                                                {{ task.base_name }}
-                                            {% elif task.custom_name %}
-                                                {{ task.custom_name }}
-                                            {% endif %}
+                                            {{ task.name }}
                                         </label>
                                     {% endfor %}
                                 </div>

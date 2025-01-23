@@ -106,19 +106,19 @@ function changeEventPerforming(event) {
     if (event.target.classList.contains('bi-clock')) {
         event.target.classList.remove("bi-clock");
         event.target.classList.add("bi-check-circle");
-        event.target.attributes.name.value = "success";
+        event.target.attributes.name.value = "D";
     } else if (event.target.classList.contains('bi-check-circle')) {
         event.target.classList.remove("bi-check-circle");
         event.target.classList.add("bi-x-circle");
-        event.target.attributes.name.value = "cancel";
+        event.target.attributes.name.value = "C";
     } else if (event.target.classList.contains('bi-x-circle')) {
         event.target.classList.remove("bi-x-circle");
         event.target.classList.add("bi-person-x");
-        event.target.attributes.name.value = "missing";
+        event.target.attributes.name.value = "M";
     } else {
         event.target.classList.remove("bi-person-x");
         event.target.classList.add("bi-clock");
-        event.target.attributes.name.value = "planed";
+        event.target.attributes.name.value = "P";
     }
 
     if (!dataToSend.lessons[event.target.parentElement.id]) {
@@ -126,7 +126,6 @@ function changeEventPerforming(event) {
     }
         
     dataToSend.lessons[event.target.parentElement.id].performing = event.target.attributes.name.value
-    
 }
 
 function changeEventPayment(event) {
