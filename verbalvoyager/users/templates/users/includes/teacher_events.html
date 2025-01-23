@@ -14,21 +14,17 @@
 
                                 {% if event|length > 1 %}
                                     {% for lsn in event %}
-                                        {% if lsn|teacher_warn_lesson %}
-                                            <i class="bi bi-exclamation-triangle"></i>
-                                        {% endif %}
-
-                                        {% if lsn|teacher_dang_lesson %}
+                                        {% if lsn|student_dang_lesson %}
                                             <i class="bi bi-exclamation-octagon"></i>
+                                        {% elif lsn|student_warn_lesson %}
+                                            <i class="bi bi-exclamation-triangle"></i>
                                         {% endif %}
                                     {% endfor %}
                                 {% else %}
-                                    {% if lesson|teacher_warn_lesson %}
-                                        <i class="bi bi-exclamation-triangle"></i>
-                                    {% endif %}
-
-                                    {% if lesson|teacher_dang_lesson %}
+                                    {% if lesson|student_dang_lesson %}
                                         <i class="bi bi-exclamation-octagon"></i>
+                                    {% elif lesson|student_warn_lesson %}
+                                        <i class="bi bi-exclamation-triangle"></i>
                                     {% endif %}
                                 {% endif %}
                                 

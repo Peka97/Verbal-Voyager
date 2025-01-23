@@ -61,8 +61,8 @@ def exercises_words(request, ex_id, step):
     }
 
     exercise = get_object_or_404(ExerciseWords, pk=ex_id)
-    
-    if not request.user.is_teacher() and not exercise.external_access:
+
+    if not exercise.external_access or not request.user.is_teacher():
         if not request.user.is_authenticated:
             return redirect(f"/users/auth?next={request.path}")
         if exercise.student != request.user:
@@ -92,18 +92,20 @@ def exercises_words(request, ex_id, step):
 
     return render(request, template_name, context)
 
+
 def exercises_dialog(request, ex_id):
     dialog = get_object_or_404(ExerciseDialog, pk=ex_id)
-    
-    if not request.user.is_teacher() and not dialog.external_access:
+
+    if not dialog.external_access or not request.user.is_teacher():
         if not request.user.is_authenticated:
             return redirect(f"/users/auth?next={request.path}")
         if dialog.student != request.user:
             raise Http404("Запрашиваемый объект не найден")
-    
+
     raw_dialog = list(filter(lambda s: len(s) > 1, dialog.text.split('\n')))
 
-    scene = raw_dialog[0] if raw_dialog[0].startswith('Scene:') or raw_dialog[0].startswith('Situation:') else None
+    scene = raw_dialog[0] if raw_dialog[0].startswith(
+        'Scene:') or raw_dialog[0].startswith('Situation:') else None
     raw_text = raw_dialog[1:] if scene else raw_dialog
     messages = []
     for message in raw_text:
@@ -122,6 +124,7 @@ def exercises_dialog(request, ex_id):
         'words': get_words(words),
     }
     return render(request, 'exercises/dialog.html', context)
+
 
 def get_words(words: list[ExerciseWords]):
     result = []
@@ -282,7 +285,20 @@ def get_api_for_words(words: list[Word]):
 
     return result
 
-<<<<<<< HEAD
+
+def generate_dialog_view(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            words = data.get('words')
+            dialog_text = generate_dialog(words, sentence_num=6, level="B2")
+            dialog_text = dialog_text.replace('**', '')
+            return JsonResponse({'result': dialog_text})
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
 
 @login_required
 def logging(request, ex_id, step_num):
@@ -300,17 +316,3 @@ def logging(request, ex_id, step_num):
             )
 
     return HttpResponse({'status': 200})
-=======
-def generate_dialog_view(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            words = data.get('words')
-            dialog_text = generate_dialog(words, sentence_num=6, level="B2")
-            dialog_text = dialog_text.replace('**', '')
-            return JsonResponse({'result': dialog_text})
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON'}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
->>>>>>> origin/dev

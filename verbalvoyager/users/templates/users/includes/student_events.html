@@ -32,12 +32,10 @@
                                 {% endwith %}
                             {% endif %}
 
-                            {% if event|student_warn_lesson %}
-                                <i class="bi bi-exclamation-triangle"></i>
-                            {% endif %}
-
                             {% if event|student_dang_lesson %}
                                 <i class="bi bi-exclamation-octagon"></i>
+                            {% elif event|student_warn_lesson %}
+                                <i class="bi bi-exclamation-triangle"></i>
                             {% endif %}
 
                             <br>

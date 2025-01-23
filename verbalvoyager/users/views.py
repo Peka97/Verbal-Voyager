@@ -40,21 +40,21 @@ def user_auth(request, **kwargs):
     next = request.GET.get('next')
 
     if request.POST:
-        
+
         # Регистрация
         if request.POST.get('username'):
             form = RegistrationUserForm(request.POST)
-            
+
             if form.is_valid():
                 user = form.save(commit=False)
                 user.save()
-                
+
                 login(request, user)
                 return redirect('')
             else:
                 context['form'] = form
                 context['auth_show'] = False
-        
+
         # Авторизация
         elif request.POST.get('login'):
             username = request.POST.get('login')
@@ -67,7 +67,7 @@ def user_auth(request, **kwargs):
                 return redirect(next) if next else redirect('')
             else:
                 context['auth_error'] = 'Неправильное имя пользователя или пароль'
-        
+
     return render(request, 'users/auth.html', context)
 
 
@@ -102,24 +102,28 @@ def user_profile(request):
     context = {
         'user_is_teacher': user.is_teacher()
     }
-    
+
     if context['user_is_teacher']:
-        projects = Project.objects.filter(teacher_id=user).values_list('pk', flat=True).all()
-        lessons_new = Lesson.objects.filter(
-            project_id__in=tuple(projects)
-            ).prefetch_related('lesson_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
+        logger.info('Teacher')
+        projects = Project.objects.filter(
+            teacher_id=user).values_list('pk', flat=True).all()
+        lessons_obj = Lesson.objects.filter(
+            teacher_id=user
+        ).prefetch_related('lesson_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
+        logger.info(lessons_obj)
         lessons = defaultdict(list)
-        
-        for lesson in lessons_new:
+
+        for lesson in lessons_obj:
             lessons[lesson.datetime].append(lesson)
-        
+
         lessons = tuple(lessons.values())
     else:
         lessons = Lesson.objects.filter(
             student_id=user
-            ).prefetch_related('lesson_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
-        
-        projects = Project.objects.filter(students=user).values_list('pk', flat=True).all()
+        ).prefetch_related('lesson_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
+
+        projects = Project.objects.filter(
+            students=user).values_list('pk', flat=True).all()
         # lessons = Lesson.objects.filter(
         #     project_id__in=tuple(projects),
         #     student_id=user,
@@ -133,7 +137,7 @@ def user_profile(request):
             student=user.pk,
             is_active=True
         ).all()
-        
+
     context['events'] = lessons
     # print(tuple(lessons)[0].lesson_tasks)
     # print(lessons.values()[0])
@@ -141,8 +145,11 @@ def user_profile(request):
     # context['events_count_total'] = len(lessons)
     # context['events_count_done'] = lessons.filter(status='D').count()
     context['courses'] = tuple(Course.objects.all())
-    
+    logger.info(projects)
+    logger.info(lessons)
+
     return render(request, 'users/profile.html', context)
+
 
 class CustomPasswordResetView(PasswordResetView):
     form_class = CustomPasswordResetForm

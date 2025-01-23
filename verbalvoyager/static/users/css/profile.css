@@ -44,9 +44,8 @@ body {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
-
 
 /* body::after {
     content: "";
@@ -305,6 +304,10 @@ div.tab-content {
                                 -o-transition: all 250ms;
                                 transition: all 250ms;
                                 position: relative;
+
+                                &.nil {
+                                    height: 2.5rem;
+                                }
                             }
 
                             .table-date:not(.active-date, .nil):hover {
@@ -338,6 +341,10 @@ div.tab-content {
 
                             .event-date-warn::after {
                                 background-color: var(--amber-a700);
+                            }
+
+                            .event-date-dang::after {
+                                background-color: var(--red-a700);
                             }
 
                             .active-date {
@@ -392,6 +399,20 @@ div.tab-content {
                             .accordion-header {
                                 font-family: "Lato", Arial, sans-serif;
                             }
+
+                            .accordion-body, .lesson-info {
+                                position: relative;
+                                margin-bottom: .8rem;
+                            }
+
+                            .task-header, .task-student-name {
+                                font-weight: lighter;
+                                color: indigo;
+                            }
+
+                            .task-student-name {
+                                opacity: .5;
+                            }
                         }
 
                         .accordion-button:not(.collapsed) {
@@ -399,9 +420,30 @@ div.tab-content {
                             background-color: var(--indigo-50);
                             box-shadow: inset 0 calc(-1* var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color);
                         }
+                        .accordion-button::after {
+                            margin-left: 1vw !important;
+                        }
 
                         .event-name {
                             margin-right: 1rem;
+                        }
+
+                        .event-count {
+                            margin-left: auto;
+
+                            
+                        }
+
+                        .bi-check-circle, .bi-wallet.paid {
+                            color: var(--green-a700);
+                        }
+
+                        .bi-wallet.not-paid, .bi-x-circle, .bi-person-x, .bi-exclamation-octagon {
+                            color: var(--red-a700);
+                        }
+
+                        .bi-clock, .bi-exclamation-triangle {
+                            color: var(--amber-a700);
                         }
                     }
                 }
@@ -574,7 +616,161 @@ OLD
 
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px; */
+
+    
 }
+
+.button-panel {
+    display: flex;
+    align-items: end;
+    justify-content: flex-start;
+    position: absolute;
+    top: 0;
+    right: 1.3rem;
+    overflow: hidden;
+    margin: .1rem;
+    ;
+    
+    &.panel-task {
+        position: sticky;
+        width: 100%;
+        margin: 0;
+        /* justify-content: start; */
+        bottom: 1.3rem;
+        right: 1.3rem;
+        transition: all 0.5s ease-in-out;
+
+        #btn-cancel-send-event-update {
+            justify-content: end;
+            width: 50%;
+
+            .event-button {
+                width: 100%;
+                border-radius: .6rem .6rem .6rem 20px !important;
+            }
+        }
+
+        #btn-send-event-update {
+            width: 50%;
+
+            .event-button {
+                width: 100%;
+                border-radius: .6rem .6rem 20px .6rem !important;
+            }
+        }
+
+    }
+
+    &.panel-lesson {
+        top: 0;
+        right: 0;
+        
+    }
+
+    .event-button {
+        width: 2rem;
+        height: 2rem;
+        border-radius: .6rem;
+        background-color: var(--indigo-700);
+        border: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+        cursor: pointer;
+        transition-duration: 0.3s;
+        overflow: hidden;
+        position: relative;
+        text-decoration: none !important;
+
+        i {
+            color: white;
+        }
+
+        .edit-icon {
+            transition-duration: 0.3s;
+            font-size: .8rem;
+        }
+      }
+      
+      .event-button:hover {
+        width: 6rem;
+        border-radius: 1rem;
+        transition-duration: 0.3s;
+        align-items: center;
+      }
+      
+      .event-button:hover .edit-icon {
+        width: 20px;
+        transition-duration: 0.3s;
+        transform: translateY(60%);
+        -webkit-transform: rotate(360deg);
+        -moz-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        transform: rotate(360deg);
+      }
+      
+      .event-button.edit-button::before {
+        display: none;
+        color: white;
+        transition-duration: 0.3s;
+        font-size: 2px;
+        content: "Edit";
+      }
+
+      .event-button.send-button::before {
+        display: none;
+        color: white;
+        transition-duration: 0.3s;
+        font-size: 2px;
+        content: "Send";
+      }
+
+      .event-button.cancel-button::before {
+        display: none;
+        color: white;
+        transition-duration: 0.3s;
+        font-size: 2px;
+        content: "Cancel";
+      }
+      
+      .event-button:hover::before {
+        display: block;
+        padding-right: 10px;
+        font-size: 13px;
+        opacity: 1;
+        transform: translateY(0px);
+        transition-duration: 0.3s;
+      }
+      
+  }
+  
+  .event-btn {
+    position: relative;
+    /* background: #ffffff;
+    color: #000;
+    padding: .5rem; */
+    /* margin-left: .3rem;
+    border-radius: 50%;
+    width: fit-content;
+    height: fit-content;
+    font-size: 1rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column; */
+    /* box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1); */
+    cursor: pointer;
+    /* transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55); */
+
+    .icon {
+        line-height: normal;
+        height: 1rem;
+        width: 1rem;
+    }
+  }
 
 .table-date {
     border-radius: 20%;

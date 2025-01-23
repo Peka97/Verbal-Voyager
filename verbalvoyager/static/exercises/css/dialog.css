@@ -140,7 +140,11 @@ body {
 }
 
 .message {
-  color:aliceblue
+  color:aliceblue;
+  
+  .menu {
+    font-size: 14px;
+  }
 }
 
 .avatar {
@@ -161,18 +165,25 @@ body {
 }
 
 .message-container:nth-child(odd) {
-  padding-left: 10vw;
+  padding-left: 5vw;
+  justify-content: end;
+
+  .message-row {
+    justify-content: inherit;
+  }
 }
 
 .message-container:nth-child(even) {
-  padding-right: 10vw;
+  padding-right: 5vw;
 }
 
 .text-container {
-    background-color: #5c71b2;
-    border-radius: 10px;
-    padding: 10px; 
-    margin-bottom: 10px; 
+  height: fit-content;
+  align-self: center;
+  background-color: #5c71b2;
+  border-radius: 10px;
+  padding: 10px; 
+  margin-bottom: 10px; 
 }
 
 .hidden {
@@ -240,9 +251,19 @@ body {
 
 .message-row {
   .avatar-container {
+    display: grid;
     margin: .5rem;
     padding: 0 !important;
     max-width: fit-content;
+
+    .avatar {
+      margin: auto;
+    }
+
+    .person-name {
+      color: aliceblue;
+      text-align: center;
+    }
   }
 
   .text-container {

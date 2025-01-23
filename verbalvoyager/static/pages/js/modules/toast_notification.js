@@ -2,14 +2,7 @@
 export function showToast (text) {
     const toastDelay = 5000
     const favicon = document.getElementById('favicon');
-    // let toastLiveExample = document.getElementById('liveToast');
-    // toastLiveExample.attributes.getNamedItem('data-bs-delay').nodeValue = '15000';
     
-    // let toastBody = document.getElementById('toast-body');
-    // toastBody.innerText = text;
-    
-    // let toast = new bootstrap.Toast();
-    // toast.show();
     let toastContainer = document.getElementById('toast-container')
     const newToastHTML = `
     <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="${toastDelay}">

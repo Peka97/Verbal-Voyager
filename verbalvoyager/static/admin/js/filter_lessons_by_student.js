@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentStudentId = event.target.value;
         console.dir(currentStudentId)
 
-        url = `http://127.0.0.1:8000/event_calendar/ajax/filter_lessons_by_student/${currentStudentId}`
+        url = `http://127.0.0.1:8000/event_calendar/json/filter_lessons_by_student/${currentStudentId}`
         fetch(url).then(resp => {
             if (resp.ok) {
                 return resp.json();

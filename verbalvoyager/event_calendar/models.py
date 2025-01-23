@@ -37,12 +37,12 @@ class Review(models.Model):
         on_delete=models.CASCADE,
         related_name='reviews',
         blank=True,  # TODO: remove?
-        null=True, # TODO: remove?
+        null=True,  # TODO: remove?
     )
     text = models.TextField(
         verbose_name='Отзыв',
         max_length=500
-        )
+    )
     from_user = models.ForeignKey(
         User,
         verbose_name='Имя пользователя',
@@ -55,10 +55,10 @@ class Review(models.Model):
         null=True,
         blank=True
     )
-    
+
     def get_created_at(self):
         return self.created_at.strftime("%d.%m.%Y")
-    
+
     get_created_at.short_description = 'Дата создания'
 
     def __str__(self) -> str:
@@ -67,7 +67,7 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
-    
+
 # class BaseLessonTask(models.Model):
 #     name = models.CharField(
 #         max_length=50,
@@ -75,14 +75,15 @@ class Review(models.Model):
 #     )
 #     def __str__(self) -> str:
 #         return self.name
-    
+
 #     def __repr__(self) -> str:
 #         return f"{self.name} [id:{self.pk}]"
-    
+
 #     class Meta:
 #         verbose_name = 'Обычное задание'
 #         verbose_name_plural = 'Обычные задания'
-        
+
+
 class LessonTask(models.Model):
     # base_name = models.ForeignKey(
     #     BaseLessonTask,
@@ -124,20 +125,21 @@ class LessonTask(models.Model):
         blank=True,
         null=True
     )
-    
+
     def __str__(self):
         return self.name if self.name else 'None'
-    
+
     def __repr__(self):
         return f"{self.__str__()} [Lesson: {self.pk}]"
+
     class Meta:
         verbose_name = 'Задача урока'
         verbose_name_plural = 'Задачи урока'
-    
+
 # class Lesson(models.Model):
 #     title = models.CharField(
 #         verbose_name='Название урока',
-#         max_length=50, 
+#         max_length=50,
 #         default='English',
 #         help_text="Поле заполняется автоматически, если остаётся пустым"
 #     )
@@ -163,11 +165,11 @@ class LessonTask(models.Model):
 #         verbose_name="Ученики"
 #     )
 #     teacher_id = models.ForeignKey(
-#         User, 
+#         User,
 #         verbose_name="Учитель",
 #         limit_choices_to={'groups__name__in': ['Teacher', ]},
-#         on_delete=models.CASCADE, 
-#         related_name='teacher_lessons', 
+#         on_delete=models.CASCADE,
+#         related_name='teacher_lessons',
 #         null=True
 #     )
 
@@ -182,7 +184,7 @@ class LessonTask(models.Model):
 #         # except Exception as err:
 #         #     logger.error(err)
 #         return self.students
-        
+
 #     get_students.short_description = students.verbose_name
 
 #     class Meta:
@@ -191,10 +193,11 @@ class LessonTask(models.Model):
 
 #         ordering = ['datetime']
 
+
 class Lesson(models.Model):
     title = models.CharField(
         verbose_name='Название урока',
-        max_length=50, 
+        max_length=50,
         default='English',
         help_text="Поле заполняется автоматически, если остаётся пустым"
     )
@@ -222,11 +225,11 @@ class Lesson(models.Model):
         null=True
     )
     teacher_id = models.ForeignKey(
-        User, 
+        User,
         verbose_name="Учитель",
         limit_choices_to={'groups__name__in': ['Teacher', ]},
-        on_delete=models.CASCADE, 
-        related_name='lessons_new_teacher', 
+        on_delete=models.CASCADE,
+        related_name='lessons_new_teacher',
         null=True
     )
     project_id = models.ForeignKey(
@@ -237,7 +240,7 @@ class Lesson(models.Model):
         blank=True,
         null=True
     )
-    
+
     def get_admin_edit_url(self):
         return reverse(f'admin:{self._meta.app_label}_{self._meta.model_name}_change', args=[quote(self.pk)])
 
@@ -249,7 +252,7 @@ class Lesson(models.Model):
         verbose_name_plural = 'Занятия'
 
         ordering = ['-datetime']
-    
+
 
 class ProjectTask(models.Model):
     name = models.CharField(
@@ -272,21 +275,21 @@ class ProjectTask(models.Model):
         blank=True,
         null=True
     )
-    
+
     def save(self, *args, **kwargs):
         projects = Project.objects.filter(tasks=self.pk)
         for project in projects:
             project.save()
-        
+
         super().save(*args, **kwargs)
-        
-    
+
     def __str__(self):
         return f"{self.name} [Project: {self.project_id}]"
-    
+
     class Meta:
         verbose_name = 'Задача проекта'
         verbose_name_plural = 'Задачи проекта'
+
 
 class ProjectType(models.Model):
     name = models.CharField('Тип проекта', max_length=50)
@@ -303,14 +306,16 @@ class Project(models.Model):
     name = models.CharField(
         max_length=50,
         verbose_name="Название проекта",
+        blank=True,
+        null=True
     )
     course_id = models.ForeignKey(
         Course,
         verbose_name='Тип курса',
         on_delete=models.CASCADE,
         related_name='projects',
-        blank=False,
-        null=False
+        blank=True,
+        null=True
     )
     types = models.ManyToManyField(
         ProjectType,
@@ -331,43 +336,43 @@ class Project(models.Model):
     )
     from_date = models.DateField(
         verbose_name='Дата начала',
-        null=False,
-        blank=False,
+        null=True,
+        blank=True,
     )
     to_date = models.DateField(
         verbose_name='Дата окончания',
-        null=False,
-        blank=False
-        )
+        null=True,
+        blank=True
+    )
     lesson_1 = models.DateTimeField(
         verbose_name='Время первого урока в неделе',
-        null=True, 
+        null=True,
         blank=True,
-        )
+    )
     lesson_2 = models.DateTimeField(
         verbose_name='Время второго урока в неделе',
-        null=True, 
+        null=True,
         blank=True
-        )
+    )
     lesson_3 = models.DateTimeField(
         verbose_name='Время третьего урока в неделе',
-        null=True, 
+        null=True,
         blank=True
-        )
+    )
     lesson_4 = models.DateTimeField(
         verbose_name='Время четвертого урока в неделе',
-        null=True, 
+        null=True,
         blank=True
-        )
+    )
     lesson_5 = models.DateTimeField(
         verbose_name='Время пятого урока в неделе',
-        null=True, 
+        null=True,
         blank=True
-        )
+    )
     is_active = models.BooleanField(
-        verbose_name='Статус', 
+        verbose_name='Статус',
         default=True
-        )
+    )
     # tasks = models.ManyToManyField(
     #     ProjectTask,
     #     verbose_name='Задачи проекта',
@@ -378,13 +383,14 @@ class Project(models.Model):
         auto_created=True,
         help_text='От 0 до 100'
     )
-    
+
     def set_progress(self):
         if self.tasks.count() > 0:
-            self.progress = self.tasks.filter(is_completed=False).count() * 100 / self.tasks.count()
+            self.progress = self.tasks.filter(
+                is_completed=False).count() * 100 / self.tasks.count()
         else:
             self.progress = 0
-    
+
     def get_students(self):
         try:
             students = [f'{student.last_name} {student.first_name}' for student in tuple(
@@ -393,14 +399,12 @@ class Project(models.Model):
         except Exception as err:
             logger.error(err)
             return self.student
-        
+
     get_students.short_description = students.verbose_name
-        
+
     def __str__(self):
-        return self.name
+        return self.name if self.name else 'None'
 
     class Meta:
         verbose_name = 'Проект'
         verbose_name_plural = 'Проекты'
-
-
