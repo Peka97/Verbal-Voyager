@@ -104,13 +104,11 @@ def user_profile(request):
     }
 
     if context['user_is_teacher']:
-        logger.info('Teacher')
         projects = Project.objects.filter(
             teacher_id=user).values_list('pk', flat=True).all()
         lessons_obj = Lesson.objects.filter(
             teacher_id=user
         ).prefetch_related('lesson_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
-        logger.info(lessons_obj)
         lessons = defaultdict(list)
 
         for lesson in lessons_obj:
@@ -145,8 +143,6 @@ def user_profile(request):
     # context['events_count_total'] = len(lessons)
     # context['events_count_done'] = lessons.filter(status='D').count()
     context['courses'] = tuple(Course.objects.all())
-    logger.info(projects)
-    logger.info(lessons)
 
     return render(request, 'users/profile.html', context)
 

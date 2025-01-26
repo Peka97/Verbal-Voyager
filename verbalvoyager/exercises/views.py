@@ -26,6 +26,14 @@ handler = logging.FileHandler(DEBUG_LOGGING_FP)
 handler.setFormatter(logging.Formatter(log_format))
 logger.addHandler(handler)
 
+logger_words = logging.getLogger('words')
+logger_words.level = logging.INFO
+words_handler = logging.FileHandler(
+    '/home/peka97/verbalvoyager/Verbal-Voyager/verbalvoyager/logs/words.log'
+)
+words_handler.setFormatter(logging.Formatter(log_format))
+logger_words.addHandler(words_handler)
+
 User = get_user_model()
 
 
@@ -181,7 +189,7 @@ def exercises_words_update(request, ex_id, step_num):
         data = json.loads(request.body)
 
         logger.info(
-            f'POST REQUEST:\n Ex Dialog:{ex_id} | {data}'
+            f'POST REQUEST:\n Ex Words:{ex_id} | {data}'
         )
         value = data.get('value')
 
@@ -307,12 +315,12 @@ def logging(request, ex_id, step_num):
         is_correct = data.get('is_correct')
 
         if is_correct != 'wrong':
-            logger.info(
-                f'Words Correct Check:\n Ex:{ex_id} | Step Num: {step_num} | {data}'
+            logger_words.info(
+                f'Words Correct Check: Ex[{ex_id}] | Step Num: {step_num} | {data}'
             )
         else:
-            logger.error(
-                f'Words Correct Check:\n Ex:{ex_id} | Step Num: {step_num} | {data}'
+            logger_words.error(
+                f'Words Correct Check: Ex[{ex_id}] | Step Num: {step_num} | {data}'
             )
 
     return HttpResponse({'status': 200})
