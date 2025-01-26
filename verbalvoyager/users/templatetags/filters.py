@@ -1,8 +1,17 @@
+import logging
 from datetime import datetime, timedelta
 
+from verbalvoyager.settings import DEBUG_LOGGING_FP
 from django import template
 
 register = template.Library()
+
+log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
+logger = logging.getLogger(__name__)
+logger.level = logging.INFO
+handler = logging.FileHandler(DEBUG_LOGGING_FP)
+handler.setFormatter(logging.Formatter(log_format))
+logger.addHandler(handler)
 
 
 @register.filter(name="type_names_to_list")
@@ -12,12 +21,21 @@ def type_names_to_list(value):
 
 @register.filter(name="join_student_names")
 def join_student_names(value):
-    return ", ".join(
-        [
-            f"{lesson.student_id.last_name} {lesson.student_id.first_name}"
-            for lesson in value
-        ]
-    )
+    try:
+        return ", ".join(
+            [
+                f"{lesson.student_id.last_name} {lesson.student_id.first_name}"
+                for lesson in value
+            ]
+        )
+    except AttributeError:
+        logger.error(value)
+        return ", ".join(
+            [
+                f"{lesson.student_id}"
+                for lesson in value
+            ]
+        )
 
 
 @register.filter(name="time")

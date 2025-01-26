@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         
         if (Words.length > 0) {
-            url = `http://127.0.0.1:8000/exercises/dialog/json/generate_dialog`
+            url = `https://verbal-voyager.ru/exercises/dialog/json/generate_dialog`
             
             fetch(url, {
                 method: 'POST',
