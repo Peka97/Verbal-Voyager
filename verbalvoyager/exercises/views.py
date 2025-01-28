@@ -189,7 +189,7 @@ def exercises_words_update(request, ex_id, step_num):
         data = json.loads(request.body)
 
         logger.info(
-            f'POST REQUEST:\n Ex Words:{ex_id} | {data}'
+            f'POST REQUEST:\n Ex Words:{ex_id} [step:{step_num}] | {data}'
         )
         value = data.get('value')
 
