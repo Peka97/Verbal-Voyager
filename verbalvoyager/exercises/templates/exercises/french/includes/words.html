@@ -1,0 +1,123 @@
+{% extends "exercises/extends/base.html" %}
+{% load static %}
+
+{% block 'content' %}
+<nav class="navbar navbar-expand-md w-100 sticky-top">
+  <div class="container container-navbar justify-content-center">
+    <div class="row nav-row w-100">
+      <div class="col">
+        <ul class="nav nav-tabs nav-fill">
+          <li class="nav-item align-self-center px-auto">
+            <a id='step_1' class="nav-link btn {% if step == 1 %}active step-active {% else %} step-future {% endif %} disabled" href={% url "exercises_words_french" ex_id=ex_id step=1 %} aria-disabled="true">
+              <strong>
+                Step 1
+              </strong>
+            </a>
+          </li>
+          <li class="nav-item align-self-center px-auto">
+            <a id='step_2' class="nav-link btn {% if step == 2 %}active step-active {% else %} step-future {% endif %} disabled" href={% url "exercises_words_french" ex_id=ex_id step=2 %} aria-disabled="true">
+              <strong>
+                Step 2
+              </strong>
+              <div class="container-stars disabled">
+                <div class="stars"></div>
+              </div>
+              <div class="glow disabled">
+                <div class="circle"></div>
+                <div class="circle"></div>
+              </div>
+            </a>
+          </li>
+          <li class="nav-item align-self-center">
+              <a id='step_3' class="nav-link btn {% if step == 3 %}active step-active {% else %} step-future {% endif %} disabled" href={% url "exercises_words_french" ex_id=ex_id step=3 %} aria-disabled="true">
+                <strong>
+                  Step 3
+                </strong>
+                <div class="container-stars disabled">
+                  <div class="stars"></div>
+                </div>
+                <div class="glow disabled">
+                  <div class="circle"></div>
+                  <div class="circle"></div>
+                </div>
+              </a>
+          </li>
+          <li class="nav-item align-self-center px-auto">
+            <a id='step_4' class="nav-link btn {% if step == 4 %}active step-active {% else %} step-future {% endif %} disabled" href={% url "exercises_words_french" ex_id=ex_id step=4 %} aria-disabled="true">
+              <strong>
+                Step 4
+              </strong>
+              <div class="container-stars disabled">
+                <div class="stars"></div>
+              </div>
+              <div class="glow disabled">
+                <div class="circle_4"></div>
+                <div class="circle_4"></div>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+    
+<div class="container words__container">
+  
+  <!-- Header -->
+  <div class="row header-row justify-content-center">
+    <div class="col">
+      <div class="header-wrap">
+          <div class="state">
+            <div class="icon">
+              <i class="bi bi-rocket-takeoff"></i>
+            </div>
+            <p>
+              {% for letter in title %}
+                <span style="--i:{{forloop.counter0}}">{{letter}}</span>
+              {% endfor %}
+            </p>
+          </div>
+        </div>
+        <div class="help-btn-wrap">
+          <button type="button" class="btn btn-lg btn__help help-btn" data-bs-toggle="popover" data-bs-html="true" data-bs-title="{{ popover.title }}" data-bs-content="{{ popover.content }}"><i class="bi bi-question-circle"></i></button>
+        </div>
+      </div>
+    </div>
+
+  <!-- Content -->
+  {% block 'words' %}{% endblock  %}
+
+  <!-- Toogle Alerts -->
+  
+  {% comment %} 
+  
+  ### Move to exercises/extends/base.html
+  <div id="toast-container" class="toast-container"></div>
+  
+  {% endcomment %}
+
+  <!-- Pagination -->
+  {% if step != 3 %}
+    <div class='row pagination'>
+      <div class='col'>
+        <nav aria-label="words">
+          <ul class="pagination">
+            <li id='prev_btn' class="page-item disabled">
+              <button type='button' class="page-link" href="#">Пред.</button>
+            </li>
+              {% for num in words_count_range %}
+                <li id='page_{{num}}' class="page-item">
+                  <button type='button' class="page-link" href="#">{{num}}</button>
+                </li>
+              {% endfor %}
+            <li id='next_btn' class="page-item">
+              <button type='button' class="page-link" href="#">След.</button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock 'content' %}

@@ -4,8 +4,6 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
-from .models import ExerciseWords, ExerciseDialog
-
 
 logger = logging.getLogger()
 # logger.setLevel(logging.INFO)

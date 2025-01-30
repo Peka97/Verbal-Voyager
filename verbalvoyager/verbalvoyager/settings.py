@@ -4,7 +4,7 @@ from pathlib import Path
 from config import *
 
 
-config = ProdConfig
+config = DevConfig
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     # Created
     'users',
     'pages',
+    'dictionary',
     'exercises',
+    'exercise_result',
     'event_calendar'
 ]
 

@@ -1,6 +1,6 @@
 <div class="col notifications">
     <h4 class="notification-title">Уведомления</h4>
-    {% if not exercises and not dialog %}
+    {% if not exercises_eng and not exercises_fr and not dialog %}
         <div class="row notification">
             <p class='notification-text'>
                 Новых уведомлений пока что нет
@@ -8,16 +8,28 @@
         </div>
     {% endif %}
 
-    {% if exercises %}
-        {% for ex in exercises %}
+    {% if exercises_eng %}
+        {% for ex in exercises_eng %}
         <div class="row notification">
             <p class='notification-text'>
                 <i class="bi bi-bell-fill"></i> Новое упражнение:
-                <a href={% url "exercises_words" ex_id=ex.pk step=1 %} class="ex_name"><i class="bi bi-file-earmark-word"></i> {{ ex.name }}</a>
+                <a href={% url "exercises_words_english" ex_id=ex.pk step=1 %} class="ex_name"><i class="bi bi-file-earmark-word"></i> {{ ex.name }}</a>
             </p>
         </div>
         {% endfor %}
     {% endif %}
+
+    {% if exercises_fr %}
+        {% for ex in exercises_fr %}
+        <div class="row notification">
+            <p class='notification-text'>
+                <i class="bi bi-bell-fill"></i> Новое упражнение:
+                <a href={% url "exercises_words_french" ex_id=ex.pk step=1 %} class="ex_name"><i class="bi bi-file-earmark-word"></i> {{ ex.name }}</a>
+            </p>
+        </div>
+        {% endfor %}
+    {% endif %}
+
     {% if dialogs %}
         {% for dialog in dialogs %}
         <div class="row notification">

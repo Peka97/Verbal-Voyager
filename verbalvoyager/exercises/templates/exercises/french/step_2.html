@@ -1,0 +1,47 @@
+{% extends "exercises/french/includes/words.html" %}
+{% load static %}
+
+{% block 'title' %} Exercise | Step {{step}}{% endblock  %}
+{% block 'style' %}
+    <link rel="stylesheet" href="{% static 'exercises/css/step_base.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/step_2.css' %}">
+{% endblock  %}
+
+{% block 'words' %}
+
+    <!-- Words -->
+    {% for word in words %}
+        <div id='word_{{word.idx}}' class="row row-cols-1 justify-content-center word-check word__block {% if word.idx != 1 %}hidden{% endif %} hidden-anim">
+            <div class="col">
+                <p class="text text-center word__main">{{ word.word }}</p>
+            </div>
+            <div class="translate__list"> 
+                {% for var in word.translate_vars %}
+                    <div class="col text-center word__variant__wrap">
+                        <button type=button class='btn btn-default word__variant {% if word.translate == var %} answer {% endif %}'>
+                            <p>{{ var }}</p>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+
+    <!-- Ex. Alerts -->
+    <div class='row row-alerts justify-content-center pt-3'>
+        <div class='col'>
+            <div class='alerts'>
+                <div id='alert-success' class="alert alert-success text-center hidden" role="alert">
+                    Верно! Так держать!
+                </div>
+                <div id='alert-danger' class="alert alert-danger text-center hidden" role="alert">
+                    Не верно! Подумай ещё
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock  %}
+
+{% block 'js' %}
+    <script type="module" src="{% static 'exercises/js/step_2.js' %}"></script>
+{% endblock  %}

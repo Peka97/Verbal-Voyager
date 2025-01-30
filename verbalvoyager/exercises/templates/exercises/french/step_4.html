@@ -1,0 +1,51 @@
+{% extends "exercises/french/includes/words.html" %}
+{% load static %}
+
+{% block title %}Exercise | Step {{step}}{% endblock  %}
+{% block 'style' %}
+    <link rel="stylesheet" href="{% static 'exercises/css/step_base.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/step_4.css' %}">
+{% endblock  %}
+
+{% block 'words' %}
+    <!-- Title -->
+    <div class="row py-3 justify-content-center">
+
+        <!-- Alerts-->
+        <div class='row justify-content-center'>
+            <div class='col-3 pt-3 hidden'>
+                <div class='alerts pt-3'>
+                    <div id='alert-done' class="alert alert-success text-center" role="alert">
+                        Упражнение завершено!
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Done button -->
+        <div class='row justify-content-center '>
+            <div class='col-3 pt-3 hidden text-center'>
+                {% csrf_token %}
+                <a id='done-btn' class="btn btn-success" href="{% url 'profile' %}" role="button" aria-disabled="false">Вернуться в Личный кабинет</a>
+            </div>
+        </div>
+    </div>
+    <div class="row words__block">
+        {% for word in words %}
+            <div id="word_{{ word.idx }}" class="col word_check word__block hidden">
+                <p class="word-translate">{{ word.translate }}</p>
+                <div class="word_input__block form-floating">
+                    <input id='{{word.word}}' type="text" name="translate" class="form-control word__check" id="floatingInput" placeholder='"{{ word.translate }}" переводится как...'>
+                    <label for="floatingInput">"{{ word.translate }}" переводится как...</label>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="row btn__answer">
+        <button type="button" class="btn btn-default btn__check" id="liveToastBtn">Проверить</button>
+    </div>
+{% endblock  %}
+
+{% block 'js' %}
+    <script type="module" src="{% static 'exercises/js/step_4.js' %}"></script>
+{% endblock  %}

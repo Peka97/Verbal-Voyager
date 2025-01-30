@@ -13,7 +13,7 @@ from django.utils.safestring import mark_safe
 
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
-from .models import Word, ExerciseWords, ExerciseDialog, ExerciseWordsResult, ExerciseDialogResult
+from .models import EnglishWord, FrenchWord, ExerciseWords, ExerciseEnglishWords, ExerciseFrenchWords, ExerciseDialog, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseWordsResult, ExerciseDialogResult
 from .forms import ExerciseWordsAdminForm, ExerciseDialogAdminForm
 
 
@@ -54,7 +54,10 @@ class TeachersListFilter(admin.SimpleListFilter):
         `self.value()`.
         """
         if self.value():
-            if len(queryset) >= 1 and isinstance(queryset[0], (ExerciseWordsResult, ExerciseDialogResult)):
+            if len(queryset) >= 1 and isinstance(queryset[0], (
+                ExerciseWordsResult,                
+                ExerciseDialogResult
+                )):
                 return queryset.filter(
                     exercise__teacher=self.value()
                 )
@@ -101,7 +104,6 @@ class StudentsListFilter(admin.SimpleListFilter):
                 return queryset.filter(
                     student=self.value()
                 )
-
 
 @admin.register(ExerciseWords)
 class ExerciseWordsAdmin(admin.ModelAdmin):
@@ -157,17 +159,142 @@ class ExerciseWordsAdmin(admin.ModelAdmin):
 
         return form
 
+@admin.register(ExerciseEnglishWords)
+class ExerciseEnglishWordsAdmin(admin.ModelAdmin):
+    filter_horizontal = ('words', )
+    search_fields = ('pk', 'teacher__username')
+    autocomplete_fields = ('student', )
+    list_display = (
+        'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access', 'source_link',
+    )
+    list_display_links = ('name', )
+    list_filter = [
+        'is_active',
+        'external_access',
+        TeachersListFilter,
+        StudentsListFilter,
+    ]
+    save_as = True
+    actions = ['make_active', 'make_inactive']
 
-@admin.register(Word)
+    fieldsets = (
+        ('ExerciseWord Main', {
+            'fields': (('name','student'), 'words',),
+        }),
+        ('ExerciseWord Options', {
+            'classes': ('collapse', ),
+            'fields': ('teacher', 'is_active', 'external_access'),
+        })
+    )
+
+    def source_link(self, obj):
+        return mark_safe(f'<a href={obj.get_url()}>Перейти<a>')
+    source_link.short_description = 'Ссылка на упражнение'
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related('student', 'teacher').prefetch_related('words')
+
+    @admin.action(description='Активировать')
+    def make_active(self, request, queryset):
+        queryset.update(is_active=True)
+
+    @admin.action(description='Деактивировать')
+    def make_inactive(self, request, queryset):
+        queryset.update(is_active=False)
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(ExerciseEnglishWordsAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['teacher'].initial = request.user
+        form.base_fields['teacher'].queryset = User.objects.filter(
+            groups__name__in=['Teacher'])
+        form.base_fields['student'].queryset = User.objects.filter(
+            groups__name__in=['Student'])
+
+        return form
+
+
+@admin.register(ExerciseFrenchWords)
+class ExerciseFrenchWordsAdmin(admin.ModelAdmin):
+    filter_horizontal = ('words', )
+    search_fields = ('pk', 'teacher__username')
+    autocomplete_fields = ('student', )
+    list_display = (
+        'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access', 'source_link',
+    )
+    list_display_links = ('name', )
+    list_filter = [
+        'is_active',
+        'external_access',
+        TeachersListFilter,
+        StudentsListFilter,
+    ]
+    save_as = True
+    actions = ['make_active', 'make_inactive']
+
+    fieldsets = (
+        ('ExerciseWord Main', {
+            'fields': (('name','student'), 'words',),
+        }),
+        ('ExerciseWord Options', {
+            'classes': ('collapse', ),
+            'fields': ('teacher', 'is_active', 'external_access'),
+        })
+    )
+
+    def source_link(self, obj):
+        return mark_safe(f'<a href={obj.get_url()}>Перейти<a>')
+    source_link.short_description = 'Ссылка на упражнение'
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related('student', 'teacher').prefetch_related('words')
+
+    @admin.action(description='Активировать')
+    def make_active(self, request, queryset):
+        queryset.update(is_active=True)
+
+    @admin.action(description='Деактивировать')
+    def make_inactive(self, request, queryset):
+        queryset.update(is_active=False)
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(ExerciseFrenchWordsAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['teacher'].initial = request.user
+        form.base_fields['teacher'].queryset = User.objects.filter(
+            groups__name__in=['Teacher'])
+        form.base_fields['student'].queryset = User.objects.filter(
+            groups__name__in=['Student'])
+
+        return form
+
+
+@admin.register(EnglishWord)
 class WordAdmin(admin.ModelAdmin):
-    list_display = ('lang', 'word', 'translate')
-    list_filter = ['lang', ]
+    list_display = ('word', 'translate')
+    # list_filter = ['lang', ]
     search_fields = ('word', 'translate')
     fieldsets = (
-        ('Word Main', {
-            'fields': ('lang', ('word', 'translate'), ),
+        ('EnglishWord Main', {
+            'fields': (('word', 'translate'), ),
         }),
-        ('Word Extra', {
+        ('EnglishWord Extra', {
+            'classes': ('collapse', ),
+            'fields': ('sentences', ),
+        })
+    )
+    
+
+@admin.register(FrenchWord)
+class FrenchWordAdmin(admin.ModelAdmin):
+    list_display = ('word', 'genus', 'translate')
+    list_filter = ['genus', ]
+    search_fields = ('word', 'translate')
+    fieldsets = (
+        ('EnglishWord Main', {
+            'fields': (('word', 'genus'), 'translate'),
+        }),
+        ('EnglishWord Extra', {
             'classes': ('collapse', ),
             'fields': ('sentences', ),
         })
@@ -175,7 +302,7 @@ class WordAdmin(admin.ModelAdmin):
 
 
 @admin.register(ExerciseWordsResult)
-class ExerciseWordsResultAdmin(admin.ModelAdmin):
+class ExerciseEnglishWordsResultAdmin(admin.ModelAdmin):
     list_display = ('get_ex_name', 'get_teacher', 'get_student',
                     'step_1', 'step_2', 'step_3', 'step_4')
     list_filter = [
@@ -246,7 +373,7 @@ class ExerciseDialogAdmin(admin.ModelAdmin):
         return form
 
     def clean(self):
-        cleaned_data = super(DialogAdminForm, self).clean()
+        cleaned_data = super(ExerciseDialogAdminForm, self).clean()
         field_value = cleaned_data.get('field_name')
         if not field_value:
             raise ValidationError('No value for field_name')
@@ -256,3 +383,67 @@ class ExerciseDialogAdmin(admin.ModelAdmin):
         css = {
             'all': ('admin/css/dialog.css', )
         }
+
+
+# @admin.register(ExerciseDialog)
+class AbstractExerciseDialogAdmin(admin.ModelAdmin):
+    form = ExerciseDialogAdminForm
+    search_fields = ['student', ]
+    autocomplete_fields = ('student', )
+    filter_horizontal = ('words', )
+    list_display = (
+        'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access', 'source_link',
+    )
+    list_display_links = ('name', )
+    list_filter = [
+        'is_active',
+        'external_access',
+        TeachersListFilter,
+        StudentsListFilter,
+    ]
+    fieldsets = (
+        ('ExerciseDialog Main', {
+            'fields': (('name', 'student'), 'words', 'text'),
+        }),
+        ('ExerciseDialog Options', {
+            'classes': ('collapse', ),
+            'fields': ('teacher', 'is_active', 'external_access'),
+        })
+    )
+
+    def source_link(self, obj):
+        return mark_safe(f'<a href={obj.get_url()}>Перейти<a>')
+    source_link.short_description = 'Ссылка на упражнение'
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related('student', 'teacher').prefetch_related('words')
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(ExerciseDialogAdmin, self).get_form(
+            request, obj, **kwargs)
+        form.base_fields['teacher'].initial = request.user
+        form.base_fields['teacher'].queryset = User.objects.filter(
+            groups__name__in=['Teacher', ])
+
+        return form
+
+    def clean(self):
+        cleaned_data = super(ExerciseDialogAdminForm, self).clean()
+        field_value = cleaned_data.get('field_name')
+        if not field_value:
+            raise ValidationError('No value for field_name')
+
+    class Media:
+        js = ['admin/js/generate_dialog_text.js',]
+        css = {
+            'all': ('admin/css/dialog.css', )
+        }
+
+@admin.register(ExerciseEnglishDialog)
+class ExerciseEnglishDialogAdmin(AbstractExerciseDialogAdmin):
+    pass
+
+@admin.register(ExerciseFrenchDialog)
+class ExerciseFrenchDialogAdmin(AbstractExerciseDialogAdmin):
+    pass
