@@ -1,15 +1,17 @@
 export function send_points(ex_type, points) {
     let token = document.getElementsByName('csrfmiddlewaretoken')[0].defaultValue;
+    let exerciseLang = document.getElementById('exercise_lang')
+    
     if (!token) {return};
     
     let url;
     if (ex_type === 'words') {
         let ex_id = window.location.href.split('/').slice(-2)[0];
         let step_num = window.location.href.split('/').slice(-1)[0];
-        url = `https://verbal-voyager.ru/exercises/${ex_type}/update/${ex_id}/step_${step_num}`;
+        url = `https://verbal-voyager.ru/exercises/${ex_type}/${exerciseLang.dataset['exerciseLang']}/update/${ex_id}/step_${step_num}`;
     } else if (ex_type === 'dialog') {
         let ex_id = window.location.href.split('/').slice(-1)[0];
-        url = `https://verbal-voyager.ru/exercises/${ex_type}/update/${ex_id}`;
+        url = `https://verbal-voyager.ru/exercises/${ex_type}/${exerciseLang.dataset['exerciseLang']}/update/${ex_id}`;
     } else {
         return;
     }

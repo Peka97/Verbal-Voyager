@@ -66,7 +66,6 @@ class TeachersListFilter(admin.SimpleListFilter):
                     teacher=self.value()
                 )
 
-
 class StudentsListFilter(admin.SimpleListFilter):
     # Human-readable title which will be displayed in the
     # right admin sidebar just above the filter options.
@@ -105,13 +104,15 @@ class StudentsListFilter(admin.SimpleListFilter):
                     student=self.value()
                 )
 
+### TODO: delete after update
+
 @admin.register(ExerciseWords)
 class ExerciseWordsAdmin(admin.ModelAdmin):
     filter_horizontal = ('words', )
     search_fields = ('pk', 'teacher__username')
     autocomplete_fields = ('student', )
     list_display = (
-        'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access', 'source_link',
+        'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access',
     )
     list_display_links = ('name', )
     list_filter = [
@@ -159,8 +160,8 @@ class ExerciseWordsAdmin(admin.ModelAdmin):
 
         return form
 
-@admin.register(ExerciseEnglishWords)
-class ExerciseEnglishWordsAdmin(admin.ModelAdmin):
+### Words
+class AbstractExerciseWordsAdmin(admin.ModelAdmin):
     filter_horizontal = ('words', )
     search_fields = ('pk', 'teacher__username')
     autocomplete_fields = ('student', )
@@ -186,9 +187,16 @@ class ExerciseEnglishWordsAdmin(admin.ModelAdmin):
             'fields': ('teacher', 'is_active', 'external_access'),
         })
     )
+    
+    def save_model(self, request, obj, form, change):
+        if not obj.name:
+            student_exercises_count = self.model.objects.filter(student=obj.student).count()
+            obj.name = f"Words {student_exercises_count + 1} "
+            
+        super().save_model(request, obj, form, change)
 
     def source_link(self, obj):
-        return mark_safe(f'<a href={obj.get_url()}>Перейти<a>')
+        return mark_safe(f'<a href={obj.get_absolute_url()}>Перейти<a>')
     source_link.short_description = 'Ссылка на упражнение'
 
     def get_queryset(self, request):
@@ -204,7 +212,7 @@ class ExerciseEnglishWordsAdmin(admin.ModelAdmin):
         queryset.update(is_active=False)
 
     def get_form(self, request, obj=None, **kwargs):
-        form = super(ExerciseEnglishWordsAdmin, self).get_form(request, obj, **kwargs)
+        form = super().get_form(request, obj, **kwargs)
         form.base_fields['teacher'].initial = request.user
         form.base_fields['teacher'].queryset = User.objects.filter(
             groups__name__in=['Teacher'])
@@ -213,67 +221,21 @@ class ExerciseEnglishWordsAdmin(admin.ModelAdmin):
 
         return form
 
+@admin.register(ExerciseEnglishWords)
+class ExerciseEnglishWordsAdmin(AbstractExerciseWordsAdmin):
+    pass
 
 @admin.register(ExerciseFrenchWords)
-class ExerciseFrenchWordsAdmin(admin.ModelAdmin):
-    filter_horizontal = ('words', )
-    search_fields = ('pk', 'teacher__username')
-    autocomplete_fields = ('student', )
-    list_display = (
-        'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access', 'source_link',
-    )
-    list_display_links = ('name', )
-    list_filter = [
-        'is_active',
-        'external_access',
-        TeachersListFilter,
-        StudentsListFilter,
-    ]
-    save_as = True
-    actions = ['make_active', 'make_inactive']
+class ExerciseFrenchWordsAdmin(AbstractExerciseWordsAdmin):
+    pass
 
-    fieldsets = (
-        ('ExerciseWord Main', {
-            'fields': (('name','student'), 'words',),
-        }),
-        ('ExerciseWord Options', {
-            'classes': ('collapse', ),
-            'fields': ('teacher', 'is_active', 'external_access'),
-        })
-    )
-
-    def source_link(self, obj):
-        return mark_safe(f'<a href={obj.get_url()}>Перейти<a>')
-    source_link.short_description = 'Ссылка на упражнение'
-
-    def get_queryset(self, request):
-        queryset = super().get_queryset(request)
-        return queryset.select_related('student', 'teacher').prefetch_related('words')
-
-    @admin.action(description='Активировать')
-    def make_active(self, request, queryset):
-        queryset.update(is_active=True)
-
-    @admin.action(description='Деактивировать')
-    def make_inactive(self, request, queryset):
-        queryset.update(is_active=False)
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super(ExerciseFrenchWordsAdmin, self).get_form(request, obj, **kwargs)
-        form.base_fields['teacher'].initial = request.user
-        form.base_fields['teacher'].queryset = User.objects.filter(
-            groups__name__in=['Teacher'])
-        form.base_fields['student'].queryset = User.objects.filter(
-            groups__name__in=['Student'])
-
-        return form
-
+### TODO: delete after update
+class AbstractWordAdmin(admin.ModelAdmin):
+    search_fields = ('word', 'translate')
 
 @admin.register(EnglishWord)
-class WordAdmin(admin.ModelAdmin):
+class WordAdmin(AbstractWordAdmin):
     list_display = ('word', 'translate')
-    # list_filter = ['lang', ]
-    search_fields = ('word', 'translate')
     fieldsets = (
         ('EnglishWord Main', {
             'fields': (('word', 'translate'), ),
@@ -284,12 +246,10 @@ class WordAdmin(admin.ModelAdmin):
         })
     )
     
-
 @admin.register(FrenchWord)
-class FrenchWordAdmin(admin.ModelAdmin):
+class FrenchWordAdmin(AbstractWordAdmin):
     list_display = ('word', 'genus', 'translate')
     list_filter = ['genus', ]
-    search_fields = ('word', 'translate')
     fieldsets = (
         ('EnglishWord Main', {
             'fields': (('word', 'genus'), 'translate'),
@@ -299,8 +259,8 @@ class FrenchWordAdmin(admin.ModelAdmin):
             'fields': ('sentences', ),
         })
     )
-
-
+    
+### TODO: delete after update
 @admin.register(ExerciseWordsResult)
 class ExerciseEnglishWordsResultAdmin(admin.ModelAdmin):
     list_display = ('get_ex_name', 'get_teacher', 'get_student',
@@ -314,7 +274,7 @@ class ExerciseEnglishWordsResultAdmin(admin.ModelAdmin):
         queryset = super().get_queryset(request)
         return queryset.select_related('words', 'words__teacher', 'words__student')
 
-
+### TODO: delete after update
 @admin.register(ExerciseDialogResult)
 class ExerciseDialogResultAdmin(admin.ModelAdmin):
     list_display = ('get_ex_name', 'get_teacher', 'get_student',
@@ -328,7 +288,7 @@ class ExerciseDialogResultAdmin(admin.ModelAdmin):
         queryset = super().get_queryset(request)
         return queryset.select_related('dialog', 'dialog__teacher', 'dialog__student')
 
-
+### TODO: delete after update
 @admin.register(ExerciseDialog)
 class ExerciseDialogAdmin(admin.ModelAdmin):
     form = ExerciseDialogAdminForm
@@ -379,13 +339,12 @@ class ExerciseDialogAdmin(admin.ModelAdmin):
             raise ValidationError('No value for field_name')
 
     class Media:
-        js = ['admin/js/generate_dialog_text.js',]
+        js = ['admin/js/generate_dialog_english_text.js',]
         css = {
             'all': ('admin/css/dialog.css', )
         }
 
-
-# @admin.register(ExerciseDialog)
+### Dialogs
 class AbstractExerciseDialogAdmin(admin.ModelAdmin):
     form = ExerciseDialogAdminForm
     search_fields = ['student', ]
@@ -420,7 +379,7 @@ class AbstractExerciseDialogAdmin(admin.ModelAdmin):
         return queryset.select_related('student', 'teacher').prefetch_related('words')
 
     def get_form(self, request, obj=None, **kwargs):
-        form = super(ExerciseDialogAdmin, self).get_form(
+        form = super().get_form(
             request, obj, **kwargs)
         form.base_fields['teacher'].initial = request.user
         form.base_fields['teacher'].queryset = User.objects.filter(
@@ -435,15 +394,16 @@ class AbstractExerciseDialogAdmin(admin.ModelAdmin):
             raise ValidationError('No value for field_name')
 
     class Media:
-        js = ['admin/js/generate_dialog_text.js',]
         css = {
             'all': ('admin/css/dialog.css', )
         }
 
 @admin.register(ExerciseEnglishDialog)
 class ExerciseEnglishDialogAdmin(AbstractExerciseDialogAdmin):
-    pass
+    class Media:
+        js = ['admin/js/generate_dialog_english_text.js',]
 
 @admin.register(ExerciseFrenchDialog)
 class ExerciseFrenchDialogAdmin(AbstractExerciseDialogAdmin):
-    pass
+    class Media:
+        js = ['admin/js/generate_dialog_french_text.js',]

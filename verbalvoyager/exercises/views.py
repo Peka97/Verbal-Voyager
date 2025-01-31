@@ -1,4 +1,5 @@
 import json
+from pprint import pprint
 import requests
 import logging
 from random import sample, shuffle
@@ -11,13 +12,14 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
+from django.db import transaction
 
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 from .utils import generate_dialog
 
 from dictionary.models import EnglishWord, FrenchWord
-from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseDialog, ExerciseDialogResult
-from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult
+from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseDialog, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseDialogResult
+from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult
 
 log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 logger = logging.getLogger(__name__)
@@ -158,7 +160,7 @@ def exercises_words_french(request, ex_id, step):
 
     return render(request, template_name, context)
 
-
+### TODO: delete after update
 def exercises_dialog(request, ex_id):
     dialog = get_object_or_404(ExerciseDialog, pk=ex_id)
 
@@ -182,16 +184,88 @@ def exercises_dialog(request, ex_id):
                 'text': message_text
             }
         )
-    words = dialog.words.all()
+
+    words = dialog.words.all().values()
+    [word.update({'idx': idx + 1}) for idx, word in enumerate(words)]
 
     context = {
         'scene': scene,
         'messages': messages,
-        'words': get_words(words),
+        'words': words,
     }
     return render(request, 'exercises/dialog.html', context)
 
+def exercises_dialog_english(request, ex_id):
+    dialog = get_object_or_404(ExerciseEnglishDialog, pk=ex_id)
 
+    if not dialog.external_access or not request.user.is_teacher():
+        if not request.user.is_authenticated:
+            return redirect(f"/users/auth?next={request.path}")
+        if dialog.student != request.user:
+            raise Http404("Запрашиваемый объект не найден")
+
+    raw_dialog = list(filter(lambda s: len(s) > 1, dialog.text.split('\n')))
+
+    scene = raw_dialog[0] if raw_dialog[0].startswith(
+        'Scene:') or raw_dialog[0].startswith('Situation:') else None
+    raw_text = raw_dialog[1:] if scene else raw_dialog
+    messages = []
+    for message in raw_text:
+        person_name, message_text = message.split(':', 1)
+        messages.append(
+            {
+                'from': person_name,
+                'text': message_text
+            }
+        )
+
+    words = dialog.words.all().values()
+    [word.update({'idx': idx + 1}) for idx, word in enumerate(words)]
+
+    context = {
+        'scene': scene,
+        'messages': messages,
+        'words': words,
+    }
+    pprint(context)
+    return render(request, 'exercises/english/dialog.html', context)
+
+
+def exercises_dialog_french(request, ex_id):
+    dialog = get_object_or_404(ExerciseFrenchDialog, pk=ex_id)
+
+    if not dialog.external_access or not request.user.is_teacher():
+        if not request.user.is_authenticated:
+            return redirect(f"/users/auth?next={request.path}")
+        if dialog.student != request.user:
+            raise Http404("Запрашиваемый объект не найден")
+
+    raw_dialog = list(filter(lambda s: len(s) > 1, dialog.text.split('\n')))
+
+    scene = raw_dialog[0] if raw_dialog[0].startswith(
+        'Scene:') or raw_dialog[0].startswith('Situation:') else None
+    raw_text = raw_dialog[1:] if scene else raw_dialog
+    messages = []
+    for message in raw_text:
+        person_name, message_text = message.split(':', 1)
+        messages.append(
+            {
+                'from': person_name,
+                'text': message_text
+            }
+        )
+
+    words = dialog.words.all().values()
+    [word.update({'idx': idx + 1}) for idx, word in enumerate(words)]
+
+    context = {
+        'scene': scene,
+        'messages': messages,
+        'words': words,
+    }
+    return render(request, 'exercises/french/dialog.html', context)
+
+### TODO: delete after update
 def get_words(words: list[ExerciseEnglishWords]):
     result = []
    
@@ -239,48 +313,97 @@ def load_translate_vars(words: list[dict]):
 
 
 @login_required
-def exercises_words_update(request, ex_id, step_num):
+def exercises_words_english_update(request, ex_id, step_num):
     if request.method == 'POST':
-        data = json.loads(request.body)
+        with transaction.atomic():
+            data = json.loads(request.body)
 
-        logger.info(
-            f'POST REQUEST:\n Ex Words:{ex_id} | {data}'
-        )
-        value = data.get('value')
+            logger.info(
+                f'POST REQUEST:\n Ex Words:{ex_id} | {data}'
+            )
+            value = data.get('value')
 
-        obj, _ = ExerciseEnglishWordsResult.objects.get_or_create(
-            words=ExerciseEnglishWords.objects.get(pk=ex_id),
-        )
-        obj.__dict__[step_num] = value
-        obj.save()
+            obj, _ = ExerciseEnglishWordsResult.objects.get_or_create(
+                words=ExerciseEnglishWords.objects.get(pk=ex_id),
+            )
+            obj.__dict__[step_num] = value
+            obj.save()
 
-        if step_num[-1] == '4':
-            exercise = ExerciseEnglishWords.objects.get(pk=ex_id)
-            exercise.is_active = False
-            exercise.save()
+            if step_num[-1] == '4':
+                exercise = ExerciseEnglishWords.objects.get(pk=ex_id)
+                exercise.is_active = False
+                exercise.save()
+
+        return redirect('profile')
+
+@login_required
+def exercises_words_french_update(request, ex_id, step_num):
+    if request.method == 'POST':
+        with transaction.atomic():
+            data = json.loads(request.body)
+
+            logger.info(
+                f'POST REQUEST:\n Ex Words:{ex_id} | {data}'
+            )
+            value = data.get('value')
+
+            obj, _ = ExerciseFrenchWordsResult.objects.get_or_create(
+                words=ExerciseFrenchWords.objects.get(pk=ex_id),
+            )
+            obj.__dict__[step_num] = value
+            obj.save()
+
+            if step_num[-1] == '4':
+                exercise = ExerciseEnglishWords.objects.get(pk=ex_id)
+                exercise.is_active = False
+                exercise.save()
 
         return redirect('profile')
 
 
 @login_required
-def exercises_dialog_update(request, ex_id):
+def exercises_dialog_english_update(request, ex_id):
     if request.method == 'POST':
-        data = json.loads(request.body)
+        with transaction.atomic():
+            data = json.loads(request.body)
 
-        logger.info(
-            f'POST REQUEST:\n Ex Dialog:{ex_id} | {data}'
-        )
+            logger.info(
+                f'POST REQUEST:\n Ex Dialog:{ex_id} | {data}'
+            )
 
-        value = data.get('value')
-        obj, _ = ExerciseDialogResult.objects.get_or_create(
-            dialog=ExerciseDialog.objects.get(pk=ex_id),
-        )
-        obj.__dict__['step_1'] = value
-        obj.save()
+            value = data.get('value')
+            obj, _ = ExerciseEnglishDialogResult.objects.get_or_create(
+                dialog=ExerciseEnglishDialog.objects.get(pk=ex_id),
+            )
+            obj.points = value
+            obj.save()
 
-        dialog = ExerciseDialog.objects.get(pk=ex_id)
-        dialog.is_active = False
-        dialog.save()
+            dialog = ExerciseDialog.objects.get(pk=ex_id)
+            dialog.is_active = False
+            dialog.save()
+
+        return redirect('profile')
+
+@login_required
+def exercises_dialog_french_update(request, ex_id):
+    if request.method == 'POST':
+        with transaction.atomic():
+            data = json.loads(request.body)
+
+            logger.info(
+                f'POST REQUEST:\n Ex Dialog:{ex_id} | {data}'
+            )
+
+            value = data.get('value')
+            obj, _ = ExerciseFrenchDialogResult.objects.get_or_create(
+                dialog=ExerciseFrenchDialog.objects.get(pk=ex_id),
+            )
+            obj.points = value
+            obj.save()
+
+            dialog = ExerciseDialog.objects.get(pk=ex_id)
+            dialog.is_active = False
+            dialog.save()
 
         return redirect('profile')
 
@@ -407,12 +530,30 @@ def load_api_for_words(words: list[EnglishWord]):
     return words
 
 
-def generate_dialog_view(request):
+def generate_dialog_english_json(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
             words = data.get('words')
-            dialog_text = generate_dialog(words, sentence_num=6, level="B2")
+            sentences_count = data.get('sentences_count')
+            level = data.get('level')
+            dialog_text = generate_dialog('английском', words, sentences_count, level=level)
+            dialog_text = dialog_text.replace('**', '')
+            return JsonResponse({'result': dialog_text})
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+
+def generate_dialog_french_json(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            words = data.get('words')
+            sentences_count = data.get('sentences_count')
+            level = data.get('level')
+            dialog_text = generate_dialog('французском', words, sentences_count, level=level)
             dialog_text = dialog_text.replace('**', '')
             return JsonResponse({'result': dialog_text})
         except json.JSONDecodeError:

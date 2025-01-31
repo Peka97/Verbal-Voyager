@@ -4,7 +4,7 @@ from pprint import pprint
 from verbalvoyager.settings import OPENAI_API_KEY
 
 
-def generate_dialog(words: list, sentence_num: int, level: str) -> str:
+def generate_dialog(lang: str, words: list, sentence_count: int, level: str) -> str:
     client = OpenAI(
         base_url="https://openrouter.ai/api/v1",
         api_key=OPENAI_API_KEY,
@@ -21,7 +21,7 @@ def generate_dialog(words: list, sentence_num: int, level: str) -> str:
             {
             "role": "user",
             "content": f"""
-                Придумай небольшой диалог ({sentence_num} реплик на каждого) двух друзей на английском с использованием следующих слов: {words}. 
+                Придумай небольшой диалог ({sentence_count} реплик на каждого) двух друзей на {lang} языке с использованием следующих слов: {words}. 
                 Уровень языка {level}.
                 Используй сделующую структуру:\n 
                 *здесь краткое описание ситуации, в которой находятся друзья*

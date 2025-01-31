@@ -1,6 +1,6 @@
 <div class="col notifications">
     <h4 class="notification-title">Уведомления</h4>
-    {% if not exercises_eng and not exercises_fr and not dialog %}
+    {% if not exercises and not dialogs %}
         <div class="row notification">
             <p class='notification-text'>
                 Новых уведомлений пока что нет
@@ -8,23 +8,12 @@
         </div>
     {% endif %}
 
-    {% if exercises_eng %}
-        {% for ex in exercises_eng %}
+    {% if exercises %}
+        {% for exercise in exercises %}
         <div class="row notification">
             <p class='notification-text'>
                 <i class="bi bi-bell-fill"></i> Новое упражнение:
-                <a href={% url "exercises_words_english" ex_id=ex.pk step=1 %} class="ex_name"><i class="bi bi-file-earmark-word"></i> {{ ex.name }}</a>
-            </p>
-        </div>
-        {% endfor %}
-    {% endif %}
-
-    {% if exercises_fr %}
-        {% for ex in exercises_fr %}
-        <div class="row notification">
-            <p class='notification-text'>
-                <i class="bi bi-bell-fill"></i> Новое упражнение:
-                <a href={% url "exercises_words_french" ex_id=ex.pk step=1 %} class="ex_name"><i class="bi bi-file-earmark-word"></i> {{ ex.name }}</a>
+                <a href={{ exercise.get_absolute_url }} class="ex_name"><i class="bi bi-file-earmark-word"></i> {{ exercise }}</a>
             </p>
         </div>
         {% endfor %}
@@ -35,9 +24,10 @@
         <div class="row notification">
             <p class='notification-text'>
                 <i class="bi bi-bell-fill"></i> Новое упражнение:
-                <a href={% url "exercises_dialog" ex_id=dialog.pk %} class="ex_name"><i class="bi bi-chat-left-text"></i> {{ dialog.name }}</a>
+                <a href={{ dialog.get_absolute_url }} class="ex_name"><i class="bi bi-chat-left-text"></i> {{ dialog }}</a>
             </p>
         </div>
         {% endfor %}
     {% endif %}
+
 </div>

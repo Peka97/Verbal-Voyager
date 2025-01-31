@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
-
+### TODO: delete after update
 class Word(models.Model):
     word = models.CharField(
         verbose_name='Слово в оригинале',
@@ -42,7 +42,7 @@ class Word(models.Model):
         verbose_name = 'Слово'
         verbose_name_plural = 'Слова'
         ordering = ['word']
-
+### TODO: delete after update
 class EnglishWord(models.Model):
     word = models.CharField(
         verbose_name='Слово в оригинале',
@@ -67,7 +67,7 @@ class EnglishWord(models.Model):
         verbose_name = 'Слово (eng) (old)'
         verbose_name_plural = 'Слова (eng) (old)'
         ordering = ['word']
-
+### TODO: delete after update
 class FrenchWord(models.Model):
     word = models.CharField(
         verbose_name='Слово в оригинале',
@@ -106,6 +106,7 @@ class FrenchWord(models.Model):
         ordering = ['word']
         
         
+### TODO: delete after update
 class ExerciseWords(models.Model):
     name = models.CharField(default=None, blank=True, max_length=50,
                             verbose_name='Название упражнения',
@@ -165,6 +166,7 @@ class ExerciseWords(models.Model):
         ordering = ['-is_active']
         
         
+### ExerWords
 class AbstractExerciseWords(models.Model):
     view_name:str
 
@@ -179,7 +181,6 @@ class AbstractExerciseWords(models.Model):
         default=False,
         help_text='Если установлено, любой может получить доступ к упражнению без регистрации или авторизации',
     )
-    
 
     def get_words(self):
         words = [
@@ -197,17 +198,17 @@ class AbstractExerciseWords(models.Model):
         return 'https://verbal-voyager.ru' + self.get_absolute_url()
     get_words.get_url = 'Ссылка на упражнение'
     
-    def save(self, *args, **kwargs):
-        if not self.name:
-            try:
-                student_exercises_count = self.objects.filter(student=self.student).count()
-                self.name = f"Words {student_exercises_count + 1}"
-            except AttributeError:
-                self.name = "Words 1"
-        super().save(*args, **kwargs)
+    def save_model(self, request, obj, form, change):
+        print(obj.name)
+        print(form)
+        if not obj.name:
+            student_exercises_count = self.objects.filter(student=obj.student).count()
+            self.name = f"Words {student_exercises_count + 1}"
+            
+        super().save_model(request, obj, form, change)
     
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         status = 'Active' if self.is_active else 'Done'
         return f"{self.pk} - {self.student} - {status}"
 
@@ -234,6 +235,9 @@ class ExerciseEnglishWords(AbstractExerciseWords):
         verbose_name="Учитель"
         )
     
+    def __str__(self):
+        return f"{self.name} (ENG)" 
+    
     class Meta:
         verbose_name = 'Упражнение "Слова" | Eng'
         verbose_name_plural = 'Упражнения "Слова" | Eng'
@@ -256,12 +260,16 @@ class ExerciseFrenchWords(AbstractExerciseWords):
         null=True,
         verbose_name="Учитель"
         )
+        
+    def __str__(self):
+        return f"{self.name} (FR)" 
     
     class Meta:
         verbose_name = 'Упражнение "Слова" | Fr'
         verbose_name_plural = 'Упражнения "Слова" | Fr'
 
 
+### TODO: delete after update
 class ExerciseDialog(models.Model):
     name = models.CharField(default=None, blank=True, max_length=50,
                             verbose_name='Название упражнения',
@@ -324,6 +332,7 @@ class ExerciseDialog(models.Model):
         verbose_name_plural = 'Упражнения "Диалог" (old)'
         ordering = ['-is_active']
 
+### ExerDialogs
 class AbstractExerciseDialog(models.Model):
     name = models.CharField(default=None, blank=True, max_length=50,
                             verbose_name='Название упражнения',
@@ -345,9 +354,13 @@ class AbstractExerciseDialog(models.Model):
     
     def save(self, *args, **kwargs):
         if not self.name:
-            student_exercises_count = self.objects.filter(student=self.student).count()
-            self.name = f"Dialog {student_exercises_count + 1}"
-        super(self).save(*args, **kwargs)
+            try:
+                student_exercises_count = self.objects.filter(student=self.student).count()
+            except AttributeError:
+                self.name = "Dialog 1"
+            else:
+                self.name = f"Dialog {student_exercises_count + 1}"
+        super().save(*args, **kwargs)
         
     def get_words(self):
         words = [
@@ -358,13 +371,10 @@ class AbstractExerciseDialog(models.Model):
     get_words.allow_tags = True
     get_words.short_description = 'Слова в упражнении'
     
-    def get_absolute_url(self):
-        return reverse("exercises_dialog", kwargs={"ex_id": self.pk})
-    
     def get_url(self):
         return 'https://verbal-voyager.ru' + self.get_absolute_url()
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         status = 'Active' if self.is_active else 'Done'
         return f"{self.pk} - {self.student.last_name} {self.student.first_name} - {status}"
 
@@ -386,7 +396,11 @@ class ExerciseEnglishDialog(AbstractExerciseDialog):
         limit_choices_to={'groups__name__in': ['Teacher', ]},
         null=True,
         verbose_name="Учитель")
-
+    def get_absolute_url(self):
+        return reverse("exercises_dialog_english", kwargs={"ex_id": self.pk})
+    
+    def __str__(self) -> str:
+        return f"{self.name} (ENG)"
     class Meta:
         verbose_name = 'Упражнение "Диалог" | Eng'
         verbose_name_plural = 'Упражнения "Диалог" | Eng'
@@ -406,10 +420,16 @@ class ExerciseFrenchDialog(AbstractExerciseDialog):
         null=True,
         verbose_name="Учитель")
 
+    def get_absolute_url(self):
+        return reverse("exercises_dialog_french", kwargs={"ex_id": self.pk})
+    
+    def __str__(self) -> str:
+        return f"{self.name} (FR)"
     class Meta:
         verbose_name = 'Упражнение "Диалог" | Fr'
         verbose_name_plural = 'Упражнения "Диалог" | Fr'
-        
+
+### TODO: delete after update
 class ExerciseWordsResult(models.Model):
     words = models.ForeignKey(
         ExerciseWords, on_delete=models.CASCADE, related_name='words_result_old', null=True, blank=True)
@@ -503,6 +523,7 @@ class ExerciseWordsResult(models.Model):
 #         verbose_name = 'Результат упражнения "Слова" (fr)'
 #         verbose_name_plural = 'Результаты упражнений "Слова" (fr)'
     
+### TODO: delete after update
 class ExerciseDialogResult(models.Model):
     dialog = models.ForeignKey(
         ExerciseDialog, on_delete=models.CASCADE, related_name='dialog_result_old', null=True, blank=True)

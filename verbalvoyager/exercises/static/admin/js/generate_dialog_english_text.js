@@ -57,16 +57,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let Words = Array();
         let WordsElements = [...document.querySelector('#id_words_to').children];
-        const regex = /\|\s*([A-Za-z\s]+)\s*\(/;
+        
         WordsElements.forEach(wordElement => {
-            let regexMatch = wordElement.title.match(regex);
-            if (regexMatch) {
-                Words.push(regexMatch[1].trim());
-            }
+            Words.push(wordElement.title.split(' - ')[0])
         })
         
         if (Words.length > 0) {
-            url = `https://verbal-voyager.ru/exercises/dialog/json/generate_dialog`
+            url = `https://verbal-voyager.ru/exercises/dialog/json/generate_dialog/english`
             
             fetch(url, {
                 method: 'POST',
@@ -74,7 +71,12 @@ document.addEventListener('DOMContentLoaded', function() {
                   'Content-Type': 'application/json',
                   'X-CSRFToken': getCookie('csrftoken')
                 },
-                body: JSON.stringify({'words': Words }),
+                body: JSON.stringify(
+                    {
+                        'words': Words,
+                        'sentences_count': GenerateСounterInput.value,
+                        'level': GenerateSelectLevelElement.value
+                    }),
                 })
                 .then(response => response.json())
                 .then(data => {
