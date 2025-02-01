@@ -227,7 +227,6 @@ def exercises_dialog_english(request, ex_id):
         'messages': messages,
         'words': words,
     }
-    pprint(context)
     return render(request, 'exercises/english/dialog.html', context)
 
 

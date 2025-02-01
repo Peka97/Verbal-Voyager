@@ -20,9 +20,11 @@
 {% block 'content' %}
 <div class="container wrapper">
     <div class='row scene-container'>
-        <div class='col scene-text'>
-            {{ scene }}
-        </div>
+        {% if scene %}
+            <div class='col scene-text'>
+                {{ scene }}
+            </div>
+        {% endif %}
         <!-- Done button -->
         <div class='col hidden text-center'>
             {% csrf_token %}

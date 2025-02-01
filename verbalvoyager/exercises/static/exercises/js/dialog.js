@@ -3,11 +3,16 @@ import { send_points } from './modules/send_points.js';
 
 
 let messages = [...document.getElementsByClassName("message")];
+let messagesCopy = messages.slice()
 let names = document.getElementById("names").dataset;
 let words_lenght = document.getElementById("words-length").dataset.wordsLength;
 let words = findWords();
+const maxWordsInSubmenu = Math.min(words.length, 4)
+
 setOrderInMessageContainer();
-insertDropdownInMessage();
+insertDropdownInMessages();
+fillSubMenuElements();
+
 
 function findWords() {
     let result = Array();
@@ -27,57 +32,86 @@ function setOrderInMessageContainer() {
         }
 }}
 
-function insertDropdownInMessage(message) {
+function insertDropdownInMessages() {
     messages.forEach(message => {
-        for(var i=0; i < words.length; i++) {
-            let word_ds = words[i].dataset;
-            let message_text = message.innerText.toLowerCase();
-            const regex = new RegExp(`\\b${word_ds.word.toLowerCase()}\\b(s|['’]s)?`, 'g');
-            
-            if (message_text.match(regex)) {
-                let words_list = words.slice();
-                words_list.splice(words.indexOf(words[i]), 1);
+        let message_text = message.innerText.toLowerCase();
+        console.log(message_text)
 
-                let words_vars = words_list.slice(0, 3)
-                words_vars.push(words[i])
-                words_vars = shuffle(words_vars);
-                let html = `
-                <div class="menu">
-                        <div class="item" data-key="${word_ds.word.toLowerCase()}">
-                          <a href="#" class="menu-word-link">
-                            <span class='word-rus'> ${word_ds.translate.toLowerCase()} </span>
-                            <svg viewBox="0 0 360 360" xml:space="preserve">
-                              <g id="SVGRepo_iconCarrier">
-                                <path
-                                  id="XMLID_225_"
-                                  d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393 c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393 s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"
-                                ></path>
-                              </g>
-                            </svg>
-                          </a>
-                          <div class="submenu">
-                `
-                // let html = `
-                //     <select class='menu'>
-                //         <option value="" disabled selected>${word_ds.translate.toLowerCase()}</option>
-                // `
-                for(var word_i=0; word_i < words_vars.length; word_i++) {
-                    html += `
-                    <div class="submenu-item">
-                        <a href="#" value="${words_vars[word_i].dataset.translate.toLowerCase()}" class="submenu-word-link">${words_vars[word_i].dataset.word}</a>
-                    </div>
-                    `
-                    // html += `<option class='submenu' value="${words_vars[word_i].dataset.translate.toLowerCase()}">${words_vars[word_i].dataset.word}</option>`
-                }
-                html += `
+        words.forEach(wordEl => {
+            let word = wordEl.dataset["word"]
+            const regexStr = `\\b(\\S')?(${word.toLowerCase()})('\\S)?\\b`
+
+            const regex = new RegExp(regexStr, 'g');
+            let matches = message_text.matchAll(regex);
+            if (matches) {
+                
+                let words_list = words.slice();
+                matches.forEach(match => {
+                    let matchWord = match[2];
+                    words_list.push(matchWord);
+                    words_list = shuffle(words_list);
+
+                    let dropDownHTML = `
+                        <div class="menu">
+                            <div class="item" data-key="${matchWord}">
+                                <a href="#" class="menu-word-link">
+                                <span class='word-rus'> ${matchWord} </span>
+                                <svg viewBox="0 0 360 360" xml:space="preserve">
+                                    <g id="SVGRepo_iconCarrier">
+                                    <path
+                                        id="XMLID_225_"
+                                        d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393 c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393 s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"
+                                    ></path>
+                                    </g>
+                                </svg>
+                                </a>
+                                <div class="dropdown submenu"></div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                `
-                message.innerHTML = message.innerHTML.replace(word_ds.word.toLowerCase(), html)
+                        `
+                        message.innerHTML = message.innerHTML.replace(matchWord, dropDownHTML);
+                        let dropDownSubmenu = [...message.getElementsByClassName('dropdown submenu')];
+                        if (dropDownSubmenu) {
+                            dropDownSubmenu.forEach(dropDown => {
+                                
+                                for (var wordIdx=0; wordIdx < words.length; wordIdx++) {
+                                    
+                                    let subMenuWordLink = document.createElement(
+                                        'a',
+                                        {
+                                            'class': 'submenu-word-link',
+                                        }
+                                    )
+                                    subMenuWordLink.href = '#'
+                                    subMenuWordLink.value = words[wordIdx].dataset.translate
+                                    subMenuWordLink.text = words[wordIdx].dataset.word
+                                }
+                            })
+                        }
+                    }
+                )
             }
+        })
+    })
+}
+
+function fillSubMenuElements() {
+    let dropDownSubmenu = [...document.getElementsByClassName('dropdown submenu')];
+
+    dropDownSubmenu.forEach(subMenu => {
+        for(var i=0;i < maxWordsInSubmenu; i++) {
+            let subMenuElement = document.createElement('div')
+            subMenuElement.className = 'submenu-item'
+            let subMenuWordLink = document.createElement('a')
+            subMenuWordLink.className = 'submenu-word-link'
+            subMenuWordLink.href = '#'
+            subMenuWordLink.value = words[i].dataset.translate
+            subMenuWordLink.text = words[i].dataset.word
+
+            subMenuElement.appendChild(subMenuWordLink)
+            subMenu.appendChild(subMenuElement)
         }
-    });
+    })
 }
 
 function shuffle(array) {
