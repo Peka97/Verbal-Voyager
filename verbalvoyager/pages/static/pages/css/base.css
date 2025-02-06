@@ -102,36 +102,38 @@
     display: none; /* Chrome, Safari и Opera */
 }
 
-html {
+html, body {
     font-size: 20px;
 }
 
+
+
 @media (max-width: 1640px) {
-    html {
+    html, body {
         font-size: 16px;
     }
 }
 
 @media (max-width: 1024px) {
-    html {
+    html, body {
         font-size: 14px;
     }
 }
 
 @media (max-width: 768px) {
-    html {
+    html, body {
         font-size: 12px;
     }
 }
 
 @media (max-width: 425px) {
-    html {
+    html, body {
         font-size: 10px;
     }
 }
 
 @media (max-width: 375px) {
-    html {
+    html, body {
         /* font-size: 8px; */
     }
 }
@@ -243,4 +245,4 @@ a {
       border: .1rem var(--deep-purple-300) solid;
       border-top: none;
     }
-  }
+}

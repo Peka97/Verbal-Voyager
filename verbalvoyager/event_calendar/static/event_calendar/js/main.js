@@ -16,6 +16,7 @@ $(document).ready(function(){
     init_calendar(date);
     var events = check_events(today, date.getMonth()+1, date.getFullYear());
     // show_events(today.day, today.month, today.year);
+    
 });
 
 // Initialize the calendar by appending the HTML dates

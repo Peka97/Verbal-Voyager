@@ -1,33 +1,42 @@
+{% load static %}
+
 <div class="col notifications">
-    <h4 class="notification-title">Уведомления</h4>
-    {% if not exercises and not dialogs %}
-        <div class="row notification">
-            <p class='notification-text'>
-                Новых уведомлений пока что нет
-            </p>
+    <div class="col notification-wrap">
+        <div class="col-12 notification-title-wrap">
+            <h4 class="notification-title">Уведомления</h4>
         </div>
-    {% endif %}
+        {% if not exercises and not dialogs %}
+            <div class="row notification">
+                <p class='notification-text'>
+                    Новых уведомлений пока что нет
+                </p>
+            </div>
+        {% endif %}
 
-    {% if exercises %}
-        {% for exercise in exercises %}
-        <div class="row notification">
-            <p class='notification-text'>
-                <i class="bi bi-bell-fill"></i> Новое упражнение:
-                <a href={{ exercise.get_absolute_url }} class="ex_name"><i class="bi bi-file-earmark-word"></i> {{ exercise }}</a>
-            </p>
-        </div>
-        {% endfor %}
-    {% endif %}
+        {% if words %}
+            {% for exer_words in words %}
+            <div class="row notification">
+                <p class='notification-text'>
+                    <i class="bi bi-bell-fill"></i> Новое упражнение: 
+                    <a href={{ exer_words.get_absolute_url }} class="exercise">
+                        <i class="exercise-icon word-icon"></i> {{ exer_words }}
+                    </a>
+                </p>
+            </div>
+            {% endfor %}
+        {% endif %}
 
-    {% if dialogs %}
-        {% for dialog in dialogs %}
-        <div class="row notification">
-            <p class='notification-text'>
-                <i class="bi bi-bell-fill"></i> Новое упражнение:
-                <a href={{ dialog.get_absolute_url }} class="ex_name"><i class="bi bi-chat-left-text"></i> {{ dialog }}</a>
-            </p>
-        </div>
-        {% endfor %}
-    {% endif %}
-
+        {% if dialogs %}
+            {% for dialog in dialogs %}
+            <div class="row notification">
+                <p class='notification-text'>
+                    <i class="bi bi-bell-fill"></i> Новое упражнение: 
+                    <a href={{ dialog.get_absolute_url }} class="exercise">
+                        <i class="exercise-icon dialog-icon"></i> {{ dialog }}
+                    </a>
+                </p>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
 </div>

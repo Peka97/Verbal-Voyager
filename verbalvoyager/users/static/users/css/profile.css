@@ -36,10 +36,12 @@
     --color-blue-pastel-pale: #A8A8E9;
     --color-blue-pastel-paler: #BABAE9;
     --color-blue-pastel-max-pale: #D9D9F4;
+
+    --calendar-wrap-height: 564px;
 }
 
 body {
-    font-size: 16px;
+    font-size: 20px;
     background-color: #001a3e;
 }
 
@@ -62,8 +64,8 @@ body {
 
 .container.page {
     margin: 2vh auto;
-    padding-left: 0px;
-    padding-right: 0px;
+    padding-left: 10vw;
+    padding-right: 10vw;
     max-width: 90vw;
 
     .tab-pane {
@@ -135,6 +137,7 @@ div.tab-content {
         padding-right: 0 !important;
         padding-left: 0 !important;
         max-width: 90vw;
+        max-height: var(--calendar-wrap-height);
 
         .col {
             flex-basis: 0;
@@ -142,36 +145,22 @@ div.tab-content {
             -ms-flex-positive: 1;
             flex-grow: 1;
             max-width: 100%;
-        }
-
-        .row.calendar-heading {
-            max-width: inherit;
-            margin: 0;
-            justify-content: center;
-            
-            .col {
-                text-align: center;
-    
-                .heading-section {
-                    margin: 1rem 1rem 0rem 1rem;
-                    color: white !important;
-                    font-size: 2rem !important;
-                    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-                }
-            }
+            height: inherit;
         }
 
         .row.calendar-wrap {
             margin: 1rem;
+            max-height: inherit;
 
             .calendar-col {
                 display: flex;
                 max-width: 70%;
+                max-height: inherit;
                 padding-left: 0;
 
                 .calendar-container {
                     position: relative;
-                    height: fit-content;
+                    /* height: fit-content; */
                     width: fit-content;
                     /* margin: 0 auto; */
                     padding: 1rem;
@@ -179,6 +168,20 @@ div.tab-content {
     
                     background-color: var(--purple-900);
                     border-radius: 1rem 0 0 1rem;
+
+                    .calendar-title-wrap {
+                        max-width: inherit;
+                        margin: 0;
+                        justify-content: center;
+                        
+                        .calendar-title {
+                            /* padding: 1vh; */
+                            /* margin: 1rem 1rem 0rem 1rem; */
+                            color: white !important;
+                            text-align: center;
+                            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+                        }
+                    }
 
                     .calendar {
                         max-width: fit-content;
@@ -451,12 +454,21 @@ div.tab-content {
 
             .col.notifications {
                 max-width: 30%;
+                max-height: inherit;
                 background-color: var(--deep-purple-400);
                 border-radius: 1rem;
                 margin: 0;
+                padding: 1rem;
+                overflow: scroll;
+                ::-webkit-scrollbar { /* chrome based */
+                    width: 0px;  /* ширина scrollbar'a */
+                    background: transparent;  /* опционально */
+                }
+                -ms-overflow-style: none;  /* IE 10+ */
+                scrollbar-width: none; /* Firefox */
 
                 .notification-title {
-                    padding: 1vh;
+                    /* padding: 1vh; */
                     text-align: center;
                     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
                 }
@@ -472,7 +484,43 @@ div.tab-content {
                     box-shadow: .2rem .2rem .2rem .2rem rgba(0,0,0,.15);
 
                     .notification-text {
+                        display: flex;
+                        flex-wrap: wrap;
+                        align-items: center;
                         margin-bottom: 0;
+
+                        i {
+                            margin: 0 0.2rem;
+                        }
+
+                        .exercise {
+                            display: flex;
+                            align-items: center;
+
+                            .exercise-icon {
+                                display: inline-block;
+                                -webkit-mask-repeat: no-repeat;
+                                mask-repeat: no-repeat;
+                                -webkit-mask-size: cover;
+                                mask-size: cover;
+                                background-color: var(--indigo-900);
+                                margin: 0 0.2rem;
+                            }
+
+                            .word-icon {
+                                -webkit-mask-image: url("../../exercises/images/word.svg"); /* Для Safari */
+                                mask-image: url("../../exercises/images/word.svg");
+                                width: 2rem;
+                                height: 2rem;
+                            }
+
+                            .dialog-icon {
+                                -webkit-mask-image: url("../../exercises/images/dialog.svg"); /* Для Safari */
+                                mask-image: url("../../exercises/images/dialog.svg");
+                                width: 1.5rem;
+                                height: 1.5rem;
+                            }
+                        }
                     }
                 }
             }
@@ -480,9 +528,33 @@ div.tab-content {
     }
 }
 
+@media (max-width: 1920px) {
+    /* body {
+        font-size: 16px;
+    } */
+
+    .container.page {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+}
+
+@media (max-width: 1640px) {
+    :root {
+        --calendar-wrap-height: 452px;
+    }
+}
+
 @media (max-width: 1024px) {
-    html {
+    :root {
+        --calendar-wrap-height: auto;
+    }
+    /* html {
         font-size: 14px;
+    } */
+    
+    .calendar-wrap {
+        height: auto !important;
     }
 
     .container.page, .calendar-page-container {
@@ -493,6 +565,7 @@ div.tab-content {
         display: inline-flex;
         max-width: none !important;
         width: 100%;
+        /* height: 420px !important; */
         padding: 0 !important;
     }
 
@@ -504,14 +577,11 @@ div.tab-content {
         width: 100% !important;
     }
 
-    .notification-text {
-        /* font-size: .8rem; */
-    }
-
     .notifications {
         display: block;
         margin-top: 1rem !important;
         max-width: 100% !important;
+        max-height: 40vh !important;
     }
 }
 
@@ -549,6 +619,12 @@ div.tab-content {
 @media (max-width: 426px) {
     html {
         font-size: 10px;
+    }
+
+    .notification-wrap {
+        margin: auto;
+        max-width: 75vw !important;
+        max-height: 40vw !important;
     }
 }
 
@@ -860,13 +936,13 @@ div.notification {
     margin-bottom: 2%;
 }
 
-a.ex_name {
+a.exercise {
     color: var(--color-violet-pastel-darker);
     text-decoration: none;
     font-weight: bold;
 }
 
-a.ex_name:hover {
+a.exercise:hover {
     color: var(--amber-200);
 }
 

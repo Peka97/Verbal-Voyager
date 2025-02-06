@@ -128,7 +128,7 @@ def user_profile(request):
         #     student_id=user,
         #     ).prefetch_related('lesson_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
         context['projects'] = projects
-        context['exercises'] = chain(ExerciseEnglishWords.objects.filter(
+        context['words'] = chain(ExerciseEnglishWords.objects.filter(
             student=user.pk,
             is_active=True
         ).all(), ExerciseFrenchWords.objects.filter(
