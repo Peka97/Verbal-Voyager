@@ -7,9 +7,12 @@ from pages.views import handler_403, handler_404, handler_500
 
 urlpatterns = [
     path('', views.index, name=''),
-    path('english', views.english_course, name='english'),
-    path('french', views.french_course, name='french'),
-    path('spanish', views.spanish_course, name='spanish'),
+    # path('english', views.english_course, name='english'),
+    path('english', views.contacts, name='english'),
+    # path('french', views.french_course, name='french'),
+    path('french', views.contacts, name='french'),
+    # path('spanish', views.spanish_course, name='spanish'),
+    path('spanish', views.contacts, name='spanish'),
     path('portfolio', views.portfolio, name='portfolio'),
     path('about', views.about_project, name='about'),
     path('contacts', views.contacts, name='contacts'),
