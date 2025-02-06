@@ -44,10 +44,16 @@ function insertDropdownInMessages() {
             const regex = new RegExp(regexStr, 'g');
             let matches = message_text.matchAll(regex);
             if (matches) {
-                
-                let words_list = words.slice();
+                let uniquedMatches = new Object();
                 matches.forEach(match => {
-                    let matchWord = match[2];
+                    if (uniquedMatches[match[0]] !== 'undefined') {
+                        uniquedMatches[match[0]] = match
+                    }
+                })
+                for (let matchKey in uniquedMatches) {
+                    let words_list = words.slice();
+                    let matchWord = uniquedMatches[matchKey][2];
+
                     words_list.push(matchWord);
                     words_list = shuffle(words_list);
 
@@ -69,7 +75,9 @@ function insertDropdownInMessages() {
                             </div>
                         </div>
                         `
-                        message.innerHTML = message.innerHTML.replace(matchWord, dropDownHTML);
+                        // message.innerHTML = message.innerHTML.replace(matchWord, dropDownHTML);
+                        message.innerHTML = message.innerHTML.replaceAll(matchWord, dropDownHTML)
+
                         let dropDownSubmenu = [...message.getElementsByClassName('dropdown submenu')];
                         if (dropDownSubmenu) {
                             dropDownSubmenu.forEach(dropDown => {
@@ -89,11 +97,12 @@ function insertDropdownInMessages() {
                             })
                         }
                     }
-                )
+                }
             }
-        })
-    })
-}
+        )
+    }
+)}
+
 
 function fillSubMenuElements() {
     let dropDownSubmenu = [...document.getElementsByClassName('dropdown submenu')];
