@@ -33,7 +33,7 @@
                         </div>
                     </div>
                     <div class="col translate">
-                        <p class="word__translate">{{word.translate}}</p>
+                        <p class="word__translate">{{word.translation|capfirst}}</p>
                     </div>
                 </div>
                 <div class='word__card'>
@@ -67,11 +67,11 @@
                                 <div class="col sentences">
                                     <div class="sentences__wrap">
                                         <p class="sentences__title">Предложения:</p>
-                                        {% if word.sentences %}
+                                        {% if word.examples %}
                                             <ul class="sentences__list">
-                                                {% for sentence in word.sentences|sentences_split %}
+                                                {% for example in word.examples|str_to_list %}
                                                     <li>
-                                                        <p class="text">{{ sentence }}</p>
+                                                        <p class="text">{{ example|highlight }}</p>
                                                     </li>
                                                 {% endfor %}
                                             </ul>

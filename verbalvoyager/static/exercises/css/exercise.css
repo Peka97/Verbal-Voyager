@@ -39,6 +39,17 @@
     --color-blue-pastel-max-pale: #D9D9F4;
 }
 
+.btn-exit-wrap {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+
+  i {
+    font-size: xx-large;
+    color: var(--amber-400);
+  }
+}
+
 /* Navbar */
 nav.navbar {
   background-color: var(--purple-900);
@@ -47,6 +58,7 @@ nav.navbar {
   .container-navbar {
     max-width: 90vw;
     padding: 0;
+    }
 
     .col {
       padding: 0;
@@ -109,7 +121,7 @@ nav.navbar {
       }
     }  
   }
-}
+
 
 /* Content */
 body > .words__container {

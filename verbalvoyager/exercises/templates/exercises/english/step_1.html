@@ -25,15 +25,26 @@
                                 </audio>
                             </div>
                         {% endif %}
-                        <div class="word__wrap">
-                            <p class="word__word">{{word.word}}</p>
+                        <div class="word__wrap">    
+                            <div class="word__word">
+                                {% if word.prefix %}
+                                    <span class="word__prefix">({{word.prefix}})</span>
+                                {% endif %}
+                                {{word.word|capfirst}}
+                                <span class="word__speech_code"> ({{word.speech_code}})</span>
+                            </div>
                             {% if word.transcription %}
                                 <p class="word__transcription">[ {{ word.transcription }} ]</p>
                             {% endif %}
                         </div>
+                        {% if word.definition %}
+                            <div class="word__definition_wrap">
+                                <button type="button" class="btn btn-lg btn__help help-btn" data-bs-toggle="popover" data-bs-html="true" data-bs-delay='{"show":0,"hide":150}' data-bs-title="Значение слова" data-bs-content="{{ word.definition|capfirst }}"><i class="bi bi-question-circle"></i></button>
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="col translate">
-                        <p class="word__translate">{{word.translate}}</p>
+                        <p class="word__translate">{{word.translation|capfirst}}</p>
                     </div>
                 </div>
                 <div class='word__card'>
@@ -51,9 +62,9 @@
                                 <div class="col means">
                                     <div class="means__wrap">
                                         <p class="means__title">Другие значения:</p>
-                                        {% if word.another_means %}
+                                        {% comment %} {% if word.another_means %}
                                             <ul class="means__list">
-                                                {% for another_mean in word.another_means %}
+                                                {% for another_mean in word.another_means|str_to_list %}
                                                     <li>
                                                         <p class="text">{{ another_mean|capfirst }}</p>
                                                     </li>
@@ -61,17 +72,17 @@
                                             </ul>
                                         {% else %}
                                             <p class="means__not_found">Нет</p>
-                                        {% endif %}
+                                        {% endif %} {% endcomment %}
                                     </div>
                                 </div>
                                 <div class="col sentences">
                                     <div class="sentences__wrap">
                                         <p class="sentences__title">Предложения:</p>
-                                        {% if word.sentences %}
+                                        {% if word.examples %}
                                             <ul class="sentences__list">
-                                                {% for sentence in word.sentences|sentences_split %}
+                                                {% for example in word.examples|str_to_list %}
                                                     <li>
-                                                        <p class="text">{{ sentence }}</p>
+                                                        <p class="text">{{ example|highlight }}</p>
                                                     </li>
                                                 {% endfor %}
                                             </ul>

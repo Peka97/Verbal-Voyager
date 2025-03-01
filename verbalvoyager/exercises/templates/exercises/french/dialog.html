@@ -3,6 +3,7 @@
 
 {% block 'title' %} Exercise Dialog | Step {{step}}{% endblock  %}
 {% block 'meta' %}
+    <meta id="exercise_lang" data-exercise-lang="french">
     <meta id="names" data-name-1="{{name_1}}" data-name-2="{{name_2}}">
     <meta id="words-length" data-words-length="{{words|length}}">
     {% for word in words %}
@@ -25,11 +26,6 @@
                 {{ scene }}
             </div>
         {% endif %}
-        <!-- Done button -->
-        <div class='col hidden text-center'>
-            {% csrf_token %}
-            <a id='done-btn' class="btn btn-success" href="{% url 'profile' %}" role="button" aria-disabled="false">Вернуться в Личный кабинет</a>
-        </div>
     </div>
     {% for message in messages %}
         <div class='row message-container'>

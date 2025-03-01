@@ -13,7 +13,7 @@ class AbstractExerciseWordsResultAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        return queryset.select_related('words', 'words__teacher', 'words__student')
+        return queryset.select_related('exercise_id', 'exercise_id__teacher', 'exercise_id__student')
 
 
 @admin.register(ExerciseEnglishWordsResult)
@@ -34,7 +34,7 @@ class AbstractExerciseDialogResultAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        return queryset.select_related('dialog', 'dialog__teacher', 'dialog__student')
+        return queryset.select_related('exercise_id', 'exercise_id__teacher', 'exercise_id__student')
 
 @admin.register(ExerciseEnglishDialogResult)
 class ExerciseEnglishDialogResultAdmin(AbstractExerciseDialogResultAdmin):

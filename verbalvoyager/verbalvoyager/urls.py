@@ -17,7 +17,9 @@ urlpatterns = [
 
     path('', include('pages.urls'), name='main'),
     path('users/', include('users.urls')),
+    path('dictionary/', include('dictionary.urls')),
     path('exercises/', include('exercises.urls')),
+    path('exercise_result/', include('exercise_result.urls')),
     path('event_calendar/', include('event_calendar.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

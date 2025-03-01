@@ -4,6 +4,8 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
+from dictionary.models import EnglishWord, FrenchWord, IrregularEnglishVerb
+
 
 logger = logging.getLogger()
 # logger.setLevel(logging.INFO)
@@ -56,3 +58,41 @@ class ExerciseDialogAdminForm(forms.ModelForm):
                 raise ValidationError(f'Word "{word.word}" not in text.')
 
         return cleaned_data
+
+
+class ExerciseIrregularEnglishVerbAdminForm(forms.ModelForm):
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # text = self.cleaned_data.get("text")
+        # if not text:
+        #     raise ValidationError("Text is required")
+        # words = self.cleaned_data["words"]
+
+        # for word in words:
+        #     if word.word.lower() not in text.lower():
+        #         raise ValidationError(f'Word "{word.word}" not in text.')
+
+        return cleaned_data
+
+
+class MyM2MWidget(forms.SelectMultiple):
+    def __init__(self, attrs=None, choices=()):
+        super().__init__(attrs, choices)
+
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        context['widget']['optgroups'] = self.optgroups(
+            name, context['widget']['value'], attrs)
+        return context
+
+    def optgroups(self, name, value, attrs=None):
+        groups = []
+        choices = []
+        # Здесь можно применить фильтрацию, если нужно
+        queryset = EnglishWord.objects.all()
+        for obj in queryset:
+            # Получаем только pk и str представление
+            choices.append((obj.pk, str(obj)))
+        groups.append((None, choices, False))
+        return groups

@@ -209,3 +209,7 @@ LOGGING = {
 }
 DEBUG_LOGGING_FP = config.DEBUG_LOGGING_FP
 OPENAI_API_KEY = config.OPENAI_API_KEY
+if DEBUG:
+    SITE_NAME = 'http://127.0.0.1:8000'
+else:
+    SITE_NAME = 'https://verbal-voyager.ru'

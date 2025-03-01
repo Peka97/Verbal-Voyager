@@ -56,14 +56,15 @@ document.addEventListener('DOMContentLoaded', function() {
         GenerateButtonElement.classList.add('disabled-link');
 
         let Words = Array();
-        let WordsElements = [...document.querySelector('#id_words_to').children];
+        let WordsElements = [...document.querySelector('#id_words').children];
         
         WordsElements.forEach(wordElement => {
-            Words.push(wordElement.title.split(' - ')[0])
+            Words.push(wordElement.value)
         })
         
         if (Words.length > 0) {
-            url = `https://verbal-voyager.ru/exercises/dialog/json/generate_dialog/english`
+            const siteName = window.location.href.split('/').slice(0, 3).join('/');
+            let url = `${siteName}/exercises/dialog/json/generate_dialog/english`
             
             fetch(url, {
                 method: 'POST',
@@ -73,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify(
                     {
-                        'words': Words,
+                        'words_ids': Words,
                         'sentences_count': GenerateСounterInput.value,
                         'level': GenerateSelectLevelElement.value
                     }),

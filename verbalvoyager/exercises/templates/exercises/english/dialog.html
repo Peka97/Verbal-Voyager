@@ -7,7 +7,7 @@
     <meta id="names" data-name-1="{{name_1}}" data-name-2="{{name_2}}">
     <meta id="words-length" data-words-length="{{words|length}}">
     {% for word in words %}
-        <meta id="word_{{word.idx}}" data-word="{{word.word}}" data-translate="{{word.translate}}">
+        <meta id="word_{{word.idx}}" data-word="{{word.word}}" data-translate="{{word.translation}}">
     {% endfor %}
 {% endblock 'meta' %}
 {% block 'style' %}
@@ -21,13 +21,11 @@
 {% block 'content' %}
 <div class="container wrapper">
     <div class='row scene-container'>
+        <div class="btn-exit-wrap">
+            <a href="{% url 'profile' %}"><i class="bi bi-box-arrow-left"></i></a>
+          </div>
         <div class='col scene-text'>
             {{ scene }}
-        </div>
-        <!-- Done button -->
-        <div class='col hidden text-center'>
-            {% csrf_token %}
-            <a id='done-btn' class="btn btn-success" href="{% url 'profile' %}" role="button" aria-disabled="false">Вернуться в Личный кабинет</a>
         </div>
     </div>
     {% for message in messages %}

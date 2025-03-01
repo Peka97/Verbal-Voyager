@@ -17,7 +17,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteView
 
 from users.forms import RegistrationUserForm, CustomPasswordResetForm
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog
+from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 from event_calendar.models import Lesson, Project, Course
 from event_calendar.forms import LessonForm
 from verbalvoyager.settings import DEBUG_LOGGING_FP
@@ -102,7 +102,7 @@ def user_profile(request):
     user = request.user
     context = {
         'user_is_teacher': user.is_teacher()
-    }   
+    }
 
     if context['user_is_teacher']:
         projects = Project.objects.filter(
@@ -135,13 +135,18 @@ def user_profile(request):
             student=user.pk,
             is_active=True
         ).all())
-        context['dialogs'] = chain(ExerciseEnglishDialog.objects.filter(
+        context['irregular_verbs'] = ExerciseIrregularEnglishVerb.objects.filter(
             student=user.pk,
             is_active=True
-        ).all(), ExerciseFrenchDialog.objects.filter(
-            student=user.pk,
-            is_active=True
-        ).all())
+        ).all()
+        context['dialogs'] = chain(
+            ExerciseEnglishDialog.objects.filter(
+                student=user.pk,
+                is_active=True).all(),
+            ExerciseFrenchDialog.objects.filter(
+                student=user.pk,
+                is_active=True).all(),
+        )
 
     context['events'] = lessons
     # print(tuple(lessons)[0].lesson_tasks)

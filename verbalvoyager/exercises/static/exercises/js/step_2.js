@@ -58,7 +58,7 @@ function checkAllWordsWatched (event) {
     }
 
     showToast('Запомнил слова? Тогда переходи к следующему шагу!');
-    send_points('words', points);
     toNextStep(2);
+    send_points('words', points);
     return true;
 }

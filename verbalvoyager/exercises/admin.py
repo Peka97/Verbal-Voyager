@@ -13,8 +13,8 @@ from django.utils.safestring import mark_safe
 
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
-from .models import EnglishWord, FrenchWord, ExerciseWords, ExerciseEnglishWords, ExerciseFrenchWords, ExerciseDialog, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseWordsResult, ExerciseDialogResult
-from .forms import ExerciseWordsAdminForm, ExerciseDialogAdminForm
+from .models import EnglishWord, FrenchWord, ExerciseWords, ExerciseEnglishWords, ExerciseFrenchWords, ExerciseDialog, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseWordsResult, ExerciseDialogResult, ExerciseIrregularEnglishVerb
+from .forms import ExerciseWordsAdminForm, ExerciseDialogAdminForm, ExerciseIrregularEnglishVerbAdminForm, MyM2MWidget
 
 
 logger = logging.getLogger(__name__)
@@ -55,9 +55,9 @@ class TeachersListFilter(admin.SimpleListFilter):
         """
         if self.value():
             if len(queryset) >= 1 and isinstance(queryset[0], (
-                ExerciseWordsResult,                
+                ExerciseWordsResult,
                 ExerciseDialogResult
-                )):
+            )):
                 return queryset.filter(
                     exercise__teacher=self.value()
                 )
@@ -65,6 +65,7 @@ class TeachersListFilter(admin.SimpleListFilter):
                 return queryset.filter(
                     teacher=self.value()
                 )
+
 
 class StudentsListFilter(admin.SimpleListFilter):
     # Human-readable title which will be displayed in the
@@ -104,7 +105,8 @@ class StudentsListFilter(admin.SimpleListFilter):
                     student=self.value()
                 )
 
-### TODO: delete after update
+# TODO: delete after update
+
 
 @admin.register(ExerciseWords)
 class ExerciseWordsAdmin(admin.ModelAdmin):
@@ -160,11 +162,13 @@ class ExerciseWordsAdmin(admin.ModelAdmin):
 
         return form
 
-### Words
+# Words
+
+
 class AbstractExerciseWordsAdmin(admin.ModelAdmin):
     filter_horizontal = ('words', )
-    search_fields = ('pk', 'teacher__username')
-    autocomplete_fields = ('student', )
+    search_fields = ('pk', 'teacher__username', 'words')
+    autocomplete_fields = ('student', 'words')
     list_display = (
         'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access', 'source_link',
     )
@@ -180,19 +184,26 @@ class AbstractExerciseWordsAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('ExerciseWord Main', {
-            'fields': (('name','student'), 'words',),
+            'fields': (('name', 'student'), 'words',),
         }),
         ('ExerciseWord Options', {
             'classes': ('collapse', ),
             'fields': ('teacher', 'is_active', 'external_access'),
         })
     )
-    
+
+    # def formfield_for_manytomany(self, db_field, request, **kwargs):
+    #     if db_field.name == 'words':
+    #         kwargs['widget'] = MyM2MWidget()
+    #         return db_field.formfield(**kwargs)
+    #     return super().formfield_for_manytomany(db_field, request, **kwargs)
+
     def save_model(self, request, obj, form, change):
         if not obj.name:
-            student_exercises_count = self.model.objects.filter(student=obj.student).count()
+            student_exercises_count = self.model.objects.filter(
+                student=obj.student).exclude(pk=obj.pk).count()
             obj.name = f"Words {student_exercises_count + 1} "
-            
+
         super().save_model(request, obj, form, change)
 
     def source_link(self, obj):
@@ -221,17 +232,22 @@ class AbstractExerciseWordsAdmin(admin.ModelAdmin):
 
         return form
 
+
 @admin.register(ExerciseEnglishWords)
 class ExerciseEnglishWordsAdmin(AbstractExerciseWordsAdmin):
     pass
+
 
 @admin.register(ExerciseFrenchWords)
 class ExerciseFrenchWordsAdmin(AbstractExerciseWordsAdmin):
     pass
 
-### TODO: delete after update
+# TODO: delete after update
+
+
 class AbstractWordAdmin(admin.ModelAdmin):
     search_fields = ('word', 'translate')
+
 
 @admin.register(EnglishWord)
 class WordAdmin(AbstractWordAdmin):
@@ -245,7 +261,8 @@ class WordAdmin(AbstractWordAdmin):
             'fields': ('sentences', ),
         })
     )
-    
+
+
 @admin.register(FrenchWord)
 class FrenchWordAdmin(AbstractWordAdmin):
     list_display = ('word', 'genus', 'translate')
@@ -259,8 +276,10 @@ class FrenchWordAdmin(AbstractWordAdmin):
             'fields': ('sentences', ),
         })
     )
-    
-### TODO: delete after update
+
+# TODO: delete after update
+
+
 @admin.register(ExerciseWordsResult)
 class ExerciseEnglishWordsResultAdmin(admin.ModelAdmin):
     list_display = ('get_ex_name', 'get_teacher', 'get_student',
@@ -274,7 +293,9 @@ class ExerciseEnglishWordsResultAdmin(admin.ModelAdmin):
         queryset = super().get_queryset(request)
         return queryset.select_related('words', 'words__teacher', 'words__student')
 
-### TODO: delete after update
+# TODO: delete after update
+
+
 @admin.register(ExerciseDialogResult)
 class ExerciseDialogResultAdmin(admin.ModelAdmin):
     list_display = ('get_ex_name', 'get_teacher', 'get_student',
@@ -288,12 +309,14 @@ class ExerciseDialogResultAdmin(admin.ModelAdmin):
         queryset = super().get_queryset(request)
         return queryset.select_related('dialog', 'dialog__teacher', 'dialog__student')
 
-### TODO: delete after update
+# TODO: delete after update
+
+
 @admin.register(ExerciseDialog)
 class ExerciseDialogAdmin(admin.ModelAdmin):
     form = ExerciseDialogAdminForm
     search_fields = ['student', ]
-    autocomplete_fields = ('student', )
+    autocomplete_fields = ('words', 'student')
     filter_horizontal = ('words', )
     list_display = (
         'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access', 'source_link',
@@ -344,11 +367,13 @@ class ExerciseDialogAdmin(admin.ModelAdmin):
             'all': ('admin/css/dialog.css', )
         }
 
-### Dialogs
+# Dialogs
+
+
 class AbstractExerciseDialogAdmin(admin.ModelAdmin):
     form = ExerciseDialogAdminForm
     search_fields = ['student', ]
-    autocomplete_fields = ('student', )
+    autocomplete_fields = ('words', 'student')
     filter_horizontal = ('words', )
     list_display = (
         'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access', 'source_link',
@@ -393,17 +418,85 @@ class AbstractExerciseDialogAdmin(admin.ModelAdmin):
         if not field_value:
             raise ValidationError('No value for field_name')
 
+    def save_model(self, request, obj, form, change):
+        if not obj.name:
+            student_exercises_count = self.model.objects.filter(
+                student=obj.student).exclude(pk=obj.pk).count()
+            obj.name = f"Dialog {student_exercises_count + 1} "
+
+        super().save_model(request, obj, form, change)
+
     class Media:
         css = {
             'all': ('admin/css/dialog.css', )
         }
+
 
 @admin.register(ExerciseEnglishDialog)
 class ExerciseEnglishDialogAdmin(AbstractExerciseDialogAdmin):
     class Media:
         js = ['admin/js/generate_dialog_english_text.js',]
 
+
 @admin.register(ExerciseFrenchDialog)
 class ExerciseFrenchDialogAdmin(AbstractExerciseDialogAdmin):
     class Media:
         js = ['admin/js/generate_dialog_french_text.js',]
+
+
+@admin.register(ExerciseIrregularEnglishVerb)
+class ExerciseIrregularEnglishVerbAdmin(admin.ModelAdmin):
+    form = ExerciseIrregularEnglishVerbAdminForm
+    search_fields = ['student', ]
+    autocomplete_fields = ('words', 'student')
+    filter_horizontal = ('words', )
+    list_display = (
+        'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access', 'source_link',
+    )
+    list_display_links = ('name', )
+    list_filter = [
+        'is_active',
+        'external_access',
+        TeachersListFilter,
+        StudentsListFilter,
+    ]
+    fieldsets = (
+        ('ExerciseIrregularVerb Main', {
+            'fields': (('name', 'student'), 'words', ),
+        }),
+        ('ExerciseDialog Options', {
+            'classes': ('collapse', ),
+            'fields': ('teacher', 'is_active', 'external_access'),
+        })
+    )
+
+    def source_link(self, obj):
+        return mark_safe(f'<a href={obj.get_url()}>Перейти<a>')
+    source_link.short_description = 'Ссылка на упражнение'
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related('student', 'teacher')
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(
+            request, obj, **kwargs)
+        form.base_fields['teacher'].initial = request.user
+        form.base_fields['teacher'].queryset = User.objects.filter(
+            groups__name__in=['Teacher', ])
+
+        return form
+
+    def clean(self):
+        cleaned_data = super(ExerciseIrregularEnglishVerb, self).clean()
+        field_value = cleaned_data.get('field_name')
+        if not field_value:
+            raise ValidationError('No value for field_name')
+
+    def save_model(self, request, obj, form, change):
+        if not obj.name:
+            student_exercises_count = self.model.objects.filter(
+                student=obj.student).exclude(pk=obj.pk).count()
+            obj.name = f"Irregular Verbs {student_exercises_count + 1} "
+
+        super().save_model(request, obj, form, change)

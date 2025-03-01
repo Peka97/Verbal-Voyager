@@ -18,7 +18,7 @@
             <div class="translate__list"> 
                 {% for var in word.translate_vars %}
                     <div class="col text-center word__variant__wrap">
-                        <button type=button class='btn btn-default word__variant {% if word.translate == var %} answer {% endif %}'>
+                        <button type=button class='btn btn-default word__variant {% if word.translation == var %} answer {% endif %}'>
                             <p>{{ var }}</p>
                         </button>
                     </div>

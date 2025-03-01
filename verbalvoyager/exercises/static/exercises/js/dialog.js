@@ -3,16 +3,14 @@ import { send_points } from './modules/send_points.js';
 
 
 let messages = [...document.getElementsByClassName("message")];
-let messagesCopy = messages.slice()
 let names = document.getElementById("names").dataset;
 let words_lenght = document.getElementById("words-length").dataset.wordsLength;
 let words = findWords();
-const maxWordsInSubmenu = Math.min(words.length, 4)
+const maxWordsInSubmenu = Math.min(words.length, 3)
 
 setOrderInMessageContainer();
 insertDropdownInMessages();
 fillSubMenuElements();
-
 
 function findWords() {
     let result = Array();
@@ -35,7 +33,6 @@ function setOrderInMessageContainer() {
 function insertDropdownInMessages() {
     messages.forEach(message => {
         let message_text = message.innerText.toLowerCase();
-        console.log(message_text)
 
         words.forEach(wordEl => {
             let word = wordEl.dataset["word"]
@@ -51,17 +48,13 @@ function insertDropdownInMessages() {
                     }
                 })
                 for (let matchKey in uniquedMatches) {
-                    let words_list = words.slice();
                     let matchWord = uniquedMatches[matchKey][2];
-
-                    words_list.push(matchWord);
-                    words_list = shuffle(words_list);
 
                     let dropDownHTML = `
                         <div class="menu">
-                            <div class="item" data-key="${matchWord}">
+                            <div class="item" data-key="${wordEl.dataset['word']}">
                                 <a href="#" class="menu-word-link">
-                                <span class='word-rus'> ${matchWord} </span>
+                                <span class='word-rus'> ${wordEl.dataset['translate'].toLowerCase()} </span>
                                 <svg viewBox="0 0 360 360" xml:space="preserve">
                                     <g id="SVGRepo_iconCarrier">
                                     <path
@@ -75,27 +68,7 @@ function insertDropdownInMessages() {
                             </div>
                         </div>
                         `
-                        // message.innerHTML = message.innerHTML.replace(matchWord, dropDownHTML);
                         message.innerHTML = message.innerHTML.replaceAll(matchWord, dropDownHTML)
-
-                        let dropDownSubmenu = [...message.getElementsByClassName('dropdown submenu')];
-                        if (dropDownSubmenu) {
-                            dropDownSubmenu.forEach(dropDown => {
-                                
-                                for (var wordIdx=0; wordIdx < words.length; wordIdx++) {
-                                    
-                                    let subMenuWordLink = document.createElement(
-                                        'a',
-                                        {
-                                            'class': 'submenu-word-link',
-                                        }
-                                    )
-                                    subMenuWordLink.href = '#'
-                                    subMenuWordLink.value = words[wordIdx].dataset.translate
-                                    subMenuWordLink.text = words[wordIdx].dataset.word
-                                }
-                            })
-                        }
                     }
                 }
             }
@@ -108,19 +81,39 @@ function fillSubMenuElements() {
     let dropDownSubmenu = [...document.getElementsByClassName('dropdown submenu')];
 
     dropDownSubmenu.forEach(subMenu => {
-        for(var i=0;i < maxWordsInSubmenu; i++) {
+        const keyWord = subMenu.parentElement.dataset['key'];
+        const wordsVariants = getWordsVariants(keyWord)
+
+        for(var i=0;i < wordsVariants.length; i++) {
             let subMenuElement = document.createElement('div')
             subMenuElement.className = 'submenu-item'
             let subMenuWordLink = document.createElement('a')
             subMenuWordLink.className = 'submenu-word-link'
             subMenuWordLink.href = '#'
-            subMenuWordLink.value = words[i].dataset.translate
-            subMenuWordLink.text = words[i].dataset.word
+            subMenuWordLink.value = wordsVariants[i].dataset.translate
+            subMenuWordLink.text = wordsVariants[i].dataset.word
 
             subMenuElement.appendChild(subMenuWordLink)
             subMenu.appendChild(subMenuElement)
         }
     })
+}
+
+function getWordsVariants(keyWord) {
+    let wordsCopy = shuffle(words.slice())
+    let keyWordsElement = document.querySelector(`meta[data-word=${keyWord}]`);
+    
+    let wordsList = Array();
+
+    for (let wordIdx=0; wordsList.length < maxWordsInSubmenu; wordIdx++) {
+        if (wordsCopy[wordIdx] !== keyWordsElement) {
+            wordsList.push(wordsCopy[wordIdx])
+        }
+    }
+
+    wordsList.push(keyWordsElement)
+    
+    return wordsList;
 }
 
 function shuffle(array) {
@@ -143,11 +136,13 @@ let word_links = [... document.getElementsByClassName('submenu-word-link')];
 let menus = [...document.getElementsByClassName('menu')];
 let points = menus.length;
 word_links.forEach(word_link => {
-    word_link.addEventListener('click', (el) => {
-        el.preventDefault();
-        const menu = el.target.parentElement.parentElement.parentElement.parentElement
-        const key = el.target.parentElement.parentElement.parentElement.dataset.key;
-        const chosen = el.target.firstChild.data.toLowerCase();
+    word_link.addEventListener('click', (event) => {
+        event.preventDefault();
+
+        let el = event.target
+        const menu = el.parentElement.parentElement.parentElement.parentElement
+        const key = el.parentElement.parentElement.parentElement.dataset.key.toLowerCase();
+        const chosen = el.firstChild.data.toLowerCase();
         
         if (key != chosen) {
             menu.classList.remove('correct');
@@ -173,6 +168,5 @@ function allWordsCorrect() {
     }
 
     send_points('dialog', points);
-    showToast('Отлично! Теперь прочитай получившийся текст и после можешь возвращаться в личный кабинет по кнопке выше.');
-    document.getElementById('done-btn').parentElement.classList.remove('hidden');
+    showToast('Отлично! Теперь прочитай получившийся текст и после возвращайся в личный кабинет.');
 }

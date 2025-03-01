@@ -4,19 +4,22 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.core.exceptions import ValidationError
 
+from verbalvoyager.settings import SITE_NAME
+from dictionary.models import EnglishWord as new_eng_word, FrenchWord as new_fr_word, IrregularEnglishVerb
+
 
 User = get_user_model()
 
-### TODO: delete after update
-class Word(models.Model):
+
+class Word(models.Model):  # TODO: delete after update
     word = models.CharField(
         verbose_name='Слово в оригинале',
         max_length=50
-        )
+    )
     translate = models.CharField(
         verbose_name='Перевод на русский',
         max_length=255
-        )
+    )
     lang = models.CharField(
         verbose_name='Язык оригинала',
         max_length=10,
@@ -29,11 +32,11 @@ class Word(models.Model):
     )
     sentences = models.TextField(
         verbose_name='Примеры употребления',
-        max_length=500, 
-        null=True, 
+        max_length=500,
+        null=True,
         blank=True,
         help_text='Напишите одно и или несколько предложений, разделяя их переносом строки.'
-        )
+    )
 
     def __str__(self) -> str:
         return f'{self.lang} | {self.word} ({self.translate})'
@@ -42,23 +45,24 @@ class Word(models.Model):
         verbose_name = 'Слово'
         verbose_name_plural = 'Слова'
         ordering = ['word']
-### TODO: delete after update
-class EnglishWord(models.Model):
+
+
+class EnglishWord(models.Model):  # TODO: delete after update
     word = models.CharField(
         verbose_name='Слово в оригинале',
         max_length=50
-        )
+    )
     translate = models.CharField(
         verbose_name='Перевод на русский',
         max_length=255
-        )
+    )
     sentences = models.TextField(
         verbose_name='Примеры употребления',
-        max_length=500, 
-        null=True, 
+        max_length=500,
+        null=True,
         blank=True,
         help_text='Напишите одно и или несколько предложений, разделяя их переносом строки.'
-        )
+    )
 
     def __str__(self) -> str:
         return f'{self.word} - {self.translate}'
@@ -67,12 +71,13 @@ class EnglishWord(models.Model):
         verbose_name = 'Слово (eng) (old)'
         verbose_name_plural = 'Слова (eng) (old)'
         ordering = ['word']
-### TODO: delete after update
-class FrenchWord(models.Model):
+
+
+class FrenchWord(models.Model):  # TODO: delete after update
     word = models.CharField(
         verbose_name='Слово в оригинале',
         max_length=50
-        )
+    )
     genus = models.CharField(
         verbose_name='Род слова',
         max_length=50,
@@ -87,15 +92,15 @@ class FrenchWord(models.Model):
     translate = models.CharField(
         verbose_name='Перевод на русский',
         max_length=255
-        )
-    
+    )
+
     sentences = models.TextField(
         verbose_name='Примеры употребления',
-        max_length=500, 
-        null=True, 
+        max_length=500,
+        null=True,
         blank=True,
         help_text='Напишите одно и или несколько предложений, разделяя их переносом строки.'
-        )
+    )
 
     def __str__(self) -> str:
         return f'{self.word} ({self.genus}) - {self.translate}'
@@ -104,28 +109,27 @@ class FrenchWord(models.Model):
         verbose_name = 'Слово (french) (old)'
         verbose_name_plural = 'Слова (french) (old)'
         ordering = ['word']
-        
-        
-### TODO: delete after update
-class ExerciseWords(models.Model):
+
+
+class ExerciseWords(models.Model):  # TODO: delete after update
     name = models.CharField(default=None, blank=True, max_length=50,
                             verbose_name='Название упражнения',
                             help_text="Поле заполняется автоматически, если остаётся пустым")
     words = models.ManyToManyField(EnglishWord, verbose_name="Слова")
     student = models.ForeignKey(
-        User, on_delete=models.CASCADE, 
-        related_name='words_student', 
+        User, on_delete=models.CASCADE,
+        related_name='words_student',
         limit_choices_to={'groups__name__in': ['Student', ]},
-        null=True, 
+        null=True,
         verbose_name='Ученик'
-        )
+    )
     teacher = models.ForeignKey(
-        User, on_delete=models.CASCADE, 
+        User, on_delete=models.CASCADE,
         related_name='words_teacher',
         limit_choices_to={'groups__name__in': ['Teacher', ]},
         null=True,
         verbose_name="Учитель"
-        )
+    )
     is_active = models.BooleanField(default=True, verbose_name="Активен")
     external_access = models.BooleanField(
         verbose_name='Внешний доступ к упражнению',
@@ -141,18 +145,18 @@ class ExerciseWords(models.Model):
 
     get_words.allow_tags = True
     get_words.short_description = 'Слова в упражнении'
-    
+
     def get_absolute_url(self):
         return reverse("exercises_words", kwargs={"ex_id": self.pk, "step": 1})
-    
+
     def get_url(self):
-        return 'https://verbal-voyager.ru' + self.get_absolute_url()
+        return SITE_NAME + self.get_absolute_url()
     get_words.get_url = 'Ссылка на упражнение'
-    
 
     def save(self, *args, **kwargs):
         if not self.name:
-            student_exercises_count = ExerciseWords.objects.filter(student=self.student).count()
+            student_exercises_count = ExerciseWords.objects.filter(
+                student=self.student).count()
             self.name = f"Words {student_exercises_count + 1}"
         super(ExerciseWords, self).save(*args, **kwargs)
 
@@ -164,11 +168,11 @@ class ExerciseWords(models.Model):
         verbose_name = 'Упражнение "Слова" (old)'
         verbose_name_plural = 'Упражнения "Слова" (old)'
         ordering = ['-is_active']
-        
-        
-### ExerWords
+
+
+# ExerciseWords
 class AbstractExerciseWords(models.Model):
-    view_name:str
+    view_name = 'exercise_words'
 
     name = models.CharField(
         default=None, blank=True, max_length=50,
@@ -184,29 +188,24 @@ class AbstractExerciseWords(models.Model):
 
     def get_words(self):
         words = [
-            f'{word.word} - {word.translate}<br>' for word in self.words.all()
+            f'{word.word} - {word.translation}<br>' for word in self.words.all()
         ]
         return format_html(' '.join(words))
 
     get_words.allow_tags = True
     get_words.short_description = 'Слова в упражнении'
-    
-    def get_absolute_url(self):
-        return reverse(self.view_name, kwargs={"ex_id": self.pk, "step": 1})
-    
+
     def get_url(self):
-        return 'https://verbal-voyager.ru' + self.get_absolute_url()
+        return SITE_NAME + self.get_absolute_url()
     get_words.get_url = 'Ссылка на упражнение'
-    
+
     def save_model(self, request, obj, form, change):
-        print(obj.name)
-        print(form)
         if not obj.name:
-            student_exercises_count = self.objects.filter(student=obj.student).count()
+            student_exercises_count = self.objects.filter(
+                student=obj.student).count()
             self.name = f"Words {student_exercises_count + 1}"
-            
+
         super().save_model(request, obj, form, change)
-    
 
     def __repr__(self) -> str:
         status = 'Active' if self.is_active else 'Done'
@@ -216,61 +215,65 @@ class AbstractExerciseWords(models.Model):
         abstract = True
         ordering = ['-is_active']
 
+
 class ExerciseEnglishWords(AbstractExerciseWords):
-    view_name = 'exercises_words_english'
-    
-    words = models.ManyToManyField(EnglishWord, verbose_name="Слова")
+
+    words = models.ManyToManyField(new_eng_word, verbose_name="Слова")
     student = models.ForeignKey(
-        User, on_delete=models.CASCADE, 
-        related_name='words_eng_student', 
+        User, on_delete=models.SET_NULL,
+        related_name='words_eng_student',
         limit_choices_to={'groups__name__in': ['Student', ]},
-        null=True, 
+        null=True,
         verbose_name='Ученик'
-        )
+    )
     teacher = models.ForeignKey(
-        User, on_delete=models.CASCADE, 
+        User, on_delete=models.SET_NULL,
         related_name='words_eng_teacher',
         limit_choices_to={'groups__name__in': ['Teacher', ]},
         null=True,
         verbose_name="Учитель"
-        )
-    
+    )
+
+    def get_absolute_url(self):
+        return reverse(self.view_name, kwargs={"ex_lang": "english", "ex_id": self.pk, "step": 1})
+
     def __str__(self):
-        return f"{self.name} (ENG)" 
-    
+        return f"{self.name} (ENG)"
+
     class Meta:
-        verbose_name = 'Упражнение "Слова" | Eng'
-        verbose_name_plural = 'Упражнения "Слова" | Eng'
+        verbose_name = 'Eng | Words'
+        verbose_name_plural = 'Eng | Words'
+
 
 class ExerciseFrenchWords(AbstractExerciseWords):
-    view_name = 'exercises_words_french'
-    
-    words = models.ManyToManyField(FrenchWord, verbose_name="Слова")
+    words = models.ManyToManyField(new_fr_word, verbose_name="Слова")
     student = models.ForeignKey(
-        User, on_delete=models.CASCADE, 
-        related_name='words_fr_student', 
+        User, on_delete=models.SET_NULL,
+        related_name='words_fr_student',
         limit_choices_to={'groups__name__in': ['Student', ]},
-        null=True, 
+        null=True,
         verbose_name='Ученик'
-        )
+    )
     teacher = models.ForeignKey(
-        User, on_delete=models.CASCADE, 
+        User, on_delete=models.SET_NULL,
         related_name='words_fr_teacher',
         limit_choices_to={'groups__name__in': ['Teacher', ]},
         null=True,
         verbose_name="Учитель"
-        )
-        
+    )
+
+    def get_absolute_url(self):
+        return reverse(self.view_name, kwargs={"ex_lang": "french", "ex_id": self.pk, "step": 1})
+
     def __str__(self):
-        return f"{self.name} (FR)" 
-    
+        return f"{self.name} (FR)"
+
     class Meta:
-        verbose_name = 'Упражнение "Слова" | Fr'
-        verbose_name_plural = 'Упражнения "Слова" | Fr'
+        verbose_name = 'Fr | Words'
+        verbose_name_plural = 'Fr | Words'
 
 
-### TODO: delete after update
-class ExerciseDialog(models.Model):
+class ExerciseDialog(models.Model):  # TODO: delete after update
     name = models.CharField(default=None, blank=True, max_length=50,
                             verbose_name='Название упражнения',
                             help_text="Поле заполняется автоматически, если остаётся пустым")
@@ -284,7 +287,7 @@ class ExerciseDialog(models.Model):
                             """)
     words = models.ManyToManyField(EnglishWord, verbose_name="Слова")
     student = models.ForeignKey(
-        User, on_delete=models.CASCADE, 
+        User, on_delete=models.CASCADE,
         related_name='dialog_student_old',
         limit_choices_to={'groups__name__in': ['Student', ]},
         null=True, verbose_name='Ученик')
@@ -304,24 +307,25 @@ class ExerciseDialog(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.name:
-            student_exercises_count = ExerciseDialog.objects.filter(student=self.student).count()
+            student_exercises_count = ExerciseDialog.objects.filter(
+                student=self.student).count()
             self.name = f"Dialog {student_exercises_count + 1}"
         super(ExerciseDialog, self).save(*args, **kwargs)
-        
+
     def get_words(self):
         words = [
             f'{word.word} - {word.translate}<br>' for word in self.words.all()
         ]
         return format_html(' '.join(words))
-    
+
     get_words.allow_tags = True
     get_words.short_description = 'Слова в упражнении'
-    
+
     def get_absolute_url(self):
         return reverse("exercises_dialog", kwargs={"ex_id": self.pk})
-    
+
     def get_url(self):
-        return 'https://verbal-voyager.ru' + self.get_absolute_url()
+        return SITE_NAME + self.get_absolute_url()
 
     def __str__(self) -> str:
         status = 'Active' if self.is_active else 'Done'
@@ -332,8 +336,11 @@ class ExerciseDialog(models.Model):
         verbose_name_plural = 'Упражнения "Диалог" (old)'
         ordering = ['-is_active']
 
-### ExerDialogs
+
+# ExerciseDialog
 class AbstractExerciseDialog(models.Model):
+    view_name = 'exercise_dialog'
+
     name = models.CharField(default=None, blank=True, max_length=50,
                             verbose_name='Название упражнения',
                             help_text="Поле заполняется автоматически, если остаётся пустым")
@@ -351,28 +358,29 @@ class AbstractExerciseDialog(models.Model):
         default=False,
         help_text='Если установлено, любой может получить доступ к упражнению без регистрации или авторизации',
     )
-    
+
     def save(self, *args, **kwargs):
         if not self.name:
             try:
-                student_exercises_count = self.objects.filter(student=self.student).count()
+                student_exercises_count = self.objects.filter(
+                    student=self.student).count()
             except AttributeError:
                 self.name = "Dialog 1"
             else:
                 self.name = f"Dialog {student_exercises_count + 1}"
         super().save(*args, **kwargs)
-        
+
     def get_words(self):
         words = [
-            f'{word.word} - {word.translate}<br>' for word in self.words.all()
+            f'{word.word} - {word.translation}<br>' for word in self.words.all()
         ]
         return format_html(' '.join(words))
-    
+
     get_words.allow_tags = True
     get_words.short_description = 'Слова в упражнении'
-    
+
     def get_url(self):
-        return 'https://verbal-voyager.ru' + self.get_absolute_url()
+        return SITE_NAME + self.get_absolute_url()
 
     def __repr__(self) -> str:
         status = 'Active' if self.is_active else 'Done'
@@ -382,62 +390,67 @@ class AbstractExerciseDialog(models.Model):
         abstract = True
         ordering = ['-is_active']
 
+
 class ExerciseEnglishDialog(AbstractExerciseDialog):
-    words = models.ManyToManyField(EnglishWord, verbose_name="Слова")
+    words = models.ManyToManyField(new_eng_word, verbose_name="Слова")
     student = models.ForeignKey(
-        User, on_delete=models.CASCADE, 
+        User, on_delete=models.SET_NULL,
         related_name='dialog_eng_student',
         limit_choices_to={'groups__name__in': ['Student', ]},
         null=True, verbose_name='Ученик')
     teacher = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name='dialog_eng_teacher',
         limit_choices_to={'groups__name__in': ['Teacher', ]},
         null=True,
         verbose_name="Учитель")
+
     def get_absolute_url(self):
-        return reverse("exercises_dialog_english", kwargs={"ex_id": self.pk})
-    
+        return reverse(self.view_name, kwargs={"ex_lang": "english", "ex_id": self.pk})
+
     def __str__(self) -> str:
         return f"{self.name} (ENG)"
+
     class Meta:
-        verbose_name = 'Упражнение "Диалог" | Eng'
-        verbose_name_plural = 'Упражнения "Диалог" | Eng'
-        
+        verbose_name = 'Eng | Dialog'
+        verbose_name_plural = 'Eng | Dialog'
+
+
 class ExerciseFrenchDialog(AbstractExerciseDialog):
-    words = models.ManyToManyField(FrenchWord, verbose_name="Слова")
+    words = models.ManyToManyField(new_fr_word, verbose_name="Слова")
     student = models.ForeignKey(
-        User, on_delete=models.CASCADE, 
+        User, on_delete=models.SET_NULL,
         related_name='dialog_fr_student',
         limit_choices_to={'groups__name__in': ['Student', ]},
         null=True, verbose_name='Ученик')
     teacher = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name='dialog_fr_teacher',
         limit_choices_to={'groups__name__in': ['Teacher', ]},
         null=True,
         verbose_name="Учитель")
 
     def get_absolute_url(self):
-        return reverse("exercises_dialog_french", kwargs={"ex_id": self.pk})
-    
+        return reverse(self.view_name, kwargs={"ex_lang": "french", "ex_id": self.pk})
+
     def __str__(self) -> str:
         return f"{self.name} (FR)"
-    class Meta:
-        verbose_name = 'Упражнение "Диалог" | Fr'
-        verbose_name_plural = 'Упражнения "Диалог" | Fr'
 
-### TODO: delete after update
-class ExerciseWordsResult(models.Model):
+    class Meta:
+        verbose_name = 'Fr | Dialog'
+        verbose_name_plural = 'Fr | Dialog'
+
+
+class ExerciseWordsResult(models.Model):  # TODO: delete after update
     words = models.ForeignKey(
         ExerciseWords, on_delete=models.CASCADE, related_name='words_result_old', null=True, blank=True)
     step_1 = models.SmallIntegerField(null=True, blank=True, default=None)
     step_2 = models.SmallIntegerField(null=True, blank=True, default=None)
     step_3 = models.SmallIntegerField(null=True, blank=True, default=None)
     step_4 = models.SmallIntegerField(null=True, blank=True, default=None)
-    
+
     def get_student(self):
         if self.words:
             return self.words.student
@@ -460,7 +473,7 @@ class ExerciseWordsResult(models.Model):
     class Meta:
         verbose_name = 'Результат упражнения "Слова" (old)'
         verbose_name_plural = 'Результаты упражнений "Слова" (old)'
-        
+
 # class ExerciseEnglishWordsResult(models.Model):
 #     words = models.ForeignKey(
 #         ExerciseEnglishWords, on_delete=models.CASCADE, related_name='words_eng_result', null=True, blank=True)
@@ -468,7 +481,7 @@ class ExerciseWordsResult(models.Model):
 #     step_2 = models.SmallIntegerField(null=True, blank=True, default=None)
 #     step_3 = models.SmallIntegerField(null=True, blank=True, default=None)
 #     step_4 = models.SmallIntegerField(null=True, blank=True, default=None)
-    
+
 #     def get_student(self):
 #         if self.words:
 #             return self.words.student
@@ -499,7 +512,7 @@ class ExerciseWordsResult(models.Model):
 #     step_2 = models.SmallIntegerField(null=True, blank=True, default=None)
 #     step_3 = models.SmallIntegerField(null=True, blank=True, default=None)
 #     step_4 = models.SmallIntegerField(null=True, blank=True, default=None)
-    
+
 #     def get_student(self):
 #         if self.words:
 #             return self.words.student
@@ -522,13 +535,13 @@ class ExerciseWordsResult(models.Model):
 #     class Meta:
 #         verbose_name = 'Результат упражнения "Слова" (fr)'
 #         verbose_name_plural = 'Результаты упражнений "Слова" (fr)'
-    
-### TODO: delete after update
-class ExerciseDialogResult(models.Model):
+
+
+class ExerciseDialogResult(models.Model):  # TODO: delete after update
     dialog = models.ForeignKey(
         ExerciseDialog, on_delete=models.CASCADE, related_name='dialog_result_old', null=True, blank=True)
     points = models.SmallIntegerField()
-    
+
     def get_student(self):
         if self.dialog:
             return self.dialog.student
@@ -551,3 +564,68 @@ class ExerciseDialogResult(models.Model):
     class Meta:
         verbose_name = 'Результат упражнений "Диалог" (old)'
         verbose_name_plural = 'Результаты упражнений "Диалог" (old)'
+
+
+# Irregular Verb
+class ExerciseIrregularEnglishVerb(models.Model):
+    view_name = 'exercise_irregular_verbs'
+
+    name = models.CharField(
+        default=None, blank=True, max_length=50,
+        verbose_name='Название упражнения',
+        help_text="Поле заполняется автоматически, если остаётся пустым"
+    )
+    words = models.ManyToManyField(IrregularEnglishVerb, verbose_name="Слова")
+    student = models.ForeignKey(
+        User, on_delete=models.SET_NULL,
+        related_name='irregular_verbs_student',
+        limit_choices_to={'groups__name__in': ['Student', ]},
+        null=True, verbose_name='Ученик')
+    teacher = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        related_name='irregular_verbs_teacher',
+        limit_choices_to={'groups__name__in': ['Teacher', ]},
+        null=True,
+        verbose_name="Учитель")
+    is_active = models.BooleanField(default=True, verbose_name="Активен")
+    external_access = models.BooleanField(
+        verbose_name='Внешний доступ к упражнению',
+        default=False,
+        help_text='Если установлено, любой может получить доступ к упражнению без регистрации или авторизации',
+    )
+
+    def get_words(self):
+        words = [
+            word.infinitive.word for word in self.words.all()
+        ]
+        return format_html(' '.join(words))
+
+    get_words.allow_tags = True
+    get_words.short_description = 'Слова в упражнении'
+
+    def get_absolute_url(self):
+        return reverse(self.view_name, kwargs={"ex_id": self.pk, "step": '1'})
+
+    def get_url(self):
+        return SITE_NAME + self.get_absolute_url()
+    get_words.get_url = 'Ссылка на упражнение'
+
+    def save_model(self, request, obj, form, change):
+        if not obj.name:
+            student_exercises_count = self.objects.filter(
+                student=obj.student).count()
+            self.name = f"Irregular Verbs {student_exercises_count + 1}"
+
+        super().save_model(request, obj, form, change)
+
+    def __str__(self) -> str:
+        return self.name
+
+    def __repr__(self) -> str:
+        status = 'Active' if self.is_active else 'Done'
+        return f"{self.pk} - {self.student} - {status}"
+
+    class Meta:
+        verbose_name = verbose_name_plural = 'Eng | Irregular Verb '
+        ordering = ['-is_active']

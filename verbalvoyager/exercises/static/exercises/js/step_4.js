@@ -40,10 +40,10 @@ function checkAnswer() {
     }
     
     if (checkAllAnswersTrue()) {
-        showToast('Упражнение завершено! Переходи по кнопке в Личный кабинет');
-        send_points('words', points);
-        done_btn.parentElement.classList.remove('hidden');
+        showToast('Упражнение завершено! Переходи в Личный кабинет.');
+        // done_btn.parentElement.classList.remove('hidden');
         toNextStep(4);
+        send_points('words', points);
     }
 }
 
@@ -89,7 +89,7 @@ document.getElementById('word_1').classList.remove('hidden');
 document.getElementById('page_1').classList.add('active', 'watched');
 fillCheckWords();
 
-const done_btn = document.getElementById('done-btn');
+// const done_btn = document.getElementById('done-btn');
 const toastTrigger = document.getElementById('liveToastBtn');
 toastTrigger.addEventListener('click', () => {
     checkAnswer();

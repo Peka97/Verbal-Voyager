@@ -58,7 +58,8 @@ function sendEventUpdate(event) {
         showToast('Данные уже были отправлены ранее. Обновите страницу для отображения актуальной информации и повторите попытку.');
         return;
     }
-    let url = "https://verbal-voyager.ru/event_calendar/json/update/"
+    const siteName = window.location.href.split('/').slice(0, 3).join('/');
+    let url = `${siteName}/event_calendar/json/update/`
     let token = document.getElementsByName('csrfmiddlewaretoken')[0].defaultValue;
 
     if (!token) {

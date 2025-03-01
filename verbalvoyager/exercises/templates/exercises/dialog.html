@@ -7,7 +7,7 @@
     <meta id="names" data-name-1="{{name_1}}" data-name-2="{{name_2}}">
     <meta id="words-length" data-words-length="{{words|length}}">
     {% for word in words %}
-        <meta id="word_{{word.id}}" data-word="{{word.word}}" data-translate="{{word.translate}}">
+        <meta id="word_{{word.id}}" data-word="{{word.word}}" data-translate="{{word.translation}}">
     {% endfor %}
 {% endblock 'meta' %}
 {% block 'style' %}

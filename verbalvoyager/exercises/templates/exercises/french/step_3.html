@@ -26,7 +26,7 @@
                 {% for trans_word in words|get_shuffled_translates %}
                     <div class='row translate' id='translate_{{ trans_word.idx }}'>
                         <div class='col'>
-                            <span lang="ru"><i class="bi bi-list"></i>{{ trans_word.translate }}</span>
+                            <span lang="ru"><i class="bi bi-list"></i>{{ trans_word.translation|title }}</span>
                         </div>
                     </div>
                 {% endfor %}

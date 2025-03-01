@@ -1,11 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
     const studentSelect = document.querySelector('select[name=student_id]');
-    console.dir(studentSelect);
     studentSelect.addEventListener('change', (event) => {
         const currentStudentId = event.target.value;
-        console.dir(currentStudentId)
+        const siteName = window.location.href.split('/').slice(0, 3).join('/');
+        let url = `${siteName}/event_calendar/json/filter_lessons_by_student/${currentStudentId}`
 
-        url = `http://127.0.0.1:8000/event_calendar/json/filter_lessons_by_student/${currentStudentId}`
         fetch(url).then(resp => {
             if (resp.ok) {
                 return resp.json();
