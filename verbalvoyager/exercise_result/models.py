@@ -1,6 +1,6 @@
 from django.db import models
 
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseDialog, ExerciseEnglishDialog, ExerciseFrenchDialog
+from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseDialog, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 
 
 # ExerciseWordsResult
@@ -94,3 +94,36 @@ class ExerciseFrenchDialogResult(AbstractExerciseDialogResult):
     class Meta:
         verbose_name = 'Результат "Диалог" | Fr'
         verbose_name_plural = 'Результаты "Диалог" | Fr'
+
+
+# ExerciseIrregularEnglishVerb
+class ExerciseIrregularEnglishVerbResult(models.Model):
+    exercise_id = models.ForeignKey(
+        ExerciseIrregularEnglishVerb, on_delete=models.CASCADE, related_name='irregular_verbs_result', null=True, blank=True
+    )
+    step_1 = models.SmallIntegerField(null=True, blank=True, default=None)
+    step_2 = models.SmallIntegerField(null=True, blank=True, default=None)
+    step_3 = models.SmallIntegerField(null=True, blank=True, default=None)
+
+    def get_student(self):
+        if self.exercise_id:
+            return self.exercise_id.student
+        return 'Unknown'
+
+    def get_teacher(self):
+        if self.exercise_id:
+            return self.exercise_id.teacher
+        return 'Unknown'
+
+    def get_ex_name(self):
+        if self.exercise_id:
+            return self.exercise_id.name
+        return 'Unknown'
+
+    get_student.short_description = 'Студент'
+    get_teacher.short_description = 'Учитель'
+    get_ex_name.short_description = 'Название'
+
+    class Meta:
+        verbose_name = 'Результат "Неправильные глаголы" | Eng'
+        verbose_name_plural = 'Результаты "Неправильные глаголы" | Eng'

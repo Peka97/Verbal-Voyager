@@ -5,6 +5,7 @@ from .models import EnglishWord, FrenchWord, IrregularEnglishVerb
 
 @admin.register(EnglishWord)
 class WordAdmin(admin.ModelAdmin):
+    show_full_result_count = False
     list_display = ('word', 'speech_code', 'translation')
     search_fields = ('word', 'translation')
     readonly_fields = ('another_means', )
@@ -28,6 +29,7 @@ class WordAdmin(admin.ModelAdmin):
 
 @admin.register(FrenchWord)
 class FrenchWordAdmin(admin.ModelAdmin):
+    show_full_result_count = False
     list_display = ('word', 'genus', 'translation')
     list_filter = ['genus', ]
     readonly_fields = ('another_means', )
@@ -49,6 +51,7 @@ class FrenchWordAdmin(admin.ModelAdmin):
 
 @admin.register(IrregularEnglishVerb)
 class IrregularEnglishVerbAdmin(admin.ModelAdmin):
+    show_full_result_count = False
     autocomplete_fields = ('infinitive', )
     list_display = ('infinitive', 'past_simple', 'past_participle')
     search_fields = ('infinitive__word', 'past_simple', 'past_participle')

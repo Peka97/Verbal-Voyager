@@ -652,6 +652,7 @@ def exercise_irregular_verbs(request, ex_id, step):
     template_name = f'exercises/english/irregular_verbs/step_{step}.html'
     context = {
         'ex_id': ex_id,
+        'ex_lang': 'english',
         'step': step,
         'title': titles[step],
         'popover': popover_data[step],

@@ -16,6 +16,8 @@ from verbalvoyager.settings import DEBUG_LOGGING_FP
 from .models import EnglishWord, FrenchWord, ExerciseWords, ExerciseEnglishWords, ExerciseFrenchWords, ExerciseDialog, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseWordsResult, ExerciseDialogResult, ExerciseIrregularEnglishVerb
 from .forms import ExerciseWordsAdminForm, ExerciseDialogAdminForm, ExerciseIrregularEnglishVerbAdminForm, MyM2MWidget
 
+# from exercises.admin import TeachersListFilter, StudentsListFilter
+
 
 logger = logging.getLogger(__name__)
 logger.level = logging.INFO
@@ -41,7 +43,8 @@ class TeachersListFilter(admin.SimpleListFilter):
         human-readable name for the option that will appear
         in the right sidebar.
         """
-        teachers = User.objects.filter(groups__name='Teacher')
+        teachers = User.objects.filter(
+            groups__name='Teacher').order_by('last_name', 'first_name')
 
         return [
             (teacher.pk, _(f'{teacher.last_name} {teacher.first_name}')) for teacher in teachers
@@ -83,7 +86,8 @@ class StudentsListFilter(admin.SimpleListFilter):
         human-readable name for the option that will appear
         in the right sidebar.
         """
-        students = User.objects.filter(groups__name='Student')
+        students = User.objects.filter(
+            groups__name='Student').order_by('last_name', 'first_name')
 
         return [
             (student.pk, _(f'{student.last_name} {student.first_name}')) for student in students
@@ -110,6 +114,7 @@ class StudentsListFilter(admin.SimpleListFilter):
 
 @admin.register(ExerciseWords)
 class ExerciseWordsAdmin(admin.ModelAdmin):
+    show_full_result_count = False
     filter_horizontal = ('words', )
     search_fields = ('pk', 'teacher__username')
     autocomplete_fields = ('student', )
@@ -166,6 +171,7 @@ class ExerciseWordsAdmin(admin.ModelAdmin):
 
 
 class AbstractExerciseWordsAdmin(admin.ModelAdmin):
+    show_full_result_count = False
     filter_horizontal = ('words', )
     search_fields = ('pk', 'teacher__username', 'words')
     autocomplete_fields = ('student', 'words')
@@ -246,6 +252,7 @@ class ExerciseFrenchWordsAdmin(AbstractExerciseWordsAdmin):
 
 
 class AbstractWordAdmin(admin.ModelAdmin):
+    show_full_result_count = False
     search_fields = ('word', 'translate')
 
 
@@ -371,6 +378,7 @@ class ExerciseDialogAdmin(admin.ModelAdmin):
 
 
 class AbstractExerciseDialogAdmin(admin.ModelAdmin):
+    show_full_result_count = False
     form = ExerciseDialogAdminForm
     search_fields = ['student', ]
     autocomplete_fields = ('words', 'student')
@@ -446,6 +454,7 @@ class ExerciseFrenchDialogAdmin(AbstractExerciseDialogAdmin):
 
 @admin.register(ExerciseIrregularEnglishVerb)
 class ExerciseIrregularEnglishVerbAdmin(admin.ModelAdmin):
+    show_full_result_count = False
     form = ExerciseIrregularEnglishVerbAdminForm
     search_fields = ['student', ]
     autocomplete_fields = ('words', 'student')
@@ -476,7 +485,7 @@ class ExerciseIrregularEnglishVerbAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        return queryset.select_related('student', 'teacher')
+        return queryset.select_related('student', 'teacher').prefetch_related('words')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(

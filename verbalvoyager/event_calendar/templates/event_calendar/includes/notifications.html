@@ -19,7 +19,8 @@
                     <p class='notification-text'>
                         <i class="bi bi-bell-fill"></i> Новое упражнение: 
                         <a href={{ exercise_words.get_absolute_url }} class="exercise">
-                            <i class="exercise-icon word-icon"></i> {{ exercise_words }}
+                            {% comment %} <i class="exercise-icon word-icon"></i> {% endcomment %}
+                            {{ exercise_words }}
                         </a>
                     </p>
                 </div>
@@ -45,7 +46,8 @@
                     <p class='notification-text'>
                         <i class="bi bi-bell-fill"></i> Новое упражнение: 
                         <a href={{ exercise_dialog.get_absolute_url }} class="exercise">
-                            <i class="exercise-icon dialog-icon"></i> {{ exercise_dialog }}
+                            {% comment %} <i class="exercise-icon dialog-icon"></i> {% endcomment %}
+                            {{ exercise_dialog }}
                         </a>
                     </p>
                 </div>

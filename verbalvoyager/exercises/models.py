@@ -597,9 +597,9 @@ class ExerciseIrregularEnglishVerb(models.Model):
 
     def get_words(self):
         words = [
-            word.infinitive.word for word in self.words.all()
+            word.infinitive.word for word in self.words.select_related('infinitive').all()
         ]
-        return format_html(' '.join(words))
+        return format_html(', '.join(words))
 
     get_words.allow_tags = True
     get_words.short_description = 'Слова в упражнении'

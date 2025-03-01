@@ -221,7 +221,7 @@ class Lesson(models.Model):
         related_name='lessons_new_student',
         limit_choices_to={'groups__name__in': ['Student', ]},
         on_delete=models.CASCADE,
-        verbose_name="Ученики",
+        verbose_name="Ученик",
         null=True
     )
     teacher_id = models.ForeignKey(
