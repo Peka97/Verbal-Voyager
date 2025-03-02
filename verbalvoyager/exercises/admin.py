@@ -41,7 +41,7 @@ class TeachersListFilter(admin.SimpleListFilter):
         human-readable name for the option that will appear
         in the right sidebar.
         """
-        teachers = User.objects.filter(groups__name='Teacher')
+        teachers = User.objects.filter(groups__name='Teacher').order_by('last_name', 'first_name')
 
         return [
             (teacher.pk, _(f'{teacher.last_name} {teacher.first_name}')) for teacher in teachers
@@ -80,7 +80,7 @@ class StudentsListFilter(admin.SimpleListFilter):
         human-readable name for the option that will appear
         in the right sidebar.
         """
-        students = User.objects.filter(groups__name='Student')
+        students = User.objects.filter(groups__name='Student').order_by('last_name', 'first_name')
 
         return [
             (student.pk, _(f'{student.last_name} {student.first_name}')) for student in students

@@ -21,7 +21,9 @@
 <div class="container wrapper">
     <div class='row scene-container'>
         <div class='col scene-text'>
-            {{ scene }}
+            {% if scene %}
+                {{ scene }}
+            {% endif %}
         </div>
         <!-- Done button -->
         <div class='col hidden text-center'>

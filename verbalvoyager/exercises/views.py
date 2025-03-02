@@ -70,7 +70,9 @@ def exercises_words(request, ex_id, step):
 
     exercise = get_object_or_404(ExerciseWords, pk=ex_id)
 
-    if not exercise.external_access or not request.user.is_teacher():
+    if exercise.external_access or (request.user.is_authenticated and request.user.is_teacher()):
+        pass
+    else:
         if not request.user.is_authenticated:
             return redirect(f"/users/auth?next={request.path}")
         if exercise.student != request.user:
@@ -104,7 +106,9 @@ def exercises_words(request, ex_id, step):
 def exercises_dialog(request, ex_id):
     dialog = get_object_or_404(ExerciseDialog, pk=ex_id)
 
-    if not dialog.external_access or not request.user.is_teacher():
+    if dialog.external_access or (request.user.is_authenticated and request.user.is_teacher()):
+        pass
+    else:
         if not request.user.is_authenticated:
             return redirect(f"/users/auth?next={request.path}")
         if dialog.student != request.user:
@@ -117,7 +121,11 @@ def exercises_dialog(request, ex_id):
     raw_text = raw_dialog[1:] if scene else raw_dialog
     messages = []
     for message in raw_text:
-        person_name, message_text = message.split(':', 1)
+        try:
+            person_name, message_text = message.split(':', 1)
+        except ValueError:
+            person_name = None
+            message_text = message
         messages.append(
             {
                 'from': person_name,
