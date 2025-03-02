@@ -6,12 +6,27 @@ from pprint import pprint
 from django.shortcuts import render
 from django.http import JsonResponse
 
+from .models import EnglishWord
+
 
 def load_from_api(request, lang):
     if request.method == 'POST':
         data = json.loads(request.body)
         word = data.get('word')
         translation = data.get('translation')
+
+        check_fields = {}
+
+        if word:
+            check_fields['word'] = word.lower()
+        if translation:
+            check_fields['translation'] = translation.lower()
+
+        word_check = EnglishWord.objects.filter(
+            **check_fields)
+        # print(word_exists_check.exists())
+        if word_check.exists():
+            return JsonResponse({'error': f'Слово уже есть в словаре: ID {word_check.first().pk}.'}, status=409)
 
         url = 'https://dictionary.skyeng.ru/api/public/v1/words/search?pageSize=1'
         headers = {'accept': 'application/json'}
@@ -23,7 +38,7 @@ def load_from_api(request, lang):
             resp = requests.get(url, params, headers=headers)
             resp_json = resp.json()[0]
         except IndexError:
-            return JsonResponse({'word': 'Not Found'}, status=404)
+            return JsonResponse({'error': 'Не найдено. Проверьте правильность ввода.'}, status=404)
 
         for mean in resp_json['meanings']:
             if mean['translation']['text'] == translation:
@@ -39,7 +54,7 @@ def load_from_api(request, lang):
                     resp_json = resp.json()
 
                 except IndexError:
-                    return JsonResponse({'word': 'Not Found'}, status=404)
+                    return JsonResponse({'error': 'Не найдено. Проверьте правильность ввода.'}, status=404)
                 else:
                     word_api = resp_json[0]
 

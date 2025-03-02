@@ -17,6 +17,7 @@ from .forms import LessonAdminForm, LessonAdminForm, ProjectAdminForm
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.utils.translation import ngettext
+from django.core.exceptions import FieldError
 
 
 log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
@@ -61,7 +62,10 @@ class StudentsListFilter(admin.SimpleListFilter):
         ]
 
     def queryset(self, request, queryset):
-        return queryset.filter(student_id=self.value()) if self.value() else None
+        try:
+            return queryset.filter(student_id=self.value()) if self.value() else None
+        except FieldError:
+            return queryset.filter(students=self.value()) if self.value() else None
 
 
 class LessonTaskInline(admin.TabularInline):

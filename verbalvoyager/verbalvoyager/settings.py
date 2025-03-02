@@ -100,35 +100,49 @@ if config.admin_tools_enabled:
     ]
 
 WSGI_APPLICATION = 'verbalvoyager.wsgi.application'
-
 if config.DEBUG:
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.sqlite3',
-    #         'NAME': BASE_DIR / 'db.sqlite3',
-    #     }
-    # }
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'verbalvoyagertest',
-            'USER': 'django',
-            'PASSWORD': 'django',
-            'HOST': 'localhost',
-            'PORT': '5432'
-        }
+    DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'verbalvoyagertest',
+        'USER': 'django',
+        'PASSWORD': 'django',
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'verbalvoyager',
-            'USER': 'django',
-            'PASSWORD': config.psql_pswd,
-            'HOST': 'localhost',
-            'PORT': ''
-        }
-    }
+}
+
+# if config.DEBUG:
+#     # DATABASES = {
+#     #     'default': {
+#     #         'ENGINE': 'django.db.backends.sqlite3',
+#     #         'NAME': BASE_DIR / 'db.sqlite3',
+#     #     }
+#     # }
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': 'verbalvoyagertest',
+#             'USER': 'django',
+#             'PASSWORD': 'django',
+#             'HOST': 'localhost',
+#             'PORT': '5432'
+#         }
+#     }
+# else:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': 'verbalvoyager',
+#             'USER': 'django',
+#             'PASSWORD': config.psql_pswd,
+#             'HOST': 'localhost',
+#             'PORT': ''
+#         }
+#     }
 
 
 # Authentication

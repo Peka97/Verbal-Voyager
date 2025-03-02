@@ -45,8 +45,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(data => {
                     if (data['means']) {
                         alert(`Для слова "${word}" найдены значения:\n${data['means'].join('\n')}.\nИзмените поле с переводом на любое из предложенных.`)
-                    } else if (data['word'] === 'Not Found') {
-                        alert(`Слово ${word} не найдено. Проверьте правильность ввода.`)
+                    } else if (data['error']) {
+                        alert(data['error'])
                     } else {
                         document.getElementById('id_prefix').value = data['prefix']
                         document.getElementById('id_speech_code').value = data['speech_code']

@@ -116,7 +116,7 @@ class StudentsListFilter(admin.SimpleListFilter):
 class ExerciseWordsAdmin(admin.ModelAdmin):
     show_full_result_count = False
     filter_horizontal = ('words', )
-    search_fields = ('pk', 'teacher__username')
+    search_fields = ('pk', 'teacher__username', 'name')
     autocomplete_fields = ('student', )
     list_display = (
         'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access',
@@ -173,7 +173,7 @@ class ExerciseWordsAdmin(admin.ModelAdmin):
 class AbstractExerciseWordsAdmin(admin.ModelAdmin):
     show_full_result_count = False
     filter_horizontal = ('words', )
-    search_fields = ('pk', 'teacher__username', 'words')
+    search_fields = ('pk', 'teacher__username', 'name')
     autocomplete_fields = ('student', 'words')
     list_display = (
         'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access', 'source_link',

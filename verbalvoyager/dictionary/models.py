@@ -114,7 +114,7 @@ class EnglishWord(AbstractWord):
     )
 
     def clean(self):
-        super().clean()
+        super(EnglishWord, self).clean()
         existing_word = EnglishWord.objects.filter(
             word=self.word,
             translation=self.translation
