@@ -12,14 +12,8 @@ urlpatterns = [
     # Words
     path('words/<str:ex_lang>/<int:ex_id>/<int:step>',
          views.exercise_words, name='exercise_words'),
-    # path('words/english/<int:ex_id>/<int:step>',
-    # 	views.exercises_words_english, name='exercises_words_english'),
-    # path('words/french/<int:ex_id>/<int:step>',
-    #     views.exercises_words_french, name='exercises_words_french'),
 
     # Dialogs
-    path('dialog/<int:ex_id>', views.exercises_dialog,
-         name='exercises_dialog'),  # TODO: remove after update
     path('dialog/<str:ex_lang>/<int:ex_id>',
          views.exercise_dialog, name='exercise_dialog'),
 

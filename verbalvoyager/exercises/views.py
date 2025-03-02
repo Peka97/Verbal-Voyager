@@ -18,7 +18,7 @@ from verbalvoyager.settings import DEBUG_LOGGING_FP
 from .utils import generate_dialog, get_exercise_or_404
 
 from dictionary.models import EnglishWord, FrenchWord
-from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseDialog, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseDialogResult, ExerciseIrregularEnglishVerb
+from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult
 
 log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
@@ -175,33 +175,33 @@ def exercise_words(request, ex_lang, ex_id, step):
 #     return render(request, template_name, context)
 
 # TODO: delete after update
-def exercises_dialog(request, ex_id):
-    exercise = get_exercise_or_404(request, ExerciseDialog, ex_id)
+# def exercises_dialog(request, ex_id):
+#     exercise = get_exercise_or_404(request, ExerciseDialog, ex_id)
 
-    raw_dialog = list(filter(lambda s: len(s) > 1, exercise.text.split('\n')))
+#     raw_dialog = list(filter(lambda s: len(s) > 1, exercise.text.split('\n')))
 
-    scene = raw_dialog[0] if raw_dialog[0].startswith(
-        'Scene:') or raw_dialog[0].startswith('Situation:') else None
-    raw_text = raw_dialog[1:] if scene else raw_dialog
-    messages = []
-    for message in raw_text:
-        person_name, message_text = message.split(':', 1)
-        messages.append(
-            {
-                'from': person_name,
-                'text': message_text
-            }
-        )
+#     scene = raw_dialog[0] if raw_dialog[0].startswith(
+#         'Scene:') or raw_dialog[0].startswith('Situation:') else None
+#     raw_text = raw_dialog[1:] if scene else raw_dialog
+#     messages = []
+#     for message in raw_text:
+#         person_name, message_text = message.split(':', 1)
+#         messages.append(
+#             {
+#                 'from': person_name,
+#                 'text': message_text
+#             }
+#         )
 
-    words = exercise.words.all().values()
-    [word.update({'idx': idx + 1}) for idx, word in enumerate(words)]
+#     words = exercise.words.all().values()
+#     [word.update({'idx': idx + 1}) for idx, word in enumerate(words)]
 
-    context = {
-        'scene': scene,
-        'messages': messages,
-        'words': words,
-    }
-    return render(request, 'exercises/dialog.html', context)
+#     context = {
+#         'scene': scene,
+#         'messages': messages,
+#         'words': words,
+#     }
+#     return render(request, 'exercises/dialog.html', context)
 
 
 def exercise_dialog(request, ex_lang, ex_id):
@@ -300,31 +300,31 @@ def exercises_dialog_french(request, ex_id):
 # TODO: delete after update
 
 
-def get_words(words: list[ExerciseEnglishWords]):
-    result = []
+# def get_words(words: list[ExerciseEnglishWords]):
+#     result = []
 
-    for idx, word in enumerate(words):
+#     for idx, word in enumerate(words):
 
-        if word.examples:
+#         if word.examples:
 
-            if '\n' in word.examples:
-                examples = word.examples.split('\n')
-            else:
-                examples = [word.examples]
+#             if '\n' in word.examples:
+#                 examples = word.examples.split('\n')
+#             else:
+#                 examples = [word.examples]
 
-        else:
-            examples = word.examples
+#         else:
+#             examples = word.examples
 
-        data = {
-            'id': idx + 1,
-            'word': word.word,
-            'translation': word.translation,
-            'examples': examples,
-            'translate_vars': get_translate_vars(words, word),
-        }
-        result.append(data)
+#         data = {
+#             'id': idx + 1,
+#             'word': word.word,
+#             'translation': word.translation,
+#             'examples': examples,
+#             'translate_vars': get_translate_vars(words, word),
+#         }
+#         result.append(data)
 
-    return result
+#     return result
 
 
 def load_translate_vars(words: list[dict]):

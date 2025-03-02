@@ -1,6 +1,6 @@
 from django.db import models
 
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseDialog, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
+from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 
 
 # ExerciseWordsResult
