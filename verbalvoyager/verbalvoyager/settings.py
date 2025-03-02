@@ -4,13 +4,11 @@ from pathlib import Path
 from config import *
 
 
-config = ProdConfig
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config.SECRET_KEY
+SECRET_KEY = current_config.SECRET_KEY
 
-DEBUG = config.DEBUG
+DEBUG = current_config.DEBUG
 
 ALLOWED_HOSTS = [
     '127.0.0.1', 'localhost', '', '::1', '158.160.153.184'
@@ -38,7 +36,9 @@ INSTALLED_APPS = [
     # Created
     'users',
     'pages',
+    'dictionary',
     'exercises',
+    'exercise_result',
     'event_calendar'
 ]
 
@@ -52,7 +52,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-if config.DEBUG:
+if current_config.DEBUG:
     INSTALLED_APPS = [
         *INSTALLED_APPS,
         'debug_toolbar',
@@ -82,7 +82,7 @@ TEMPLATES = [
 ]
 
 # Enable Django Admin Tools
-if config.admin_tools_enabled:
+if current_config.admin_tools_enabled:
     INSTALLED_APPS = [
         'admin_tools',
         'admin_tools.theming',
@@ -99,7 +99,10 @@ if config.admin_tools_enabled:
 
 WSGI_APPLICATION = 'verbalvoyager.wsgi.application'
 
-if config.DEBUG:
+if current_config.DEBUG:
+    DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
+
+if current_config.DEBUG:
     # DATABASES = {
     #     'default': {
     #         'ENGINE': 'django.db.backends.sqlite3',
@@ -122,7 +125,7 @@ else:
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'verbalvoyager',
             'USER': 'django',
-            'PASSWORD': config.psql_pswd,
+            'PASSWORD': current_config.psql_pswd,
             'HOST': 'localhost',
             'PORT': ''
         }
@@ -170,8 +173,8 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 EMAIL_TIMEOUT = 15
-EMAIL_HOST_USER = config.email_login
-EMAIL_HOST_PASSWORD = config.email_password
+EMAIL_HOST_USER = current_config.email_login
+EMAIL_HOST_PASSWORD = current_config.email_password
 
 # Logs
 LOGGING = {
@@ -205,5 +208,9 @@ LOGGING = {
         },
     }
 }
-DEBUG_LOGGING_FP = config.DEBUG_LOGGING_FP
-OPENAI_API_KEY = config.OPENAI_API_KEY
+DEBUG_LOGGING_FP = current_config.DEBUG_LOGGING_FP
+OPENAI_API_KEY = current_config.OPENAI_API_KEY
+if DEBUG:
+    SITE_NAME = 'http://127.0.0.1:8000'
+else:
+    SITE_NAME = 'https://verbal-voyager.ru'

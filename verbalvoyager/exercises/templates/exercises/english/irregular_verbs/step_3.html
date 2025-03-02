@@ -1,0 +1,44 @@
+{% extends "exercises/english/includes/irregular_verbs.html" %}
+{% load static %}
+
+{% block 'title' %}Irregular Verbs | Step {{step}}{% endblock  %}
+{% block 'style' %}
+    <link rel="stylesheet" href="{% static 'exercises/css/step_base.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/irregular_verbs/step_3.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/dropdown.css' %}">
+{% endblock  %}
+
+{% block 'words' %}
+    <!-- Words -->
+    {% for word in words %}
+        <div id='word_{{word.idx}}' class="row row-cols-3 justify-content-md-center word-check word__block {% if word.idx != 1 %}hidden{% endif %} hidden-anim">
+            <div class="col">
+                <p class="text text-center word__main">{{ word.infinitive__word }}</p>
+            </div>
+            <div class="col">
+                <p class="text text-center word__main">{{ word.past_simple }}</p>
+            </div>
+            <div class="col">
+                <p class="text text-center word__main">{{ word.past_participle }}</p>
+            </div>
+        </div>
+    {% endfor %}
+
+    <!-- Ex. Alerts -->
+    <div class='row row-alerts justify-content-center pt-3'>
+        <div class='col'>
+            <div class='alerts'>
+                <div id='alert-success' class="alert alert-success text-center hidden" role="alert">
+                    Верно! Так держать!
+                </div>
+                <div id='alert-danger' class="alert alert-danger text-center hidden" role="alert">
+                    Не верно! Подумай ещё
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock  %}
+
+{% block 'js' %}
+    <script type="module" src="{% static 'exercises/js/irregular_verbs/step_3.js' %}"></script>
+{% endblock  %}

@@ -5,6 +5,7 @@ from .models import User
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
+    show_full_result_count = False
     list_display = (
         'username', 'last_name', 'first_name', 'get_groups', 'email',
     )
@@ -20,18 +21,16 @@ class CustomUserAdmin(UserAdmin):
         ('User Advanced Permissions', {
             'classes': ('collapse',),
             'fields': ('is_staff', 'is_superuser', 'user_permissions')
-            }
-         ),
-        ('User Dates', 
+        }
+        ),
+        ('User Dates',
             {
                 'classes': ('collapse',),
                 'fields': ('last_login', 'date_joined')
             }
-        ),
+         ),
     )
-    
+
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.prefetch_related('groups')
-
-

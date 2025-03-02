@@ -1,15 +1,19 @@
 
 
   .menu {
+    --dropdonwBackgroundColor: #3d537f;
     position: relative;
-    padding: 0px 10px;
-    background-color:   #3d537f;
+    display: flex;
+    justify-content: center;
+    /* padding: 0px 10px; */
+    background-color: var(--dropdonwBackgroundColor);
     border-radius: 1rem;
   }
 
   .item {
     display: inline-block;
     position: relative;
+    width: 100%;
   }
 
   .menu-word-link {
@@ -19,6 +23,7 @@
     text-decoration: none;
     pointer-events: none;
     cursor: default;
+    height: 100%;
   }
 
   .menu-word-link span {
@@ -33,7 +38,7 @@
     border: 1px solid #ccc;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     display: none;
-    z-index: 1;
+    z-index: 999;
   }
 
   .submenu-item {
@@ -67,7 +72,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #0a3cff;
+    background-color: var(--dropdonwBackgroundColor);
     z-index: -1;
     transform: scaleX(0);
     transform-origin: left;
@@ -118,7 +123,7 @@
   }
 
   .submenu {
-    background-color: #3d537f;
+    background-color: var(--dropdonwBackgroundColor);
   }
   
   .submenu-item .submenu-word-link:hover::before {
@@ -136,7 +141,6 @@
     line-height: 1.6;
     color: #000000;
     width: fit-content;
-    display: inline-block;
     list-style: none;
   }
   
@@ -167,11 +171,11 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #0a3cff;
+    background-color: var(--dropdonwBackgroundColor);
     z-index: -1;
     transform: scaleX(0);
     transform-origin: left;
-    transition: transform 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+    /* transition: transform 0.48s cubic-bezier(0.23, 1, 0.32, 1); */
   }
   
   .menu .menu-word-link svg {
@@ -193,14 +197,14 @@
     top: 100%;
     border-radius: 0 0 16px 16px;
     left: 0;
-    /* width: 100%; */
+    width: 100%;
     overflow: hidden;
     border: 1px solid #cccccc;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-12px);
     transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
-    z-index: 1;
+    z-index: 1000;
     pointer-events: none;
     list-style: none;
   }

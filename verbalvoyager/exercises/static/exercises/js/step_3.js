@@ -42,6 +42,6 @@ function checkAnswer (event) {
     }
     
     showToast('Запомнил слова? Тогда переходи к следующему шагу!');
-    send_points('words', points);
     toNextStep(3);
+    send_points('words', points);
     }

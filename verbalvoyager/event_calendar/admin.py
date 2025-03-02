@@ -18,6 +18,7 @@ from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.utils.translation import ngettext
 from django.core.exceptions import FieldError
+from django.core.exceptions import FieldError
 
 
 log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
@@ -36,7 +37,8 @@ class TeachersListFilter(admin.SimpleListFilter):
     parameter_name = "teacher"
 
     def lookups(self, request, model_admin):
-        teachers = User.objects.filter(groups__name='Teacher').order_by('last_name', 'first_name')
+        teachers = User.objects.filter(
+            groups__name='Teacher').order_by('last_name', 'first_name')
 
         return [
             (teacher.pk, _(f'{teacher.last_name} {teacher.first_name}'))
@@ -52,7 +54,8 @@ class StudentsListFilter(admin.SimpleListFilter):
     parameter_name = "students"
 
     def lookups(self, request, model_admin):
-        students = User.objects.filter(groups__name='Student').order_by('last_name', 'first_name')
+        students = User.objects.filter(
+            groups__name='Student').order_by('last_name', 'first_name')
 
         return [
             (student.pk, _(f'{student.last_name} {student.first_name}'))
@@ -167,6 +170,7 @@ class ProjectTaskInline(admin.TabularInline):
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
+    show_full_result_count = False
     form = LessonAdminForm
     ordering = ('-datetime', )
     autocomplete_fields = ('student_id', )
@@ -256,6 +260,7 @@ class LessonAdmin(admin.ModelAdmin):
 
 @admin.register(ProjectTask)
 class ProjectTaskAdmin(admin.ModelAdmin):
+    show_full_result_count = False
     search_fields = ('project_id', )
     autocomplete_fields = ('project_id', )
     list_display = ('name', 'points', 'project_id', 'is_completed')
@@ -278,6 +283,10 @@ class ProjectTaskAdmin(admin.ModelAdmin):
         })
     )
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related('project_id')
+
     @admin.action(description='Завершить задачу')
     def set_complete(self, request, queryset):
         for task in queryset:
@@ -296,7 +305,7 @@ class ProjectTaskAdmin(admin.ModelAdmin):
 
 @admin.register(LessonTask)
 class LessonTaskAdmin(admin.ModelAdmin):
-    # autocomplete_fields = ('lesson_id', )
+    show_full_result_count = False
     list_display = ('name', 'points', 'lesson_id', 'is_completed')
     list_filter = (
         'is_completed',
@@ -317,6 +326,10 @@ class LessonTaskAdmin(admin.ModelAdmin):
             'fields': (('points', 'is_completed'),),
         })
     )
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related('lesson_id')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "lesson_id":
@@ -339,10 +352,13 @@ class LessonTaskAdmin(admin.ModelAdmin):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
+    show_full_result_count = False
     form = ProjectAdminForm
 
-    search_fields = ['student_id', 'project_id']
-    filter_horizontal = ('students', 'types',)
+    search_fields = ['students', 'project_id', 'project_type']
+    autocomplete_fields = ('students', 'types')
+
+    # filter_horizontal = ('students', 'types',)
     readonly_fields = ('progress', )
     list_display = ('is_active', 'name', 'course_id',
                     'teacher_id', 'get_students', 'from_date', 'to_date', 'progress')
@@ -361,7 +377,7 @@ class ProjectAdmin(admin.ModelAdmin):
     fieldsets = (
         (u'Project Type', {
             'description': 'Укажи название проекта, его курс и тип.',
-            'fields': ('name', 'course_id', 'types'),
+            'fields': (('name', 'course_id'), 'types'),
         }),
         ('Project Target', {
             'description': 'Выбери студента и учителя, к которым относится проект.',
@@ -467,6 +483,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
+    show_full_result_count = False
     list_display = ('course', 'from_user', 'text', 'created_at')
 
     def get_queryset(self, request):
@@ -474,5 +491,12 @@ class ReviewAdmin(admin.ModelAdmin):
         return queryset.select_related('course', 'from_user')
 
 
-admin.site.register(Course)
-admin.site.register(ProjectType)
+@admin.register(Course)
+class CourseAdmin(admin.ModelAdmin):
+    show_full_result_count = False
+
+
+@admin.register(ProjectType)
+class ProjectTypeAdmin(admin.ModelAdmin):
+    show_full_result_count = False
+    search_fields = ('id', )

@@ -3,6 +3,7 @@ import logging
 from datetime import datetime
 from calendar import monthrange
 from pprint import pprint
+from itertools import chain
 
 import pytz
 from typing import Any, Dict
@@ -16,7 +17,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteView
 
 from users.forms import RegistrationUserForm, CustomPasswordResetForm
-from exercises.models import ExerciseWords, ExerciseDialog
+from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 from event_calendar.models import Lesson, Project, Course
 from event_calendar.forms import LessonForm
 from verbalvoyager.settings import DEBUG_LOGGING_FP
@@ -118,7 +119,7 @@ def user_profile(request):
     else:
         lessons = Lesson.objects.filter(
             student_id=user
-        ).prefetch_related('lesson_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
+        ).prefetch_related('lesson_tasks', 'project_id__types').select_related('teacher_id', 'student_id', 'project_id',).order_by('datetime').all()
 
         projects = Project.objects.filter(
             students=user).values_list('pk', flat=True).all()
@@ -127,14 +128,25 @@ def user_profile(request):
         #     student_id=user,
         #     ).prefetch_related('lesson_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
         context['projects'] = projects
-        context['exercises'] = ExerciseWords.objects.filter(
+        context['words'] = chain(ExerciseEnglishWords.objects.filter(
+            student=user.pk,
+            is_active=True
+        ).all(), ExerciseFrenchWords.objects.filter(
+            student=user.pk,
+            is_active=True
+        ).all())
+        context['irregular_verbs'] = ExerciseIrregularEnglishVerb.objects.filter(
             student=user.pk,
             is_active=True
         ).all()
-        context['dialogs'] = ExerciseDialog.objects.filter(
-            student=user.pk,
-            is_active=True
-        ).all()
+        context['dialogs'] = chain(
+            ExerciseEnglishDialog.objects.filter(
+                student=user.pk,
+                is_active=True).all(),
+            ExerciseFrenchDialog.objects.filter(
+                student=user.pk,
+                is_active=True).all(),
+        )
 
     context['events'] = lessons
     # print(tuple(lessons)[0].lesson_tasks)
