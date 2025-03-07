@@ -53,8 +53,8 @@ def get_exercise_or_404(request, exercise_obj, ex_pk):
         pass
     else:
         if not request.user.is_authenticated:
-            return redirect(f"/users/auth?next={request.path}")
+            return None, redirect(f"/users/auth?next={request.path}")
         if exercise.student != request.user:
             raise Http404("Запрашиваемый объект не найден")
 
-    return exercise
+    return exercise, None

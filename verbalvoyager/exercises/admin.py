@@ -183,7 +183,8 @@ class StudentsListFilter(admin.SimpleListFilter):
 class AbstractExerciseWordsAdmin(admin.ModelAdmin):
     show_full_result_count = False
     filter_horizontal = ('words', )
-    search_fields = ('pk', 'teacher__username', 'name')
+    search_fields = ['pk', 'student__pk', 'student__first_name',
+                     'student__last_name', 'name']
     autocomplete_fields = ('student', 'words')
     list_display = (
         'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access', 'source_link',
@@ -390,7 +391,8 @@ class ExerciseFrenchWordsAdmin(AbstractExerciseWordsAdmin):
 class AbstractExerciseDialogAdmin(admin.ModelAdmin):
     show_full_result_count = False
     form = ExerciseDialogAdminForm
-    search_fields = ['student', ]
+    search_fields = ['pk', 'student__pk', 'student__first_name',
+                     'student__last_name', 'name']
     autocomplete_fields = ('words', 'student')
     filter_horizontal = ('words', )
     list_display = (
@@ -412,6 +414,7 @@ class AbstractExerciseDialogAdmin(admin.ModelAdmin):
             'fields': ('teacher', 'is_active', 'external_access'),
         })
     )
+    save_as = True
 
     def source_link(self, obj):
         return mark_safe(f'<a href={obj.get_url()}>Перейти<a>')
@@ -466,7 +469,8 @@ class ExerciseFrenchDialogAdmin(AbstractExerciseDialogAdmin):
 class ExerciseIrregularEnglishVerbAdmin(admin.ModelAdmin):
     show_full_result_count = False
     form = ExerciseIrregularEnglishVerbAdminForm
-    search_fields = ['student', ]
+    search_fields = ['pk', 'student__pk', 'student__first_name',
+                     'student__last_name', 'name']
     autocomplete_fields = ('words', 'student')
     filter_horizontal = ('words', )
     list_display = (
@@ -488,6 +492,7 @@ class ExerciseIrregularEnglishVerbAdmin(admin.ModelAdmin):
             'fields': ('teacher', 'is_active', 'external_access'),
         })
     )
+    save_as = True
 
     def source_link(self, obj):
         return mark_safe(f'<a href={obj.get_url()}>Перейти<a>')

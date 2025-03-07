@@ -46,7 +46,6 @@ function shuffle(array) {
 function getRandomWords(exclude) {
     let wordsVariants = allWords.slice();
     wordsVariants.splice(wordsVariants.indexOf(exclude), 1);
-    wordsVariants = shuffle(wordsVariants);
     return wordsVariants.slice(0, 3)
 }
 
@@ -58,6 +57,9 @@ function insertDropdownInWordRows() {
         let currentWord = choosenRandomWord.innerText.replace(/\s+/g, '')
         let wordVariants = getRandomWords(currentWord);
         wordVariants.push(currentWord);
+
+        wordVariants = shuffle(wordVariants);
+        
         choosenRandomWord.innerHTML = `
         <div class="menu">
             <div class="item" data-key="${currentWord}">

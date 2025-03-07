@@ -22,6 +22,7 @@ class WordAdmin(admin.ModelAdmin):
             'fields': ('image_url', 'sound_url'),
         })
     )
+    save_as = True
 
     class Media:
         js = ['admin/js/load_data_from_api_UI.js',]
@@ -47,6 +48,7 @@ class FrenchWordAdmin(admin.ModelAdmin):
             'fields': ('image_url', 'sound_url'),
         })
     )
+    save_as = True
 
 
 @admin.register(IrregularEnglishVerb)
@@ -55,3 +57,4 @@ class IrregularEnglishVerbAdmin(admin.ModelAdmin):
     autocomplete_fields = ('infinitive', )
     list_display = ('infinitive', 'past_simple', 'past_participle')
     search_fields = ('infinitive__word', 'past_simple', 'past_participle')
+    save_as = True

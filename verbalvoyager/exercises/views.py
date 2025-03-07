@@ -4,7 +4,7 @@ import requests
 import logging
 from random import sample, shuffle
 
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from django.http.response import Http404
 from django.shortcuts import render, redirect, get_object_or_404
@@ -77,15 +77,10 @@ def exercise_words(request, ex_lang, ex_id, step):
     else:
         return Http404()
 
-    exercise = get_exercise_or_404(request, exercise_obj, ex_id)
+    exercise, redirect = get_exercise_or_404(request, exercise_obj, ex_id)
 
-    if exercise.external_access or (request.user.is_authenticated and request.user.is_teacher()):
-        pass
-    else:
-        if not request.user.is_authenticated:
-            return redirect(f"/users/auth?next={request.path}")
-        if exercise.student != request.user:
-            raise Http404("Запрашиваемый объект не найден")
+    if redirect:
+        return redirect
 
     words = exercise.words.all().values()
     [word.update({'idx': idx + 1}) for idx, word in enumerate(words)]
@@ -117,14 +112,6 @@ def exercise_dialog(request, ex_lang, ex_id):
         return Http404()
 
     exercise = get_exercise_or_404(request, exercise_obj, ex_id)
-
-    if exercise.external_access or (request.user.is_authenticated and request.user.is_teacher()):
-        pass
-    else:
-        if not request.user.is_authenticated:
-            return redirect(f"/users/auth?next={request.path}")
-        if exercise.student != request.user:
-            raise Http404("Запрашиваемый объект не найден")
 
     raw_dialog = list(filter(lambda s: len(s) > 1, exercise.text.split('\n')))
 
@@ -256,8 +243,11 @@ def exercise_irregular_verbs(request, ex_id, step):
         }
     }
 
-    exercise = get_exercise_or_404(
+    exercise, redirect = get_exercise_or_404(
         request, ExerciseIrregularEnglishVerb, ex_id)
+
+    if redirect:
+        return redirect
 
     words = exercise.words.select_related(
         'infinitive').values(

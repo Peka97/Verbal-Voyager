@@ -46,19 +46,21 @@ function shuffle(array) {
 function getRandomWords(exclude) {
     let wordsVariants = allWords.slice();
     wordsVariants.splice(wordsVariants.indexOf(exclude), 1);
-    wordsVariants = shuffle(wordsVariants);
     return wordsVariants.slice(0, 3)
 }
 
 function insertDropdownInWordRows() {
     for (let i=0; i < wordRows.length; i++) {
         let currentWordRow = wordRows[i];
-        let choosenRandomWordOne = currentWordRow.children[getRandomWordId()];
-        let choosenRandomWordTwo;
+        let RandomWordIndexOne = getRandomWordId();
+        let RandomWordIndexTwo;
 
         do {
-            choosenRandomWordTwo = currentWordRow.children[getRandomWordId()];
-        } while (choosenRandomWordOne.innerText === choosenRandomWordTwo.innerText);
+            RandomWordIndexTwo = getRandomWordId();
+        } while (RandomWordIndexOne === RandomWordIndexTwo);
+
+        let choosenRandomWordOne = currentWordRow.children[RandomWordIndexOne];
+        let choosenRandomWordTwo = currentWordRow.children[RandomWordIndexTwo];
 
         let currentWordOne = choosenRandomWordOne.innerText.replace(/\s+/g, '');
         let currentWordTwo = choosenRandomWordTwo.innerText.replace(/\s+/g, '');
@@ -68,6 +70,9 @@ function insertDropdownInWordRows() {
 
         wordVariantsOne.push(currentWordOne);
         wordVariantsTwo.push(currentWordTwo);
+
+        wordVariantsOne = shuffle(wordVariantsOne);
+        wordVariantsTwo = shuffle(wordVariantsTwo);
 
         choosenRandomWordOne.innerHTML = `
         <div class="menu">
@@ -94,6 +99,7 @@ function insertDropdownInWordRows() {
                         <a class="submenu-word-link" href="#">${wordVariantsOne[3]}</a>
                         </div>
                     </div>
+                </div>
             </div>
         </div>
         `
@@ -122,6 +128,7 @@ function insertDropdownInWordRows() {
                         <a class="submenu-word-link" href="#">${wordVariantsTwo[3]}</a>
                         </div>
                     </div>
+                </div>
             </div>
         </div>
         `
