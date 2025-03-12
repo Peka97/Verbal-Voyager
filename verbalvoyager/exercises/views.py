@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.db import transaction
+from django.views.decorators.cache import cache_control
 
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 from .utils import generate_dialog, get_exercise_or_404
@@ -39,6 +40,7 @@ logger_words.addHandler(words_handler)
 User = get_user_model()
 
 
+@cache_control(max_age=3600)
 def exercise_words(request, ex_lang, ex_id, step):
     titles = {1: 'Запоминаем', 2: 'Выбираем', 3: 'Расставляем', 4: 'Переводим'}
     popover_data = {
@@ -103,6 +105,7 @@ def exercise_words(request, ex_lang, ex_id, step):
     return render(request, template_name, context)
 
 
+@cache_control(max_age=3600)
 def exercise_dialog(request, ex_lang, ex_id):
     if ex_lang == 'english':
         exercise_obj = ExerciseEnglishDialog
@@ -111,7 +114,10 @@ def exercise_dialog(request, ex_lang, ex_id):
     else:
         return Http404()
 
-    exercise = get_exercise_or_404(request, exercise_obj, ex_id)
+    exercise, redirect = get_exercise_or_404(request, exercise_obj, ex_id)
+
+    if redirect:
+        return redirect
 
     raw_dialog = list(filter(lambda s: len(s) > 1, exercise.text.split('\n')))
 
@@ -212,6 +218,7 @@ def logging(request, ex_id, step_num):
     return HttpResponse({'status': 200})
 
 
+@cache_control(max_age=3600)
 def exercise_irregular_verbs(request, ex_id, step):
     titles = {1: 'Запоминаем', 2: 'Выбираем', 3: 'Расставляем', 4: 'Переводим'}
     popover_data = {

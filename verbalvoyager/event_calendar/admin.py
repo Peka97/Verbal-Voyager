@@ -76,97 +76,6 @@ class LessonTaskInline(admin.TabularInline):
 class ProjectTaskInline(admin.TabularInline):
     model = ProjectTask
 
-# @admin.register(Lesson)
-# class LessonAdmin(admin.ModelAdmin):
-#     form = LessonAdminForm
-#     ordering = ('-datetime', )
-#     search_fields = ['student_id', 'lesson_id']
-#     filter_horizontal = ('students',)
-#     list_display = ('datetime', 'title', 'status',
-#                     'is_paid', 'teacher_id', 'get_students')
-#     list_display_links = ('datetime', 'title')
-#     list_filter = [
-#         TeachersListFilter,
-#         'datetime',
-#         'is_paid',
-#         'status',
-#         StudentsListFilter,
-#     ]
-#     actions = ['set_pay', 'set_not_pay', 'set_done', 'set_miss', 'set_cancel']
-#     save_as = True
-#     # inlines = [
-#         # LessonTaskInline,
-#     # ]
-
-#     fieldsets = (
-#         ('Lesson Info', {
-#             'fields': (('title', 'datetime'), 'students', ),
-#         }),
-#         ('Lesson Options', {
-#             'classes': ('collapse', ),
-#             'fields': (('status','is_paid', ), 'teacher_id'),
-#         })
-#     )
-
-#     def get_queryset(self, request):
-#         queryset = super().get_queryset(request)
-#         return queryset.select_related('teacher_id').prefetch_related('students', )
-
-    # def formfield_for_manytomany(self, db_field, request, **kwargs):
-    #     if db_field.name == "tasks":
-    #         kwargs["queryset"] = LessonTask.objects.all().prefetch_related('student_id')
-    #     return super().formfield_for_manytomany(db_field, request, **kwargs)
-
-    # def get_form(self, request, obj=None, **kwargs):
-    #     form = super(LessonAdmin, self).get_form(request, obj, **kwargs)
-    #     form.base_fields['teacher_id'].initial = request.user
-    #     form.base_fields['teacher_id'].queryset = User.objects.filter(groups__name__in=['Teacher'])
-    #     form.base_fields['students'].queryset = User.objects.filter(groups__name__in=['Student'])
-
-    #     return form
-
-    # def get_actions(self, request):
-    #     actions = super().get_actions(request)
-    #     delete_action = actions.pop('delete_selected')
-    #     actions['delete_selected'] = delete_action
-
-    #     return actions
-
-    # @admin.action(description='Изменить статус на "Оплачено"')
-    # def set_pay(self, request, queryset):
-    #     for obj in queryset:
-    #         if not obj.is_paid:
-    #             obj.is_paid = True
-    #             obj.save()
-
-    # @admin.action(description='Изменить статус на "Не оплачено"')
-    # def set_not_pay(self, request, queryset):
-    #     for obj in queryset:
-    #         if obj.is_paid:
-    #             obj.is_paid = False
-    #             obj.save()
-
-    # @admin.action(description='Проставить пропуски')
-    # def set_miss(self, request, queryset):
-    #     for obj in queryset:
-    #         if obj.status != 'M':
-    #             obj.status = 'M'
-    #             obj.save()
-
-    # @admin.action(description='Отменить уроки')
-    # def set_cancel(self, request, queryset):
-    #     for obj in queryset:
-    #         if obj.status != 'C':
-    #             obj.status = 'C'
-    #             obj.save()
-
-    # @admin.action(description='Закончить уроки')
-    # def set_done(self, request, queryset):
-    #     for obj in queryset:
-    #         if obj.status!= 'D':
-    #             obj.status = 'D'
-    #             obj.save()
-
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
@@ -298,9 +207,6 @@ class ProjectTaskAdmin(admin.ModelAdmin):
         for task in queryset:
             task.is_completed = False
             task.save()
-# @admin.register(BaseLessonTask)
-# class BaseLessonTaskAdmin(admin.ModelAdmin):
-#     list_display = ('name', )
 
 
 @admin.register(LessonTask)

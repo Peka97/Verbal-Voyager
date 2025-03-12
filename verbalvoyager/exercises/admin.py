@@ -4,10 +4,6 @@ from django.contrib import admin
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
-from django.utils.html import format_html
-from django.http import JsonResponse
-from django.core.serializers.json import DjangoJSONEncoder
-from django.urls import path
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 
@@ -15,9 +11,7 @@ from verbalvoyager.settings import DEBUG_LOGGING_FP
 
 from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseIrregularEnglishVerbResult
-from .forms import ExerciseWordsAdminForm, ExerciseDialogAdminForm, ExerciseIrregularEnglishVerbAdminForm, MyM2MWidget
-
-# from exercises.admin import TeachersListFilter, StudentsListFilter
+from .forms import ExerciseDialogAdminForm, ExerciseIrregularEnglishVerbAdminForm
 
 
 logger = logging.getLogger(__name__)
@@ -119,65 +113,7 @@ class StudentsListFilter(admin.SimpleListFilter):
                     student=self.value()
                 )
 
-# TODO: delete after update
-
-
-# @admin.register(ExerciseWords)
-# class ExerciseWordsAdmin(admin.ModelAdmin):
-#     show_full_result_count = False
-#     filter_horizontal = ('words', )
-#     search_fields = ('pk', 'teacher__username', 'name')
-#     autocomplete_fields = ('student', )
-#     list_display = (
-#         'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access',
-#     )
-#     list_display_links = ('name', )
-#     list_filter = [
-#         'is_active',
-#         'external_access',
-#         TeachersListFilter,
-#         StudentsListFilter,
-#     ]
-#     save_as = True
-#     actions = ['make_active', 'make_inactive']
-
-#     fieldsets = (
-#         ('ExerciseWord Main', {
-#             'fields': (('name', 'student'), 'words',),
-#         }),
-#         ('ExerciseWord Options', {
-#             'classes': ('collapse', ),
-#             'fields': ('teacher', 'is_active', 'external_access'),
-#         })
-#     )
-
-#     def source_link(self, obj):
-#         return mark_safe(f'<a href={obj.get_url()}>Перейти<a>')
-#     source_link.short_description = 'Ссылка на упражнение'
-
-#     def get_queryset(self, request):
-#         queryset = super().get_queryset(request)
-#         return queryset.select_related('student', 'teacher').prefetch_related('words')
-
-#     @admin.action(description='Активировать')
-#     def make_active(self, request, queryset):
-#         queryset.update(is_active=True)
-
-#     @admin.action(description='Деактивировать')
-#     def make_inactive(self, request, queryset):
-#         queryset.update(is_active=False)
-
-#     def get_form(self, request, obj=None, **kwargs):
-#         form = super(ExerciseWordsAdmin, self).get_form(request, obj, **kwargs)
-#         form.base_fields['teacher'].initial = request.user
-#         form.base_fields['teacher'].queryset = User.objects.filter(
-#             groups__name__in=['Teacher'])
-#         form.base_fields['student'].queryset = User.objects.filter(
-#             groups__name__in=['Student'])
-
-#         return form
-
-# Words
+# ExerciseWords
 
 
 class AbstractExerciseWordsAdmin(admin.ModelAdmin):
@@ -208,12 +144,6 @@ class AbstractExerciseWordsAdmin(admin.ModelAdmin):
             'fields': ('teacher', 'is_active', 'external_access'),
         })
     )
-
-    # def formfield_for_manytomany(self, db_field, request, **kwargs):
-    #     if db_field.name == 'words':
-    #         kwargs['widget'] = MyM2MWidget()
-    #         return db_field.formfield(**kwargs)
-    #     return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
         if not obj.name:
@@ -259,133 +189,8 @@ class ExerciseEnglishWordsAdmin(AbstractExerciseWordsAdmin):
 class ExerciseFrenchWordsAdmin(AbstractExerciseWordsAdmin):
     pass
 
-# TODO: delete after update
 
-
-# class AbstractWordAdmin(admin.ModelAdmin):
-#     show_full_result_count = False
-#     search_fields = ('word', 'translate')
-
-
-# @admin.register(EnglishWord)
-# class WordAdmin(AbstractWordAdmin):
-#     list_display = ('word', 'translate')
-#     fieldsets = (
-#         ('EnglishWord Main', {
-#             'fields': (('word', 'translate'), ),
-#         }),
-#         ('EnglishWord Extra', {
-#             'classes': ('collapse', ),
-#             'fields': ('sentences', ),
-#         })
-#     )
-
-
-# @admin.register(FrenchWord)
-# class FrenchWordAdmin(AbstractWordAdmin):
-#     list_display = ('word', 'genus', 'translate')
-#     list_filter = ['genus', ]
-#     fieldsets = (
-#         ('EnglishWord Main', {
-#             'fields': (('word', 'genus'), 'translate'),
-#         }),
-#         ('EnglishWord Extra', {
-#             'classes': ('collapse', ),
-#             'fields': ('sentences', ),
-#         })
-#     )
-
-# # TODO: delete after update
-
-
-# @admin.register(ExerciseWordsResult)
-# class ExerciseEnglishWordsResultAdmin(admin.ModelAdmin):
-#     list_display = ('get_ex_name', 'get_teacher', 'get_student',
-#                     'step_1', 'step_2', 'step_3', 'step_4')
-#     list_filter = [
-#         TeachersListFilter,
-#         StudentsListFilter,
-#     ]
-
-#     def get_queryset(self, request):
-#         queryset = super().get_queryset(request)
-#         return queryset.select_related('words', 'words__teacher', 'words__student')
-
-# # TODO: delete after update
-
-
-# @admin.register(ExerciseDialogResult)
-# class ExerciseDialogResultAdmin(admin.ModelAdmin):
-#     list_display = ('get_ex_name', 'get_teacher', 'get_student',
-#                     'points')
-#     list_filter = [
-#         TeachersListFilter,
-#         StudentsListFilter,
-#     ]
-
-#     def get_queryset(self, request):
-#         queryset = super().get_queryset(request)
-#         return queryset.select_related('dialog', 'dialog__teacher', 'dialog__student')
-
-# # TODO: delete after update
-
-
-# @admin.register(ExerciseDialog)
-# class ExerciseDialogAdmin(admin.ModelAdmin):
-#     form = ExerciseDialogAdminForm
-#     search_fields = ['student', ]
-#     autocomplete_fields = ('words', 'student')
-#     filter_horizontal = ('words', )
-#     list_display = (
-#         'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access', 'source_link',
-#     )
-#     list_display_links = ('name', )
-#     list_filter = [
-#         'is_active',
-#         'external_access',
-#         TeachersListFilter,
-#         StudentsListFilter,
-#     ]
-#     fieldsets = (
-#         ('ExerciseDialog Main', {
-#             'fields': (('name', 'student'), 'words', 'text'),
-#         }),
-#         ('ExerciseDialog Options', {
-#             'classes': ('collapse', ),
-#             'fields': ('teacher', 'is_active', 'external_access'),
-#         })
-#     )
-
-#     def source_link(self, obj):
-#         return mark_safe(f'<a href={obj.get_url()}>Перейти<a>')
-#     source_link.short_description = 'Ссылка на упражнение'
-
-#     def get_queryset(self, request):
-#         queryset = super().get_queryset(request)
-#         return queryset.select_related('student', 'teacher').prefetch_related('words')
-
-#     def get_form(self, request, obj=None, **kwargs):
-#         form = super(ExerciseDialogAdmin, self).get_form(
-#             request, obj, **kwargs)
-#         form.base_fields['teacher'].initial = request.user
-#         form.base_fields['teacher'].queryset = User.objects.filter(
-#             groups__name__in=['Teacher', ])
-
-#         return form
-
-#     def clean(self):
-#         cleaned_data = super(ExerciseDialogAdminForm, self).clean()
-#         field_value = cleaned_data.get('field_name')
-#         if not field_value:
-#             raise ValidationError('No value for field_name')
-
-#     class Media:
-#         js = ['admin/js/generate_dialog_english_text.js',]
-#         css = {
-#             'all': ('admin/css/dialog.css', )
-#         }
-
-# Dialogs
+# ExerciseDialogs
 
 
 class AbstractExerciseDialogAdmin(admin.ModelAdmin):
@@ -434,10 +239,7 @@ class AbstractExerciseDialogAdmin(admin.ModelAdmin):
         return form
 
     def clean(self):
-        cleaned_data = super(ExerciseDialogAdminForm, self).clean()
-        field_value = cleaned_data.get('field_name')
-        if not field_value:
-            raise ValidationError('No value for field_name')
+        super(ExerciseDialogAdminForm, self).clean()
 
     def save_model(self, request, obj, form, change):
         if not obj.name:

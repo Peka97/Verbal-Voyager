@@ -68,32 +68,8 @@ class Review(models.Model):
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
 
-# class BaseLessonTask(models.Model):
-#     name = models.CharField(
-#         max_length=50,
-#         verbose_name='Название обычного задания'
-#     )
-#     def __str__(self) -> str:
-#         return self.name
-
-#     def __repr__(self) -> str:
-#         return f"{self.name} [id:{self.pk}]"
-
-#     class Meta:
-#         verbose_name = 'Обычное задание'
-#         verbose_name_plural = 'Обычные задания'
-
 
 class LessonTask(models.Model):
-    # base_name = models.ForeignKey(
-    #     BaseLessonTask,
-    #     on_delete=models.CASCADE,
-    #     related_name='task_basename',
-    #     blank=True,
-    #     null=True,
-    #     verbose_name='Обычное задание',
-    #     help_text="Выберите обычное задание из предложенных. Поле с уникальным заданием необходимо оставить пустым."
-    # )
     name = models.CharField(
         max_length=150,
         blank=True,
@@ -109,14 +85,6 @@ class LessonTask(models.Model):
         verbose_name='Задача завершена',
         default=False,
     )
-    # lesson_id = models.ForeignKey(
-    #     'Lesson',
-    #     verbose_name='Урок',
-    #     on_delete=models.CASCADE,
-    #     related_name='lesson_tasks',
-    #     blank=True,
-    #     null=True
-    # )
     lesson_id = models.ForeignKey(
         'Lesson',
         verbose_name='Урок',
@@ -135,63 +103,6 @@ class LessonTask(models.Model):
     class Meta:
         verbose_name = 'Задача урока'
         verbose_name_plural = 'Задачи урока'
-
-# class Lesson(models.Model):
-#     title = models.CharField(
-#         verbose_name='Название урока',
-#         max_length=50,
-#         default='English',
-#         help_text="Поле заполняется автоматически, если остаётся пустым"
-#     )
-#     datetime = models.DateTimeField(
-#         verbose_name='Дата и время урока'
-#     )
-#     is_paid = models.BooleanField(verbose_name="Статус оплаты", default=False)
-#     status = models.CharField(
-#         verbose_name="Статус урока",
-#         max_length=20,
-#         default='P',
-#         choices=[
-#             ('P', 'Запланировано'),
-#             ('M', 'Пропущено'),
-#             ('D', 'Завершено'),
-#             ('C', 'Отменено')
-#         ]
-#     )
-#     students = models.ManyToManyField(
-#         User,
-#         related_name='student_lessons',
-#         limit_choices_to={'groups__name__in': ['Student', ]},
-#         verbose_name="Ученики"
-#     )
-#     teacher_id = models.ForeignKey(
-#         User,
-#         verbose_name="Учитель",
-#         limit_choices_to={'groups__name__in': ['Teacher', ]},
-#         on_delete=models.CASCADE,
-#         related_name='teacher_lessons',
-#         null=True
-#     )
-
-#     def __str__(self):
-#         return f"{self.datetime.strftime('%d.%m.%Y %H:%M')} | {self.get_students()} [{self.title}]"
-
-#     def get_students(self):
-#         # try:
-#         #     students = [f'{student.last_name} {student.first_name}' for student in tuple(
-#         #         self.students.all())]
-#         #     return ', '.join(students)
-#         # except Exception as err:
-#         #     logger.error(err)
-#         return self.students
-
-#     get_students.short_description = students.verbose_name
-
-#     class Meta:
-#         verbose_name = 'Занятие'
-#         verbose_name_plural = 'Занятия'
-
-#         ordering = ['datetime']
 
 
 class Lesson(models.Model):
@@ -243,9 +154,6 @@ class Lesson(models.Model):
 
     def get_admin_edit_url(self):
         return reverse(f'admin:{self._meta.app_label}_{self._meta.model_name}_change', args=[quote(self.pk)])
-
-    # def __str__(self):
-    #     return f"{self.datetime.strftime('%d.%m.%Y %H:%M')} | {self.get_students()} [{self.title}]"
 
     class Meta:
         verbose_name = 'Занятие'
@@ -373,10 +281,6 @@ class Project(models.Model):
         verbose_name='Статус',
         default=True
     )
-    # tasks = models.ManyToManyField(
-    #     ProjectTask,
-    #     verbose_name='Задачи проекта',
-    # )
     progress = models.SmallIntegerField(
         verbose_name='Прогресс проекта',
         default=0,

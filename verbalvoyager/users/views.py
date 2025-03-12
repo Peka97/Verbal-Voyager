@@ -19,7 +19,6 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteVi
 from users.forms import RegistrationUserForm, CustomPasswordResetForm
 from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 from event_calendar.models import Lesson, Project, Course
-from event_calendar.forms import LessonForm
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
 log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
