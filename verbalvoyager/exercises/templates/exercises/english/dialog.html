@@ -15,18 +15,21 @@
     <link rel="stylesheet" href="{% static 'exercises/css/exercise.css' %}">
     <link rel="stylesheet" href="{% static 'exercises/css/dialog.css' %}">
 
-    <link rel="stylesheet" href="{% static 'exercises/css/dropdown.css' %}">    
+    <link rel="stylesheet" href="{% static 'exercises/css/dropdown_dialogs.css' %}">    
 {% endblock  %}
 
 {% block 'content' %}
 <div class="container wrapper">
+    {% csrf_token %}
     <div class='row scene-container'>
         <div class="btn-exit-wrap">
             <a href="{% url 'profile' %}"><i class="bi bi-box-arrow-left"></i></a>
-          </div>
-        <div class='col scene-text'>
-            {{ scene }}
         </div>
+        {% if scene %}
+            <div class='col scene-text'>
+                {{ scene }}
+            </div>
+        {% endif %}
     </div>
     {% for message in messages %}
         <div class='row message-container'>

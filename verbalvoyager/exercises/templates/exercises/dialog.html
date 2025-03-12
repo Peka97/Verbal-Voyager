@@ -20,15 +20,13 @@
 
 {% block 'content' %}
 <div class="container wrapper">
+    {% csrf_token %}
     <div class='row scene-container'>
-        <div class='col scene-text'>
-            {{ scene }}
-        </div>
-        <!-- Done button -->
-        <div class='col hidden text-center'>
-            {% csrf_token %}
-            <a id='done-btn' class="btn btn-success" href="{% url 'profile' %}" role="button" aria-disabled="false">Вернуться в Личный кабинет</a>
-        </div>
+        {% if scene %}
+            <div class='col scene-text'>
+                {{ scene }}
+            </div>
+        {% endif %}
     </div>
     {% for message in messages %}
         <div class='row message-container'>

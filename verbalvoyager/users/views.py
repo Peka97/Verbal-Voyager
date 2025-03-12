@@ -21,6 +21,7 @@ from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, Exercise
 from event_calendar.models import Lesson, Project, Course
 from event_calendar.forms import LessonForm
 from verbalvoyager.settings import DEBUG_LOGGING_FP
+from users.utils import get_words_learned_count, get_exercises_done_count
 
 log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 logger = logging.getLogger(__name__)
@@ -98,7 +99,7 @@ def user_logout(request):
 
 
 @login_required(login_url="/users/auth")
-def user_profile(request):
+def user_account(request, current_pane):
     user = request.user
     context = {
         'user_is_teacher': user.is_teacher()
@@ -128,33 +129,49 @@ def user_profile(request):
         #     student_id=user,
         #     ).prefetch_related('lesson_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
         context['projects'] = projects
-        context['words'] = chain(ExerciseEnglishWords.objects.filter(
-            student=user.pk,
-            is_active=True
-        ).all(), ExerciseFrenchWords.objects.filter(
-            student=user.pk,
-            is_active=True
-        ).all())
-        context['irregular_verbs'] = ExerciseIrregularEnglishVerb.objects.filter(
-            student=user.pk,
-            is_active=True
-        ).all()
-        context['dialogs'] = chain(
-            ExerciseEnglishDialog.objects.filter(
-                student=user.pk,
-                is_active=True).all(),
-            ExerciseFrenchDialog.objects.filter(
-                student=user.pk,
-                is_active=True).all(),
+        english_words, french_words = ExerciseEnglishWords.objects.filter(student=user.pk), \
+            ExerciseFrenchWords.objects.filter(student=user.pk)
+        context['exercises_words'] = tuple(chain(
+            english_words.all(),
+            french_words.all()
+        ))
+        irregular_verbs = ExerciseIrregularEnglishVerb.objects.filter(
+            student=user.pk)
+
+        context['exercises_irregular_verbs'] = irregular_verbs.filter(
+            is_active=True).all()
+        english_dialogs, french_dialogs = ExerciseEnglishDialog.objects.filter(
+            student=user.pk), ExerciseFrenchDialog.objects.filter(student=user.pk)
+        dialogs = chain(
+            english_dialogs.filter(is_active=True).all(),
+            french_dialogs.filter(is_active=True).all()
         )
 
+        context['exercises_dialogs'] = dialogs
+
     context['events'] = lessons
-    # print(tuple(lessons)[0].lesson_tasks)
-    # print(lessons.values()[0])
-    # context['new_events'] = lessons_new
-    # context['events_count_total'] = len(lessons)
-    # context['events_count_done'] = lessons.filter(status='D').count()
+
+    context['statistics'] = {}
+    context['statistics']['lessons_done_count'] = lessons.filter(
+        status='D').count()
+    # TODO: move to utils
+    context['statistics']['exercises_done_count'] = get_exercises_done_count(
+        english_words,
+        french_words,
+        irregular_verbs,
+        english_dialogs,
+        french_dialogs
+    )
+    context['statistics']['words_learned_count'] = get_words_learned_count(
+        english_words,
+        french_words,
+        irregular_verbs,
+        english_dialogs,
+        french_dialogs
+    )
+
     context['courses'] = tuple(Course.objects.all())
+    context['current_pane'] = current_pane
 
     return render(request, 'users/profile.html', context)
 

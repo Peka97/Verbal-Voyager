@@ -274,3 +274,17 @@ body {
 #done-btn {
   max-width: fit-content;
 }
+
+/* .message {
+  display: flex;
+  flex-wrap: wrap;
+
+  .menu {
+    margin: 0 .3rem;
+
+    .menu-word-link {
+      gap: 0.3rem !important;
+      padding: .3rem .8rem !important;
+    }
+  }
+} */

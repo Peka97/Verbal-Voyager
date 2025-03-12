@@ -12,7 +12,7 @@ handler500 = handler_500
 urlpatterns = [
     path('auth', views.user_auth, name='auth'),
     path('sign_up', views.user_sign_up, name='sign_up'),
-    path('profile', views.user_profile, name='profile'),
+    path('account/<str:current_pane>', views.user_account, name='account'),
     path('logout', views.user_logout, name='logout'),
 
     path(

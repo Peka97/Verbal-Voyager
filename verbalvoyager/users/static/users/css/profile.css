@@ -60,7 +60,7 @@ body {
         --bs-nav-tabs-border-width: 0 !important;
 
         .nav-item.profile {
-            /* margin-right: 5px; */
+            margin-right: .2rem;
             /* margin-bottom: -3px; */
             background-color: var(--purple-900);
             border-radius: .5rem .5rem 0 0;

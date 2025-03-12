@@ -5,7 +5,7 @@
 {% block 'title' %}Irregular Verbs | Step {{step}}{% endblock  %}
 {% block 'style' %}
     <link rel="stylesheet" href="{% static 'exercises/css/step_base.css' %}">
-    <link rel="stylesheet" href="{% static 'exercises/css/step_1.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/irregular_verbs/step_1.css' %}">
 {% endblock  %}
 
 {% block 'words' %}
@@ -27,11 +27,18 @@
                         {% endif %}
                         <div class="word__wrap">    
                             <div class="word__word">
-                                {% if word.infinitive__prefix %}
-                                    <span class="word__prefix">({{word.infinitive__prefix}})</span>
-                                {% endif %}
-                                {{word.infinitive__word|capfirst}}
-                                <span class="word__speech_code"> ({{word.infinitive__speech_code}})</span>
+                                <div class="infinitive__wrap">
+                                    {% if word.infinitive__prefix %}
+                                        <span class="word__prefix">({{word.infinitive__prefix}})</span>
+                                    {% endif %}
+                                    {{word.infinitive__word|capfirst}}
+                                    
+                                    <span class="word__speech_code"> ({{word.infinitive__speech_code}})</span>
+                                </div>
+                                <div class='irregular_forms__wrap'>
+                                    {{word.past_simple|capfirst}} - 
+                                    {{word.past_participle|capfirst}}
+                                </div>
                             </div>
                             {% if word.infinitive__transcription %}
                                 <p class="word__transcription">[ {{ word.infinitive__transcription }} ]</p>

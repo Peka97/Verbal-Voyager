@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         document.getElementById('id_definition').value = data['definition']
                         document.getElementById('id_examples').value = data['examples']
                         document.getElementById('id_image_url').value = data['image_url']
-                        document.getElementById('id_sound_url').value = data['id_sound_url']
+                        document.getElementById('id_sound_url').value = data['sound_url']
                     }
                 })
                 .catch(error => {
