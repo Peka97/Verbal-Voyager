@@ -28,6 +28,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (word.length > 0) {
             const siteName = window.location.href.split('/').slice(0, 3).join('/');
             let url = `${siteName}/dictionary/json/load_from_api/english`
+            let WordID;
+
+            if (window.location.href.indexOf('/change/') > -1) {
+                WordID = window.location.href.split('/')[6];
+            } 
             
             fetch(url, {
                 method: 'POST',
@@ -38,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify(
                     {
                         'word': word,
+                        'word_id': WordID,
                         'translation': translation
                     }),
                 })
@@ -45,8 +51,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(data => {
                     if (data['means']) {
                         alert(`Для слова "${word}" найдены значения:\n${data['means'].join('\n')}.\nИзмените поле с переводом на любое из предложенных.`)
-                    } else if (data['word'] === 'Not Found') {
-                        alert(`Слово ${word} не найдено. Проверьте правильность ввода.`)
+                    } else if (data['error']) {
+                        alert(data['error'])
                     } else {
                         document.getElementById('id_prefix').value = data['prefix']
                         document.getElementById('id_speech_code').value = data['speech_code']
@@ -54,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         document.getElementById('id_definition').value = data['definition']
                         document.getElementById('id_examples').value = data['examples']
                         document.getElementById('id_image_url').value = data['image_url']
-                        document.getElementById('id_sound_url').value = data['id_sound_url']
+                        document.getElementById('id_sound_url').value = data['sound_url']
                     }
                 })
                 .catch(error => {

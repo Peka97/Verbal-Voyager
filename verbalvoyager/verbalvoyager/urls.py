@@ -4,7 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
 
-from verbalvoyager.settings import config
+from verbalvoyager.settings import current_config
 from pages.views import handler_403, handler_404, handler_500
 
 # TODO: rename handler_\d+ to error_\d+_view
@@ -23,13 +23,13 @@ urlpatterns = [
     path('event_calendar/', include('event_calendar.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-if config.DEBUG:
+if current_config.DEBUG:
     urlpatterns = [
         *urlpatterns,
         path("__debug__/", include("debug_toolbar.urls")),
     ]
 
-if config.admin_tools_enabled:
+if current_config.admin_tools_enabled:
     urlpatterns = [
         *urlpatterns,
         path('admin_tools/', include('admin_tools.urls')),

@@ -28,6 +28,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (word.length > 0) {
             const siteName = window.location.href.split('/').slice(0, 3).join('/');
             let url = `${siteName}/dictionary/json/load_from_api/english`
+            let WordID;
+
+            if (window.location.href.indexOf('/change/') > -1) {
+                WordID = window.location.href.split('/')[6];
+            } 
             
             fetch(url, {
                 method: 'POST',
@@ -38,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify(
                     {
                         'word': word,
+                        'word_id': WordID,
                         'translation': translation
                     }),
                 })

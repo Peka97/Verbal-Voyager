@@ -7,15 +7,14 @@
     <meta id="names" data-name-1="{{name_1}}" data-name-2="{{name_2}}">
     <meta id="words-length" data-words-length="{{words|length}}">
     {% for word in words %}
-        <meta id="word_{{word.idx}}" data-word="{{word.word}}" data-translate="{{word.translation}}">
+        <meta id="word_{{word.idx}}" data-word="{{word.word}}" data-translation="{{word.translation}}">
     {% endfor %}
 {% endblock 'meta' %}
 {% block 'style' %}
     <link rel="stylesheet" href="{% static 'pages/css/base.css' %}">
     <link rel="stylesheet" href="{% static 'exercises/css/exercise.css' %}">
-    <link rel="stylesheet" href="{% static 'exercises/css/dialog.css' %}">
-
-    <link rel="stylesheet" href="{% static 'exercises/css/dropdown_dialogs.css' %}">    
+    <link rel="stylesheet" href="{% static 'exercises/css/dialogs/dialog.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/dialogs/dropdown.css' %}">
 {% endblock  %}
 
 {% block 'content' %}
@@ -23,7 +22,7 @@
     {% csrf_token %}
     <div class='row scene-container'>
         <div class="btn-exit-wrap">
-            <a href="{% url 'profile' %}"><i class="bi bi-box-arrow-left"></i></a>
+            <a href="{% url 'account' current_pane='activities' %}"><i class="bi bi-box-arrow-left"></i></a>
         </div>
         {% if scene %}
             <div class='col scene-text'>

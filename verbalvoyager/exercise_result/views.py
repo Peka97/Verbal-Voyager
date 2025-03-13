@@ -7,17 +7,12 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import JsonResponse
 
-from verbalvoyager.settings import DEBUG_LOGGING_FP
+from logger import get_logger
 from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseIrregularEnglishVerbResult
 
 
-log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
-logger = logging.getLogger(__name__)
-logger.level = logging.INFO
-handler = logging.FileHandler(DEBUG_LOGGING_FP)
-handler.setFormatter(logging.Formatter(log_format))
-logger.addHandler(handler)
+logger = get_logger()
 
 
 @login_required

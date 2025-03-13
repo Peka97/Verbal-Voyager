@@ -17,7 +17,7 @@ export function send_points(ex_type, points) {
     } else if (ex_type === 'irregular_verbs') {
         let exerciseId = window.location.href.split('/').slice(-2)[0];
         let stepNum = window.location.href.split('/').slice(-1)[0];
-        url = `${siteName}/exercise_result/${ex_type}/${exerciseId}/step_${stepNum}`;
+        url = `${siteName}/exercise_result/${ex_type}/${exerciseLang.dataset['exerciseLang']}/${exerciseId}/step_${stepNum}`;
         console.log(url)
     } else {
         return;

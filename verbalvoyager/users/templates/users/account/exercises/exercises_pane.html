@@ -31,13 +31,14 @@
                 </ul>
             </div>
             <div class="action">
-                <button type="button" class="button">
-                    {% comment %} <a href={{ exercise_words.get_absolute_url }}>Перейти</a> {% endcomment %}
+                <a class="btn-default" href="{{ exercise_words.get_absolute_url }}" role="button" aria-disabled="true">Перейти</a>
+                {% comment %} <button type="button" class="button">
+                    <a href={{ exercise_words.get_absolute_url }}>Перейти</a>
                     <span class="button__text">Перейти</span>
                     <span class="button__icon">
                         <i class="bi bi-box-arrow-up-right"></i>
                     </span>
-                </button>
+                </button> {% endcomment %}
             </div>
         </div>
     {% endfor %}

@@ -83,6 +83,7 @@ function insertDropdownInWordRows() {
                         <a class="submenu-word-link" href="#">${wordVariants[3]}</a>
                         </div>
                     </div>
+                </div>
             </div>
         </div>
         `

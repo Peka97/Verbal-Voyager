@@ -4,8 +4,8 @@
 
 {% block title %}Exercise | Step {{step}}{% endblock  %}
 {% block 'style' %}
-    <link rel="stylesheet" href="{% static 'exercises/css/step_base.css' %}">
-    <link rel="stylesheet" href="{% static 'exercises/css/step_3.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/words/step_base.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/words/step_3.css' %}">
 {% endblock  %}
 
 {% block 'words' %}
@@ -41,5 +41,5 @@
 
 {% block 'js' %}
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <script type="module" src="{% static 'exercises/js/step_3.js' %}"></script>
+    <script type="module" src="{% static 'exercises/js/words/step_3.js' %}"></script>
 {% endblock  %}

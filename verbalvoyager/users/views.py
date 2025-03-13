@@ -16,20 +16,14 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteView
 
+from logger import get_logger
 from users.forms import RegistrationUserForm, CustomPasswordResetForm
+from users.utils import get_words_learned_count, get_exercises_done_count
 from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 from event_calendar.models import Lesson, Project, Course
-from event_calendar.forms import LessonForm
-from verbalvoyager.settings import DEBUG_LOGGING_FP
-from users.utils import get_words_learned_count, get_exercises_done_count
 
-log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
-logger = logging.getLogger(__name__)
-logger.level = logging.INFO
-handler = logging.FileHandler(DEBUG_LOGGING_FP)
-handler.setFormatter(logging.Formatter(log_format))
-logger.addHandler(handler)
 
+logger = get_logger()
 User = get_user_model()
 
 
@@ -124,10 +118,6 @@ def user_account(request, current_pane):
 
         projects = Project.objects.filter(
             students=user).values_list('pk', flat=True).all()
-        # lessons = Lesson.objects.filter(
-        #     project_id__in=tuple(projects),
-        #     student_id=user,
-        #     ).prefetch_related('lesson_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
         context['projects'] = projects
         english_words, french_words = ExerciseEnglishWords.objects.filter(student=user.pk), \
             ExerciseFrenchWords.objects.filter(student=user.pk)
@@ -148,32 +138,29 @@ def user_account(request, current_pane):
         )
 
         context['exercises_dialogs'] = dialogs
+        context['statistics'] = {}
+        context['statistics']['lessons_done_count'] = lessons.filter(
+            status='D').count()
+        context['statistics']['exercises_done_count'] = get_exercises_done_count(
+            english_words,
+            french_words,
+            irregular_verbs,
+            english_dialogs,
+            french_dialogs
+        )
+        context['statistics']['words_learned_count'] = get_words_learned_count(
+            english_words,
+            french_words,
+            irregular_verbs,
+            english_dialogs,
+            french_dialogs
+        )
 
     context['events'] = lessons
-
-    context['statistics'] = {}
-    context['statistics']['lessons_done_count'] = lessons.filter(
-        status='D').count()
-    # TODO: move to utils
-    context['statistics']['exercises_done_count'] = get_exercises_done_count(
-        english_words,
-        french_words,
-        irregular_verbs,
-        english_dialogs,
-        french_dialogs
-    )
-    context['statistics']['words_learned_count'] = get_words_learned_count(
-        english_words,
-        french_words,
-        irregular_verbs,
-        english_dialogs,
-        french_dialogs
-    )
-
     context['courses'] = tuple(Course.objects.all())
     context['current_pane'] = current_pane
 
-    return render(request, 'users/profile.html', context)
+    return render(request, 'users/account/account.html', context)
 
 
 class CustomPasswordResetView(PasswordResetView):

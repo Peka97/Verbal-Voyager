@@ -13,6 +13,7 @@ def load_from_api(request, lang):
     if request.method == 'POST':
         data = json.loads(request.body)
         word = data.get('word')
+        word_id = data.get('word_id')
         translation = data.get('translation')
 
         check_fields = {}
@@ -22,11 +23,17 @@ def load_from_api(request, lang):
         if translation:
             check_fields['translation'] = translation.lower()
 
-        word_check = EnglishWord.objects.filter(
-            **check_fields)
-        # print(word_exists_check.exists())
-        if word_check.exists():
-            return JsonResponse({'error': f'Слово уже есть в словаре: ID {word_check.first().pk}.'}, status=409)
+        if word and translation:
+            word_check = EnglishWord.objects.filter(
+                **check_fields)
+
+            if word_check.exists():
+                word_check_obj = word_check.first()
+
+                if not word_id:
+                    return JsonResponse({'error': f'Слово уже есть в словаре: ID {word_check_obj.pk}.'}, status=409)
+                elif word_check_obj.word == word and word_check_obj.translation == translation and str(word_check_obj.pk) != str(word_id):
+                    return JsonResponse({'error': f'Слово уже есть в словаре: ID {word_check_obj.pk}.'}, status=409)
 
         url = 'https://dictionary.skyeng.ru/api/public/v1/words/search?pageSize=1'
         headers = {'accept': 'application/json'}

@@ -4,8 +4,8 @@
 
 {% block 'title' %} Exercise | Step {{step}}{% endblock  %}
 {% block 'style' %}
-    <link rel="stylesheet" href="{% static 'exercises/css/step_base.css' %}">
-    <link rel="stylesheet" href="{% static 'exercises/css/step_1.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/words/step_base.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/words/step_1.css' %}">
 {% endblock  %}
 
 {% block 'words' %}
@@ -53,11 +53,12 @@
                                         <p class="means__title">Другие значения:</p>
                                         {% if word.another_means %}
                                             <ul class="means__list">
-                                                {% for another_mean in word.another_means %}
+                                                {% comment %} {% for another_mean in word.another_means %}
                                                     <li>
                                                         <p class="text">{{ another_mean|capfirst }}</p>
                                                     </li>
-                                                {% endfor %}
+                                                {% endfor %} {% endcomment %}
+                                                {{ word.another_means|parse_to_list }}
                                             </ul>
                                         {% else %}
                                             <p class="means__not_found">Нет</p>
@@ -91,5 +92,5 @@
 {% endblock  %}
 
 {% block 'js' %}
-    <script type="module" src="{% static 'exercises/js/step_1.js' %}"></script>
+    <script type="module" src="{% static 'exercises/js/words/step_1.js' %}"></script>
 {% endblock  %}

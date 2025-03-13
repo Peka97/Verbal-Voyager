@@ -54,7 +54,7 @@ function insertDropdownInMessages() {
                         <div class="menu">
                             <div class="item" data-key="${wordEl.dataset['word']}">
                                 <a href="#" class="menu-word-link">
-                                <span class='word-rus'> ${wordEl.dataset['translate'].toLowerCase()} </span>
+                                <span class='word-rus'> ${wordEl.dataset['translation'].toLowerCase()} </span>
                                 <svg viewBox="0 0 360 360" xml:space="preserve">
                                     <g id="SVGRepo_iconCarrier">
                                     <path
@@ -90,7 +90,7 @@ function fillSubMenuElements() {
             let subMenuWordLink = document.createElement('a')
             subMenuWordLink.className = 'submenu-word-link'
             subMenuWordLink.href = '#'
-            subMenuWordLink.value = wordsVariants[i].dataset.translate
+            subMenuWordLink.value = wordsVariants[i].dataset.translation
             subMenuWordLink.text = wordsVariants[i].dataset.word
 
             subMenuElement.appendChild(subMenuWordLink)

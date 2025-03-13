@@ -163,6 +163,16 @@ class FrenchWord(AbstractWord):
             raise ValidationError(
                 f"Такое сочетание слова и перевода уже существует - {existing_word}")
 
+    def save(self, *args, **kwargs):
+        self.clean()
+
+        another_means_words = FrenchWord.objects.filter(
+            word=self.word).exclude(pk=self.pk).all()
+        self.another_means = ', '.join(
+            [word.translation for word in another_means_words if word.translation])
+
+        super(FrenchWord, self).save(*args, **kwargs)
+
     def __str__(self) -> str:
         return f'{self.word} ({self.genus}) - {self.translation}'
 
