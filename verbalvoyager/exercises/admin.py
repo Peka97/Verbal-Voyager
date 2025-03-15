@@ -1,15 +1,14 @@
-import logging
-
 from django.contrib import admin
-from django.db.models import Q
-from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 
 from logger import get_logger
-from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
-from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseIrregularEnglishVerbResult
+
+from pages.filters import DropdownFilter, RelatedDropdownFilter
+from .filters import TeachersListFilter, StudentsListFilter
+
+from .models import ExerciseCategory, ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 from .forms import ExerciseDialogAdminForm, ExerciseIrregularEnglishVerbAdminForm
 
 
@@ -17,124 +16,40 @@ logger = get_logger()
 
 User = get_user_model()
 
-
-# Filters
-class TeachersListFilter(admin.SimpleListFilter):
-    # Human-readable title which will be displayed in the
-    # right admin sidebar just above the filter options.
-    title = _("Учитель")
-
-    # Parameter for the filter that will be used in the URL query.
-    parameter_name = "teacher"
-
-    def lookups(self, request, model_admin):
-        """
-        Returns a list of tuples. The first element in each
-        tuple is the coded value for the option that will
-        appear in the URL query. The second element is the
-        human-readable name for the option that will appear
-        in the right sidebar.
-        """
-        teachers = User.objects.filter(
-            groups__name='Teacher').order_by('last_name', 'first_name')
-
-        return [
-            (teacher.pk, _(f'{teacher.last_name} {teacher.first_name}')) for teacher in teachers
-        ]
-
-    def queryset(self, request, queryset):
-        """
-        Returns the filtered queryset based on the value
-        provided in the query string and retrievable via
-        `self.value()`.
-        """
-        if self.value():
-            if len(queryset) >= 1 and isinstance(queryset[0], (
-                ExerciseEnglishWordsResult,
-                ExerciseFrenchWordsResult,
-                ExerciseEnglishDialogResult,
-                ExerciseFrenchDialogResult,
-                ExerciseIrregularEnglishVerbResult
-            )):
-                return queryset.filter(
-                    exercise__teacher=self.value()
-                )
-            else:
-                return queryset.filter(
-                    teacher=self.value()
-                )
+# Category
 
 
-class StudentsListFilter(admin.SimpleListFilter):
-    # Human-readable title which will be displayed in the
-    # right admin sidebar just above the filter options.
-    title = _("Ученик")
+@admin.register(ExerciseCategory)
+class ExerciseCategoryAdmin(admin.ModelAdmin):
+    search_fields = ['pk', 'name']
+    list_display = ['pk', 'name']
+    list_display_links = ['pk', 'name']
 
-    # Parameter for the filter that will be used in the URL query.
-    parameter_name = "student"
-
-    def lookups(self, request, model_admin):
-        """
-        Returns a list of tuples. The first element in each
-        tuple is the coded value for the option that will
-        appear in the URL query. The second element is the
-        human-readable name for the option that will appear
-        in the right sidebar.
-        """
-        students = User.objects.filter(
-            groups__name='Student').order_by('last_name', 'first_name')
-
-        return [
-            (student.pk, _(f'{student.last_name} {student.first_name}')) for student in students
-        ]
-
-    def queryset(self, request, queryset):
-        """
-        Returns the filtered queryset based on the value
-        provided in the query string and retrievable via
-        `self.value()`.
-        """
-        if self.value():
-            if len(queryset) >= 1 and isinstance(queryset[0], (
-                ExerciseEnglishWordsResult,
-                ExerciseFrenchWordsResult,
-                ExerciseEnglishDialogResult,
-                ExerciseFrenchDialogResult,
-                ExerciseIrregularEnglishVerbResult
-            )):
-                return queryset.filter(
-                    exercise__student=self.value()
-                )
-            else:
-                return queryset.filter(
-                    student=self.value()
-                )
 
 # ExerciseWords
-
-
 class AbstractExerciseWordsAdmin(admin.ModelAdmin):
     show_full_result_count = False
     filter_horizontal = ('words', )
     search_fields = ['pk', 'student__pk', 'student__first_name',
-                     'student__last_name', 'name']
-    autocomplete_fields = ('student', 'words')
+                     'student__last_name', 'name', 'category__pk', 'category__name']
+    autocomplete_fields = ('student', 'words', 'category')
     list_display = (
         'pk', 'name', 'is_active', 'student', 'teacher', 'get_words', 'external_access', 'source_link',
     )
     list_display_links = ('name', )
     list_filter = [
-        'is_active',
-        'external_access',
         TeachersListFilter,
         StudentsListFilter,
+        ('category', RelatedDropdownFilter),
+        ('is_active', DropdownFilter),
+        ('external_access', DropdownFilter),
     ]
     save_as = True
     actions = ['make_active', 'make_inactive']
 
     fieldsets = (
         ('ExerciseWord Main', {
-            'fields': (('name', 'student'), 'words',),
+            'fields': (('name', 'category', 'student'), 'words',),
         }),
         ('ExerciseWord Options', {
             'classes': ('collapse', ),
@@ -202,14 +117,15 @@ class AbstractExerciseDialogAdmin(admin.ModelAdmin):
     )
     list_display_links = ('name', )
     list_filter = [
-        'is_active',
-        'external_access',
         TeachersListFilter,
         StudentsListFilter,
+        ('category', RelatedDropdownFilter),
+        ('is_active', DropdownFilter),
+        ('external_access', DropdownFilter),
     ]
     fieldsets = (
         ('ExerciseDialog Main', {
-            'fields': (('name', 'student'), 'words', 'text'),
+            'fields': (('name', 'category', 'student'), 'words', 'text'),
         }),
         ('ExerciseDialog Options', {
             'classes': ('collapse', ),
@@ -277,14 +193,15 @@ class ExerciseIrregularEnglishVerbAdmin(admin.ModelAdmin):
     )
     list_display_links = ('name', )
     list_filter = [
-        'is_active',
-        'external_access',
         TeachersListFilter,
         StudentsListFilter,
+        ('category', RelatedDropdownFilter),
+        ('is_active', DropdownFilter),
+        ('external_access', DropdownFilter),
     ]
     fieldsets = (
         ('ExerciseIrregularVerb Main', {
-            'fields': (('name', 'student'), 'words', ),
+            'fields': (('name', 'category', 'student'), 'words', ),
         }),
         ('ExerciseDialog Options', {
             'classes': ('collapse', ),

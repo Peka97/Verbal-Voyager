@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from .models import EnglishWord, FrenchWord, IrregularEnglishVerb
+from pages.filters import ChoiceDropdownFilter
 
 
 @admin.register(EnglishWord)
@@ -32,7 +33,7 @@ class WordAdmin(admin.ModelAdmin):
 class FrenchWordAdmin(admin.ModelAdmin):
     show_full_result_count = False
     list_display = ('word', 'genus', 'translation')
-    list_filter = ['genus', ]
+    list_filter = (('genus', ChoiceDropdownFilter),)
     readonly_fields = ('another_means', )
     search_fields = ('word', 'translation')
     fieldsets = (

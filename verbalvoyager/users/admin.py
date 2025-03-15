@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+
 from .models import User
+from pages.filters import DropdownFilter, RelatedDropdownFilter
 
 
 @admin.register(User)
@@ -8,6 +10,11 @@ class CustomUserAdmin(UserAdmin):
     show_full_result_count = False
     list_display = (
         'username', 'last_name', 'first_name', 'get_groups', 'email',
+    )
+    list_filter = (
+        ('groups', RelatedDropdownFilter),
+        ('is_staff', DropdownFilter),
+        ('is_superuser', DropdownFilter),
     )
     fieldsets = (
         ('User Info', {'fields': ('first_name', 'last_name', 'email')}),

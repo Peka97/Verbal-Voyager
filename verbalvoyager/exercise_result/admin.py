@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseIrregularEnglishVerbResult
-from exercises.admin import TeachersListFilter, StudentsListFilter
+from .filters import TeachersListFilter, StudentsListFilter
 
 
 class AbstractExerciseWordsResultAdmin(admin.ModelAdmin):
@@ -15,7 +15,7 @@ class AbstractExerciseWordsResultAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        return queryset.select_related('exercise_id', 'exercise_id__teacher', 'exercise_id__student')
+        return queryset.select_related('exercise', 'exercise__teacher', 'exercise__student')
 
 
 @admin.register(ExerciseEnglishWordsResult)
@@ -39,7 +39,7 @@ class AbstractExerciseDialogResultAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        return queryset.select_related('exercise_id', 'exercise_id__teacher', 'exercise_id__student')
+        return queryset.select_related('exercise', 'exercise__teacher', 'exercise__student')
 
 
 @admin.register(ExerciseEnglishDialogResult)
@@ -64,4 +64,4 @@ class ExerciseIrregularEnglishVerbResultAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        return queryset.select_related('exercise_id', 'exercise_id__teacher', 'exercise_id__student')
+        return queryset.select_related('exercise', 'exercise__teacher', 'exercise__student')

@@ -103,6 +103,12 @@ class LessonTask(models.Model):
 
 
 class Lesson(models.Model):
+    STATUS_CHOICES = (
+        ('P', 'Запланировано'),
+        ('M', 'Пропущено'),
+        ('D', 'Завершено'),
+        ('C', 'Отменено')
+    )
     title = models.CharField(
         verbose_name='Название урока',
         max_length=50,
@@ -117,12 +123,7 @@ class Lesson(models.Model):
         verbose_name="Статус урока",
         max_length=20,
         default='P',
-        choices=[
-            ('P', 'Запланировано'),
-            ('M', 'Пропущено'),
-            ('D', 'Завершено'),
-            ('C', 'Отменено')
-        ]
+        choices=STATUS_CHOICES
     )
     student_id = models.ForeignKey(
         User,

@@ -9,6 +9,21 @@ from dictionary.models import EnglishWord as new_eng_word, FrenchWord as new_fr_
 
 User = get_user_model()
 
+
+class ExerciseCategory(models.Model):
+    name = models.CharField(
+        max_length=100,
+        verbose_name='Категория упражнений',
+        help_text='Категория, в которую будут помещены упражнения'
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Категория упражнений'
+        verbose_name_plural = 'Категории упражнений'
+        ordering = ['name',]
 # ExerciseWords
 
 
@@ -19,6 +34,14 @@ class AbstractExerciseWords(models.Model):
         default=None, blank=True, max_length=50,
         verbose_name='Название упражнения',
         help_text="Поле заполняется автоматически, если остаётся пустым"
+    )
+    category = models.ForeignKey(
+        ExerciseCategory,
+        verbose_name='Категория упражнения',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        help_text='Категория, связывающая упражнение с чем-либо, например, учебник, книга или фильм'
     )
     is_active = models.BooleanField(default=True, verbose_name="Активен")
     external_access = models.BooleanField(
@@ -121,6 +144,14 @@ class AbstractExerciseDialog(models.Model):
     name = models.CharField(default=None, blank=True, max_length=50,
                             verbose_name='Название упражнения',
                             help_text="Поле заполняется автоматически, если остаётся пустым")
+    category = models.ForeignKey(
+        ExerciseCategory,
+        verbose_name='Категория упражнения',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        help_text='Категория, связывающая упражнение с чем-либо, например, учебник, книга или фильм'
+    )
     text = models.TextField(blank=False, null=True, verbose_name='Текст',
                             help_text="""
                             Требуемый формат:
@@ -228,6 +259,14 @@ class ExerciseIrregularEnglishVerb(models.Model):
         default=None, blank=True, max_length=50,
         verbose_name='Название упражнения',
         help_text="Поле заполняется автоматически, если остаётся пустым"
+    )
+    category = models.ForeignKey(
+        ExerciseCategory,
+        verbose_name='Категория упражнения',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        help_text='Категория, связывающая упражнение с чем-либо, например, учебник, книга или фильм'
     )
     words = models.ManyToManyField(IrregularEnglishVerb, verbose_name="Слова")
     student = models.ForeignKey(

@@ -5,8 +5,10 @@ from datetime import timedelta
 from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _, ngettext
-from django.core.exceptions import FieldError
+from rangefilter.filters import DateRangeFilterBuilder, DateRangeQuickSelectListFilterBuilder
 
+from pages.filters import DropdownFilter, ChoiceDropdownFilter
+from .filters import TeachersListFilter, StudentsListFilter
 from logger import get_logger
 from event_calendar.models import Lesson, Course, Review, ProjectType, Project, ProjectTask, LessonTask
 from event_calendar.forms import LessonAdminForm, LessonAdminForm, ProjectAdminForm
@@ -14,44 +16,6 @@ from event_calendar.forms import LessonAdminForm, LessonAdminForm, ProjectAdminF
 
 logger = get_logger()
 User = get_user_model()
-
-
-# Filters
-class TeachersListFilter(admin.SimpleListFilter):
-    title = _("Учитель")
-    parameter_name = "teacher"
-
-    def lookups(self, request, model_admin):
-        teachers = User.objects.filter(
-            groups__name='Teacher').order_by('last_name', 'first_name')
-
-        return [
-            (teacher.pk, _(f'{teacher.last_name} {teacher.first_name}'))
-            for teacher in teachers
-        ]
-
-    def queryset(self, request, queryset):
-        return queryset.filter(teacher_id=self.value()) if self.value() else None
-
-
-class StudentsListFilter(admin.SimpleListFilter):
-    title = _("Ученик")
-    parameter_name = "students"
-
-    def lookups(self, request, model_admin):
-        students = User.objects.filter(
-            groups__name='Student').order_by('last_name', 'first_name')
-
-        return [
-            (student.pk, _(f'{student.last_name} {student.first_name}'))
-            for student in students
-        ]
-
-    def queryset(self, request, queryset):
-        try:
-            return queryset.filter(students=self.value()) if self.value() else None
-        except FieldError:
-            return queryset.filter(student_id=self.value()) if self.value() else None
 
 
 class LessonTaskInline(admin.TabularInline):
@@ -74,10 +38,10 @@ class LessonAdmin(admin.ModelAdmin):
     list_display_links = ('datetime', 'title')
     list_filter = [
         TeachersListFilter,
-        'datetime',
-        'is_paid',
-        'status',
         StudentsListFilter,
+        ('is_paid', DropdownFilter),
+        ('status', ChoiceDropdownFilter),
+        ('datetime', DateRangeQuickSelectListFilterBuilder(title='Дата урока')),
     ]
     actions = ['set_pay', 'set_not_pay', 'set_done', 'set_miss', 'set_cancel']
     save_as = True
@@ -159,7 +123,7 @@ class ProjectTaskAdmin(admin.ModelAdmin):
     autocomplete_fields = ('project_id', )
     list_display = ('name', 'points', 'project_id', 'is_completed')
     list_filter = (
-        'is_completed',
+        ('is_completed', DropdownFilter),
     )
     actions = ('set_complete', 'unset_complete')
     fieldsets = (
@@ -199,7 +163,7 @@ class LessonTaskAdmin(admin.ModelAdmin):
     show_full_result_count = False
     list_display = ('name', 'points', 'lesson_id', 'is_completed')
     list_filter = (
-        'is_completed',
+        ('is_completed', DropdownFilter),
     )
     actions = ('set_complete', 'unset_complete')
 
@@ -257,6 +221,8 @@ class ProjectAdmin(admin.ModelAdmin):
     list_filter = [
         TeachersListFilter,
         StudentsListFilter,
+        ('from_date', DateRangeFilterBuilder(title='Дата начала проекта')),
+        ('to_date', DateRangeFilterBuilder(title='Дата окончания проекта')),
     ]
     actions = ['create_lessons', ]
 
