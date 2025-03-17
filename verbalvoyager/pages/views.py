@@ -1,10 +1,6 @@
-import logging
-from random import shuffle
-import datetime as dt
 
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist
 
 from event_calendar.models import Review, Course
 from logger import get_logger

@@ -3,7 +3,6 @@ import requests
 import re
 from pprint import pprint
 
-from django.shortcuts import render
 from django.http import JsonResponse
 
 from .models import EnglishWord

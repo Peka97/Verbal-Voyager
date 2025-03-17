@@ -1,11 +1,8 @@
-import logging
 import re
 
 from random import shuffle
-from datetime import datetime, timedelta
 from django.utils.safestring import mark_safe
 
-from logger import get_logger
 from django import template
 
 register = template.Library()

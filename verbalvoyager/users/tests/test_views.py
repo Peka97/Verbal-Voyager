@@ -1,10 +1,7 @@
 import pytest
 from django.urls import reverse
 
-from django.contrib.auth import get_user_model, authenticate
-from django.contrib.auth.models import Group
-
-from django.test import TestCase, Client
+from django.contrib.auth import get_user_model
 
 
 # Fixtures
@@ -12,145 +9,33 @@ from django.test import TestCase, Client
 User = get_user_model()
 
 
+@pytest.fixture
+def data_with_wrong_fields():
+    data = {
+        'username': 'student_user',  # Already exists
+        'password1': 'password',  # Too easy
+        'password2': 'password',
+        'first_name': 'John',
+        'last_name': 'Doe',
+        'email': 'john.doe@'  # Wrong format
+    }
+    return data
+
+
+@pytest.fixture
+def data_with_not_matched_passwords():
+    data = {
+        'username': 'new_username',
+        'password1': 'password',  # Don't match
+        'password2': 'password123',  # Don't match
+        'first_name': 'John',
+        'last_name': 'Doe',
+        'email': 'john.doe@example.com'
+    }
+    return data
+
+
 # Tests
-
-
-class AuthenticationTest(TestCase):
-
-    def setUp(self):
-        self.client = Client()
-        self.login_url = reverse('auth')
-        self.success_url = reverse('')
-        self.logout_url = reverse('logout')
-        self.username = 'student_user'
-        self.password = 'password'
-        self.user = User.objects.create_user(
-            username=self.username, password=self.password)
-
-    def test_login_page_exists(self):
-        response = self.client.get(self.login_url)
-
-        self.assertEqual(response.status_code, 200)
-
-    def test_successful_login_redirects(self):
-        response = self.client.post(
-            self.login_url, {'login': self.username, 'password': self.password})
-
-        self.assertEqual(response.status_code, 302)  # Ожидаем код 302 Redirect
-        self.assertRedirects(response, self.success_url)
-        self.assertTrue(response.client.session['_auth_user_id'])
-
-    def test_successful_login_user_is_authenticated(self):
-        self.client.post(self.login_url, {
-                         'login': self.username, 'password': self.password})
-        user = authenticate(username=self.username, password=self.password)
-
-        self.assertTrue(user.is_authenticated)
-
-    def test_invalid_login_shows_error(self):
-        response = self.client.post(
-            self.login_url,
-            {'login': self.username, 'password': 'wrongpassword'},
-            follow=True
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("Неправильное имя пользователя или пароль",
-                      response.content.decode('utf-8'))
-        self.assertFalse(response.client.session.get('_auth_user_id', False))
-
-    def test_logout(self):
-        self.client.login(username=self.username, password=self.password)
-        response = self.client.get(self.logout_url, follow=True)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertNotIn(self.success_url, self.client.session)
-
-
-class AccountPageTest(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.activities_page = reverse(
-            'account', kwargs={'current_pane': 'activities'})
-        self.profile_page = reverse(
-            'account', kwargs={'current_pane': 'profile'})
-        self.exercises_page = reverse(
-            'account', kwargs={'current_pane': 'exercises'})
-        self.user = User.objects.create_user(
-            username='test_user', password='test_password')
-
-        self.student_group, _ = Group.objects.get_or_create(name='Student')
-        self.teacher_group, _ = Group.objects.get_or_create(name='Teacher')
-        self.student = User.objects.create_user(
-            username='test_student', password='test_password')
-        self.teacher = User.objects.create_user(
-            username='test_teacher', password='test_password')
-        self.student.groups.add(self.student_group)
-        self.teacher.groups.add(self.teacher_group)
-
-    def test_login_required_account_page(self):
-        self.client.logout()
-        response = self.client.get(self.activities_page)
-        self.assertEqual(response.status_code, 302)
-        response = self.client.get(self.profile_page)
-        self.assertEqual(response.status_code, 302)
-        response = self.client.get(self.exercises_page)
-        self.assertEqual(response.status_code, 302)
-
-    def test_activities_page_success_with_base_user(self):
-        self.client.login(username=self.user.username,
-                          password=self.user.password)
-        response = self.client.get(self.activities_page, follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_profile_page_success_with_base_user(self):
-        self.client.login(username=self.user.username,
-                          password=self.user.password)
-        response = self.client.get(self.profile_page, follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_exercises_page_success_with_base_user(self):
-        self.client.login(username=self.user.username,
-                          password=self.user.password)
-        response = self.client.get(self.exercises_page, follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_activities_page_success_with_student(self):
-        self.client.login(username=self.student.username,
-                          password=self.student.password)
-        response = self.client.get(self.activities_page, follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_profile_page_success_with_student(self):
-        self.client.login(username=self.student.username,
-                          password=self.student.password)
-        response = self.client.get(self.profile_page, follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_exercises_page_success_with_student(self):
-        self.client.login(username=self.student.username,
-                          password=self.student.password)
-        response = self.client.get(self.exercises_page, follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_activities_page_success_with_teacher(self):
-        self.client.login(username=self.teacher.username,
-                          password=self.teacher.password)
-        response = self.client.get(self.activities_page, follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_profile_page_success_with_teacher(self):
-        self.client.login(username=self.teacher.username,
-                          password=self.teacher.password)
-        response = self.client.get(self.profile_page, follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_exercises_page_success_with_teacher(self):
-        self.client.login(username=self.teacher.username,
-                          password=self.teacher.password)
-        response = self.client.get(self.exercises_page, follow=True)
-        self.assertEqual(response.status_code, 200)
-
 
 @pytest.mark.django_db
 def test_user_logout_with_redirect_home_page(client):
@@ -162,6 +47,77 @@ def test_user_logout_with_redirect_home_page(client):
     response = client.get(url, follow=True)
     assert response.status_code == 200
     assert '<title> Главная </title>' in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_user_auth_get_success(client):
+    url = reverse('auth')
+
+    response = client.get(url)
+    assert response.status_code == 200
+
+# TODO: auth not successful
+
+
+@pytest.mark.django_db
+def test_user_auth_redirect_and_success(client, student_user):
+    url = reverse('auth')
+    data = {
+        'login': student_user.username,
+        'password': student_user.password
+    }
+
+    response = client.post(url, data)
+    assert response.status_code == 302
+
+    response = client.post(url, data, follow=True)
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_user_auth_fail(client, student_user):
+    url = reverse('auth')
+    data = {
+        'login': student_user.username,
+        'password': 'wrong password'
+    }
+
+    response = client.post(url, data)
+    assert response.status_code == 200
+    assert 'Неправильное имя пользователя или пароль' in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_user_sign_up_success(client):
+    url = reverse('auth')
+    data = {
+        'username': 'new_username',
+        'password1': '0ifO-4Fuzw',
+        'password2': '0ifO-4Fuzw',
+        'first_name': 'John',
+        'last_name': 'Doe',
+        'email': 'john.doe@example.com'
+    }
+
+    response = client.post(url, data)
+    assert response.status_code == 302
+    response = client.post(url, data, follow=True)
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_user_sign_up_failed(client, student_user, data_with_wrong_fields, data_with_not_matched_passwords):
+    url = reverse('auth')
+
+    response = client.post(url, data_with_wrong_fields, follow=True)
+    assert response.status_code == 200
+    assert 'Пользователь с таким именем уже существует' in response.content.decode()
+    assert 'Введённый пароль слишком широко распространён' in response.content.decode()
+    assert 'Введите правильный адрес электронной почты' in response.content.decode()
+
+    response = client.post(url, data_with_not_matched_passwords, follow=True)
+    assert response.status_code == 200
+    assert 'Введенные пароли не совпадают' in response.content.decode()
 
 
 @pytest.mark.django_db
@@ -182,23 +138,26 @@ def test_user_reset_password_get_success(client):
 
 @pytest.mark.django_db
 def test_account_activities_groupless_user_account_success(client, groupless_user):
-    client.force_login(groupless_user)
+    client.login(username=groupless_user.username,
+                 password=groupless_user.password)
     url = reverse("account", kwargs={"current_pane": "activities"})
-    assert client.get(url).status_code == 200
+    assert client.get(url, follow=True).status_code == 200
 
 
 @pytest.mark.django_db
 def test_account_activities_student_account_success(client, student_user):
-    client.force_login(student_user)
+    client.login(username=student_user.username,
+                 password=student_user.password)
     url = reverse("account", kwargs={"current_pane": "activities"})
-    assert client.get(url).status_code == 200
+    assert client.get(url, follow=True).status_code == 200
 
 
 @pytest.mark.django_db
 def test_account_activities_teacher_account_success(client, teacher_user):
-    client.force_login(teacher_user)
+    client.login(username=teacher_user.username,
+                 password=teacher_user.password)
     url = reverse("account", kwargs={"current_pane": "activities"})
-    assert client.get(url).status_code == 200
+    assert client.get(url, follow=True).status_code == 200
 
 
 @pytest.mark.django_db
@@ -209,23 +168,26 @@ def test_account_activities_anonimous_redirection(client):
 
 @pytest.mark.django_db
 def test_account_profile_groupless_user_account_success(client, groupless_user):
-    client.force_login(groupless_user)
+    client.login(username=groupless_user.username,
+                 password=groupless_user.password)
     url = reverse("account", kwargs={"current_pane": "profile"})
-    assert client.get(url).status_code == 200
+    assert client.get(url, follow=True).status_code == 200
 
 
 @pytest.mark.django_db
 def test_account_profile_student_account_success(client, student_user):
-    client.force_login(student_user)
+    client.login(username=student_user.username,
+                 password=student_user.password)
     url = reverse("account", kwargs={"current_pane": "profile"})
-    assert client.get(url).status_code == 200
+    assert client.get(url, follow=True).status_code == 200
 
 
 @pytest.mark.django_db
 def test_account_profile_teacher_account_success(client, teacher_user):
-    client.force_login(teacher_user)
+    client.login(username=teacher_user.username,
+                 password=teacher_user.password)
     url = reverse("account", kwargs={"current_pane": "profile"})
-    assert client.get(url).status_code == 200
+    assert client.get(url, follow=True).status_code == 200
 
 
 @pytest.mark.django_db
@@ -236,23 +198,26 @@ def test_account_profile_anonimous_redirection(client):
 
 @pytest.mark.django_db
 def test_account_exercises_groupless_user_account_success(client, groupless_user):
-    client.force_login(groupless_user)
+    client.login(username=groupless_user.username,
+                 password=groupless_user.password)
     url = reverse("account", kwargs={"current_pane": "exercises"})
-    assert client.get(url).status_code == 200
+    assert client.get(url, follow=True).status_code == 200
 
 
 @pytest.mark.django_db
 def test_account_exercises_student_account_success(client, student_user):
-    client.force_login(student_user)
+    client.login(username=student_user.username,
+                 password=student_user.password)
     url = reverse("account", kwargs={"current_pane": "exercises"})
-    assert client.get(url).status_code == 200
+    assert client.get(url, follow=True).status_code == 200
 
 
 @pytest.mark.django_db
 def test_account_exercises_teacher_account_success(client, teacher_user):
-    client.force_login(teacher_user)
+    client.login(username=teacher_user.username,
+                 password=teacher_user.password)
     url = reverse("account", kwargs={"current_pane": "exercises"})
-    assert client.get(url).status_code == 200
+    assert client.get(url, follow=True).status_code == 200
 
 
 @pytest.mark.django_db

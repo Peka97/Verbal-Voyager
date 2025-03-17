@@ -1,16 +1,8 @@
 from collections import defaultdict
-import logging
-from datetime import datetime
-from calendar import monthrange
-from pprint import pprint
 from itertools import chain
 
-import pytz
-from typing import Any, Dict
 
-from django.shortcuts import render, HttpResponse
-from django.utils import timezone
-from django.urls import reverse
+from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect

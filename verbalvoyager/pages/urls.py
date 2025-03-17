@@ -1,5 +1,4 @@
 from django.urls import path
-from django.contrib import admin
 
 from . import views
 from pages.views import handler_403, handler_404, handler_500

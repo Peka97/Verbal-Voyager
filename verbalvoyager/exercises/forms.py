@@ -1,11 +1,9 @@
-import logging
 
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
 from logger import get_logger
-from dictionary.models import EnglishWord, FrenchWord, IrregularEnglishVerb
 
 
 logger = get_logger()

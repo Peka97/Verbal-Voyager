@@ -1,11 +1,9 @@
-from typing import Any
 
 from django import forms
-from django.contrib import admin
 from django.forms import ModelForm
 from django.contrib.auth import get_user_model
 
-from .models import Lesson, ProjectType, LessonTask
+from .models import Lesson
 
 
 User = get_user_model()
@@ -58,14 +56,7 @@ class LessonForm(ModelForm):
         model = Lesson
         fields = "__all__"
         exclude = ("datetime", )
-            
-class LessonAdminForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(LessonAdminForm, self).__init__(*args, **kwargs)
-        self.fields['teacher_id'].queryset = User.objects.filter(
-            groups__name__in=['Teacher'])
-        self.fields['students'].queryset = User.objects.filter(
-            groups__name__in=['Student'])
+
 
 class LessonAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -75,10 +66,11 @@ class LessonAdminForm(forms.ModelForm):
         self.fields['student_id'].queryset = User.objects.filter(
             groups__name__in=['Student'])
 
+
 class ProjectForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectForm, self).__init__(*args, **kwargs)
-    
+
     students = forms.ModelChoiceField(
         queryset=User.objects.exclude(username__startswith='_') &
         User.objects.exclude(username__startswith='test_') &
@@ -90,7 +82,8 @@ class ProjectForm(forms.ModelForm):
         queryset=User.objects.filter(groups__name='Teacher'),
         label='Учитель'
     )
-    
+
+
 class ProjectAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectAdminForm, self).__init__(*args, **kwargs)

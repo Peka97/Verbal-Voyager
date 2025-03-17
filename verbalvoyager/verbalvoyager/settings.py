@@ -1,7 +1,7 @@
 import os
 
 from pathlib import Path
-from config import *
+from config import DevConfig
 
 
 current_config = DevConfig

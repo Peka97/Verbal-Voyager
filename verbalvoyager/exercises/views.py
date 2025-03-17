@@ -1,26 +1,17 @@
 import json
-from pprint import pprint
-import requests
-import logging
 from random import sample, shuffle
 
-from django.http import HttpResponse, Http404, HttpResponseRedirect
-from django.core.exceptions import PermissionDenied
-from django.http.response import Http404
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, Http404
+from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
-from django.db import transaction
 from django.views.decorators.cache import cache_control
 
 from logger import get_logger, get_words_logger
 from .utils import generate_dialog, get_exercise_or_404
 
-from dictionary.models import EnglishWord, FrenchWord
 from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
-from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult
 
 logger = get_logger()
 logger_words = get_words_logger()
@@ -190,7 +181,7 @@ def generate_dialog_french_json(request):
 
 
 @login_required
-def logging(request, ex_id, step_num):
+def words_logging(request, ex_id, step_num):
     if request.method == 'POST':
         data = json.loads(request.body)
         is_correct = data.get('is_correct')

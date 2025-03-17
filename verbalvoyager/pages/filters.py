@@ -1,7 +1,5 @@
 from django.contrib.admin import SimpleListFilter, AllValuesFieldListFilter, ChoicesFieldListFilter, RelatedFieldListFilter, RelatedOnlyFieldListFilter
-from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
-from django.core.exceptions import FieldError
 
 
 DROPDOWN_TEMPLATE_PATH = 'pages/admin/dropdown_filter.html'

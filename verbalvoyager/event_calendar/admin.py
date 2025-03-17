@@ -4,14 +4,14 @@ from datetime import timedelta
 
 from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
-from django.utils.translation import gettext_lazy as _, ngettext
+from django.utils.translation import ngettext
 from rangefilter.filters import DateRangeFilterBuilder, DateRangeQuickSelectListFilterBuilder
 
 from pages.filters import DropdownFilter, ChoiceDropdownFilter
 from .filters import TeachersListFilter, StudentsListFilter
 from logger import get_logger
 from event_calendar.models import Lesson, Course, Review, ProjectType, Project, ProjectTask, LessonTask
-from event_calendar.forms import LessonAdminForm, LessonAdminForm, ProjectAdminForm
+from event_calendar.forms import LessonAdminForm, ProjectAdminForm
 
 
 logger = get_logger()

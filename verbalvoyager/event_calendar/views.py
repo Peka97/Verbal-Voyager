@@ -1,7 +1,5 @@
-import logging
 import json
 
-from pprint import pprint
 
 from django.http import JsonResponse
 from django.db import transaction

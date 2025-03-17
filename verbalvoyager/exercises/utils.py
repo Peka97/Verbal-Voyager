@@ -1,7 +1,6 @@
 from openai import OpenAI
-from pprint import pprint
 
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from django.http.response import Http404
 
 from verbalvoyager.settings import OPENAI_API_KEY

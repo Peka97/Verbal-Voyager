@@ -1,5 +1,4 @@
 import json
-import logging
 from pprint import pprint
 
 from django.shortcuts import redirect

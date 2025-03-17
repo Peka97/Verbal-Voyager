@@ -1,11 +1,6 @@
-import logging
-from datetime import datetime
 
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
-from django.db.models.signals import pre_save, post_save, m2m_changed, pre_delete
-from django.dispatch import receiver
 from django.urls import reverse
 from django.contrib.admin.utils import quote
 
