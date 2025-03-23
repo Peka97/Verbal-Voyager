@@ -20,17 +20,45 @@ def update(request):
     data = json.loads(request.body)
 
     if data.get('tasks'):
-        tasks_obj = LessonTask.objects.filter(
-            pk__in=data['tasks'].keys()).all()
-        tasks = {task.pk: task for task in tasks_obj}
+        tasks_to_create = data['tasks']['toCreate']
+        tasks_to_update = data['tasks']['toUpdate']
 
-        for task_pk, task_status in data['tasks'].items():
-            updated_task = tasks.get(int(task_pk))
-            if updated_task:
-                updated_task.is_completed = task_status
+        if tasks_to_create:
+            for task_data in tasks_to_create.values():
+                new_task = LessonTask.objects.create(
+                    name=task_data['name'],
+                    points=task_data['points'],
+                    is_completed=task_data['isCompleted'],
+                    lesson_id=Lesson.objects.get(
+                        pk=int(task_data['createFor'])),
+                )
+                new_task.save()
 
-        with transaction.atomic():
-            LessonTask.objects.bulk_update(tasks.values(), ('is_completed',))
+        if tasks_to_update:
+            updated_fields = set()
+
+            tasks_obj_to_update = LessonTask.objects.filter(
+                pk__in=tasks_to_update.keys()).all()
+            tasks = {task.pk: task for task in tasks_obj_to_update}
+
+            for task_pk, task_data in tasks_to_update.items():
+                updated_task = tasks.get(int(task_pk))
+
+                if updated_task:
+                    if task_data.get('name'):
+                        updated_task.name = task_data['name']
+                        updated_fields.add('name')
+                    if task_data.get('points'):
+                        updated_task.points = task_data['points']
+                        updated_fields.add('points')
+                    if task_data.get('isCompleted'):
+                        updated_task.is_completed = task_data['isCompleted']
+                        updated_fields.add('is_completed')
+
+            if updated_fields:
+                with transaction.atomic():
+                    LessonTask.objects.bulk_update(
+                        tasks.values(), updated_fields)
 
     if data.get('lessons'):
         lesson_obj = Lesson.objects.filter(pk__in=data['lessons'].keys()).all()

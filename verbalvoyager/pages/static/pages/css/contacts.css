@@ -1,3 +1,7 @@
+:root {
+  --background-color: #001a3e;
+}
+
 .container.contact__cards {
   color: white;
 

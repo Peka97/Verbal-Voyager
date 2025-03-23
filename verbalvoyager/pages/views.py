@@ -2,7 +2,7 @@
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 
-from event_calendar.models import Review, Course
+from event_calendar.models import Review, Course, Project
 from logger import get_logger
 
 
@@ -48,6 +48,11 @@ def index(request):
     context['user'] = user
     context['courses'] = courses
     context['reviews'] = reviews
+    context['student_count'] = {
+        'english': Project.objects.filter(course_id__name='Английский язык').count(),
+        'french': Project.objects.filter(course_id__name='Французский язык').count(),
+        'spanish': Project.objects.filter(course_id__name='Испанский язык').count(),
+    }
 
     return render(request, 'pages/index.html', context)
 

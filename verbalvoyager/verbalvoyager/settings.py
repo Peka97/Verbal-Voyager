@@ -160,6 +160,14 @@ LOGOUT_REDIRECT_URL = '/'
 
 # Internationalization
 LANGUAGE_CODE = 'ru-ru'
+USE_I18N = True
+USE_L10N = True  # Optional, but recommended (localization)
+LANGUAGES = [
+    ('ru', 'Russian'),  # Добавьте ваш язык
+]
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',  # Укажите путь к каталогу с переводами
+]
 
 TIME_ZONE = 'Europe/Saratov'
 USE_TZ = False

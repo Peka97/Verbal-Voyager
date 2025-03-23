@@ -3,6 +3,15 @@ body {
   margin: 0 1rem;
 }
 
+
+.btn-exit-wrap {
+    i {
+        font-size: xx-large;
+        color: var(--amber-400);
+    }
+}
+
+
 .toast-container {
   position: fixed; /* Фиксирует позицию контейнера */
   bottom: 20px; /* Отступ от нижнего края экрана */

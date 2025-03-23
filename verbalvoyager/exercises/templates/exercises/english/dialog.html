@@ -19,11 +19,11 @@
 
 {% block 'content' %}
 <div class="container wrapper">
+    <div class="btn-exit-wrap">
+        <a href="{% url 'account' current_pane='activities' %}"><i class="bi bi-box-arrow-left"></i></a>
+    </div>
     {% csrf_token %}
     <div class='row scene-container'>
-        <div class="btn-exit-wrap">
-            <a href="{% url 'account' current_pane='activities' %}"><i class="bi bi-box-arrow-left"></i></a>
-        </div>
         {% if scene %}
             <div class='col scene-text'>
                 {{ scene }}
@@ -34,7 +34,7 @@
         <div class='row message-container'>
             <div class='row message-row'>
                 <div class='col avatar-container'>
-                    <img class='avatar' width='50' height='50' src="{% static "users/images/default_avatar.png" %}" alt="User photo">
+                    <img class='avatar' width='50' height='50' src="{% static "users/images/default_avatar.webp" %}" alt="User photo">
                     <span class='person-name'>{{ message.from }}</span>
                 </div>
                 <div class='col text-container'>

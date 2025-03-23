@@ -1,4 +1,4 @@
-#checklist {
+.checklist .lesson-task {
     --background: #fff;
     --text: #414856;
     --check: #4f29f0;
@@ -13,11 +13,11 @@
     position: relative;
     padding-left: 2vw;
     display: grid;
-    grid-template-columns: 30px auto;
+    grid-template-columns: 30px fit-content(70%) fit-content(10%);
     align-items: center;
   }
   
-  #checklist label {
+  .checklist .lesson-task label {
     color: var(--text);
     position: relative;
     cursor: pointer;
@@ -32,12 +32,12 @@ span.not-tasks {
     color: #c3c8de;
 }
   
-  #checklist label::before, #checklist label::after {
+  .checklist .lesson-task label::before, .checklist label::after {
     content: "";
     position: absolute;
   }
   
-  #checklist label::before {
+  .checklist .lesson-task label::before {
     height: 2px;
     width: 8px;
     left: -27px;
@@ -46,7 +46,7 @@ span.not-tasks {
     transition: background 0.3s ease;
   }
   
-  #checklist label:after {
+  .checklist .lesson-task label:after {
     height: 4px;
     width: 4px;
     top: 8px;
@@ -54,7 +54,7 @@ span.not-tasks {
     border-radius: 50%;
   }
   
-  #checklist input[type="checkbox"] {
+  .checklist .lesson-task input[type="checkbox"] {
     -webkit-appearance: none;
     -moz-appearance: none;
     position: relative;
@@ -70,7 +70,7 @@ span.not-tasks {
     margin-right: 20px;
   }
   
-  #checklist input[type="checkbox"]::before, #checklist input[type="checkbox"]::after {
+  .checklist .lesson-task input[type="checkbox"]::before, .checklist input[type="checkbox"]::after {
     content: "";
     position: absolute;
     height: 2px;
@@ -79,37 +79,37 @@ span.not-tasks {
     border-radius: 2px;
   }
   
-  #checklist input[type="checkbox"]::before {
+  .checklist .lesson-task input[type="checkbox"]::before {
     width: 0px;
     right: 60%;
     transform-origin: right bottom;
   }
   
-  #checklist input[type="checkbox"]::after {
+  .checklist .lesson-task input[type="checkbox"]::after {
     width: 0px;
     left: 40%;
     transform-origin: left bottom;
   }
   
-  #checklist input[type="checkbox"]:checked::before {
+  .checklist .lesson-task input[type="checkbox"]:checked::before {
     animation: check-01 0.4s ease forwards;
   }
   
-  #checklist input[type="checkbox"]:checked::after {
+  .checklist .lesson-task input[type="checkbox"]:checked::after {
     animation: check-02 0.4s ease forwards;
   }
   
-  #checklist input[type="checkbox"]:checked + label {
+  .checklist .lesson-task input[type="checkbox"]:checked + label {
     color: var(--disabled);
     animation: move 0.3s ease 0.1s forwards;
   }
   
-  #checklist input[type="checkbox"]:checked + label::before {
+  .checklist .lesson-task input[type="checkbox"]:checked + label::before {
     background: var(--disabled);
     animation: slice 0.4s ease forwards;
   }
   
-  #checklist input[type="checkbox"]:checked + label::after {
+  .checklist .lesson-task input[type="checkbox"]:checked + label::after {
     animation: firework 0.5s ease forwards 0.1s;
   }
   
@@ -204,3 +204,7 @@ span.not-tasks {
       box-shadow: 0 -15px 0 0px #4f29f0, 14px -8px 0 0px #4f29f0, 14px 8px 0 0px #4f29f0, 0 15px 0 0px #4f29f0, -14px 8px 0 0px #4f29f0, -14px -8px 0 0px #4f29f0;
     }
   }
+
+  input.new-task-wrong {
+    border: solid .1rem var(--red-a400);
+}
