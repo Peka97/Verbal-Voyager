@@ -9,18 +9,28 @@
                         <div class="event-name"> 
 
                             {% with tags=event.project_id.types.all|type_names_to_list %}
-                                {% if "Персональный" in tags %}
-                                    <i class="bi bi-person-fill" style='color: indigo'></i>
-                                {% else %}
-                                    <i class="bi bi-people-fill" style='color: indigo'></i>
-                                {% endif %}
+                            <div class='lesson-types'>
+                                <div class="tooltip-container">
+                                    {% if "Персональный" in tags %}
+                                        <span class="tooltip">Персональный</span>
+                                        <i class="bi bi-person-fill"></i>
+                                    {% elif "Групповой" in tags %}
+                                        <span class="tooltip">Групповой</span>
+                                        <i class="bi bi-people-fill"></i>
+                                    {% endif %}
+                                </div>
 
-                                {% if "Онлайн" in tags %}
-                                    <i class="bi bi-laptop" style='color: indigo'></i>
-                                {% else %}
-                                    <i class="bi bi-door-open" style='color: indigo'></i>
-                                {% endif %}
-                            {% endwith %}
+                                <div class="tooltip-container">
+                                    {% if "Онлайн" in tags %}
+                                        <span class="tooltip">Онлайн</span>
+                                        <i class="bi bi-laptop"></i>
+                                    {% elif "Оффлайн" in tags %}
+                                        <span class="tooltip">В студии</span>
+                                        <i class="bi bi-door-open"></i>
+                                    {% endif %}
+                                </div>
+                                {% endwith %}
+                            </div>
 
                             {% if event.datetime.minute < 10 %}
                                 {% with prefix=0 %}
@@ -44,19 +54,28 @@
                             {{ event.teacher_id.last_name }} {{ event.teacher_id.first_name }}
                         </div>
                         <div class="event-info">
-                            {% if event.status == 'P' %}
-                                <i class="bi bi-clock text-warning"></i> 
-                            {% elif event.status == 'C' %}
-                                <i class="bi bi-x-circle text-danger"></i>
-                            {% else %}
-                                <i class="bi bi-check-circle text-success"></i> 
-                            {% endif %}
+                            <div class='lesson-statuses'>
+                                <div class="tooltip-container">
+                                    {% if lsn.status == 'P' %}
+                                        <span class="tooltip">Запланирован</span>
+                                        <i class="bi bi-clock performing-status" name={{lsn.status}}></i>
+                                    {% elif lsn.status == 'C' %}
+                                        <span class="tooltip">Отменён</span>
+                                        <i class="bi bi-x-circle performing-status" name={{lsn.status}}></i>
+                                    {% elif lsn.status == 'M' %}
+                                        <span class="tooltip">Пропущен</span>
+                                        <i class="bi bi-person-x performing-status" name={{lsn.status}}></i>
+                                    {% else %}
+                                        <span class="tooltip">Проведён</span>
+                                        <i class="bi bi-check-circle performing-status" name={{lsn.status}}></i> 
+                                    {% endif %}
+                                    </div>
 
-                            {% if event.is_paid %}
-                                <i class="bi bi-wallet text-success"></i>
-                            {% else %}
-                                <i class="bi bi-wallet text-danger"></i> 
-                            {% endif %}
+                                <div class="tooltip-container">
+                                    <span class="tooltip">{% if lsn.is_paid %}Оплачен{% else %}Не оплачен{% endif %}</span>
+                                    <i class="bi bi-wallet payment-status {% if lsn.is_paid %} paid {% else %} not-paid {% endif %}"></i>
+                                </div>
+                            </div>
 
                             <br>
 
@@ -70,12 +89,14 @@
                             <span class='task-header' style='font-weight: lighter; color: indigo'>Tasks: </span>
                             
                             {% if tasks %}
-                                <div id='checklist'>
+                                <div class='checklist'>
                                     {% for task in tasks %}
-                                        <input disabled {% if task.is_completed %} checked {% endif %} value="1" name="r" type="checkbox" id="{{ task.pk }}">
-                                        <label for="{{ task.pk }}">
-                                            {{ task.name }}
-                                        </label>
+                                        <div class='lesson-task'>
+                                            <input disabled {% if task.is_completed %} checked {% endif %} value="1" name="r" type="checkbox" id="{{ task.pk }}">
+                                            <label for="{{ task.pk }}">
+                                                {{ task.name }}
+                                            </label>
+                                        </div>
                                     {% endfor %}
                                 </div>
                             {% else %}

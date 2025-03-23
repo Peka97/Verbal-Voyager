@@ -343,7 +343,7 @@ div.tab-content {
 
                         .event-info {
                             margin-left: auto;
-                            color: var(--deep-purple-900);
+                            /* color: var(--deep-purple-900); */
                             text-align: right;
                         }
 
@@ -428,6 +428,23 @@ div.tab-content {
 
                         .event-name {
                             margin-right: 1rem;
+
+                            .lesson-types {
+                                display: flex;
+                                gap: .2rem;
+
+                                i {
+                                    color: var(--indigo-900)
+                                }
+                            }
+
+                            
+                        }
+
+                        .lesson-statuses {
+                            display: flex;
+                            justify-content: end;
+                            gap: .2rem;
                         }
 
                         .event-count {
