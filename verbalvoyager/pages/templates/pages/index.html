@@ -53,43 +53,76 @@
     <!-- Cards -->
     <div class="album py-2">
       <div class='container py-2'>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        <div class="row album-row first row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
           <div class="col-xl-4 col-md-12 px-2">
             <div class="card d-flex flex-column h-100 shadow-sm">
-              <img src="{% static 'pages/images/english.webp' %}" class="d-block w-100" alt="Third Slide Image">
+              <img src="{% static 'pages/images/card_english.webp' %}" class="d-block w-100" alt="Third Slide Image">
               <div class="card-body d-flex flex-column justify-content-start">
                 <h5 class="card-title align-self-start">English course</h5>
-                <p class="card-text">Английский - безусловно самый популярный международный язык в настоящее время. Он открывает бесчисленные возможности: путешествия, новая работа, общение с людьми всего мира. Знание этого языка помогает расширить горизонты и обогатить свою жизнь независимо от причин, по которым вы его изучаете.</p>
+                <p class="card-text">На этой планете культура, юмор и способ мышления формируют уникальную систему координат. Смотреть "Друзей" в оригинале — значит, понимать все тонкости юмора и сленга, недоступные в дубляже. Эта планета открывает двери к пониманию текстов любимых песен The Beatles и Queen, даря ощущение сопричастности к их творчеству. Погружение в английский — это не просто изучение правил, а возможность напрямую следить за новостями от Илона Маска и понимать его твиты без интерпретаций.</p>
               </div>
               <div class="card-footer d-flex justify-content-between align-items-center">
-                <span>{{student_count.english}} ученик{{ student_count.english|pluralize:"а,ов" }}</span>
-                <a class="btn-default disabled" href="{% url 'english' %}" role="button" aria-disabled="true">Записаться</a>
+                {% comment %} <span>{{student_count.english}} ученик{{ student_count.english|pluralize:"а,ов" }}</span> {% endcomment %}
+                <span>95 учеников</span>
+                <a class="btn-default disabled" href="{% url 'contacts' %}" role="button" aria-disabled="true">Записаться</a>
               </div>
             </div>
           </div>
           <div class="col-xl-4 col-md-12 px-2">
             <div class="card d-flex flex-column h-100 shadow-sm">
-              <img src="{% static 'pages/images/french.webp' %}" class="d-block w-100" alt="Third Slide Image">
+              <img src="{% static 'pages/images/card_french.webp' %}" class="d-block w-100" alt="Third Slide Image">
               <div class="card-body d-flex flex-column justify-content-start">
                 <h5 class="card-title align-self-start">French course</h5>
-                <p class="card-text">Французский - язык любви, изящности и искусства. Его изучение поможет вам погрузиться в богатую культуру и историю Франции. Французский язык также является одним из официальных языков многих международных организаций, что делает его полезным для карьерного роста и профессиональной деятельности.</p>
+                <p class="card-text">Изысканная планета, где красота языка и элегантность культуры сплетаются воедино. Слушать песни Эдит Пиаф в оригинале — значит, прочувствовать всю глубину страсти и меланхолии, которые теряются в переводе. Эта планета открывает доступ к шедеврам французской кухни, от рецептов от шеф-поваров до понимания тонкостей винной культуры. Погружение во французский — это не просто грамматика, а возможность цитировать Коко Шанель в оригинале и понимать, в чем секрет французского шика.</p>
               </div>
               <div class="card-footer d-flex justify-content-between align-items-center">
-                <span>{{student_count.french}} ученик{{ student_count.french|pluralize:"а,ов" }}</span>
-                <a class="btn-default disabled" href="{% url 'french' %}" role="button" aria-disabled="true">Записаться</a>
+                {% comment %} <span>{{student_count.french}} ученик{{ student_count.french|pluralize:"а,ов" }}</span> {% endcomment %}
+                <span>66 учеников</span>
+                <a class="btn-default disabled" href="{% url 'contacts' %}" role="button" aria-disabled="true">Записаться</a>
               </div>
             </div>
           </div>
           <div class="col-xl-4 col-md-12 px-2">
             <div class="card d-flex flex-column h-100 shadow-sm">
-              <img src="{% static 'pages/images/spanish.webp' %}" class="d-block w-100" alt="Third Slide Image">
+              <img src="{% static 'pages/images/card_spanish.webp' %}" class="d-block w-100" alt="Third Slide Image">
               <div class="card-body d-flex flex-column justify-content-start">
                 <h5 class="card-title align-self-start">Spanish course</h5>
-                <p class="card-text">Испанский - третий по популярности язык в мире. В этом языке 60% англо-саксонских корней и он достаточно прост в изучении. Знание этого языка открывает вам доступ ко многим испаноязычным странам: Мексике, Аргентине, Кубе, Колумбии, Чили и другим! </p>
+                <p class="card-text">Путешествие к солнцу и страсти, в мир, где музыка звучит в каждой фразе, а танцы живут в каждом жесте. Смотреть сериалы, как "Бумажный дом", в оригинале – значит, ощутить весь накал эмоций и понять игру слов, которые не передать дубляжом. Эта планета открывает двери к богатейшей латиноамериканской литературе, от Márquez до Allende, даря новые перспективы и культуры. Погружение в испанский – это не только заучивание глаголов, а возможность заказать auténtica паэлью в Валенсии и почувствовать себя своим среди местных.</p>
               </div>
               <div class="card-footer d-flex justify-content-between align-items-center">
-                <span>{{student_count.spanish}} ученик{{ student_count.spanish|pluralize:"а,ов" }}</span>
-                <a class="btn-default disabled" href="{% url 'spanish' %}" role="button" aria-disabled="true">Записаться</a>
+                {% comment %} <span>{{student_count.spanish}} ученик{{ student_count.spanish|pluralize:"а,ов" }}</span> {% endcomment %}
+                <span>30 учеников</span>
+                <a class="btn-default disabled" href="{% url 'contacts' %}" role="button" aria-disabled="true">Записаться</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row album-row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+          <div class="col-xl-4 col-md-12 px-2">
+            <div class="card d-flex flex-column h-100 shadow-sm">
+              <img src="{% static 'pages/images/card_russian.webp' %}" class="d-block w-100" alt="Third Slide Image">
+              <div class="card-body d-flex flex-column justify-content-start">
+                <h5 class="card-title align-self-start">Russian course</h5>
+                <p class="card-text">Врата в загадочную и необъятную вселенную, где глубина души и сила духа отражаются в каждом слове и оттенке. Читая Достоевского в оригинале, постигаешь сложность человеческой натуры и трагизм бытия, скрытые за упрощенными переводами. Эта планета открывает доступ к бескрайним просторам русской культуры, от балета Чайковского до поэзии Пушкина, даря неповторимый эстетический опыт. Изучение русского — это не только освоение сложной грамматики, но и возможность понимать тонкий юмор Ильфа и Петрова, спорить о вечных вопросах за чашкой ароматного чая и чувствовать себя частью великой истории.</p>
+              </div>
+              <div class="card-footer d-flex justify-content-between align-items-center">
+                {% comment %} <span>{{student_count.english}} ученик{{ student_count.english|pluralize:"а,ов" }}</span> {% endcomment %}
+                <span>17 учеников</span>
+                <a class="btn-default disabled" href="{% url 'contacts' %}" role="button" aria-disabled="true">Записаться</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-4 col-md-12 px-2">
+            <div class="card d-flex flex-column h-100 shadow-sm">
+              <img src="{% static 'pages/images/card_china.webp' %}" class="d-block w-100" alt="Third Slide Image">
+              <div class="card-body d-flex flex-column justify-content-start">
+                <h5 class="card-title align-self-start">China course</h5>
+                <p class="card-text">Погружение в древнюю и мудрую цивилизацию, где каждый иероглиф — это целая история, а каждая фраза — отражение тысячелетней культуры. Смотреть фильмы Вонга Кар-Вая в оригинале — значит, прочувствовать глубину эмоций и понять нюансы визуального повествования, ускользающие от поверхностного восприятия. Эта планета открывает доступ к богатейшей китайской философии, от трактатов Конфуция до даосской мудрости, предлагая совершенно иной взгляд на мир. Изучение китайского — это не просто запоминание тонов, а возможность понимать искусство каллиграфии, наслаждаться изысканным вкусом настоящего китайского чая и вести беседы о смысле жизни с носителями древней мудрости.</p>
+              </div>
+              <div class="card-footer d-flex justify-content-between align-items-center">
+                {% comment %} <span>{{student_count.french}} ученик{{ student_count.french|pluralize:"а,ов" }}</span> {% endcomment %}
+                <span>12 учеников</span>
+                <a class="btn-default disabled" href="{% url 'contacts' %}" role="button" aria-disabled="true">Записаться</a>
               </div>
             </div>
           </div>

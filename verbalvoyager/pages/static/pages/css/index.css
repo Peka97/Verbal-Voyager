@@ -486,9 +486,18 @@ a {
     color: var(--indigo-500);
 }
 
+.album-row {
+    justify-content: center;
+}
+
+.album-row.first {
+    margin-bottom: 1rem;
+}
+
 .card {
     background-color: white;
-    border: .15rem var(--amber-500) solid ;
+    /* border: .15rem var(--amber-500) solid ; */
+    border: none;
 }
 
 .card > img {
@@ -503,6 +512,8 @@ a {
 
 .card-text {
     font-size: 1rem;
+    max-height: 30vh;
+    overflow-y: scroll;
 }
 
 .card-footer {
@@ -564,6 +575,11 @@ a {
 
     small, .review-text {
         font-size: 1rem;
+    }
+
+    .review-text {
+        max-height: 30vh;
+        overflow-y: auto;
     }
 }
 

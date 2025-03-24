@@ -389,6 +389,10 @@ div.tab-content {
                                 margin-right: 1rem;
                             }
 
+                            .edit-task-input-name.new-task-wrong {
+                                border-bottom-color: red !important;
+                            }
+
                             .task-edit-icon {
                                 color: var(--indigo-700);
                             }
