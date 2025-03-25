@@ -137,8 +137,8 @@ class EnglishWord(AbstractWord):
         return f'{self.word} ({self.speech_code}) - {self.translation}'
 
     class Meta(AbstractWord.Meta):
-        verbose_name = f'{AbstractWord.Meta.verbose_name} | Eng'
-        verbose_name_plural = f'{AbstractWord.Meta.verbose_name_plural} | Eng'
+        verbose_name = f'Eng | {AbstractWord.Meta.verbose_name}'
+        verbose_name_plural = f'Eng | {AbstractWord.Meta.verbose_name_plural}'
 
 
 class FrenchWord(AbstractWord):
@@ -177,8 +177,8 @@ class FrenchWord(AbstractWord):
         return f'{self.word} ({self.genus}) - {self.translation}'
 
     class Meta(AbstractWord.Meta):
-        verbose_name = f'{AbstractWord.Meta.verbose_name} | Fr'
-        verbose_name_plural = f'{AbstractWord.Meta.verbose_name_plural} | Fr'
+        verbose_name = f'Fr | {AbstractWord.Meta.verbose_name}'
+        verbose_name_plural = f'Fr | {AbstractWord.Meta.verbose_name_plural}'
 
 
 class IrregularEnglishVerb(models.Model):
@@ -203,7 +203,7 @@ class IrregularEnglishVerb(models.Model):
         return f'{self.infinitive.word if self.infinitive else self.infinitive} - {self.past_simple} - {self.past_participle}'
 
     class Meta:
-        verbose_name = 'Неправильный глагол | Eng'
-        verbose_name_plural = 'Неправильные глаголы | Eng'
+        verbose_name = 'Eng | Неправильный глагол'
+        verbose_name_plural = 'Eng | Неправильные глаголы'
 
         ordering = ['infinitive__word']

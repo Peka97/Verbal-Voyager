@@ -38,8 +38,8 @@ class ExerciseEnglishWordsResult(AnstractExerciseWordsResult):
         ExerciseEnglishWords, on_delete=models.CASCADE, related_name='words_eng_result', null=True, blank=True)
 
     class Meta:
-        verbose_name = 'Результат "Слова" | Eng'
-        verbose_name_plural = 'Результаты "Слова" | Eng'
+        verbose_name = 'Eng | Результат "Слова"'
+        verbose_name_plural = 'Eng | Результаты "Слова"'
 
 
 class ExerciseFrenchWordsResult(AnstractExerciseWordsResult):
@@ -47,8 +47,8 @@ class ExerciseFrenchWordsResult(AnstractExerciseWordsResult):
         ExerciseFrenchWords, on_delete=models.CASCADE, related_name='words_fr_result', null=True, blank=True)
 
     class Meta:
-        verbose_name = 'Результат "Слова" | Fr'
-        verbose_name_plural = 'Результаты "Слова" | Fr'
+        verbose_name = 'Fr | Результат "Слова"'
+        verbose_name_plural = 'Fr | Результаты "Слова"'
 
 
 # ExerciseDialogResult
@@ -83,8 +83,8 @@ class ExerciseEnglishDialogResult(AbstractExerciseDialogResult):
         ExerciseEnglishDialog, on_delete=models.CASCADE, related_name='dialog_result', null=True, blank=True)
 
     class Meta:
-        verbose_name = 'Результат "Диалог" | Eng'
-        verbose_name_plural = 'Результаты "Диалог" | Eng'
+        verbose_name = 'Eng | Результат "Диалог"'
+        verbose_name_plural = 'Eng | Результаты "Диалог"'
 
 
 class ExerciseFrenchDialogResult(AbstractExerciseDialogResult):
@@ -92,8 +92,8 @@ class ExerciseFrenchDialogResult(AbstractExerciseDialogResult):
         ExerciseFrenchDialog, on_delete=models.CASCADE, related_name='dialog_result', null=True, blank=True)
 
     class Meta:
-        verbose_name = 'Результат "Диалог" | Fr'
-        verbose_name_plural = 'Результаты "Диалог" | Fr'
+        verbose_name = 'Fr | Результат "Диалог"'
+        verbose_name_plural = 'Fr | Результаты "Диалог"'
 
 
 # ExerciseIrregularEnglishVerb
@@ -125,5 +125,5 @@ class ExerciseIrregularEnglishVerbResult(models.Model):
     get_ex_name.short_description = 'Название'
 
     class Meta:
-        verbose_name = 'Результат "Неправильные глаголы" | Eng'
-        verbose_name_plural = 'Результаты "Неправильные глаголы" | Eng'
+        verbose_name = 'Eng | Результат "Неправильные глаголы"'
+        verbose_name_plural = 'Eng | Результаты "Неправильные глаголы"'

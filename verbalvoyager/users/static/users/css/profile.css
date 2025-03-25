@@ -119,6 +119,7 @@ div.tab-content {
                     border-radius: 1rem 0 0 1rem;
 
                     .calendar-title-wrap {
+                        position: relative;
                         max-width: inherit;
                         margin: 0;
                         justify-content: center;
@@ -129,6 +130,52 @@ div.tab-content {
                             color: white !important;
                             text-align: center;
                             text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+                        }
+
+                        .calendar-title-updated {
+                            font-size: small;
+                            line-height: 1.5rem;
+                        }
+
+                        .calendar-left-button, .calendar-right-button {
+                            line-height: 1.5rem;
+                            color: white !important;
+                        }
+
+                        .calendar-left-button:hover, .calendar-right-button:hover {
+                            color: var(--indigo-200) !important;
+                            transform: scale(1.1);
+                        }
+
+                        .calendar-left-button, .calendar-right-button {
+                            cursor: pointer;
+                            width: 3rem;
+                            text-align: center;
+                            position: absolute;
+                            color: white;
+                            -webkit-transition: 0.3s;
+                            -o-transition: 0.3s;
+                            transition: 0.3s;
+                            font-size: 1rem !important; 
+                        }
+                        @media (prefers-reduced-motion: reduce) {
+                            .calendar-left-button, .calendar-right-button {
+                                -webkit-transition: none;
+                                -o-transition: none;
+                                transition: none; 
+                            } 
+                        }
+                        .calendar-left-button:hover, .calendar-right-button:hover {
+                            color: var(--indigo-300) !important; 
+                        }
+                          
+                        .calendar-left-button {
+                            left: 0; 
+                        }
+                        
+                        .calendar-right-button {
+                            right: 0;
+                            top: 0; 
                         }
                     }
 
@@ -782,10 +829,6 @@ OLD
 .calendar {
     background-color: var(--color-blue-pastel-paler);
     border-radius: 20px;
-}
-
-.left-button, .right-button {
-    color: var(--color-blue-pastel-main) !important;
 }
 
 .left-button:hover, .right-button:hover {

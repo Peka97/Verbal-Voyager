@@ -1,8 +1,12 @@
 {% load filters %}
 
+<div name='empty-card' class="event-card empty-card hidden">
+    <div class='event-name px-3'>Занятий сегодня нет</div>
+</div>
+
 {% for event in events %}
     {% with lesson=event|first %}
-        <div class="event-card" name="{{ lesson.datetime.day }}.{{ lesson.datetime.month }}.{{ lesson.datetime.year }}">
+        <div class="event-card" teacher="{{lesson.teacher_id}}" name="{{ lesson.datetime.day }}.{{ lesson.datetime.month }}.{{ lesson.datetime.year }}">
             <div class="accordion accordion-flush" id="accordionFlushExample">
                 <div class="accordion-item">
                     <h2 class="accordion-header">

@@ -1,13 +1,19 @@
 <div class="content calendar-container">
 	<div class="col-12 calendar-title-wrap">
+		{% if user.is_supervisor %}
+		<span class="calendar-left-button fa fa-chevron-left" id="prev_teacher"> </span>
+		{% endif %}
 		<h4 class="calendar-title">Календарь</h4>
+		{% if user.is_supervisor %}
+		<span class="calendar-right-button fa fa-chevron-right" id="next_teacher"> </span>
+		{% endif %}
 	</div>
 	<div class="calendar"> 
 		<div class="year-header"> 
 			<span class="left-button fa fa-chevron-left" id="prev"> </span> 
 			<span class="year" id="label"></span> 
 			<span class="right-button fa fa-chevron-right" id="next"> </span>
-		</div> 
+		</div>
 		<table class="months-table w-100"> 
 			<tbody>
 				<tr class="months-row">
@@ -20,7 +26,7 @@
 					<td class="month">Jul</td>
 					<td class="month">Aug</td> 
 					<td class="month">Sep</td> 
-					<td class="month">Oct</td>          
+					<td class="month">Oct</td>
 					<td class="month">Nov</td>
 					<td class="month">Dec</td>
 				</tr>
@@ -76,7 +82,7 @@
 	</div>
 </div>
 <!-- Events -->
-<div class="events-container">
+<div id="events_container" class="events-container">
 	{% comment %} <div class="dialog" id="dialog">
 		<h2 class="dialog-header"> Новое событие </h2>
 		<form class="form" id="form" action="{% url "add_event"%}" method="post">
@@ -92,9 +98,9 @@
 			</div>
 		</form>
 	</div> {% endcomment %}
-	<div name='empty-card' class="event-card empty-card hidden">
+	{% comment %} <div name='empty-card' class="event-card empty-card hidden">
 		<div class='event-name px-3'>Занятий сегодня нет</div>
-	</div>
+	</div> {% endcomment %}
 	{% if events %}
 		{% if user_is_teacher %}
 			{% include 'users/account/activities/includes/teacher_events.html' %}

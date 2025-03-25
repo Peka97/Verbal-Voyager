@@ -1,14 +1,17 @@
 import json
-
+from collections import defaultdict
 
 from django.http import JsonResponse
 from django.db import transaction
+from django.shortcuts import render
+from django.contrib.auth import get_user_model
 
 from logger import get_logger
-from .models import Lesson, LessonTask
+from .models import Lesson, LessonTask, Project
 
 
 logger = get_logger()
+User = get_user_model()
 
 
 def filter_lessons_by_student(request, student_id):
@@ -79,3 +82,26 @@ def update(request):
                 lessons.values(), ('status', 'is_paid',))
 
     return JsonResponse({'status': 'OK'})
+
+
+def load_teacher_lessons(request, teacher_id):
+    context = {}
+
+    teacher = User.objects.get(pk=teacher_id)
+    teacher_name = f"{teacher.last_name} {teacher.first_name}"
+
+    lessons_obj = Lesson.objects.filter(
+        teacher_id=teacher_id
+    ).prefetch_related('lesson_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
+    lessons = defaultdict(list)
+
+    for lesson in lessons_obj:
+        lessons[lesson.datetime].append(lesson)
+
+    lessons = tuple(lessons.values())
+
+    context['events'] = lessons
+    rendered_template = render(
+        request, 'users/account/activities/includes/teacher_events.html', context).content.decode('utf-8')
+
+    return JsonResponse({'status': 'OK', 'html': rendered_template, 'teacher_name': teacher_name})

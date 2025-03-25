@@ -87,9 +87,14 @@ def user_logout(request):
 @login_required(login_url="/users/auth")
 def user_account(request, current_pane):
     user = request.user
+
     context = {
         'user_is_teacher': user.is_teacher()
     }
+
+    if user.is_supervisor():
+        context['teachers'] = tuple(
+            User.objects.filter(groups__name='Teacher').exclude(username='admin').values_list('pk', flat=True))
 
     if context['user_is_teacher']:
         projects = Project.objects.filter(
