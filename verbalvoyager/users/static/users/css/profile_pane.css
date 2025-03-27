@@ -3,6 +3,10 @@
 
     .data-row {
         margin: 1rem 2rem;
+
+        .col.avatar {
+            max-width: fit-content;
+        }
     }
 
     .personal-wrap {

@@ -35,6 +35,8 @@ INSTALLED_APPS = [
 
     # Libraries
     'rangefilter',
+    # 'django-nested-admin',
+    'nested_admin',
 
     # Created
     'users',
@@ -42,7 +44,8 @@ INSTALLED_APPS = [
     'dictionary',
     'exercises',
     'exercise_result',
-    'event_calendar'
+    'event_calendar',
+    'lesson_plan',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'users.middleware.TimezoneMiddleware'
 ]
 
 if current_config.DEBUG:
@@ -99,6 +103,8 @@ if current_config.admin_tools_enabled:
         'django.template.loaders.filesystem.Loader',
         'django.template.loaders.app_directories.Loader',
     ]
+    ADMIN_TOOLS_MENU = 'verbalvoyager.menu.CustomMenu'
+    ADMIN_TOOLS_APP_INDEX_DASHBOARD = 'verbalvoyager.dashboard.CustomAppIndexDashboard'
 
 WSGI_APPLICATION = 'verbalvoyager.wsgi.application'
 
@@ -160,6 +166,7 @@ LOGOUT_REDIRECT_URL = '/'
 
 # Internationalization
 LANGUAGE_CODE = 'ru-ru'
+
 USE_I18N = True
 USE_L10N = True  # Optional, but recommended (localization)
 LANGUAGES = [

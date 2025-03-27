@@ -1,16 +1,18 @@
 from collections import defaultdict
 from itertools import chain
 
-
+from django.urls import reverse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteView
+from django.contrib import messages
 
 from logger import get_logger
 from users.forms import RegistrationUserForm, CustomPasswordResetForm
 from users.utils import get_words_learned_count, get_exercises_done_count
+from users.forms import TimezoneForm
 from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 from event_calendar.models import Lesson, Project, Course
 
@@ -91,6 +93,21 @@ def user_account(request, current_pane):
     context = {
         'user_is_teacher': user.is_teacher()
     }
+
+    if request.method == 'POST':
+        # instance=request.user, если поле timezone в модели пользователя
+        form = TimezoneForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Часовой пояс успешно обновлен.')
+            # Замените 'profile' на URL вашего профиля
+            url = reverse('account', kwargs={'current_pane': 'profile'})
+            return redirect(url)
+        else:
+            messages.error(request, 'Ошибка при обновлении часового пояса.')
+    else:
+        # instance=request.user, если поле timezone в модели пользователя
+        context['timezone_form'] = TimezoneForm(instance=request.user)
 
     if user.is_supervisor():
         context['teachers'] = tuple(

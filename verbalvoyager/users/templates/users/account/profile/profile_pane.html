@@ -8,7 +8,7 @@
             </div>
         </div>
         <div class='row data-row'>
-            <div class='col align-self-center'>
+            <div class='col avatar align-self-center'>
                 <img class='avatar' src="{% static "users/images/default_avatar.webp" %}" alt="User photo">
             </div>
             <div class='col align-self-center name-wrap'>
@@ -26,6 +26,27 @@
                     </div>
                     <div class='col'>
                         <p class='user-data'> {{ user.last_name }} </p>
+                    </div>
+                </div>
+                <div class='row'>
+                    <div class='col'>
+                        <p> Часовой пояс: </p>
+                    </div>
+                    <div class='col'>
+                        {% if messages %}
+                            <ul class="messages">
+                                {% for message in messages %}
+                                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        <form method='post'>
+                            {% csrf_token %}
+                            {% for field in timezone_form %}
+                                {{ field}}
+                            {% endfor %}
+                            <button type="submit" class="btn-default mt-2">Сохранить</button>
+                        </form>
                     </div>
                 </div> 
             </div>

@@ -31,5 +31,5 @@ if current_config.DEBUG:
 if current_config.admin_tools_enabled:
     urlpatterns = [
         *urlpatterns,
-        path('admin_tools/', include('admin_tools.urls')),
+        path('admin_tools/', include('admin_tools.urls'), name='admin'),
     ]

@@ -1,4 +1,6 @@
 from typing import Any
+
+import pytz
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
@@ -42,3 +44,15 @@ class RegistrationUserForm(UserCreationForm):
 
 class CustomPasswordResetForm(PasswordResetForm):
     email = forms.EmailField()
+
+
+class TimezoneForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['timezone']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['timezone'].widget.attrs.update(
+            {'class': 'form-select', 'aria-label': 'Выберите часовой пояс'})
+        self.fields['timezone'].help_text = "Выберите ваш часовой пояс, чтобы время отображалось корректно."

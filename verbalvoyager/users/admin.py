@@ -19,7 +19,8 @@ class CustomUserAdmin(UserAdmin):
     )
     readonly_fields = ['last_login', 'date_joined', 'username', 'password']
     fieldsets = (
-        ('User Info', {'fields': ('first_name', 'last_name', 'email')}),
+        ('User Info', {'fields': ('first_name',
+         'last_name', 'email', 'timezone')}),
         ('User Permissions', {'fields': ('groups', )}),
         ('User Credentials',
             {

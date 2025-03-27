@@ -6,36 +6,51 @@ from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
 from django.utils.translation import ngettext
 from rangefilter.filters import DateRangeFilterBuilder, DateRangeQuickSelectListFilterBuilder
+from nested_admin import NestedStackedInline, NestedModelAdmin, NestedTabularInline
 
 from pages.filters import DropdownFilter, ChoiceDropdownFilter
 from .filters import TeachersListFilter, StudentsListFilter
 from logger import get_logger
 from event_calendar.models import Lesson, Course, Review, ProjectType, Project, ProjectTask, LessonTask
 from event_calendar.forms import LessonAdminForm, ProjectAdminForm
+from lesson_plan.models import EnglishLessonPlan, EnglishLessonMainAims, EnglishLessonSubsidiaryAims
+from lesson_plan.admin import EnglishLessonPlanAdmin, EnglishLessonMainAimsInline, EnglishLessonSubsidiaryAimsInline
 
 
 logger = get_logger()
 User = get_user_model()
 
 
-class LessonTaskInline(admin.TabularInline):
+class LessonTaskInline(NestedTabularInline):
     model = LessonTask
+    extra = 0
 
 
 class ProjectTaskInline(admin.TabularInline):
     model = ProjectTask
+    extra = 0
+
+
+class EnglishLessonPlanInline(NestedStackedInline):
+    model = EnglishLessonPlan
+    extra = 0
+    min_num = 1
+    max_num = 1
+    autocomplete_fields = ('new_vocabulary', )
+    fieldsets = EnglishLessonPlanAdmin.fieldsets
+    inlines = EnglishLessonPlanAdmin.inlines
 
 
 @admin.register(Lesson)
-class LessonAdmin(admin.ModelAdmin):
+class LessonAdmin(NestedModelAdmin):
     show_full_result_count = False
     form = LessonAdminForm
     ordering = ('-datetime', )
     autocomplete_fields = ('student_id', )
     search_fields = ['student_id', 'lesson_id']
-    list_display = ('datetime', 'title', 'status',
+    list_display = ('get_lesson_time', 'title', 'status',
                     'is_paid', 'teacher_id', 'student_id')
-    list_display_links = ('datetime', 'title')
+    list_display_links = ('get_lesson_time', 'title')
     list_filter = [
         TeachersListFilter,
         StudentsListFilter,
@@ -47,11 +62,12 @@ class LessonAdmin(admin.ModelAdmin):
     save_as = True
     inlines = [
         LessonTaskInline,
+        EnglishLessonPlanInline,
     ]
 
     fieldsets = (
         ('Lesson Info', {
-            'fields': (('title', 'datetime'), 'student_id', ),
+            'fields': (('title', 'datetime', 'duration'), 'student_id', ),
         }),
         ('Lesson Options', {
             'classes': ('collapse', ),
@@ -284,27 +300,35 @@ class ProjectAdmin(admin.ModelAdmin):
             from_date = project.from_date
             to_date = project.to_date
             days = []
+            durations = []
 
             if project.lesson_1:
                 days.append(project.lesson_1)
+                durations.append(project.lesson_1_duration)
 
             if project.lesson_2:
                 days.append(project.lesson_2)
+                durations.append(project.lesson_2_duration)
 
             if project.lesson_3:
                 days.append(project.lesson_3)
+                durations.append(project.lesson_3_duration)
 
             if project.lesson_4:
                 days.append(project.lesson_4)
+                durations.append(project.lesson_4_duration)
 
             if project.lesson_5:
                 days.append(project.lesson_5)
+                durations.append(project.lesson_5_duration)
 
             while in_period:
 
                 for idx, day in enumerate(days):
                     if from_date <= day.date() <= to_date:
-                        is_created = self._create(day, students, teacher)
+                        lesson_duration = durations[idx % len(durations)]
+                        is_created = self._create(
+                            day, lesson_duration, students, teacher)
 
                         if is_created:
                             lessons_created_count += 1
@@ -325,10 +349,11 @@ class ProjectAdmin(admin.ModelAdmin):
             messages.SUCCESS,
         )
 
-    def _create(self, day, students, teacher):
+    def _create(self, day, lesson_duration, students, teacher):
         for student_id in students.all():
             lesson, is_created = Lesson.objects.get_or_create(
                 datetime=day,
+                duration=lesson_duration,
                 student_id=student_id,
                 teacher_id=teacher,
             )

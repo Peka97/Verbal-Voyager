@@ -87,3 +87,9 @@ def student_dang_lesson(lesson):
     # Урок не оплачен, до урока меньше 2-х часов.
     if not lesson.is_paid and lesson.status in ('P', ) and (lesson.datetime - timedelta(hours=2)) <= datetime.today():
         return True
+
+
+@register.filter(name="datetime_plus_duration")
+def datetime_plus_duration(lesson_datetime, duration):
+    time_end = lesson_datetime + timedelta(minutes=duration)
+    return f"{lesson_datetime.strftime('%H:%M')} - {time_end.strftime('%H:%M')}"

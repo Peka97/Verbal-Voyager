@@ -1,9 +1,18 @@
 from typing import Any
+
+import pytz
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import models
 
 
 class User(AbstractUser):
+    timezone = models.CharField(
+        max_length=50,
+        choices=[(tz, tz) for tz in pytz.common_timezones],
+        default='Europe/Saratov',
+    )
+
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._meta.get_field('email').__dict__['_unique'] = True

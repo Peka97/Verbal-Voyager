@@ -101,11 +101,9 @@
 	{% comment %} <div name='empty-card' class="event-card empty-card hidden">
 		<div class='event-name px-3'>Занятий сегодня нет</div>
 	</div> {% endcomment %}
-	{% if events %}
-		{% if user_is_teacher %}
-			{% include 'users/account/activities/includes/teacher_events.html' %}
-		{% else %}
-			{% include 'users/account/activities/includes/student_events.html' %}
-		{% endif %}
+	{% if user_is_teacher %}
+		{% include 'users/account/activities/includes/teacher_events.html' %}
+	{% else %}
+		{% include 'users/account/activities/includes/student_events.html' %}
 	{% endif %}
 </div>

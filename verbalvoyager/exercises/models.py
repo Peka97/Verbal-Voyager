@@ -31,7 +31,10 @@ class AbstractExerciseWords(models.Model):
     view_name = 'exercise_words'
 
     name = models.CharField(
-        default=None, blank=True, max_length=50,
+        default=None,
+        blank=True,
+        null=True,
+        max_length=50,
         verbose_name='Название упражнения',
         help_text="Поле заполняется автоматически, если остаётся пустым"
     )
@@ -63,13 +66,13 @@ class AbstractExerciseWords(models.Model):
         return SITE_NAME + self.get_absolute_url()
     get_words.get_url = 'Ссылка на упражнение'
 
-    def save_model(self, request, obj, form, change):
-        if not obj.name:
-            student_exercises_count = self.objects.filter(
-                student=obj.student).count()
+    def save(self, *args, **kwargs):
+        if not self.name:
+            student_exercises_count = self.__class__.objects.filter(
+                student=self.student).count()
             self.name = f"Words {student_exercises_count + 1}"
 
-        super().save_model(request, obj, form, change)
+        super().save(*args, **kwargs)
 
     def __repr__(self) -> str:
         status = 'Active' if self.is_active else 'Done'
