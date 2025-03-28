@@ -13,7 +13,6 @@
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ lesson.pk }}" aria-expanded="false" aria-controls="flush-collapse{{ lesson.pk }}">
                             <div class="event-name">
-                                {% comment %} {{ lesson|datetime_plus_duration }} (SRT) {% endcomment %}
                                 {{ lesson.datetime|localtime|datetime_plus_duration:lesson.duration }}
 
                                 {% if event|length > 1 %}

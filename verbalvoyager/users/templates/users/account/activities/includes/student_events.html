@@ -1,4 +1,5 @@
 {% load filters %}
+{% load tz %}
 
 <div name='empty-card' class="event-card empty-card hidden">
     <div class='event-name px-3'>Занятий сегодня нет</div>
@@ -36,19 +37,11 @@
                                 {% endwith %}
                             </div>
 
-                            {% if event.datetime.minute < 10 %}
-                                {% with prefix=0 %}
-                                    {{ event.datetime.hour }}:{{ prefix }}{{ event.datetime.minute}} (SRT)
-                                {% endwith %}
-                            {% else %}
-                                {% with prefix="" %}
-                                    {{ event.datetime.hour }}:{{ prefix }}{{ event.datetime.minute}} (SRT)
-                                {% endwith %}
-                            {% endif %}
+                            {{ event.datetime|localtime|datetime_plus_duration:event.duration }}
 
-                            {% if event|student_dang_lesson %}
+                            {% if event|student_dang_lesson:event.datetime|localtime %}
                                 <i class="bi bi-exclamation-octagon"></i>
-                            {% elif event|student_warn_lesson %}
+                            {% elif event|student_warn_lesson:event.datetime|localtime %}
                                 <i class="bi bi-exclamation-triangle"></i>
                             {% endif %}
 
