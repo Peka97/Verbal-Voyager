@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import EnglishWord, FrenchWord, IrregularEnglishVerb
 from pages.filters import ChoiceDropdownFilter
+from logging_app.helpers import log_action
 
 
 @admin.register(EnglishWord)
@@ -24,6 +25,10 @@ class WordAdmin(admin.ModelAdmin):
         })
     )
     save_as = True
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
 
     class Media:
         js = ['admin/js/load_data_from_api_UI.js',]
@@ -51,6 +56,10 @@ class FrenchWordAdmin(admin.ModelAdmin):
     )
     save_as = True
 
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
+
 
 @admin.register(IrregularEnglishVerb)
 class IrregularEnglishVerbAdmin(admin.ModelAdmin):
@@ -59,3 +68,7 @@ class IrregularEnglishVerbAdmin(admin.ModelAdmin):
     list_display = ('infinitive', 'past_simple', 'past_participle')
     search_fields = ('infinitive__word', 'past_simple', 'past_participle')
     save_as = True
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)

@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseIrregularEnglishVerbResult
 from .filters import TeachersListFilter, StudentsListFilter
+from logging_app.helpers import log_action
 
 
 class AbstractExerciseWordsResultAdmin(admin.ModelAdmin):
@@ -12,6 +13,10 @@ class AbstractExerciseWordsResultAdmin(admin.ModelAdmin):
         TeachersListFilter,
         StudentsListFilter,
     ]
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -37,6 +42,10 @@ class AbstractExerciseDialogResultAdmin(admin.ModelAdmin):
         StudentsListFilter,
     ]
 
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
+
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.select_related('exercise', 'exercise__teacher', 'exercise__student')
@@ -61,6 +70,10 @@ class ExerciseIrregularEnglishVerbResultAdmin(admin.ModelAdmin):
         TeachersListFilter,
         StudentsListFilter,
     ]
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)

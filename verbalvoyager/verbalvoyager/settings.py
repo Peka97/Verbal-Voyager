@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'exercise_result',
     'event_calendar',
     'lesson_plan',
+    'logging_app',
 ]
 
 MIDDLEWARE = [

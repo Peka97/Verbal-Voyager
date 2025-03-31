@@ -36,6 +36,8 @@ class EnglishLessonPlan(models.Model):
         blank=True,
         help_text="Новые слова"
     )
+
+    # text field
     processes = models.CharField(
         verbose_name='Процессы',
         max_length=250,
@@ -43,6 +45,8 @@ class EnglishLessonPlan(models.Model):
         null=True,
         help_text="Ссылки на сторонние ресурсы"
     )
+
+    # Добавить поле с файлами
     materials = models.CharField(
         max_length=250,
         verbose_name='Материалы',

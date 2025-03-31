@@ -4,6 +4,7 @@ from django.contrib.auth.models import Group
 
 from .models import User
 from pages.filters import DropdownFilter, RelatedDropdownFilter
+from logging_app.helpers import log_action
 
 
 @admin.register(User)
@@ -17,7 +18,10 @@ class CustomUserAdmin(UserAdmin):
         ('is_staff', DropdownFilter),
         ('is_superuser', DropdownFilter),
     )
-    readonly_fields = ['last_login', 'date_joined', 'username', 'password']
+    readonly_fields = [
+        'last_login', 'date_joined',
+        # 'username', 'password'
+    ]
     fieldsets = (
         ('User Info', {'fields': ('first_name',
          'last_name', 'email', 'timezone')}),
@@ -40,6 +44,10 @@ class CustomUserAdmin(UserAdmin):
             }
          ),
     )
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)

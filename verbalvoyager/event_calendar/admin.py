@@ -15,6 +15,7 @@ from event_calendar.models import Lesson, Course, Review, ProjectType, Project, 
 from event_calendar.forms import LessonAdminForm, ProjectAdminForm
 from lesson_plan.models import EnglishLessonPlan, EnglishLessonMainAims, EnglishLessonSubsidiaryAims
 from lesson_plan.admin import EnglishLessonPlanAdmin, EnglishLessonMainAimsInline, EnglishLessonSubsidiaryAimsInline
+from logging_app.helpers import log_action
 
 
 logger = get_logger()
@@ -74,6 +75,10 @@ class LessonAdmin(NestedModelAdmin):
             'fields': (('status', 'is_paid', ), 'teacher_id', 'project_id'),
         })
     )
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -157,6 +162,10 @@ class ProjectTaskAdmin(admin.ModelAdmin):
         })
     )
 
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
+
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.select_related('project_id')
@@ -197,6 +206,10 @@ class LessonTaskAdmin(admin.ModelAdmin):
             'fields': (('points', 'is_completed'),),
         })
     )
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -268,6 +281,10 @@ class ProjectAdmin(admin.ModelAdmin):
             'fields': ('is_active',),
         })
     )
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -368,6 +385,10 @@ class ReviewAdmin(admin.ModelAdmin):
     show_full_result_count = False
     list_display = ('course', 'from_user', 'text', 'created_at')
 
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
+
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.select_related('course', 'from_user')
@@ -377,8 +398,19 @@ class ReviewAdmin(admin.ModelAdmin):
 class CourseAdmin(admin.ModelAdmin):
     show_full_result_count = False
 
+    def save_model(self, request, obj, form, change):
+        if obj:
+            obj.save()
+            log_action(request.user, obj, f'{self.model} [{obj.pk}] saved')
+
+        return super().save_model(request, obj, form, change)
+
 
 @admin.register(ProjectType)
 class ProjectTypeAdmin(admin.ModelAdmin):
     show_full_result_count = False
     search_fields = ('id', )
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)

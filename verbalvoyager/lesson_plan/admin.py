@@ -2,6 +2,7 @@ from django.contrib import admin
 from nested_admin import NestedStackedInline, NestedModelAdmin
 
 from .models import EnglishLessonPlan, EnglishLessonMainAims, EnglishLessonSubsidiaryAims
+from logging_app.helpers import log_action
 
 # Register your models here.
 
@@ -39,6 +40,10 @@ class EnglishLessonPlanAdmin(NestedModelAdmin):
             'fields': ('processes', 'materials',)
         }),
     )
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)

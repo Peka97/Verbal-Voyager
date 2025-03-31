@@ -72,7 +72,7 @@ class AbstractExerciseWords(models.Model):
                 student=self.student).count()
             self.name = f"Words {student_exercises_count + 1}"
 
-        super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     def __repr__(self) -> str:
         status = 'Active' if self.is_active else 'Done'
@@ -179,7 +179,7 @@ class AbstractExerciseDialog(models.Model):
                 self.name = "Dialog 1"
             else:
                 self.name = f"Dialog {student_exercises_count + 1}"
-        super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     def get_words(self):
         words = [
@@ -316,7 +316,7 @@ class ExerciseIrregularEnglishVerb(models.Model):
                 student=obj.student).count()
             self.name = f"Irregular Verbs {student_exercises_count + 1}"
 
-        super().save_model(request, obj, form, change)
+        return super().save_model(request, obj, form, change)
 
     def __str__(self) -> str:
         return self.name

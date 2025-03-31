@@ -10,6 +10,7 @@ from .filters import TeachersListFilter, StudentsListFilter
 
 from .models import ExerciseCategory, ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 from .forms import ExerciseDialogAdminForm, ExerciseIrregularEnglishVerbAdminForm
+from logging_app.helpers import log_action
 
 
 logger = get_logger()
@@ -24,6 +25,10 @@ class ExerciseCategoryAdmin(admin.ModelAdmin):
     search_fields = ['pk', 'name']
     list_display = ['pk', 'name']
     list_display_links = ['pk', 'name']
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
 
 
 # ExerciseWords
@@ -57,13 +62,9 @@ class AbstractExerciseWordsAdmin(admin.ModelAdmin):
         })
     )
 
+    @log_action
     def save_model(self, request, obj, form, change):
-        if not obj.name:
-            student_exercises_count = self.model.objects.filter(
-                student=obj.student).exclude(pk=obj.pk).count()
-            obj.name = f"Words {student_exercises_count + 1} "
-
-        super().save_model(request, obj, form, change)
+        return super().save_model(request, obj, form, change)
 
     def source_link(self, obj):
         return mark_safe(f'<a href={obj.get_absolute_url()}>Перейти<a>')
@@ -134,6 +135,10 @@ class AbstractExerciseDialogAdmin(admin.ModelAdmin):
     )
     save_as = True
 
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
+
     def source_link(self, obj):
         return mark_safe(f'<a href={obj.get_url()}>Перейти<a>')
     source_link.short_description = 'Ссылка на упражнение'
@@ -153,14 +158,6 @@ class AbstractExerciseDialogAdmin(admin.ModelAdmin):
 
     def clean(self):
         super(ExerciseDialogAdminForm, self).clean()
-
-    def save_model(self, request, obj, form, change):
-        if not obj.name:
-            student_exercises_count = self.model.objects.filter(
-                student=obj.student).exclude(pk=obj.pk).count()
-            obj.name = f"Dialog {student_exercises_count + 1} "
-
-        super().save_model(request, obj, form, change)
 
     class Media:
         css = {
@@ -210,6 +207,10 @@ class ExerciseIrregularEnglishVerbAdmin(admin.ModelAdmin):
     )
     save_as = True
 
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
+
     def source_link(self, obj):
         return mark_safe(f'<a href={obj.get_url()}>Перейти<a>')
     source_link.short_description = 'Ссылка на упражнение'
@@ -232,11 +233,3 @@ class ExerciseIrregularEnglishVerbAdmin(admin.ModelAdmin):
         field_value = cleaned_data.get('field_name')
         if not field_value:
             raise ValidationError('No value for field_name')
-
-    def save_model(self, request, obj, form, change):
-        if not obj.name:
-            student_exercises_count = self.model.objects.filter(
-                student=obj.student).exclude(pk=obj.pk).count()
-            obj.name = f"Irregular Verbs {student_exercises_count + 1} "
-
-        super().save_model(request, obj, form, change)
