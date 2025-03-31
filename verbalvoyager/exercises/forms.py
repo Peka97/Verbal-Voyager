@@ -1,17 +1,12 @@
-import logging
 
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
-from dictionary.models import EnglishWord, FrenchWord, IrregularEnglishVerb
+from logger import get_logger
 
 
-logger = logging.getLogger()
-logger.setLevel(logging.ERROR)
-logger.addHandler(logging.FileHandler(
-    '/home/peka97/verbalvoyager/Verbal-Voyager/verbalvoyager/logs/debug.log')
-)
+logger = get_logger()
 User = get_user_model()
 
 

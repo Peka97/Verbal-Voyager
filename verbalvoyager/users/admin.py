@@ -3,6 +3,8 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
 
 from .models import User
+from pages.filters import DropdownFilter, RelatedDropdownFilter
+from logging_app.helpers import log_action
 
 
 @admin.register(User)
@@ -11,9 +13,18 @@ class CustomUserAdmin(UserAdmin):
     list_display = (
         'username', 'last_name', 'first_name', 'get_groups', 'email',
     )
-    # readonly_fields = ['last_login', 'date_joined', 'username', 'password']
+    list_filter = (
+        ('groups', RelatedDropdownFilter),
+        ('is_staff', DropdownFilter),
+        ('is_superuser', DropdownFilter),
+    )
+    readonly_fields = [
+        'last_login', 'date_joined',
+        # 'username', 'password'
+    ]
     fieldsets = (
-        ('User Info', {'fields': ('first_name', 'last_name', 'email')}),
+        ('User Info', {'fields': ('first_name',
+         'last_name', 'email', 'timezone')}),
         ('User Permissions', {'fields': ('groups', )}),
         ('User Credentials',
             {
@@ -33,6 +44,10 @@ class CustomUserAdmin(UserAdmin):
             }
          ),
     )
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -54,10 +69,7 @@ class CustomUserAdmin(UserAdmin):
         if db_field.name == 'groups':
             user = request.user
 
-            if user.username == 'admin':
-                pass
-
-            elif user.groups.filter(name='Teacher').exists():
+            if user.username != 'admin' and user.groups.filter(name='Teacher').exists():
                 student_group = Group.objects.get(name='Student')
                 kwargs['queryset'] = Group.objects.filter(pk=student_group.pk)
         return super().formfield_for_manytomany(db_field, request, **kwargs)

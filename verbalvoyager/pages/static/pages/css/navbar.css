@@ -1,8 +1,8 @@
 nav.header.navbar {
     background-color: var(--purple-900);
-    height: auto;
+    /* height: auto; */
     /* min-height: 8vh; */
-    max-height: max(56px, 8vh);
+    height: var(--nav-bar-height);
 }
 
 .nav-link.disabled, .nav-link:disabled {

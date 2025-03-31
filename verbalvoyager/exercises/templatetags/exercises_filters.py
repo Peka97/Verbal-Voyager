@@ -1,11 +1,8 @@
-import logging
 import re
 
 from random import shuffle
-from datetime import datetime, timedelta
 from django.utils.safestring import mark_safe
 
-from verbalvoyager.settings import DEBUG_LOGGING_FP
 from django import template
 
 register = template.Library()
@@ -22,6 +19,16 @@ def get_shuffled_translates(values):
                   for idx, word in enumerate(values)]
     shuffle(translates)
     return translates
+
+
+@register.filter(name="parse_to_list", is_safe=True)
+def parse_to_list(values):
+    result = ''
+
+    for word in values.split(', '):
+        result += f'<li><p class="text">{word.capitalize()}</p></li>'
+
+    return mark_safe(result)
 
 
 @register.filter(name="str_to_list")

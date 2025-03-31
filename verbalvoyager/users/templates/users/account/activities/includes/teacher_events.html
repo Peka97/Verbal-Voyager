@@ -1,0 +1,197 @@
+{% load filters %}
+{% load tz %}
+
+<div name='empty-card' class="event-card empty-card hidden">
+    <div class='event-name px-3'>Занятий сегодня нет</div>
+</div>
+
+{% for event in events %}
+    {% with lesson=event|first %}
+        <div class="event-card" teacher="{{lesson.teacher_id}}" name="{{ lesson.datetime.day }}.{{ lesson.datetime.month }}.{{ lesson.datetime.year }}">
+            <div class="accordion accordion-flush" id="accordionFlushExample">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ lesson.pk }}" aria-expanded="false" aria-controls="flush-collapse{{ lesson.pk }}">
+                            <div class="event-name">
+                                {{ lesson.datetime|localtime|datetime_plus_duration:lesson.duration }}
+
+                                {% if event|length > 1 %}
+                                
+                                    {% for lsn in event %}
+                                        
+                                        {% if lsn|student_dang_lesson %}
+                                            <i class="bi bi-exclamation-octagon"></i>
+                                        {% elif lsn|student_warn_lesson %}
+                                            <i class="bi bi-exclamation-triangle"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    {% if lesson|student_dang_lesson %}
+                                        <i class="bi bi-exclamation-octagon"></i>
+                                    {% elif lesson|student_warn_lesson %}
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                    {% endif %}
+                                {% endif %}
+                                        
+                                <br>
+                                <div class='lesson-types'>
+                                
+                                    {% with tags=lesson.project_id.types.all|type_names_to_list %}
+                                        
+                                    <div class="tooltip-container">
+                                        {% if "Персональный" in tags %}
+                                            <span class="tooltip">Персональный</span>
+                                            <i class="bi bi-person-fill"></i>
+                                        {% elif "Групповой" in tags %}
+                                            <span class="tooltip">Групповой</span>
+                                            <i class="bi bi-people-fill"></i>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="tooltip-container">
+                                        {% if "Онлайн" in tags %}
+                                            <span class="tooltip">Онлайн</span>
+                                            <i class="bi bi-laptop"></i>
+                                        {% elif "Оффлайн" in tags %}
+                                            <span class="tooltip">В студии</span>
+                                            <i class="bi bi-door-open"></i>
+                                        {% endif %}
+                                    </div>
+                                    {% endwith %}
+                                </div>
+
+                                {{ event|join_student_names }}
+
+                            </div>
+                            <div class="event-count">
+                                {{ lesson.title }}
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="flush-collapse{{ lesson.pk }}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                        <div class="accordion-body">
+                            {% if event|length > 1 %}
+                                {% for lsn in event %}
+                                    <div id="lesson_{{ lsn.pk }}" class="lesson-info">
+                                        
+                                        {% with lsn.lesson_tasks.all as tasks %}
+                                        <span class='task-student-name'>{{ lsn.student_id }}</span>
+
+
+                                        <div class="event-count event-status-changer pr-2">
+                                            <div class="tooltip-container">
+                                            {% if lsn.status == 'P' %}
+                                                <span class="tooltip">Запланирован</span>
+                                                <i class="bi bi-clock performing-status" name={{lsn.status}}></i>
+                                            {% elif lsn.status == 'C' %}
+                                                <span class="tooltip">Отменён</span>
+                                                <i class="bi bi-x-circle performing-status" name={{lsn.status}}></i>
+                                            {% elif lsn.status == 'M' %}
+                                                <span class="tooltip">Пропущен</span>
+                                                <i class="bi bi-person-x performing-status" name={{lsn.status}}></i>
+                                            {% else %}
+                                                <span class="tooltip">Проведён</span>
+                                                <i class="bi bi-check-circle performing-status" name={{lsn.status}}></i> 
+                                            {% endif %}
+                                            </div>
+                                            <div class="tooltip-container">
+                                                <span class="tooltip">{% if lsn.is_paid %}Оплачен{% else %}Не оплачен{% endif %}</span>
+                                                <i class="bi bi-wallet payment-status {% if lsn.is_paid %} paid {% else %} not-paid {% endif %}"></i>
+                                            </div>
+                                        </div>
+                                        <div class='task-container'>
+                                            <span class='task-container-header' style='font-weight: lighter; color: indigo'>Tasks: </span>
+
+                                            {% if tasks %}
+                                                <div class='checklist'>
+                                                    {% for task in tasks %}
+                                                        <div class='lesson-task'>
+                                                            <input {% if task.is_completed %} checked {% endif %} name="task" type="checkbox" id="{{ task.pk }}">
+                                                            <label for="{{ task.pk }}">{{ task.name }} ({{task.points}} point{{task.points|pluralize}})
+                                                            </label>
+                                                            <i class="bi bi-pen-fill task-edit-icon "></i>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                <span class="not-tasks"> заданий нет </span>
+                                            {% endif %}
+                                            <span class="new-task-button">
+                                                <i class="bi bi-plus-square"></i> добавить задание
+                                            </span>
+                                        {% endwith %}
+                                        </div>
+
+                                        <div id="panel-edit-event" class="button-panel panel-lesson">
+                                            <a id="btn-edit-event" class="event-button edit-button" href="{{ lsn.get_admin_edit_url }}">
+                                                <i class="bi bi-pen-fill lesson-edit-icon"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                
+                            {% else %}
+                                {% with lesson.lesson_tasks.all as tasks %}
+                                    <div id="lesson_{{ lesson.pk }}" class="lesson-info">
+                                        <div class="event-count event-status-changer pr-2">
+                                            {% comment %} <span class='task-student-name'>{{ lesson.student_id }}</span> {% endcomment %}
+                                            
+                                            <div class="tooltip-container">
+                                            {% if lesson.status == 'P' %}
+                                                <span class="tooltip">Запланирован</span>
+                                                <i class="bi bi-clock performing-status" name={{lesson.status}}></i> 
+                                            {% elif lesson.status == 'C' %}
+                                                <span class="tooltip">Отменён</span>
+                                                <i class="bi bi-x-circle performing-status" name={{lesson.status}}></i>
+                                            {% elif lesson.status == 'M' %}
+                                            <span class="tooltip">Пропущен</span>
+                                                <i class="bi bi-person-x performing-status" name={{lesson.status}}></i>
+                                            {% else %}
+                                                <span class="tooltip">Проведён</span>
+                                                <i class="bi bi-check-circle performing-status" name={{lesson.status}}></i> 
+                                            {% endif %}
+                                            </div>
+                                            <div class="tooltip-container">
+                                                <span class="tooltip">{% if lsn.is_paid %}Оплачен{% else %}Не оплачен{% endif %}</span>
+                                                <i class="bi bi-wallet payment-status {% if lesson.is_paid %} paid {% else %} not-paid {% endif %}"></i>
+                                            </div>
+                                        </div>
+                                        <div class='task-container'>
+                                            <span class='task-container-header' style='font-weight: lighter; color: indigo'>Tasks: </span>
+
+                                            {% if tasks %}
+                                                <div class='checklist'>
+                                                    {% for task in tasks %}
+                                                        <div class='lesson-task'>
+                                                            <input {% if task.is_completed %} checked {% endif %} name="task" type="checkbox" id="{{ task.pk }}">
+                                                            <label for="{{ task.pk }}">{{ task.name }} ({{task.points}} point{{task.points|pluralize}})
+                                                            </label>
+                                                            <i class="bi bi-pen-fill task-edit-icon"></i>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                <span class="not-tasks">
+                                                    заданий нет. 
+                                                </span>
+                                            {% endif %}
+                                            <span class="new-task-button">
+                                                <i class="bi bi-plus-square"></i> добавить задание
+                                            </span>
+                                        {% endwith %}
+                                    </div>
+
+                                    <div id="panel-edit-event" class="button-panel panel-lesson">
+                                        <a id="btn-edit-event" class="event-button edit-button" href="{{ lesson.get_admin_edit_url }}">
+                                            <i class="bi bi-pen-fill lesson-edit-icon"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endwith %}
+{% endfor %}

@@ -1,8 +1,10 @@
 import os
 
 from pathlib import Path
-from config import *
+from config import DevConfig
 
+
+current_config = DevConfig
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -32,6 +34,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Libraries
+    'rangefilter',
+    # 'django-nested-admin',
+    'nested_admin',
 
     # Created
     'users',
@@ -39,7 +44,9 @@ INSTALLED_APPS = [
     'dictionary',
     'exercises',
     'exercise_result',
-    'event_calendar'
+    'event_calendar',
+    'lesson_plan',
+    'logging_app',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'users.middleware.TimezoneMiddleware'
 ]
 
 if current_config.DEBUG:
@@ -96,6 +104,8 @@ if current_config.admin_tools_enabled:
         'django.template.loaders.filesystem.Loader',
         'django.template.loaders.app_directories.Loader',
     ]
+    ADMIN_TOOLS_MENU = 'verbalvoyager.menu.CustomMenu'
+    ADMIN_TOOLS_APP_INDEX_DASHBOARD = 'verbalvoyager.dashboard.CustomAppIndexDashboard'
 
 WSGI_APPLICATION = 'verbalvoyager.wsgi.application'
 
@@ -116,7 +126,10 @@ if current_config.DEBUG:
             'USER': 'django',
             'PASSWORD': 'django',
             'HOST': 'localhost',
-            'PORT': '5432'
+            'PORT': '5432',
+            'TEST': {
+                'NAME': 'test_verbal_voyager',
+            },
         }
     }
 else:
@@ -127,7 +140,7 @@ else:
             'USER': 'django',
             'PASSWORD': current_config.psql_pswd,
             'HOST': 'localhost',
-            'PORT': ''
+            'PORT': '',
         }
     }
 
@@ -154,6 +167,15 @@ LOGOUT_REDIRECT_URL = '/'
 
 # Internationalization
 LANGUAGE_CODE = 'ru-ru'
+
+USE_I18N = True
+USE_L10N = True  # Optional, but recommended (localization)
+LANGUAGES = [
+    ('ru', 'Russian'),  # Добавьте ваш язык
+]
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',  # Укажите путь к каталогу с переводами
+]
 
 TIME_ZONE = 'Europe/Saratov'
 USE_TZ = False
@@ -208,8 +230,9 @@ LOGGING = {
         },
     }
 }
-DEBUG_LOGGING_FP = current_config.DEBUG_LOGGING_FP
+
 OPENAI_API_KEY = current_config.OPENAI_API_KEY
+
 if DEBUG:
     SITE_NAME = 'http://127.0.0.1:8000'
 else:

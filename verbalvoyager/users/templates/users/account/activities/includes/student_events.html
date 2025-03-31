@@ -1,0 +1,174 @@
+{% load filters %}
+{% load tz %}
+
+<div name='empty-card' class="event-card empty-card hidden">
+    <div class='event-name px-3'>Занятий сегодня нет</div>
+</div>
+
+{% for event in events %}
+    <div name='{{ event.datetime.day }}.{{ event.datetime.month }}.{{ event.datetime.year }}' class="event-card">
+        <div class="accordion accordion-flush" id="accordionFlushExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ event.pk }}" aria-expanded="false" aria-controls="flush-collapse{{ event.pk }}">
+                        <div class="event-name"> 
+
+                            {% with tags=event.project_id.types.all|type_names_to_list %}
+                            <div class='lesson-types'>
+                                <div class="tooltip-container">
+                                    {% if "Персональный" in tags %}
+                                        <span class="tooltip">Персональный</span>
+                                        <i class="bi bi-person-fill"></i>
+                                    {% elif "Групповой" in tags %}
+                                        <span class="tooltip">Групповой</span>
+                                        <i class="bi bi-people-fill"></i>
+                                    {% endif %}
+                                </div>
+
+                                <div class="tooltip-container">
+                                    {% if "Онлайн" in tags %}
+                                        <span class="tooltip">Онлайн</span>
+                                        <i class="bi bi-laptop"></i>
+                                    {% elif "Оффлайн" in tags %}
+                                        <span class="tooltip">В студии</span>
+                                        <i class="bi bi-door-open"></i>
+                                    {% endif %}
+                                </div>
+                                {% endwith %}
+                            </div>
+
+                            {{ event.datetime|localtime|datetime_plus_duration:event.duration }}
+
+                            {% if event|student_dang_lesson:event.datetime|localtime %}
+                                <i class="bi bi-exclamation-octagon"></i>
+                            {% elif event|student_warn_lesson:event.datetime|localtime %}
+                                <i class="bi bi-exclamation-triangle"></i>
+                            {% endif %}
+
+                            <br>
+
+                            <i class="bi bi-mortarboard-fill" style='color: indigo'></i>
+                            {{ event.teacher_id.last_name }} {{ event.teacher_id.first_name }}
+                        </div>
+                        <div class="event-info">
+                            <div class='lesson-statuses'>
+                                <div class="tooltip-container">
+                                    {% if lsn.status == 'P' %}
+                                        <span class="tooltip">Запланирован</span>
+                                        <i class="bi bi-clock performing-status" name={{lsn.status}}></i>
+                                    {% elif lsn.status == 'C' %}
+                                        <span class="tooltip">Отменён</span>
+                                        <i class="bi bi-x-circle performing-status" name={{lsn.status}}></i>
+                                    {% elif lsn.status == 'M' %}
+                                        <span class="tooltip">Пропущен</span>
+                                        <i class="bi bi-person-x performing-status" name={{lsn.status}}></i>
+                                    {% else %}
+                                        <span class="tooltip">Проведён</span>
+                                        <i class="bi bi-check-circle performing-status" name={{lsn.status}}></i> 
+                                    {% endif %}
+                                    </div>
+
+                                <div class="tooltip-container">
+                                    <span class="tooltip">{% if lsn.is_paid %}Оплачен{% else %}Не оплачен{% endif %}</span>
+                                    <i class="bi bi-wallet payment-status {% if lsn.is_paid %} paid {% else %} not-paid {% endif %}"></i>
+                                </div>
+                            </div>
+
+                            <br>
+
+                            {{ event.title }}
+                        </div>
+                    </button>
+                </h2>
+                <div id="flush-collapse{{ event.pk }}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">
+                        {% with event.lesson_tasks.all as tasks %}
+                            <span class='task-header' style='font-weight: lighter; color: indigo'>Tasks: </span>
+                            
+                            {% if tasks %}
+                                <div class='checklist'>
+                                    {% for task in tasks %}
+                                        <div class='lesson-task'>
+                                            <input disabled {% if task.is_completed %} checked {% endif %} value="1" name="r" type="checkbox" id="{{ task.pk }}">
+                                            <label for="{{ task.pk }}">
+                                                {{ task.name }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <span class="not-tasks"> заданий нет </span>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+{% for event in new_events %}
+    <div name='{{ event.datetime.day }}.{{ event.datetime.month }}.{{ event.datetime.year }}' class="event-card">
+        <div class="accordion accordion-flush" id="accordionFlushExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ event.pk }}" aria-expanded="false" aria-controls="flush-collapse{{ event.pk }}">
+                        <div class="event-name"> 
+                            {% if event.datetime.minute < 10 %}
+                                {% with prefix=0 %}
+                                    {{ event.datetime.hour }}:{{ prefix }}{{ event.datetime.minute}} (SRT)
+                                {% endwith %}
+                            {% else %}
+                                {% with prefix="" %}
+                                    {{ event.datetime.hour }}:{{ prefix }}{{ event.datetime.minute}} (SRT)
+                                {% endwith %}
+                            {% endif %}
+                            <br>
+                            <i class="bi bi-mortarboard-fill"></i>
+                            {{ event.teacher_id.last_name }} {{ event.teacher_id.first_name }}
+                        </div>
+                        <div class="event-info">
+                            {% if event.status == 'P' %}
+                                <i class="bi bi-clock text-warning"></i> 
+                            {% elif event.status == 'C' %}
+                                <i class="bi bi-x-circle text-danger"></i>
+                            {% else %}
+                                <i class="bi bi-check-circle text-success"></i> 
+                            {% endif %}
+
+                            {% if event.is_paid %}
+                                <i class="bi bi-wallet text-success"></i>
+                            {% else %}
+                                <i class="bi bi-wallet text-danger"></i> 
+                            {% endif %}
+                            <br>
+                            {{ event.title }}
+                        </div>
+                    </button>
+                </h2>
+                <div id="flush-collapse{{ event.pk }}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">
+                        {% with event.lesson_tasks.all as tasks %}
+                            {% if tasks %}
+                                <span style='font-weight: lighter; color: indigo'>Tasks: </span>
+                                <ul>
+                                    {% for task in tasks %}
+                                        {% if task.base_name %}
+                                            <li>{{ task.base_name }}</li>
+                                        {% elif task.custom_name %}
+                                            <li>{{ task.custom_name }}</li>
+                                        {% endif %}
+                                            
+                                        {% endfor %}
+                                </ul>
+                                {% else %}
+                                    <span style='font-weight: lighter; color: indigo'>Tasks: </span>
+                                    -
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}

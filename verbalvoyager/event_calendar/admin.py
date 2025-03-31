@@ -1,114 +1,84 @@
 # -*- coding: utf-8 -*-
 
-import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
 
-from django.contrib import admin
-from django.utils.translation import gettext_lazy as _
-
-from django.urls import path, reverse
-from django.http import JsonResponse
-from django.core.serializers.json import DjangoJSONEncoder
-
-from verbalvoyager.settings import DEBUG_LOGGING_FP
-
-from .models import Lesson, Course, Review, ProjectType, Project, ProjectTask, LessonTask
-from .forms import LessonAdminForm, LessonAdminForm, ProjectAdminForm
+from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
-from django.contrib import messages
 from django.utils.translation import ngettext
-from django.core.exceptions import FieldError
-from django.core.exceptions import FieldError
+from rangefilter.filters import DateRangeFilterBuilder, DateRangeQuickSelectListFilterBuilder
+from nested_admin import NestedStackedInline, NestedModelAdmin, NestedTabularInline
+
+from pages.filters import DropdownFilter, ChoiceDropdownFilter
+from .filters import TeachersListFilter, StudentsListFilter
+from logger import get_logger
+from event_calendar.models import Lesson, Course, Review, ProjectType, Project, ProjectTask, LessonTask
+from event_calendar.forms import LessonAdminForm, ProjectAdminForm
+from lesson_plan.models import EnglishLessonPlan, EnglishLessonMainAims, EnglishLessonSubsidiaryAims
+from lesson_plan.admin import EnglishLessonPlanAdmin, EnglishLessonMainAimsInline, EnglishLessonSubsidiaryAimsInline
+from logging_app.helpers import log_action
 
 
-log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
-logger = logging.getLogger(__name__)
-logger.level = logging.INFO
-handler = logging.FileHandler(DEBUG_LOGGING_FP)
-handler.setFormatter(logging.Formatter(log_format))
-logger.addHandler(handler)
-
+logger = get_logger()
 User = get_user_model()
 
 
-# Filters
-class TeachersListFilter(admin.SimpleListFilter):
-    title = _("Учитель")
-    parameter_name = "teacher"
-
-    def lookups(self, request, model_admin):
-        teachers = User.objects.filter(
-            groups__name='Teacher').order_by('last_name', 'first_name')
-
-        return [
-            (teacher.pk, _(f'{teacher.last_name} {teacher.first_name}'))
-            for teacher in teachers
-        ]
-
-    def queryset(self, request, queryset):
-        return queryset.filter(teacher_id=self.value()) if self.value() else None
-
-
-class StudentsListFilter(admin.SimpleListFilter):
-    title = _("Ученик")
-    parameter_name = "students"
-
-    def lookups(self, request, model_admin):
-        students = User.objects.filter(
-            groups__name='Student').order_by('last_name', 'first_name')
-
-        return [
-            (student.pk, _(f'{student.last_name} {student.first_name}'))
-            for student in students
-        ]
-
-    def queryset(self, request, queryset):
-        try:
-            return queryset.filter(students=self.value()) if self.value() else None
-        except FieldError:
-            return queryset.filter(student_id=self.value()) if self.value() else None
-
-
-class LessonTaskInline(admin.TabularInline):
+class LessonTaskInline(NestedTabularInline):
     model = LessonTask
+    extra = 0
 
 
 class ProjectTaskInline(admin.TabularInline):
     model = ProjectTask
+    extra = 0
+
+
+class EnglishLessonPlanInline(NestedStackedInline):
+    model = EnglishLessonPlan
+    extra = 0
+    min_num = 1
+    max_num = 1
+    autocomplete_fields = ('new_vocabulary', )
+    fieldsets = EnglishLessonPlanAdmin.fieldsets
+    inlines = EnglishLessonPlanAdmin.inlines
 
 
 @admin.register(Lesson)
-class LessonAdmin(admin.ModelAdmin):
+class LessonAdmin(NestedModelAdmin):
     show_full_result_count = False
     form = LessonAdminForm
     ordering = ('-datetime', )
     autocomplete_fields = ('student_id', )
     search_fields = ['student_id', 'lesson_id']
-    list_display = ('datetime', 'title', 'status',
+    list_display = ('get_lesson_time', 'title', 'status',
                     'is_paid', 'teacher_id', 'student_id')
-    list_display_links = ('datetime', 'title')
+    list_display_links = ('get_lesson_time', 'title')
     list_filter = [
         TeachersListFilter,
-        'datetime',
-        'is_paid',
-        'status',
         StudentsListFilter,
+        ('is_paid', DropdownFilter),
+        ('status', ChoiceDropdownFilter),
+        ('datetime', DateRangeQuickSelectListFilterBuilder(title='Дата урока')),
     ]
     actions = ['set_pay', 'set_not_pay', 'set_done', 'set_miss', 'set_cancel']
     save_as = True
     inlines = [
         LessonTaskInline,
+        EnglishLessonPlanInline,
     ]
 
     fieldsets = (
         ('Lesson Info', {
-            'fields': (('title', 'datetime'), 'student_id', ),
+            'fields': (('title', 'datetime', 'duration'), 'student_id', ),
         }),
         ('Lesson Options', {
             'classes': ('collapse', ),
             'fields': (('status', 'is_paid', ), 'teacher_id', 'project_id'),
         })
     )
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -174,7 +144,7 @@ class ProjectTaskAdmin(admin.ModelAdmin):
     autocomplete_fields = ('project_id', )
     list_display = ('name', 'points', 'project_id', 'is_completed')
     list_filter = (
-        'is_completed',
+        ('is_completed', DropdownFilter),
     )
     actions = ('set_complete', 'unset_complete')
     fieldsets = (
@@ -191,6 +161,10 @@ class ProjectTaskAdmin(admin.ModelAdmin):
             'fields': (('points', 'is_completed'),),
         })
     )
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -214,7 +188,7 @@ class LessonTaskAdmin(admin.ModelAdmin):
     show_full_result_count = False
     list_display = ('name', 'points', 'lesson_id', 'is_completed')
     list_filter = (
-        'is_completed',
+        ('is_completed', DropdownFilter),
     )
     actions = ('set_complete', 'unset_complete')
 
@@ -232,6 +206,10 @@ class LessonTaskAdmin(admin.ModelAdmin):
             'fields': (('points', 'is_completed'),),
         })
     )
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -272,6 +250,8 @@ class ProjectAdmin(admin.ModelAdmin):
     list_filter = [
         TeachersListFilter,
         StudentsListFilter,
+        ('from_date', DateRangeFilterBuilder(title='Дата начала проекта')),
+        ('to_date', DateRangeFilterBuilder(title='Дата окончания проекта')),
     ]
     actions = ['create_lessons', ]
 
@@ -301,6 +281,10 @@ class ProjectAdmin(admin.ModelAdmin):
             'fields': ('is_active',),
         })
     )
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -333,27 +317,35 @@ class ProjectAdmin(admin.ModelAdmin):
             from_date = project.from_date
             to_date = project.to_date
             days = []
+            durations = []
 
             if project.lesson_1:
                 days.append(project.lesson_1)
+                durations.append(project.lesson_1_duration)
 
             if project.lesson_2:
                 days.append(project.lesson_2)
+                durations.append(project.lesson_2_duration)
 
             if project.lesson_3:
                 days.append(project.lesson_3)
+                durations.append(project.lesson_3_duration)
 
             if project.lesson_4:
                 days.append(project.lesson_4)
+                durations.append(project.lesson_4_duration)
 
             if project.lesson_5:
                 days.append(project.lesson_5)
+                durations.append(project.lesson_5_duration)
 
             while in_period:
 
                 for idx, day in enumerate(days):
                     if from_date <= day.date() <= to_date:
-                        is_created = self._create(day, students, teacher)
+                        lesson_duration = durations[idx % len(durations)]
+                        is_created = self._create(
+                            day, lesson_duration, students, teacher)
 
                         if is_created:
                             lessons_created_count += 1
@@ -374,10 +366,11 @@ class ProjectAdmin(admin.ModelAdmin):
             messages.SUCCESS,
         )
 
-    def _create(self, day, students, teacher):
+    def _create(self, day, lesson_duration, students, teacher):
         for student_id in students.all():
             lesson, is_created = Lesson.objects.get_or_create(
                 datetime=day,
+                duration=lesson_duration,
                 student_id=student_id,
                 teacher_id=teacher,
             )
@@ -392,6 +385,10 @@ class ReviewAdmin(admin.ModelAdmin):
     show_full_result_count = False
     list_display = ('course', 'from_user', 'text', 'created_at')
 
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
+
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.select_related('course', 'from_user')
@@ -401,8 +398,19 @@ class ReviewAdmin(admin.ModelAdmin):
 class CourseAdmin(admin.ModelAdmin):
     show_full_result_count = False
 
+    def save_model(self, request, obj, form, change):
+        if obj:
+            obj.save()
+            log_action(request.user, obj, f'{self.model} [{obj.pk}] saved')
+
+        return super().save_model(request, obj, form, change)
+
 
 @admin.register(ProjectType)
 class ProjectTypeAdmin(admin.ModelAdmin):
     show_full_result_count = False
     search_fields = ('id', )
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)

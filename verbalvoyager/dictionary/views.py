@@ -3,7 +3,6 @@ import requests
 import re
 from pprint import pprint
 
-from django.shortcuts import render
 from django.http import JsonResponse
 
 from .models import EnglishWord
@@ -85,6 +84,7 @@ def load_from_api(request, lang):
                     except IndexError:
                         answer['image_url'] = None
 
+                    pprint(word_api)
                     answer['prefix'] = word_api['prefix']
                     answer['sound_url'] = word_api['soundUrl']
                     answer['transcription'] = word_api['transcription']

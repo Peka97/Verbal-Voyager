@@ -9,6 +9,21 @@ from dictionary.models import EnglishWord as new_eng_word, FrenchWord as new_fr_
 
 User = get_user_model()
 
+
+class ExerciseCategory(models.Model):
+    name = models.CharField(
+        max_length=100,
+        verbose_name='Категория упражнений',
+        help_text='Категория, в которую будут помещены упражнения'
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Категория упражнений'
+        verbose_name_plural = 'Категории упражнений'
+        ordering = ['name',]
 # ExerciseWords
 
 
@@ -16,9 +31,20 @@ class AbstractExerciseWords(models.Model):
     view_name = 'exercise_words'
 
     name = models.CharField(
-        default=None, blank=True, max_length=50,
+        default=None,
+        blank=True,
+        null=True,
+        max_length=50,
         verbose_name='Название упражнения',
         help_text="Поле заполняется автоматически, если остаётся пустым"
+    )
+    category = models.ForeignKey(
+        ExerciseCategory,
+        verbose_name='Категория упражнения',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        help_text='Категория, связывающая упражнение с чем-либо, например, учебник, книга или фильм'
     )
     is_active = models.BooleanField(default=True, verbose_name="Активен")
     external_access = models.BooleanField(
@@ -40,13 +66,13 @@ class AbstractExerciseWords(models.Model):
         return SITE_NAME + self.get_absolute_url()
     get_words.get_url = 'Ссылка на упражнение'
 
-    def save_model(self, request, obj, form, change):
-        if not obj.name:
-            student_exercises_count = self.objects.filter(
-                student=obj.student).count()
+    def save(self, *args, **kwargs):
+        if not self.name:
+            student_exercises_count = self.__class__.objects.filter(
+                student=self.student).count()
             self.name = f"Words {student_exercises_count + 1}"
 
-        super().save_model(request, obj, form, change)
+        return super().save(*args, **kwargs)
 
     def __repr__(self) -> str:
         status = 'Active' if self.is_active else 'Done'
@@ -121,6 +147,14 @@ class AbstractExerciseDialog(models.Model):
     name = models.CharField(default=None, blank=True, max_length=50,
                             verbose_name='Название упражнения',
                             help_text="Поле заполняется автоматически, если остаётся пустым")
+    category = models.ForeignKey(
+        ExerciseCategory,
+        verbose_name='Категория упражнения',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        help_text='Категория, связывающая упражнение с чем-либо, например, учебник, книга или фильм'
+    )
     text = models.TextField(blank=False, null=True, verbose_name='Текст',
                             help_text="""
                             Требуемый формат:
@@ -145,7 +179,7 @@ class AbstractExerciseDialog(models.Model):
                 self.name = "Dialog 1"
             else:
                 self.name = f"Dialog {student_exercises_count + 1}"
-        super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     def get_words(self):
         words = [
@@ -229,6 +263,14 @@ class ExerciseIrregularEnglishVerb(models.Model):
         verbose_name='Название упражнения',
         help_text="Поле заполняется автоматически, если остаётся пустым"
     )
+    category = models.ForeignKey(
+        ExerciseCategory,
+        verbose_name='Категория упражнения',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        help_text='Категория, связывающая упражнение с чем-либо, например, учебник, книга или фильм'
+    )
     words = models.ManyToManyField(IrregularEnglishVerb, verbose_name="Слова")
     student = models.ForeignKey(
         User, on_delete=models.SET_NULL,
@@ -274,7 +316,7 @@ class ExerciseIrregularEnglishVerb(models.Model):
                 student=obj.student).count()
             self.name = f"Irregular Verbs {student_exercises_count + 1}"
 
-        super().save_model(request, obj, form, change)
+        return super().save_model(request, obj, form, change)
 
     def __str__(self) -> str:
         return self.name

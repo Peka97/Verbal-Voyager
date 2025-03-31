@@ -1,22 +1,15 @@
-import logging
-from datetime import datetime
+from datetime import timedelta
 
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
-from django.db.models.signals import pre_save, post_save, m2m_changed, pre_delete
-from django.dispatch import receiver
 from django.urls import reverse
 from django.contrib.admin.utils import quote
 from django.core.exceptions import FieldError
 
-from verbalvoyager.settings import DEBUG_LOGGING_FP
+from logger import get_logger
 
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-logger.addHandler(logging.FileHandler(DEBUG_LOGGING_FP))
-
+logger = get_logger()
 User = get_user_model()
 
 
@@ -107,6 +100,12 @@ class LessonTask(models.Model):
 
 
 class Lesson(models.Model):
+    STATUS_CHOICES = (
+        ('P', 'Запланировано'),
+        ('M', 'Пропущено'),
+        ('D', 'Завершено'),
+        ('C', 'Отменено')
+    )
     title = models.CharField(
         verbose_name='Название урока',
         max_length=50,
@@ -116,17 +115,17 @@ class Lesson(models.Model):
     datetime = models.DateTimeField(
         verbose_name='Дата и время урока'
     )
+    duration = models.SmallIntegerField(
+        verbose_name='Продолжительность',
+        default=60,
+        help_text="В минутах"
+    )
     is_paid = models.BooleanField(verbose_name="Статус оплаты", default=False)
     status = models.CharField(
         verbose_name="Статус урока",
         max_length=20,
         default='P',
-        choices=[
-            ('P', 'Запланировано'),
-            ('M', 'Пропущено'),
-            ('D', 'Завершено'),
-            ('C', 'Отменено')
-        ]
+        choices=STATUS_CHOICES
     )
     student_id = models.ForeignKey(
         User,
@@ -153,8 +152,22 @@ class Lesson(models.Model):
         null=True
     )
 
+    def save(self,  *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.lesson_plan.first():
+            self.lesson_plan.first().save()
+
     def get_admin_edit_url(self):
         return reverse(f'admin:{self._meta.app_label}_{self._meta.model_name}_change', args=[quote(self.pk)])
+
+    def get_lesson_time(self):
+        time_end = (
+            self.datetime +
+            timedelta(minutes=self.duration)
+        ).strftime('%H:%M')
+
+        return f"{self.datetime.strftime('%d.%m.%Y %H:%M')} - {time_end}"
+    get_lesson_time.short_description = 'Время урока'
 
     class Meta:
         verbose_name = 'Занятие'
@@ -261,25 +274,50 @@ class Project(models.Model):
         null=True,
         blank=True,
     )
+    lesson_1_duration = models.IntegerField(
+        verbose_name='Длительность урока',
+        default=45,
+        help_text='В минутах'
+    )
     lesson_2 = models.DateTimeField(
         verbose_name='Время второго урока в неделе',
         null=True,
         blank=True
+    )
+    lesson_2_duration = models.IntegerField(
+        verbose_name='Длительность урока',
+        default=45,
+        help_text='В минутах'
     )
     lesson_3 = models.DateTimeField(
         verbose_name='Время третьего урока в неделе',
         null=True,
         blank=True
     )
+    lesson_3_duration = models.IntegerField(
+        verbose_name='Длительность урока',
+        default=45,
+        help_text='В минутах'
+    )
     lesson_4 = models.DateTimeField(
         verbose_name='Время четвертого урока в неделе',
         null=True,
         blank=True
     )
+    lesson_4_duration = models.IntegerField(
+        verbose_name='Длительность урока',
+        default=45,
+        help_text='В минутах'
+    )
     lesson_5 = models.DateTimeField(
         verbose_name='Время пятого урока в неделе',
         null=True,
         blank=True
+    )
+    lesson_5_duration = models.IntegerField(
+        verbose_name='Длительность урока',
+        default=45,
+        help_text='В минутах'
     )
     is_active = models.BooleanField(
         verbose_name='Статус',

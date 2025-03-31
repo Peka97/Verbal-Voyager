@@ -1,5 +1,6 @@
 :root {
     --background-color: #001a3e;
+    --nav-bar-height: max(56px, 8vh);
 
     --purple-a700: #AA00FF;
     --purple-a400: #D500F9;
@@ -193,7 +194,7 @@ a {
 
     color: white;
     background-color: var(--purple-800);
-    border: var(--purple-200) solid 0.1rem;
+    border: var(--purple-200) solid 0.15vw;
     border-radius: 0.3rem;
 
     font-size: calc(0.2rem + 1vw);

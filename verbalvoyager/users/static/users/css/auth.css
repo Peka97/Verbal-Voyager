@@ -7,7 +7,7 @@ body {
     
     overflow: hidden;
 
-    background-image: url('../../pages/images/top_banner_space_full.png');
+    background-image: url('../images/top_banner_space_full.webp');
     background-repeat: no-repeat;
     background-size: cover;
 }

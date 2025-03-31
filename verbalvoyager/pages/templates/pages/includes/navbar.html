@@ -13,7 +13,7 @@
           <ul class="header navbar-nav m-auto mb-lg-0">
             <li class="logo">
               <a href='{% url "" %}' class="header nav-link">
-                <img class='header logo' src="{% static 'pages/images/logo_mini.png' %}" alt="logo">
+                <img class='header logo' src="{% static 'pages/images/logo_mini.webp' %}" alt="logo">
               </a>
             </li>
             <li class="header nav-item dropdown">
@@ -47,10 +47,12 @@
                 {{ user.username}}
               {% endif %}
             </span>
-            <img class='avatar rounded-circle' src="{% static "users/images/default_avatar.png" %}" alt="User photo">
+            <img class='avatar rounded-circle' src="{% static "users/images/default_avatar.webp" %}" alt="User photo">
           </a>
           <ul class="header dropdown-menu dropdown-menu-end text-small shadow" style="">
-            <li><a class="header dropdown-item" href="{% url 'profile' %}">Профиль</a></li>
+            <li><a class="header dropdown-item" href="{% url 'account' current_pane='activities' %}">Активности</a></li>
+            <li><a class="header dropdown-item" href="{% url 'account' current_pane='profile' %}">Профиль</a></li>
+            <li><a class="header dropdown-item" href="{% url 'account' current_pane='exercises' %}">Упражнения</a></li>
             {% if user_is_teacher or user.is_teacher %}
               <li><hr class="dropdown-divider"></li>
               <li><a class="header dropdown-item" href="{% url 'admin:index' %}">Администрирование</a></li>
@@ -61,7 +63,6 @@
         </div>
       {% else %}
         <a id='auth' class="btn-default me-2" href="{% url 'auth' %}" role="button">Начать путешествие</a>
-        {% comment %} <a id='sign_up' class="btn-default me-2" href="{% url 'sign_up' %}" role="button">Зарегистрироваться</a> {% endcomment %}
       {% endif %}
     </div>
   </div>

@@ -1,5 +1,4 @@
 from django.urls import path
-from django.contrib.auth import views, get_user_model
 from . import views
 from pages.views import handler_403, handler_404, handler_500
 
@@ -28,5 +27,5 @@ urlpatterns = [
          views.generate_dialog_french_json, name='generate_dialog_french_json'),
 
     # Exercise Logging
-    path('logging/<int:ex_id>/<str:step_num>', views.logging, name='logging'),
+    path('logging/<int:ex_id>/<str:step_num>', views.words_logging),
 ]

@@ -1,41 +1,20 @@
 import json
-from pprint import pprint
-import requests
-import logging
 from random import sample, shuffle
 
-from django.http import HttpResponse, Http404, HttpResponseRedirect
-from django.core.exceptions import PermissionDenied
-from django.http.response import Http404
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, Http404
+from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
-from django.db import transaction
 from django.views.decorators.cache import cache_control
 
-from verbalvoyager.settings import DEBUG_LOGGING_FP
+from logger import get_logger, get_words_logger
 from .utils import generate_dialog, get_exercise_or_404
 
-from dictionary.models import EnglishWord, FrenchWord
 from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
-from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult
 
-log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
-logger = logging.getLogger(__name__)
-logger.level = logging.INFO
-handler = logging.FileHandler(DEBUG_LOGGING_FP)
-handler.setFormatter(logging.Formatter(log_format))
-logger.addHandler(handler)
-
-logger_words = logging.getLogger('words')
-logger_words.level = logging.INFO
-words_handler = logging.FileHandler(
-    '/home/peka97/verbalvoyager/Verbal-Voyager/verbalvoyager/logs/words.log'
-)
-words_handler.setFormatter(logging.Formatter(log_format))
-logger_words.addHandler(words_handler)
+logger = get_logger()
+logger_words = get_words_logger()
 
 User = get_user_model()
 
@@ -126,6 +105,7 @@ def exercise_dialog(request, ex_lang, ex_id):
     raw_text = raw_dialog[1:] if scene else raw_dialog
     messages = []
     for message in raw_text:
+        print(message)
         person_name, message_text = message.split(':', 1)
         messages.append(
             {
@@ -201,7 +181,7 @@ def generate_dialog_french_json(request):
 
 
 @login_required
-def logging(request, ex_id, step_num):
+def words_logging(request, ex_id, step_num):
     if request.method == 'POST':
         data = json.loads(request.body)
         is_correct = data.get('is_correct')

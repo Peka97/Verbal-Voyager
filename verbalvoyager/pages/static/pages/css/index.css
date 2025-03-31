@@ -1,9 +1,233 @@
+:root {
+    --background-color: #0f0b2c;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 0;
+}
+
+.main-header {
+    position: relative;
+    height: calc(100vh - var(--nav-bar-height));
+    margin-bottom: 1rem;
+}
+
+.layers.astronauts {
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    max-height: inherit;
+    height: calc(100vh - var(--nav-bar-height));
+    width: 25vw;
+    overflow: hidden;
+    position: relative;
+    /* background: url(../images/layer-1.webp);
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    background-position: center !important; */
+}
+
+.layers.planet {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - var(--nav-bar-height));
+    overflow: hidden;
+    position: relative;
+    /* background: url(./images/Слой-1.png);
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    background-position: center !important; */
+}
+
+.layer {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    background-position: center !important;
+    will-change: transform;
+}
+
+/* .layer-animated {
+    transition: transform .75s ease;
+} */
+
+.layer-base {
+    z-index: 1;
+    background: url(../images/layer-1.webp);
+    transform: translate3d(0, calc(var(--scrollTop) / 2), 0);
+}
+
+.layer-ground {
+    z-index: 10;
+    background: url(../images/layer-2.webp);
+}
+
+.layer-3 {
+    z-index: 9;
+    background: url(../images/layer-3.webp);
+    transform: translate3d(0, calc(var(--scrollTop) / 3.6), 0);
+}
+
+.layer-4 {
+    z-index: 8;
+    background: url(../images/layer-4.webp);
+    transform: translate3d(0, calc(var(--scrollTop) / 3.2), 0);
+}
+
+.layer-5 {
+    z-index: 7;
+    background: url(../images/layer-5.webp);
+    transform: translate3d(0, calc(var(--scrollTop) / 2.8), 0);
+}
+
+.layer.astronaut {
+    z-index: 10;
+    height: 60vh;
+    background-size: contain !important;
+    background-position-y: bottom !important;
+}
+
+.layer.astronaut.helmet {
+    opacity: .3;
+}
+
+.layer.astronaut.julia {
+    background: url(../images/Julia.webp);
+}
+
+.layer.astronaut.julia-helmet {
+    background: url(../images/Julia_helmet.webp);
+}
+
+.layer.astronaut.liza {
+    background: url(../images/Liza.webp);
+}
+
+.layer.astronaut.liza-helmet {
+    background: url(../images/Liza_helmet.webp);
+}
+
+.preview-wrapper {
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: end;
+}
+
+.preview-container {
+    height: 80vh;
+    max-width: 80vw;
+    display: flex;
+    justify-content: center;
+    align-items: end;
+}
+
+.astronaut-container {
+    max-height: 60vh;
+    max-width: 50vw;
+    display: flex;
+    justify-content: end;
+    align-items: end;
+    grid-gap: 1rem;
+
+    img {
+        max-height: inherit;
+        max-width: inherit;
+    }
+}
+
+.astronaut-wrapper {
+    max-width: 100%;
+    display: flex;
+}
+
+.text-container {
+    width: 35vw;
+    max-height: fit-content;
+    align-self: flex-start;
+
+    padding: 2%;
+    border: 0.3vw #FFC107 solid;
+    border-radius: calc(1rem + 1vw);
+    text-shadow: calc(.1vh + .1vw) calc(.1vh + .1vw) calc(.1vh + .1vw) var(--deep-purple-900);
+    backdrop-filter: blur(3px);
+    
+    .text-header > p {
+        color: white;
+
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: calc(1vw + 1vh);
+        font-weight: bold;
+
+        text-align: center;
+        text-shadow: 0.05rem 0.05rem 0.1rem #311B92;
+    }
+
+    .text-content > p {
+        color: white;
+
+        font-size: calc(1vw + .5vh);
+        text-indent: 3rem;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    }
+}
+
+@media (max-width: 1440px) {
+    .preview-container {
+        max-height: 100vh !important;
+        flex-wrap: wrap;
+        height: 100vh;
+    }
+
+    .text-container {
+        order: 0;
+        flex: 1 1 100%;
+        max-width: 50vw;
+        align-self: auto;
+    }
+
+    .astronaut-container {
+        order: 1;
+        flex: 1 1 100%;
+        max-width: 65vw;
+    }
+}
+
+@media (max-width: 768px) {
+    .text-container {
+        max-width: 60vw;
+    }
+    .astronaut-container {
+        max-width: 80vw;
+        justify-content: center;
+    }
+    .astronaut-wrapper {
+        max-width: 80vw !important;
+        width: 80vw !important;
+    }
+    .layers.astronauts {
+        width: 40vw !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .text-container {
+        max-width: 80vw;
+    }
+}
+
 a {
     color: white;
     text-decoration: none;
 }
 
-body::after {
+/* body::after {
     content: "";
     position: absolute;
     top: 6vh;
@@ -14,7 +238,7 @@ body::after {
     width: 100vw;
     height: 160vh;
     z-index: -2;
-}
+} */
 
 .preview-container {
     display: flex;
@@ -262,9 +486,18 @@ body::after {
     color: var(--indigo-500);
 }
 
+.album-row {
+    justify-content: center;
+}
+
+.album-row.first {
+    margin-bottom: 1rem;
+}
+
 .card {
     background-color: white;
-    border: .15rem var(--amber-500) solid ;
+    /* border: .15rem var(--amber-500) solid ; */
+    border: none;
 }
 
 .card > img {
@@ -279,6 +512,8 @@ body::after {
 
 .card-text {
     font-size: 1rem;
+    max-height: 30vh;
+    overflow-y: scroll;
 }
 
 .card-footer {
@@ -340,6 +575,11 @@ body::after {
 
     small, .review-text {
         font-size: 1rem;
+    }
+
+    .review-text {
+        max-height: 30vh;
+        overflow-y: auto;
     }
 }
 

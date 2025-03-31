@@ -1,33 +1,23 @@
 from collections import defaultdict
-import logging
-from datetime import datetime
-from calendar import monthrange
-from pprint import pprint
 from itertools import chain
 
-import pytz
-from typing import Any, Dict
-
-from django.shortcuts import render, HttpResponse
-from django.utils import timezone
 from django.urls import reverse
+from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteView
+from django.contrib import messages
 
+from logger import get_logger
 from users.forms import RegistrationUserForm, CustomPasswordResetForm
+from users.utils import get_words_learned_count, get_exercises_done_count
+from users.forms import TimezoneForm
 from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 from event_calendar.models import Lesson, Project, Course
-from verbalvoyager.settings import DEBUG_LOGGING_FP
 
-log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
-logger = logging.getLogger(__name__)
-logger.level = logging.INFO
-handler = logging.FileHandler(DEBUG_LOGGING_FP)
-handler.setFormatter(logging.Formatter(log_format))
-logger.addHandler(handler)
 
+logger = get_logger()
 User = get_user_model()
 
 
@@ -97,11 +87,31 @@ def user_logout(request):
 
 
 @login_required(login_url="/users/auth")
-def user_profile(request):
+def user_account(request, current_pane):
     user = request.user
+
     context = {
         'user_is_teacher': user.is_teacher()
     }
+
+    if request.method == 'POST':
+        # instance=request.user, если поле timezone в модели пользователя
+        form = TimezoneForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Часовой пояс успешно обновлен.')
+            # Замените 'profile' на URL вашего профиля
+            url = reverse('account', kwargs={'current_pane': 'profile'})
+            return redirect(url)
+        else:
+            messages.error(request, 'Ошибка при обновлении часового пояса.')
+    else:
+        # instance=request.user, если поле timezone в модели пользователя
+        context['timezone_form'] = TimezoneForm(instance=request.user)
+
+    if user.is_supervisor():
+        context['teachers'] = tuple(
+            User.objects.filter(groups__name='Teacher').exclude(username='admin').values_list('pk', flat=True))
 
     if context['user_is_teacher']:
         projects = Project.objects.filter(
@@ -122,40 +132,49 @@ def user_profile(request):
 
         projects = Project.objects.filter(
             students=user).values_list('pk', flat=True).all()
-        # lessons = Lesson.objects.filter(
-        #     project_id__in=tuple(projects),
-        #     student_id=user,
-        #     ).prefetch_related('lesson_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
         context['projects'] = projects
-        context['words'] = chain(ExerciseEnglishWords.objects.filter(
-            student=user.pk,
-            is_active=True
-        ).all(), ExerciseFrenchWords.objects.filter(
-            student=user.pk,
-            is_active=True
-        ).all())
-        context['irregular_verbs'] = ExerciseIrregularEnglishVerb.objects.filter(
-            student=user.pk,
-            is_active=True
-        ).all()
-        context['dialogs'] = chain(
-            ExerciseEnglishDialog.objects.filter(
-                student=user.pk,
-                is_active=True).all(),
-            ExerciseFrenchDialog.objects.filter(
-                student=user.pk,
-                is_active=True).all(),
+        english_words, french_words = ExerciseEnglishWords.objects.filter(student=user.pk), \
+            ExerciseFrenchWords.objects.filter(student=user.pk)
+        context['exercises_words'] = tuple(chain(
+            english_words.all(),
+            french_words.all()
+        ))
+        irregular_verbs = ExerciseIrregularEnglishVerb.objects.filter(
+            student=user.pk)
+
+        context['exercises_irregular_verbs'] = irregular_verbs.filter(
+            is_active=True).all()
+        english_dialogs, french_dialogs = ExerciseEnglishDialog.objects.filter(
+            student=user.pk), ExerciseFrenchDialog.objects.filter(student=user.pk)
+        dialogs = chain(
+            english_dialogs.filter(is_active=True).all(),
+            french_dialogs.filter(is_active=True).all()
+        )
+
+        context['exercises_dialogs'] = dialogs
+        context['statistics'] = {}
+        context['statistics']['lessons_done_count'] = lessons.filter(
+            status='D').count()
+        context['statistics']['exercises_done_count'] = get_exercises_done_count(
+            english_words,
+            french_words,
+            irregular_verbs,
+            english_dialogs,
+            french_dialogs
+        )
+        context['statistics']['words_learned_count'] = get_words_learned_count(
+            english_words,
+            french_words,
+            irregular_verbs,
+            english_dialogs,
+            french_dialogs
         )
 
     context['events'] = lessons
-    # print(tuple(lessons)[0].lesson_tasks)
-    # print(lessons.values()[0])
-    # context['new_events'] = lessons_new
-    # context['events_count_total'] = len(lessons)
-    # context['events_count_done'] = lessons.filter(status='D').count()
     context['courses'] = tuple(Course.objects.all())
+    context['current_pane'] = current_pane
 
-    return render(request, 'users/profile.html', context)
+    return render(request, 'users/account/account.html', context)
 
 
 class CustomPasswordResetView(PasswordResetView):

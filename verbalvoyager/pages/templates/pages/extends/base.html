@@ -5,6 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    {% block 'meta' %}{% endblock 'meta' %}
+
     <title>{% block title %}{% endblock  %}</title>
     <!-- Favicon -->
     <link id='favicon' type="Image/x-icon" href="{% static 'pages/images/favicon.ico' %}" rel="icon">
@@ -16,6 +19,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'pages/css/base.css' %}">
     <link rel="stylesheet" href="{% static 'pages/css/navbar.css' %}">
+    
     {% block 'style' %}{% endblock  %}
   </head>
   <body>

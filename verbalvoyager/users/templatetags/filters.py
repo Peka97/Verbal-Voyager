@@ -1,17 +1,11 @@
-import logging
 from datetime import datetime, timedelta
 
-from verbalvoyager.settings import DEBUG_LOGGING_FP
+from logger import get_logger
 from django import template
 
 register = template.Library()
 
-log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
-logger = logging.getLogger(__name__)
-logger.level = logging.INFO
-handler = logging.FileHandler(DEBUG_LOGGING_FP)
-handler.setFormatter(logging.Formatter(log_format))
-logger.addHandler(handler)
+logger = get_logger()
 
 
 @register.filter(name="type_names_to_list")
@@ -93,3 +87,9 @@ def student_dang_lesson(lesson):
     # Урок не оплачен, до урока меньше 2-х часов.
     if not lesson.is_paid and lesson.status in ('P', ) and (lesson.datetime - timedelta(hours=2)) <= datetime.today():
         return True
+
+
+@register.filter(name="datetime_plus_duration")
+def datetime_plus_duration(lesson_datetime, duration):
+    time_end = lesson_datetime + timedelta(minutes=duration)
+    return f"{lesson_datetime.strftime('%H:%M')} - {time_end.strftime('%H:%M')}"

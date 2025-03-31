@@ -1,6 +1,8 @@
 from django.contrib import admin
 
 from .models import EnglishWord, FrenchWord, IrregularEnglishVerb
+from pages.filters import ChoiceDropdownFilter
+from logging_app.helpers import log_action
 
 
 @admin.register(EnglishWord)
@@ -24,6 +26,10 @@ class WordAdmin(admin.ModelAdmin):
     )
     save_as = True
 
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
+
     class Media:
         js = ['admin/js/load_data_from_api_UI.js',]
 
@@ -32,7 +38,7 @@ class WordAdmin(admin.ModelAdmin):
 class FrenchWordAdmin(admin.ModelAdmin):
     show_full_result_count = False
     list_display = ('word', 'genus', 'translation')
-    list_filter = ['genus', ]
+    list_filter = (('genus', ChoiceDropdownFilter),)
     readonly_fields = ('another_means', )
     search_fields = ('word', 'translation')
     fieldsets = (
@@ -50,6 +56,10 @@ class FrenchWordAdmin(admin.ModelAdmin):
     )
     save_as = True
 
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
+
 
 @admin.register(IrregularEnglishVerb)
 class IrregularEnglishVerbAdmin(admin.ModelAdmin):
@@ -58,3 +68,7 @@ class IrregularEnglishVerbAdmin(admin.ModelAdmin):
     list_display = ('infinitive', 'past_simple', 'past_participle')
     search_fields = ('infinitive__word', 'past_simple', 'past_participle')
     save_as = True
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
