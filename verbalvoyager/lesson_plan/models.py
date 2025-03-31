@@ -36,17 +36,13 @@ class EnglishLessonPlan(models.Model):
         blank=True,
         help_text="Новые слова"
     )
-
-    # text field
-    processes = models.CharField(
+    processes = models.TextField(
         verbose_name='Процессы',
         max_length=250,
         blank=True,
         null=True,
         help_text="Ссылки на сторонние ресурсы"
     )
-
-    # Добавить поле с файлами
     materials = models.CharField(
         max_length=250,
         verbose_name='Материалы',
@@ -54,6 +50,7 @@ class EnglishLessonPlan(models.Model):
         null=True,
         help_text="Пройденные страницы"
     )
+    # Добавить поле с файлами
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
