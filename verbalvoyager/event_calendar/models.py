@@ -8,6 +8,7 @@ from django.db.models.signals import pre_save, post_save, m2m_changed, pre_delet
 from django.dispatch import receiver
 from django.urls import reverse
 from django.contrib.admin.utils import quote
+from django.core.exceptions import FieldError
 
 from verbalvoyager.settings import DEBUG_LOGGING_FP
 
@@ -185,9 +186,12 @@ class ProjectTask(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        projects = Project.objects.filter(tasks=self.pk)
-        for project in projects:
-            project.save()
+        try:
+            projects = Project.objects.filter(tasks=self.pk)
+            for project in projects:
+                project.save()
+        except FieldError:
+            pass
 
         super().save(*args, **kwargs)
 

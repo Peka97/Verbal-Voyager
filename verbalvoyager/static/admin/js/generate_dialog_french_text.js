@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
         GenerateButtonElement.classList.add('disabled-link');
 
         let Words = Array();
-        let WordsElements = [...document.querySelector('#id_words_to').children];
+        let WordsElements = [...document.querySelector('#id_words').children];
         
         WordsElements.forEach(wordElement => {
             Words.push(wordElement.value)
