@@ -1,10 +1,10 @@
 import os
 
 from pathlib import Path
-from config import DevConfig
+from config import ProdConfig
 
 
-current_config = DevConfig
+current_config = ProdConfig
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -35,6 +35,7 @@ INSTALLED_APPS = [
 
     # Libraries
     'rangefilter',
+    'fontawesomefree',
     # 'django-nested-admin',
     'nested_admin',
 
@@ -162,6 +163,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGIN_URL = '/users/auth'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
@@ -227,6 +229,13 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console', 'file'],
+            'level': 'ERROR',
+            'propagate': True
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
         },
     }
 }

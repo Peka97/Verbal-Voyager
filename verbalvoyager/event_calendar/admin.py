@@ -59,7 +59,8 @@ class LessonAdmin(NestedModelAdmin):
         ('status', ChoiceDropdownFilter),
         ('datetime', DateRangeQuickSelectListFilterBuilder(title='Дата урока')),
     ]
-    actions = ['set_pay', 'set_not_pay', 'set_done', 'set_miss', 'set_cancel']
+    actions = ['set_pay', 'set_not_pay', 'set_done', 'set_miss', 'set_cancel',
+               'set_duration_45', 'set_duration_60', 'set_duration_90',]
     save_as = True
     inlines = [
         LessonTaskInline,
@@ -135,6 +136,24 @@ class LessonAdmin(NestedModelAdmin):
             if obj.status != 'D':
                 obj.status = 'D'
                 obj.save()
+
+    @admin.action(description='Задать длительность урока 45 минут')
+    def set_duration_45(self, request, queryset):
+        for obj in queryset:
+            obj.duration = 45
+            obj.save()
+
+    @admin.action(description='Задать длительность урока 60 минут')
+    def set_duration_60(self, request, queryset):
+        for obj in queryset:
+            obj.duration = 60
+            obj.save()
+
+    @admin.action(description='Задать длительность урока 90 минут')
+    def set_duration_90(self, request, queryset):
+        for obj in queryset:
+            obj.duration = 90
+            obj.save()
 
 
 @admin.register(ProjectTask)

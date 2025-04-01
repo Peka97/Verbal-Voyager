@@ -52,7 +52,7 @@
           <ul class="header dropdown-menu dropdown-menu-end text-small shadow" style="">
             <li><a class="header dropdown-item" href="{% url 'account' current_pane='activities' %}">Активности</a></li>
             <li><a class="header dropdown-item" href="{% url 'account' current_pane='profile' %}">Профиль</a></li>
-            <li><a class="header dropdown-item" href="{% url 'account' current_pane='exercises' %}">Упражнения</a></li>
+            {% comment %} <li><a class="header dropdown-item" href="{% url 'account' current_pane='exercises' %}">Упражнения</a></li> {% endcomment %}
             {% if user_is_teacher or user.is_teacher %}
               <li><hr class="dropdown-divider"></li>
               <li><a class="header dropdown-item" href="{% url 'admin:index' %}">Администрирование</a></li>

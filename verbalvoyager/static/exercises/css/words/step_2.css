@@ -1,0 +1,176 @@
+/* Content */
+body > .words__container {
+  max-width: 90vw;
+  padding: 0;
+}
+
+.word__block {
+  transition: all 0.25s ease;
+  min-height: 50vh;
+
+  .word__main {
+    display: flex;
+    justify-content: center;
+    max-height: 15vh;
+    height: 100%;
+    align-items: end;
+    padding-bottom: 1em;
+    font-size: 2.5em;
+    color: var(--amber-400);
+  }
+
+  .translate__list {
+    width: auto;
+
+    .word__variant__wrap {
+      display: flex;
+      width: 100%;
+      margin-bottom: .5em;
+
+      .word__variant {
+        background-color: var(--purple-900);
+        font-size: 1.5em;
+        min-width: 25vw;
+        width: 100%;
+        border-radius: .5em;
+        padding: .5em;
+        transition: all 1s ease;
+
+        p {
+          margin: auto;
+        }
+      }
+
+      .word__variant.wrong {
+        background-color: var(--red-400);
+        color: white;
+      }
+
+      .word__variant::before {
+        width: 50vw;
+        border-radius: 1em;
+      }
+
+      .word__variant:hover {
+        /* background-color: var(--purple-400); */
+      }
+
+      .word__variant:not(.wrong):hover::before {
+        background-color: var(--indigo-400);
+      }
+
+      /* .word__variant.answer:active {
+        background-color: var(--green-500);
+        color: white;
+      }
+
+      .word__variant:not(.answer):active {
+        color: white;
+        animation: wrongStrobbing 2s ease infinite;
+      } */
+
+      .wrong {
+
+        &::before {
+          /* color: white; */
+          /* animation: wrongStrobbing 2s ease infinite; */
+          display: none;
+        }
+      }
+
+      .word__variant:active::before {
+        display: none;
+      }
+    }
+  }
+}
+
+.word__block.watched {
+  .word__variant.answer {
+    background-color: var(--green-500);
+    color: white;
+    border-color: var(--green-100);
+  }
+
+  .word__variant:not(.answer) {
+    background-color: var(--red-400);
+    color: white;
+    border-color: var(--red-200);
+  }
+
+  .word__variant::before {
+    display: none;
+  }
+}
+
+@media (max-width: 1440px) {
+  .header-wrap {
+    font-size: 2em !important;
+  }
+}
+
+@media (max-width: 1088px) {}
+
+@media (max-width: 1024px) {}
+
+@media (max-width: 900px) {
+  body {
+    font-size: 14px !important;
+  }
+}
+
+@media (max-width: 840px) {}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 12px !important;
+  }
+
+  .bi-rocket-takeoff::before {
+    font-size: 1em !important;
+  }
+
+  .bi-question-circle::before {
+    font-size: 1.2em !important;
+  }
+
+  .bi-play-circle::before {
+    font-size: 1em !important;
+  }
+}
+
+@media (max-width: 426px) {
+  body {
+    font-size: 10px !important;
+  }
+
+  .bi.bi-rocket-takeoff::before {
+    line-height: 1.5em !important;
+  }
+
+  .page-item:not(#prev_btn, #next_btn) {
+    display: none !important;
+  }
+
+  .word__variant__wrap {
+    margin-bottom: 1em !important;
+  }
+
+  .word__variant {
+    font-size: 2em !important;
+  }
+}
+
+@media (max-width: 321px) {
+  body {
+    font-size: 8px !important;
+  }
+
+  .bi.bi-rocket-takeoff::before {
+    font-size: 1.2em !important;
+  }
+
+  .bi-question-circle::before {
+    font-size: 1.1em !important;
+  }
+}

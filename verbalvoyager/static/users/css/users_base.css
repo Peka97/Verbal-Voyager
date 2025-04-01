@@ -1,0 +1,15 @@
+:root {
+    --color-white-warm: #EDE2D1;
+
+    --color-brown: #A25E1B;
+    --color-brown-pale: #D08F4E;
+    --color-brown-paler: #D1A071;
+    --color-creme: #eec8a5;
+    --color-brown-dark: #693909;
+    --color-brown-darker: #371805;
+}
+
+body {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    background-color: var(--color-white-warm);
+}

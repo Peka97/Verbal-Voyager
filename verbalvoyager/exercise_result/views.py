@@ -1,5 +1,4 @@
 import json
-from pprint import pprint
 
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
@@ -21,7 +20,6 @@ def exercise_result_update(request, ex_type, ex_lang, ex_id, step_num=None):
         logger.info(
             f'POST REQUEST:\n {ex_type}[{ex_id}] ({ex_lang}) | {data}'
         )
-        pprint(data)
 
         value = data.get('value')
 
@@ -48,7 +46,7 @@ def exercise_result_update(request, ex_type, ex_lang, ex_id, step_num=None):
         with transaction.atomic():
             exercise, _ = exercise_obj.objects.get_or_create(pk=ex_id)
             exercise_result, _ = exercise_result_obj.objects.get_or_create(
-                exercise_id=exercise,
+                exercise_id=exercise.id,
             )
 
             if ex_type == 'words':
@@ -71,105 +69,3 @@ def exercise_result_update(request, ex_type, ex_lang, ex_id, step_num=None):
             exercise_result.save()
 
             return JsonResponse({'result': 'Updated'}, status=200)
-
-
-@login_required
-def exercise_result_words_english_update(request, ex_id, step_num):
-    if request.method == 'POST':
-        with transaction.atomic():
-            data = json.loads(request.body)
-
-            logger.info(
-                f'POST REQUEST:\n Ex Words:{ex_id} | {data}'
-            )
-            value = data.get('value')
-
-            exercise = ExerciseEnglishWords.objects.get(pk=ex_id)
-            exercise_result, _ = ExerciseEnglishWordsResult.objects.get_or_create(
-                words=exercise,
-            )
-            exercise_result.__dict__[step_num] = value
-            exercise_result.save()
-
-            if step_num[-1] == '4':
-                exercise.is_active = False
-                exercise.save()
-
-        return redirect('profile')
-
-
-@login_required
-def exercise_result_words_french_update(request, ex_id, step_num):
-    if request.method == 'POST':
-        with transaction.atomic():
-            data = json.loads(request.body)
-
-            logger.info(
-                f'POST REQUEST:\n Ex Words:{ex_id} | {data}'
-            )
-            value = data.get('value')
-
-            exercise = ExerciseFrenchWords.objects.get(pk=ex_id)
-            exercise_result, _ = ExerciseFrenchWordsResult.objects.get_or_create(
-                words=exercise,
-            )
-            exercise_result.__dict__[step_num] = value
-            exercise_result.save()
-
-            if step_num[-1] == '4':
-                exercise.is_active = False
-                exercise.save()
-
-        return redirect('profile')
-
-
-@login_required
-def exercise_result_dialog_english_update(request, ex_id):
-    if request.method == 'POST':
-        with transaction.atomic():
-            data = json.loads(request.body)
-
-            logger.info(
-                f'POST REQUEST:\n Ex Dialog:{ex_id} | {data}'
-            )
-
-            value = data.get('value')
-
-            dialog = ExerciseEnglishDialog.objects.get(pk=ex_id)
-            exercise_result, _ = ExerciseEnglishDialogResult.objects.get_or_create(
-                dialog=dialog,
-            )
-            exercise_result.points = value
-            exercise_result.save()
-
-            dialog.is_active = False
-            dialog.save()
-
-        return redirect('profile')
-
-
-@login_required
-def exercise_result_dialog_french_update(request, ex_id):
-    if request.method == 'POST':
-        with transaction.atomic():
-            data = json.loads(request.body)
-
-            logger.info(
-                f'POST REQUEST:\n Ex Dialog:{ex_id} | {data}'
-            )
-
-            value = data.get('value')
-
-            dialog = ExerciseFrenchDialog.objects.get(pk=ex_id)
-            exercise_result, _ = ExerciseFrenchDialogResult.objects.get_or_create(
-                dialog=dialog,
-            )
-            exercise_result.points = value
-            exercise_result.save()
-
-            dialog.is_active = False
-            dialog.save()
-
-        return redirect('profile')
-
-# TODO: add result for IrregularVerbs

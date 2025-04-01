@@ -1,0 +1,44 @@
+.profile-wrap {
+    padding: 1rem;
+
+    .data-row {
+        margin: 1rem 2rem;
+
+        .col.avatar {
+            max-width: fit-content;
+        }
+    }
+
+    .personal-wrap {
+        padding: 1rem;
+        border-radius: 1rem 0 0 1rem;
+        background-color: var(--purple-900);
+        color: white;
+        box-shadow: .2rem .2rem .2rem .2rem rgba(0, 0, 0, .15);
+    
+        .name-wrap {
+            .col {
+                max-width: fit-content;
+                padding: 0 .5rem;
+    
+                .user-data {
+                    color: var(--amber-a400);
+                }
+            }
+        }
+    }
+
+    .statistics-wrap {
+        padding: 1rem;
+        border-radius: 0 1rem 1rem 0;
+        background-color: var(--indigo-200);
+        color: var(--indigo-900);
+        box-shadow: .2rem .2rem .2rem .2rem rgba(0, 0, 0, .15);
+
+        .name-wrap {
+            .col {
+                white-space: nowrap;
+            }
+        }
+    }
+}

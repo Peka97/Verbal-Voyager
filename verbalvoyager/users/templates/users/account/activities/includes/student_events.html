@@ -39,11 +39,11 @@
 
                             {{ event.datetime|localtime|datetime_plus_duration:event.duration }}
 
-                            {% if event|student_dang_lesson:event.datetime|localtime %}
+                            {% comment %} {% if event|student_dang_lesson:event.datetime|localtime %}
                                 <i class="bi bi-exclamation-octagon"></i>
                             {% elif event|student_warn_lesson:event.datetime|localtime %}
                                 <i class="bi bi-exclamation-triangle"></i>
-                            {% endif %}
+                            {% endif %} {% endcomment %}
 
                             <br>
 
@@ -53,13 +53,13 @@
                         <div class="event-info">
                             <div class='lesson-statuses'>
                                 <div class="tooltip-container">
-                                    {% if lsn.status == 'P' %}
+                                    {% if event.status == 'P' %}
                                         <span class="tooltip">Запланирован</span>
                                         <i class="bi bi-clock performing-status" name={{lsn.status}}></i>
-                                    {% elif lsn.status == 'C' %}
+                                    {% elif event.status == 'C' %}
                                         <span class="tooltip">Отменён</span>
                                         <i class="bi bi-x-circle performing-status" name={{lsn.status}}></i>
-                                    {% elif lsn.status == 'M' %}
+                                    {% elif event.status == 'M' %}
                                         <span class="tooltip">Пропущен</span>
                                         <i class="bi bi-person-x performing-status" name={{lsn.status}}></i>
                                     {% else %}
