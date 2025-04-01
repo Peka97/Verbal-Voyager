@@ -1,6 +1,5 @@
 import json
 from collections import defaultdict
-from pprint import pprint
 
 from django.http import JsonResponse
 from django.db import transaction
@@ -22,7 +21,6 @@ def filter_lessons_by_student(request, student_id):
 
 def update(request):
     data = json.loads(request.body)
-    pprint(data)
 
     if data.get('tasks'):
         tasks_to_create = data['tasks']['toCreate']
@@ -37,7 +35,6 @@ def update(request):
                     lesson_id=Lesson.objects.get(
                         pk=int(task_data['createFor'])),
                 )
-                print(new_task)
                 new_task.save()
 
         if tasks_to_update:
