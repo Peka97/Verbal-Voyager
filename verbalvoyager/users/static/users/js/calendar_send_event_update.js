@@ -73,6 +73,7 @@ function changeCheckbox(event) {
     const lessonId = changedCheckbox.parentElement.parentElement.parentElement.parentElement.id.split('_')[1];
 
     let method;
+    
     if (isNewLessonTask) {
         method = 'toCreate';
     } else {
@@ -287,7 +288,7 @@ function changeTaskAdderToTask(event) {
         let taskId = lessonTaskElement.firstChild.id
         let method;
 
-        if (taskId === undefined || lessonTaskElement.classList.contains('edit-lesson-task')) {
+        if (taskId === undefined || lessonTaskElement.classList.contains('update-lesson-task')) {
             taskId = newTaskDiv.id
             method = 'toUpdate'
         } else {
@@ -357,7 +358,7 @@ function editTask(event) {
 
     removeAllChildren(lessonTaskElement)
     lessonTaskElement.classList.remove('lesson-task');
-    lessonTaskElement.classList.add('new-lesson-task');
+    lessonTaskElement.classList.add('update-lesson-task');
     let taskForm = getTaskForm();
     taskForm.children[0].value = taskOldNameValue
     taskForm.children[0].id = taskOldId
