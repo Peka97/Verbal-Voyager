@@ -417,11 +417,8 @@ class ReviewAdmin(admin.ModelAdmin):
 class CourseAdmin(admin.ModelAdmin):
     show_full_result_count = False
 
+    @log_action
     def save_model(self, request, obj, form, change):
-        if obj:
-            obj.save()
-            log_action(request.user, obj, f'{self.model} [{obj.pk}] saved')
-
         return super().save_model(request, obj, form, change)
 
 
