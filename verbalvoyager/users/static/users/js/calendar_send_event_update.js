@@ -6,14 +6,14 @@ const checkBoxElements = document.querySelectorAll('input[type="checkbox"][name=
 const sendEventUpdateButtonPanelElement = document.querySelector('div#panel-send-event-update');
 const sendEventUpdateButtonElement = document.querySelector('div#btn-send-event-update');
 const cancelSendEventUpdateButtonElement = document.querySelector('div#btn-cancel-send-event-update');
-let sendingBlock = false;
 
-let sendEventUpdateButtonPanelIsHidden = true;
+let sendingBlock = false;
 let dataToSend = {
     lessons: {},
     tasks: {
         toCreate: {},
-        toUpdate: {}
+        toUpdate: {},
+        toDelete: [],
     },
 };
 let dataOld = {
@@ -34,7 +34,6 @@ iconPaymentStatusElements.forEach(elem => {
 
 EventStatusChangerElements.forEach((elem) => {
     const lessonId = elem.parentElement.id.split('_')[1];
-    // let iconElements = [...elem.children].filter(el => el.tagName === 'I');
     const currentPerformingStatus = elem.querySelector('i.performing-status');
     const currentPaymentStatus = elem.querySelector('i.payment-status');
 
@@ -63,10 +62,6 @@ sendEventUpdateButtonElement.addEventListener('click', sendEventUpdate);
 cancelSendEventUpdateButtonElement.addEventListener('click', cancelSendEventUpdate);
 
 function changeCheckbox(event) {
-    if (sendEventUpdateButtonPanelIsHidden) {
-        removeHiddenCheckbox();
-    }
-
     let changedCheckbox = event.target;
     const isNewLessonTask = changedCheckbox.parentElement.classList.contains('new-lesson-task');
     const labelCheckboxText = changedCheckbox.parentElement.querySelector('label').innerText;
@@ -86,14 +81,8 @@ function changeCheckbox(event) {
         isCompleted: changedCheckbox.checked,
         createFor: lessonId,
     }
-}
-
-function removeHiddenCheckbox() {
-    sendEventUpdateButtonPanelElement.classList.remove('hidden');
-
-    checkBoxElements.forEach((checkbox) => {
-        checkbox.removeEventListener('change', removeHiddenCheckbox);
-    });
+    
+    sendEventUpdatePanelShowCheck()
 }
 
 function sendEventUpdate(event) {
@@ -123,9 +112,10 @@ function sendEventUpdate(event) {
 
     fetch(url, data).then(resp => {
         if (resp.ok) {
-            const eventUpdatedCount = Object.keys(dataToSend.tasks.toCreate).length + Object.keys(dataToSend.tasks.toUpdate).length + Object.keys(dataToSend.lessons).length
-            showToast(`${eventUpdatedCount} событие(-ий) обновлено`);
+            const eventUpdatedCount = Object.keys(dataToSend.tasks.toCreate).length + Object.keys(dataToSend.tasks.toUpdate).length + Object.keys(dataToSend.tasks.toDelete).length + Object.keys(dataToSend.lessons).length
             sendingBlock = true;
+
+            showToast(`${eventUpdatedCount} событие(-ий) обновлено`);
             return resp.json();
         } else {
             showToast(`Ошибка обновления событий. Код ${resp.status}`);
@@ -141,10 +131,6 @@ function cancelSendEventUpdate() {
 }
 
 function changeEventPerforming(event) {
-    if (sendEventUpdateButtonPanelIsHidden) {
-        removeHiddenCheckbox();
-    }
-
     let iconElement = event.target
     let tooltipElement = event.target.previousElementSibling
 
@@ -177,13 +163,10 @@ function changeEventPerforming(event) {
         
     dataToSend.lessons[lessonId].performing = event.target.attributes.name.value
 
+    sendEventUpdatePanelShowCheck()
 }
 
 function changeEventPayment(event) {
-    if (sendEventUpdateButtonPanelIsHidden) {
-        removeHiddenCheckbox();
-    }
-
     let iconElement = event.target
     let tooltipElement = event.target.previousElementSibling
     
@@ -204,31 +187,36 @@ function changeEventPayment(event) {
     }
 
     dataToSend.lessons[lessonId].payment = iconElement.classList.contains("paid");
+
+    sendEventUpdatePanelShowCheck()
 }
 
 // Add new lesson task
-var newTaskButtons = [...document.getElementsByClassName('new-task-button')];
-let taskEditButtonElements = [...document.getElementsByClassName('task-edit-icon')];
+const newTaskButtons = [...document.getElementsByClassName('new-task-button')];
+const taskEditButtonElements = [...document.getElementsByClassName('task-edit-icon')];
+const taskDeleteButtonElements = [...document.getElementsByClassName('task-delete-icon')];
 
 taskEditButtonElements.forEach(element => {
     element.addEventListener('click', editTask)});
 
-newTaskButtons.forEach(btn => {
-    btn.addEventListener('click', (event) => {
-        const lessonId = event.target.parentElement.parentElement.id.split('_')[1];
-        let tasksContainerElement = event.target.parentElement.parentElement.querySelector('.task-container');
+    newTaskButtons.forEach(btn => {
+        btn.addEventListener('click', (event) => {
+            let tasksContainerElement = event.target.parentElement.parentElement.querySelector('.task-container');
 
-        if (tasksContainerElement.children[1].classList.contains('not-tasks')) {
-            tasksContainerElement.children[1].remove()
-            let newChecklist = document.createElement('div');
-            newChecklist.classList.add('checklist');
-            
-            tasksContainerElement.insertBefore(newChecklist, tasksContainerElement.querySelector('span.new-task-button'));
-        }
-
+            if (tasksContainerElement.children[1].classList.contains('not-tasks')) {
+                tasksContainerElement.children[1].remove()
+                let newChecklist = document.createElement('div');
+                newChecklist.classList.add('checklist');
+                
+                tasksContainerElement.insertBefore(newChecklist, tasksContainerElement.querySelector('span.new-task-button'));
+            }
         tasksContainerElement.appendChild(getTaskForm())
     });
 });
+
+taskDeleteButtonElements.forEach(element => {
+    element.addEventListener('click', deleteTask)}
+);
 
 function getTaskForm(method) {
     let classNamePrefix;
@@ -307,7 +295,8 @@ function changeTaskAdderToTask(event) {
             isCompleted: false,
             createFor: lessonId,
         }
-        sendEventUpdateButtonPanelElement.classList.remove('hidden');
+
+        sendEventUpdatePanelShowCheck()
         
     } else if (input.wrongInput) {
         input.wrongInput.classList.add('new-task-wrong');
@@ -344,9 +333,14 @@ function getLessonTaskDiv(lessonTaskInputElements) {
     taskEditButtonElement.classList.add('bi', 'bi-pen-fill', 'task-edit-icon');
     taskEditButtonElement.addEventListener('click', editTask);
 
+    let taskDeleteButtonElement = document.createElement('i');
+    taskDeleteButtonElement.classList.add('bi', 'bi-trash', 'task-delete-icon');
+    taskDeleteButtonElement.addEventListener('click', deleteTask);
+
     lessonTaskDivElement.appendChild(taskInputElement);
     lessonTaskDivElement.appendChild(taskLabelElement);
     lessonTaskDivElement.appendChild(taskEditButtonElement);
+    lessonTaskDivElement.appendChild(taskDeleteButtonElement);
 
     return {id: newLessonTaskId, element: lessonTaskDivElement};
 }
@@ -369,4 +363,33 @@ function removeAllChildren(element) {
     while (element.firstChild) {
         element.removeChild(element.firstChild);
     }
-  }
+}
+
+function deleteTask(event) {
+    let lessonTaskElement = event.target.parentElement;
+    const lessonTaskId = lessonTaskElement.children[0].id
+    lessonTaskElement.remove()
+    
+
+    if (lessonTaskId in dataToSend.tasks.toCreate) {
+        delete dataToSend.tasks.toCreate[lessonTaskId];
+    } else {
+        dataToSend.tasks.toDelete.push(lessonTaskId);
+    }
+
+    sendEventUpdatePanelShowCheck()
+}
+
+function sendEventUpdatePanelShowCheck() {
+    const dataToSendCounts = Object.keys(dataToSend.lessons).length +
+        Object.keys(dataToSend.tasks.toCreate).length +
+        Object.keys(dataToSend.tasks.toUpdate).length +
+        Object.keys(dataToSend.tasks.toDelete).length
+
+    if (dataToSendCounts > 0) {
+        sendEventUpdateButtonPanelElement.classList.remove('hidden');
+        return
+    }
+
+    sendEventUpdateButtonPanelElement.classList.add('hidden');
+}

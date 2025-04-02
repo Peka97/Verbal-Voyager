@@ -88,6 +88,9 @@ class LessonTask(models.Model):
         null=True
     )
 
+    def save(self, force_insert=..., force_update=..., using=..., update_fields=...):
+        return super().save(force_insert, force_update, using, update_fields)
+
     def __str__(self):
         return self.name if self.name else 'None'
 
@@ -152,13 +155,16 @@ class Lesson(models.Model):
         null=True
     )
 
+    def get_admin_edit_url(self):
+        return reverse('admin:event_calendar_lesson_change', args=[quote(self.pk)])
+
     def save(self,  *args, **kwargs):
-        super().save(*args, **kwargs)
+        result = super().save(*args, **kwargs)
+
         if self.lesson_plan.first():
             self.lesson_plan.first().save()
 
-    def get_admin_edit_url(self):
-        return reverse(f'admin:{self._meta.app_label}_{self._meta.model_name}_change', args=[quote(self.pk)])
+        return result
 
     def get_lesson_time(self):
         time_end = (
@@ -206,7 +212,7 @@ class ProjectTask(models.Model):
         except FieldError:
             pass
 
-        super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name} [Project: {self.project_id}]"
