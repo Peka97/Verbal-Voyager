@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.contrib.auth import get_user_model
 
 from logger import get_logger
-from .models import Lesson, LessonTask, Project
+from .models import Lesson, LessonTask
 
 
 logger = get_logger()

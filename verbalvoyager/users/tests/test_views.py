@@ -1,13 +1,6 @@
 import pytest
 from django.urls import reverse
 
-from django.contrib.auth import get_user_model
-
-
-# Fixtures
-
-User = get_user_model()
-
 
 @pytest.fixture
 def data_with_wrong_fields():
@@ -56,22 +49,22 @@ def test_user_auth_get_success(client):
     response = client.get(url)
     assert response.status_code == 200
 
-# TODO: auth not successful
-
 
 @pytest.mark.django_db
-def test_user_auth_redirect_and_success(client, student_user):
+def test_user_auth_success_and_redirect(client, student_user):
     url = reverse('auth')
     data = {
-        'login': student_user.username,
-        'password': student_user.password
+        'login': 'student_user',
+        'password': 'password'
     }
 
     response = client.post(url, data)
     assert response.status_code == 302
+    assert client.session['_auth_user_id'] == str(student_user.id)
 
     response = client.post(url, data, follow=True)
     assert response.status_code == 200
+    # TODO: check redirect url
 
 
 @pytest.mark.django_db
@@ -137,90 +130,84 @@ def test_user_reset_password_get_success(client):
 
 
 @pytest.mark.django_db
-def test_account_activities_groupless_user_account_success(client, groupless_user):
-    client.login(username=groupless_user.username,
-                 password=groupless_user.password)
+def test_account_activities_groupless_user_account_success(groupless_user_client):
     url = reverse("account", kwargs={"current_pane": "activities"})
-    assert client.get(url, follow=True).status_code == 200
+    response = groupless_user_client.get(url, follow=True)
+    assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_account_activities_student_account_success(client, student_user):
-    client.login(username=student_user.username,
-                 password=student_user.password)
+def test_account_activities_student_account_success(student_client):
     url = reverse("account", kwargs={"current_pane": "activities"})
-    assert client.get(url, follow=True).status_code == 200
+    response = student_client.get(url, follow=True)
+    assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_account_activities_teacher_account_success(client, teacher_user):
-    client.login(username=teacher_user.username,
-                 password=teacher_user.password)
+def test_account_activities_teacher_account_success(teacher_client):
     url = reverse("account", kwargs={"current_pane": "activities"})
-    assert client.get(url, follow=True).status_code == 200
+    response = teacher_client.get(url, follow=True)
+    assert response.status_code == 200
 
 
 @pytest.mark.django_db
 def test_account_activities_anonimous_redirection(client):
     url = reverse("account", kwargs={"current_pane": "activities"})
-    assert client.get(url).status_code == 302
+    response = client.get(url)
+    assert response.status_code == 302
 
 
 @pytest.mark.django_db
-def test_account_profile_groupless_user_account_success(client, groupless_user):
-    client.login(username=groupless_user.username,
-                 password=groupless_user.password)
+def test_account_profile_groupless_user_account_success(groupless_user_client):
     url = reverse("account", kwargs={"current_pane": "profile"})
-    assert client.get(url, follow=True).status_code == 200
+    response = groupless_user_client.get(url, follow=True)
+    assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_account_profile_student_account_success(client, student_user):
-    client.login(username=student_user.username,
-                 password=student_user.password)
+def test_account_profile_student_account_success(student_client):
     url = reverse("account", kwargs={"current_pane": "profile"})
-    assert client.get(url, follow=True).status_code == 200
+    response = student_client.get(url, follow=True)
+    assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_account_profile_teacher_account_success(client, teacher_user):
-    client.login(username=teacher_user.username,
-                 password=teacher_user.password)
+def test_account_profile_teacher_account_success(teacher_client):
     url = reverse("account", kwargs={"current_pane": "profile"})
-    assert client.get(url, follow=True).status_code == 200
+    response = teacher_client.get(url, follow=True)
+    assert response.status_code == 200
 
 
 @pytest.mark.django_db
 def test_account_profile_anonimous_redirection(client):
     url = reverse("account", kwargs={"current_pane": "profile"})
-    assert client.get(url).status_code == 302
+    reponse = client.get(url)
+    assert reponse.status_code == 302
 
 
 @pytest.mark.django_db
-def test_account_exercises_groupless_user_account_success(client, groupless_user):
-    client.login(username=groupless_user.username,
-                 password=groupless_user.password)
+def test_account_exercises_groupless_user_account_success(groupless_user_client):
     url = reverse("account", kwargs={"current_pane": "exercises"})
-    assert client.get(url, follow=True).status_code == 200
+    response = groupless_user_client.get(url, follow=True)
+    assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_account_exercises_student_account_success(client, student_user):
-    client.login(username=student_user.username,
-                 password=student_user.password)
+def test_account_exercises_student_account_success(student_client):
     url = reverse("account", kwargs={"current_pane": "exercises"})
-    assert client.get(url, follow=True).status_code == 200
+    response = student_client.get(url, follow=True)
+    assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_account_exercises_teacher_account_success(client, teacher_user):
-    client.login(username=teacher_user.username,
-                 password=teacher_user.password)
+def test_account_exercises_teacher_account_success(teacher_client):
     url = reverse("account", kwargs={"current_pane": "exercises"})
-    assert client.get(url, follow=True).status_code == 200
+    response = teacher_client.get(url, follow=True)
+    assert response.status_code == 200
 
 
 @pytest.mark.django_db
 def test_account_exercises_anonimous_redirection(client):
     url = reverse("account", kwargs={"current_pane": "exercises"})
-    assert client.get(url).status_code == 302
+    response = client.get(url)
+    assert response.status_code == 302

@@ -13,8 +13,8 @@ from .filters import TeachersListFilter, StudentsListFilter
 from logger import get_logger
 from event_calendar.models import Lesson, Course, Review, ProjectType, Project, ProjectTask, LessonTask
 from event_calendar.forms import LessonAdminForm, ProjectAdminForm
-from lesson_plan.models import EnglishLessonPlan, EnglishLessonMainAims, EnglishLessonSubsidiaryAims
-from lesson_plan.admin import EnglishLessonPlanAdmin, EnglishLessonMainAimsInline, EnglishLessonSubsidiaryAimsInline
+from lesson_plan.models import EnglishLessonPlan
+from lesson_plan.admin import EnglishLessonPlanAdmin
 from logging_app.helpers import log_action
 
 

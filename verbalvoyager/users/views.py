@@ -95,18 +95,15 @@ def user_account(request, current_pane):
     }
 
     if request.method == 'POST':
-        # instance=request.user, если поле timezone в модели пользователя
         form = TimezoneForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
             messages.success(request, 'Часовой пояс успешно обновлен.')
-            # Замените 'profile' на URL вашего профиля
             url = reverse('account', kwargs={'current_pane': 'profile'})
             return redirect(url)
         else:
             messages.error(request, 'Ошибка при обновлении часового пояса.')
     else:
-        # instance=request.user, если поле timezone в модели пользователя
         context['timezone_form'] = TimezoneForm(instance=request.user)
 
     if user.is_supervisor():
