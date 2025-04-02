@@ -34,8 +34,8 @@
                                         <i class="bi bi-door-open"></i>
                                     {% endif %}
                                 </div>
-                                {% endwith %}
                             </div>
+                            {% endwith %}
 
 
                             {{ event.datetime|localtime|datetime_plus_duration:event.duration }}
@@ -45,8 +45,6 @@
                             {% elif event|student_warn_lesson %}
                                 <i class="bi bi-exclamation-triangle"></i>
                             {% endif %}
-
-                            {% endwith %}
 
                             <br>
 
