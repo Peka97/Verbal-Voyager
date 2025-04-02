@@ -24,13 +24,16 @@
                                         {% elif lsn|student_warn_lesson %}
                                             <i class="bi bi-exclamation-triangle"></i>
                                         {% endif %}
+
                                     {% endfor %}
                                 {% else %}
+
                                     {% if lesson|student_dang_lesson %}
                                         <i class="bi bi-exclamation-octagon"></i>
                                     {% elif lesson|student_warn_lesson %}
                                         <i class="bi bi-exclamation-triangle"></i>
                                     {% endif %}
+                                    
                                 {% endif %}
                                         
                                 <br>
@@ -109,7 +112,8 @@
                                                             <input {% if task.is_completed %} checked {% endif %} name="task" type="checkbox" id="{{ task.pk }}">
                                                             <label for="{{ task.pk }}">{{ task.name }} ({{task.points}} point{{task.points|pluralize}})
                                                             </label>
-                                                            <i class="bi bi-pen-fill task-edit-icon "></i>
+                                                            <i class="bi bi-pen-fill task-edit-icon"></i>
+                                                            <i class="bi bi-trash task-delete-icon"></i>
                                                         </div>
                                                     {% endfor %}
                                                 </div>
@@ -164,9 +168,9 @@
                                                     {% for task in tasks %}
                                                         <div class='lesson-task'>
                                                             <input {% if task.is_completed %} checked {% endif %} name="task" type="checkbox" id="{{ task.pk }}">
-                                                            <label for="{{ task.pk }}">{{ task.name }} ({{task.points}} point{{task.points|pluralize}})
-                                                            </label>
+                                                            <label for="{{ task.pk }}">{{ task.name }} ({{task.points}} point{{task.points|pluralize}})</label>
                                                             <i class="bi bi-pen-fill task-edit-icon"></i>
+                                                            <i class="bi bi-trash task-delete-icon"></i>
                                                         </div>
                                                     {% endfor %}
                                                 </div>

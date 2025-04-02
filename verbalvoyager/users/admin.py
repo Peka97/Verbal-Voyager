@@ -4,7 +4,6 @@ from django.contrib.auth.models import Group
 
 from .models import User
 from pages.filters import DropdownFilter, RelatedDropdownFilter
-from logging_app.helpers import log_action
 
 
 @admin.register(User)

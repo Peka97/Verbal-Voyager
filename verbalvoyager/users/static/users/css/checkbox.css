@@ -13,8 +13,9 @@
     position: relative;
     padding-left: 2vw;
     display: grid;
-    grid-template-columns: 30px fit-content(70%) fit-content(10%);
+    grid-template-columns: 30px fit-content(70%) fit-content(10%) fit-content(10%);
     align-items: center;
+    gap: .5rem
   }
   
   .checklist .lesson-task label {
@@ -25,7 +26,7 @@
     align-items: center;
     width: fit-content;
     transition: color 0.3s ease;
-    margin-right: 20px;
+    /* margin-right: 20px; */
   }
 
 span.not-tasks {
@@ -62,12 +63,12 @@ span.not-tasks {
     width: 15px;
     outline: none;
     border: 0;
-    margin: 0 15px 0 0;
+    /* margin: 0 15px 0 0; */
     cursor: pointer;
     background: var(--background);
     display: grid;
     align-items: center;
-    margin-right: 20px;
+    /* margin-right: 20px; */
   }
   
   .checklist .lesson-task input[type="checkbox"]::before, .checklist input[type="checkbox"]::after {

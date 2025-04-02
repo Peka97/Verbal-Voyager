@@ -34,16 +34,17 @@
                                         <i class="bi bi-door-open"></i>
                                     {% endif %}
                                 </div>
-                                {% endwith %}
                             </div>
+                            {% endwith %}
+
 
                             {{ event.datetime|localtime|datetime_plus_duration:event.duration }}
 
-                            {% comment %} {% if event|student_dang_lesson:event.datetime|localtime %}
+                            {% if event|student_dang_lesson %}
                                 <i class="bi bi-exclamation-octagon"></i>
-                            {% elif event|student_warn_lesson:event.datetime|localtime %}
+                            {% elif event|student_warn_lesson %}
                                 <i class="bi bi-exclamation-triangle"></i>
-                            {% endif %} {% endcomment %}
+                            {% endif %}
 
                             <br>
 

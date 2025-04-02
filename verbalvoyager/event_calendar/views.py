@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.contrib.auth import get_user_model
 
 from logger import get_logger
-from .models import Lesson, LessonTask, Project
+from .models import Lesson, LessonTask
 
 
 logger = get_logger()
@@ -25,17 +25,23 @@ def update(request):
     if data.get('tasks'):
         tasks_to_create = data['tasks']['toCreate']
         tasks_to_update = data['tasks']['toUpdate']
+        tasks_to_delete = data['tasks']['toDelete']
 
         if tasks_to_create:
+            tasks_obj = []
+
             for task_data in tasks_to_create.values():
-                new_task = LessonTask.objects.create(
+                new_task = LessonTask(
                     name=task_data['name'],
                     points=task_data['points'],
                     is_completed=task_data['isCompleted'],
-                    lesson_id=Lesson.objects.get(
-                        pk=int(task_data['createFor'])),
                 )
-                new_task.save()
+                new_task.lesson_id = Lesson.objects.get(
+                    pk=int(task_data['createFor']))
+                tasks_obj.append(new_task)
+
+            with transaction.atomic():
+                LessonTask.objects.bulk_create(tasks_obj)
 
         if tasks_to_update:
             updated_fields = set()
@@ -58,10 +64,12 @@ def update(request):
                         updated_task.is_completed = task_data['isCompleted']
                         updated_fields.add('is_completed')
 
-            if updated_fields:
-                with transaction.atomic():
-                    LessonTask.objects.bulk_update(
-                        tasks.values(), updated_fields)
+            with transaction.atomic():
+                LessonTask.objects.bulk_update(
+                    tasks.values(), updated_fields)
+
+        if tasks_to_delete:
+            LessonTask.objects.filter(pk__in=tasks_to_delete).delete()
 
     if data.get('lessons'):
         lesson_obj = Lesson.objects.filter(pk__in=data['lessons'].keys()).all()

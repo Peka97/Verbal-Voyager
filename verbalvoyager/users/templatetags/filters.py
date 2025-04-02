@@ -1,7 +1,11 @@
+import pytz
 from datetime import datetime, timedelta
 
 from logger import get_logger
 from django import template
+
+from verbalvoyager.settings import TIME_ZONE
+
 
 register = template.Library()
 
@@ -39,53 +43,65 @@ def time(value):
 
 @register.filter(name="teacher_warn_lesson")
 def teacher_warn_lesson(lesson):
+    tz_server = pytz.timezone(TIME_ZONE)
+    tz_user = pytz.timezone(lesson.teacher_id.timezone)
+    user_lesson_datetime = lesson.datetime.astimezone(tz_user)
+
     # Урок оплачен, но отменён.
     if lesson.is_paid and lesson.status in ('C',):
         return True
 
     # Урок не оплачен, до урока меньше суток.
-    if not lesson.is_paid and (lesson.datetime + timedelta(days=1)) >= datetime.today():
+    if not lesson.is_paid and (user_lesson_datetime + timedelta(days=1)) >= datetime.today().astimezone(tz_server):
         return True
-
-    # Урок оплачен, запланированное время прошло, но статус не завершён или отменён.
-    # if lesson.is_paid and lesson.datetime >= datetime.today() and lesson.status not in ('D', 'C'):
-    #     return True
 
 
 @register.filter(name="teacher_dang_lesson")
 def teacher_dang_lesson(lesson):
+    tz_server = pytz.timezone(TIME_ZONE)
+    tz_user = pytz.timezone(lesson.teacher_id.timezone)
+    user_lesson_datetime = lesson.datetime.astimezone(tz_user)
+
     # Урок не оплачен и проведён.
     if not lesson.is_paid and lesson.status in ('D',):
         return True
 
     # Урок не оплачен, до урока меньше 2-х часов.
-    if not lesson.is_paid and (lesson.datetime + timedelta(hours=2)) >= datetime.today():
+    if not lesson.is_paid and (user_lesson_datetime + timedelta(hours=2)) >= datetime.today().astimezone(tz_server):
         return True
 
 
 @register.filter(name="student_warn_lesson")
 def student_warn_lesson(lesson):
+    tz_server = pytz.timezone(TIME_ZONE)
+    tz_user = pytz.timezone(lesson.teacher_id.timezone)
+    user_lesson_datetime = lesson.datetime.astimezone(tz_user)
+
     # Урок оплачен, но отменён.
     if lesson.is_paid and lesson.status in ('C',):
         return True
 
     # Урок не оплачен, до урока меньше суток.
-    if not lesson.is_paid and lesson.status in ('P', ) and (lesson.datetime - timedelta(days=1)) <= datetime.today():
+    if not lesson.is_paid and lesson.status in ('P', ) and (user_lesson_datetime - timedelta(days=1)) <= datetime.today().astimezone(tz_server):
         return True
 
     # Урок оплачен, запланированное время прошло, но статус не завершён или отменён.
-    # if lesson.is_paid and lesson.datetime >= datetime.today() and lesson.status not in ('D', 'C'):
-    #     return True
+    if lesson.is_paid and user_lesson_datetime <= datetime.today().astimezone(tz_server) and lesson.status not in ('D', 'C'):
+        return True
 
 
 @register.filter(name="student_dang_lesson")
 def student_dang_lesson(lesson):
+    tz_server = pytz.timezone(TIME_ZONE)
+    tz_user = pytz.timezone(lesson.teacher_id.timezone)
+    user_lesson_datetime = lesson.datetime.astimezone(tz_user)
+
     # Урок не оплачен и проведён.
     if not lesson.is_paid and lesson.status in ('D',):
         return True
 
     # Урок не оплачен, до урока меньше 2-х часов.
-    if not lesson.is_paid and lesson.status in ('P', ) and (lesson.datetime - timedelta(hours=2)) <= datetime.today():
+    if not lesson.is_paid and lesson.status in ('P', ) and (user_lesson_datetime - timedelta(hours=2)) <= datetime.today().astimezone(tz_server):
         return True
 
 

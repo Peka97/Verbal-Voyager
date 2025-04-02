@@ -441,7 +441,11 @@ div.tab-content {
                             }
 
                             .task-edit-icon {
-                                color: var(--indigo-700);
+                                color: var(--indigo-700) !important;
+                            }
+
+                            .task-delete-icon {
+                                color: var(--red-a700) !important;
                             }
 
                             .edit-lesson-task, .new-lesson-task {
