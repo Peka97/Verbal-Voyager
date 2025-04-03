@@ -133,6 +133,9 @@ else:
             'PASSWORD': CURRENT_CONFIG.psql_pswd,
             'HOST': 'localhost',
             'PORT': '',
+            'TEST': {
+                'NAME': 'test_verbal_voyager',
+            },
         }
     }
 
