@@ -6,12 +6,13 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
+
 from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteView
 from django.contrib import messages
 
 from logger import get_logger
 from users.forms import RegistrationUserForm, CustomPasswordResetForm
-from users.utils import get_words_learned_count, get_exercises_done_count
+from users.utils import get_words_learned_count, get_exercises_done_count, init_student_demo_access
 from users.forms import TimezoneForm
 from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 from event_calendar.models import Lesson, Project, Course
@@ -40,6 +41,12 @@ def user_auth(request, **kwargs):
                 user.save()
 
                 login(request, user)
+                
+                try:
+                    init_student_demo_access(user)
+                except Exception as err:
+                    logger.error(f'Fail create demo exercises: {user}', exc_info=True)
+                    
                 return redirect('')
             else:
                 context['form'] = form
@@ -59,26 +66,6 @@ def user_auth(request, **kwargs):
                 context['auth_error'] = 'Неправильное имя пользователя или пароль'
 
     return render(request, 'users/auth.html', context)
-
-
-def user_sign_up(request):
-    context = {}
-    if request.method == 'GET':
-        form = RegistrationUserForm()
-
-    if request.method == 'POST':
-        form = RegistrationUserForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password1']
-            user = authenticate(request, username=username, password=password)
-            login(request, user)
-            return redirect('')
-
-    context['form'] = form
-
-    return render(request, 'users/sign_up.html', context)
 
 
 def user_logout(request):

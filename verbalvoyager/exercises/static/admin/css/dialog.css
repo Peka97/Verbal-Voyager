@@ -1,5 +1,54 @@
+.hidden {
+    display: none;
+}
+
 .disabled-link {
     pointer-events: none;  /* Отключаем клик */
-    opacity: 0.5;         /* Делаем полупрозрачной */
-    color: gray;          /* Делаем серый цвет */
 }
+
+.wrapper__block-generate {
+    margin-left: 10px;
+}
+
+.generate-title {
+    margin-bottom: 10px;
+}
+
+.generate-input, .generate-select {
+    height: max-content;
+    width: max-content;
+}
+
+.generate-select {
+    margin: 0 10px;
+}
+
+.button__generate-dialog {
+    margin: auto;
+    vertical-align: middle;
+    font-size: 1.5rem;
+    transition: all ease-in-out .5ms;
+}
+
+.button__generate-dialog:hover {
+    transform: scale(1.1);
+}
+
+.loader__generate-dialog {
+    margin: auto;
+    vertical-align: middle;
+    font-size: 1.5rem;
+}
+
+.loader-animation {
+    animation: rotate-animation-ease-in-out 2s ease-in-out infinite;
+}
+
+@keyframes rotate-animation-ease-in-out {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }

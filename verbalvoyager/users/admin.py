@@ -50,6 +50,12 @@ class CustomUserAdmin(UserAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
+        
+        if request.user.username != 'admin':
+            queryset = queryset \
+            .exclude(username='admin') \
+            .exclude(groups__name__in=['TeacherDemo'])
+            
         return queryset.prefetch_related('groups')
 
     def get_fieldsets(self, request, obj=None):
@@ -69,6 +75,5 @@ class CustomUserAdmin(UserAdmin):
             user = request.user
 
             if user.username != 'admin' and user.groups.filter(name='Teacher').exists():
-                student_group = Group.objects.get(name='Student')
-                kwargs['queryset'] = Group.objects.filter(pk=student_group.pk)
+                kwargs['queryset'] = Group.objects.filter(name__in=['Student', 'StudentDemo'])
         return super().formfield_for_manytomany(db_field, request, **kwargs)

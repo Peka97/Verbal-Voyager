@@ -188,11 +188,11 @@ body {
 
 .text-container {
   height: fit-content;
-  align-self: center;
+  align-self: start;
   background-color: #5c71b2;
   border-radius: 10px;
   padding: 10px; 
-  margin-bottom: 10px; 
+  margin-top: 10px; 
 }
 
 .hidden {

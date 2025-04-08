@@ -20,7 +20,6 @@ def generate_dialog(lang: str, word_ids: list, sentence_count: int, level: str) 
 
     word_objects = [word_obj.objects.get(pk=word_id) for word_id in word_ids]
     words = ', '.join(word.word for word in word_objects)
-    print(words)
 
     completion = client.chat.completions.create(
         extra_headers={
@@ -34,10 +33,11 @@ def generate_dialog(lang: str, word_ids: list, sentence_count: int, level: str) 
                 "content": f"""
                 Придумай небольшой диалог ({sentence_count} реплик на каждого) двух друзей на {lang} языке с использованием следующих слов: {words}. 
                 Уровень языка {level}.
-                Используй сделующую структуру:\n 
-                *здесь краткое описание ситуации, в которой находятся друзья*
-                *имя первого друга*: *текст*
-                *имя второго друга*: *текст*
+                Используй строго следующую структуру:\n 
+                "Situation: [здесь краткое описание ситуации, в которой находятся друзья]\n
+                [имя первого друга]: [текст]\n
+                [имя второго друга]: [текст]"\n
+                Ковычки и квадратные скобки из структуры выше убери в конечном варианте.
                 """
             }
         ]
