@@ -155,9 +155,14 @@ html, body {
     }
 }
 
-@media (max-width: 425px) {
+@media (max-width: 426px) {
     html, body {
-        font-size: 10px;
+        /* font-size: 10px; */
+        font-size: 12px;
+    }
+
+    .btn-default {
+        font-size: 1.2rem !important;
     }
 }
 

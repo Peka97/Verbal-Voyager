@@ -17,7 +17,12 @@
         box-shadow: .2rem .2rem .2rem .2rem rgba(0, 0, 0, .15);
     
         .name-wrap {
+            display: flex;
+            flex-wrap: wrap;
+
             .col {
+                display: flex;
+
                 max-width: fit-content;
                 padding: 0 .5rem;
     
@@ -41,4 +46,12 @@
             }
         }
     }
+}
+
+@media (max-width: 480px) {
+    .col.timezone {
+        flex: 0 0 100%;
+        max-width: 100% !important;
+    }
+    
 }
