@@ -43,7 +43,8 @@ class EnglishLessonPlanAdmin(NestedModelAdmin):
 
     @log_action
     def save_model(self, request, obj, form, change):
-        return super().save_model(request, obj, form, change)
+        saved_model = super().save_model(request, obj, form, change)
+        return saved_model
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)

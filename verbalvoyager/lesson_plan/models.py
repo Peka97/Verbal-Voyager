@@ -50,28 +50,33 @@ class EnglishLessonPlan(models.Model):
         null=True,
         help_text="Пройденные страницы"
     )
-    # Добавить поле с файлами
+    # TODO: Добавить поле с файлами
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
 
-        words = self.new_vocabulary
+    #     words = self.new_vocabulary
+    #     print(words)
+    #     print(self.exercise_id)
 
-        if not self.exercise_id and words.exists():
+    #     if not self.exercise_id and words.exists():
 
-            new_exercise = ExerciseEnglishWords.objects.create(
-                name=None,
-                student=self.lesson_id.student_id,
-                teacher=self.lesson_id.teacher_id,
-                is_active=True,
-            )
-            new_exercise.save()
-            new_exercise.words.set(words.all())
-            self.exercise_id = new_exercise
-            self.save()
+    #         new_exercise = ExerciseEnglishWords.objects.create(
+    #             name=None,
+    #             student=self.lesson_id.student_id,
+    #             teacher=self.lesson_id.teacher_id,
+    #             is_active=True,
+    #         )
+    #         new_exercise.save()
+    #         new_exercise.words.set(words.all())
+    #         self.exercise_id = new_exercise
+    #         self.save()
 
     def __str__(self):
-        return f"{self.theme} [{self.pk}]"
+        if self.theme:
+            return f"{self.theme} [{self.pk}]"
+        else:
+            return f"LessonPlan for {self.lesson_id.title}[{self.pk}]"
 
     class Meta:
         verbose_name = 'План урока'
