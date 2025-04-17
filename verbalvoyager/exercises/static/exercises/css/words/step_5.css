@@ -81,85 +81,62 @@ body>.words__container {
     }
 
     .words__block {
-        color: white;
+        justify-content: center;
+        text-align: center;
 
-        .row.word .col {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .word__block {
+
+            .word-translate {
+                padding-bottom: 1em;
+                font-size: 2.5em;
+                color: var(--amber-400);
+            }
+
+            .word_input__block {
+                max-width: 80vw;
+                margin: auto;
+
+                input {
+                    color: var(--amber-400);
+                    background-color: var(--deep-purple-700);
+                    border-color: var(--deep-purple-700);
+
+                    &:focus {
+                        color: var(--amber-400);
+                    }
+                }
+
+                label {
+                    color: var(--amber-400);
+
+                    &::after { 
+                        background-color: var(--deep-purple-400);
+                    }
+                }
+
+                input:focus + label {
+                    color: var(--amber-400);
+
+                    &::after {
+                        background-color: var(--deep-purple-400);
+                    }
+                }
+
+                input.wrong {
+                    border-color: var(--red-400);
+                }
+
+                input.correct {
+                    border-color: var(--green-a400);
+                }
+            }
         }
         
-        .col.words {
-            width: auto;
-
-            #words {
-
-                .row.word {
-                    width: auto;
-                    margin-bottom: 1rem;
-                    padding: 1rem;
-                    text-align: center;
-                    border: 2px solid var(--color-violet-pastel-dark);
-                    border-radius: 1em;
-                    background-color: var(--purple-900);
-                    color: var(--indigo-50);
-                    transition: background-color 0.5s;
-                    hyphens: auto;
-
-                    .col {
-                        height: 3rem;
-
-                        span {
-                            font-size: 1.5em;
-                            white-space: nowrap;
-                        }
-                    }
-                }
-            }
-        }
-
-        .col.translates {
-            width: auto;
-
-            #translates {
-
-                .row.translate {
-                    width: auto;
-                    padding: 1rem;
-                    margin-bottom: 1rem;
-                    text-align: center;
-                    border: 2px solid var(--color-violet-pastel-main);
-                    border-radius: 1em;
-                    background-color: var(--deep-purple-200);
-                    color: var(--indigo-900);
-                    transition: background-color 0.5s;
-
-                    .col {
-                        height: 3rem;
-                        
-                        span {
-                            font-size: 1.5em;
-                            hyphens: auto;
-                            
-                            i {
-                                margin-right: .2em;
-                                cursor: move;
-                            }
-                            
-                        }
-                    }
-                }
-
-                .swap-highlight {
-                    background-color: var(--deep-purple-a200) !important;
-                    color: white !important;
-                }
-            }
-        }
     }
     
     .row.btn__answer {
         justify-content: center;
+        margin: 1em 0;
 
         .btn__check {
             background-color: var(--purple-900);
@@ -219,17 +196,10 @@ body>.words__container {
     .bi.bi-rocket-takeoff::before {
         line-height: 1.5em !important;
     }
-
-    .col.words {
-        padding: 0;
-    }
-
-    .row.word, .row.translate {
-        margin-left: 0;
-        margin-right: 0;
-        padding: .5em 0 !important;
-        max-width: 48vw;
-    }
+    
+    .page-item:not(#prev_btn, #next_btn) {
+        display: none !important;
+      }
 }
 
 @media (max-width: 321px) {
@@ -245,5 +215,3 @@ body>.words__container {
         font-size: 1.1em !important;
     }
 }
-
-

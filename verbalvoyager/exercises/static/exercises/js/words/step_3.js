@@ -7,10 +7,14 @@ document.getElementById('step_2').classList.add('step-complete')
 const dropItems = document.getElementById('translates')
 new Sortable(dropItems, {
   animation: 150,
-  ghostClass: 'ghost',
+  swap : true,
+  swapClass : "swap-highlight",
+  ghostClass: "ghost",
   chosenClass: "chosen",
-  dragClass: "sortable-drag"
+  dragClass: "sortable-drag",
+  handle: ".drag-handle",
 });
+
 let points = [... document.getElementsByClassName('word')].length;
 const toastTrigger = document.getElementById('liveToastBtn');
 
@@ -19,12 +23,6 @@ if (toastTrigger) {
     checkAnswer();
   })
 }
-
-// Код для подсказок рядом с названием шага упражнения.
-// let popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-// let popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-//     return new bootstrap.Popover(popoverTriggerEl);
-// });
 
 function checkAnswer (event) {
     let words = document.getElementById('words').children

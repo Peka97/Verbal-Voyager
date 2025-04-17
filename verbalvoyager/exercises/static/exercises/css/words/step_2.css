@@ -87,15 +87,15 @@ body > .words__container {
 
 .word__block.watched {
   .word__variant.answer {
+    border-color: var(--green-100);
     background-color: var(--green-500);
     color: white;
-    border-color: var(--green-100);
   }
 
   .word__variant:not(.answer) {
+    border-color: var(--red-200);
     background-color: var(--red-400);
     color: white;
-    border-color: var(--red-200);
   }
 
   .word__variant::before {

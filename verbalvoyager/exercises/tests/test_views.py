@@ -65,13 +65,13 @@ def test_exercise_english_words_with_exeternal_access_success(exercise_english_w
 
 
 @pytest.mark.django_db
-def test_exercise_english_dialogs_success(exercise_english_dialogs, client, student_user):
+def test_exercise_english_dialogs_success(exercise_english_dialog, client, student_user):
     client.force_login(student_user)
     url = reverse(
         'exercise_dialog',
         kwargs={
             'ex_lang': 'english',
-            'ex_id': exercise_english_dialogs.pk,
+            'ex_id': exercise_english_dialog.pk,
         }
     )
 
@@ -79,12 +79,12 @@ def test_exercise_english_dialogs_success(exercise_english_dialogs, client, stud
 
 
 @pytest.mark.django_db
-def test_exercise_english_dialogs_redirect(exercise_english_dialogs, client):
+def test_exercise_english_dialogs_redirect(exercise_english_dialog, client):
     url = reverse(
         'exercise_dialog',
         kwargs={
             'ex_lang': 'english',
-            'ex_id': exercise_english_dialogs.pk,
+            'ex_id': exercise_english_dialog.pk,
         }
     )
 
@@ -92,13 +92,13 @@ def test_exercise_english_dialogs_redirect(exercise_english_dialogs, client):
 
 
 @pytest.mark.django_db
-def test_exercise_english_dialogs_words_not_found(exercise_english_dialogs, client, another_student_user):
+def test_exercise_english_dialogs_words_not_found(exercise_english_dialog, client, another_student_user):
     client.force_login(another_student_user)
     url = reverse(
         'exercise_dialog',
         kwargs={
             'ex_lang': 'english',
-            'ex_id': exercise_english_dialogs.pk,
+            'ex_id': exercise_english_dialog.pk,
         }
     )
 
@@ -106,12 +106,12 @@ def test_exercise_english_dialogs_words_not_found(exercise_english_dialogs, clie
 
 
 @pytest.mark.django_db
-def test_exercise_english_dialogs_with_exeternal_access_success(exercise_english_dialogs_with_exernal_access, client):
+def test_exercise_english_dialogs_with_exeternal_access_success(exercise_english_dialog_with_exernal_access, client):
     url = reverse(
         'exercise_dialog',
         kwargs={
             'ex_lang': 'english',
-            'ex_id': exercise_english_dialogs_with_exernal_access.pk,
+            'ex_id': exercise_english_dialog_with_exernal_access.pk,
         }
     )
 

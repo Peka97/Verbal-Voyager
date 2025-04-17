@@ -63,6 +63,20 @@
               </div>
             </a>
           </li>
+          <li class="nav-item align-self-center px-auto">
+            <a id='step_5' class="nav-link btn {% if step == 5 %}active step-active {% else %} step-future {% endif %} disabled" href="#" aria-disabled="true">
+              <strong>
+                Step 5
+              </strong>
+              <div class="container-stars disabled">
+                <div class="stars"></div>
+              </div>
+              <div class="glow disabled">
+                <div class="circle_4"></div>
+                <div class="circle_4"></div>
+              </div>
+            </a>
+          </li>
         </ul>
       </div>
     </div>
@@ -81,7 +95,7 @@
             </div>
             <p>
               {% for letter in title %}
-                <span style="--i:{{forloop.counter0}}">{{letter}}</span>
+                <span {% if letter == " " %} class="space-placeholder" {% endif %} style="--i:{{forloop.counter0}}">{{letter}}</span>
               {% endfor %}
             </p>
           </div>
