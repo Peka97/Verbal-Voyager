@@ -1,5 +1,5 @@
 import { showToast } from '/static/pages/js/modules/toast_notification.js';
-import { send_points } from '../modules/send_points.js';
+import { send_points } from '../modules/send_points_fix.js';
 
 
 let messages = [...document.getElementsByClassName("message")];
