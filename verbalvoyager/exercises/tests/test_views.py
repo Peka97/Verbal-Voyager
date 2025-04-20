@@ -5,8 +5,7 @@ from django.urls import reverse
 
 
 @pytest.mark.django_db
-def test_exercise_english_words_success(exercise_english_words, client, student_user):
-    client.force_login(student_user)
+def test_exercise_english_words_success(exercise_english_words, student_client):
     url = reverse(
         'exercise_words',
         kwargs={
@@ -16,7 +15,7 @@ def test_exercise_english_words_success(exercise_english_words, client, student_
         }
     )
 
-    assert client.get(url).status_code == 200
+    assert student_client.get(url).status_code == 200
 
 
 @pytest.mark.django_db

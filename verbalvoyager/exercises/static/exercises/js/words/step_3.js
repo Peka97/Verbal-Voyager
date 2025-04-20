@@ -12,7 +12,7 @@ new Sortable(dropItems, {
   ghostClass: "ghost",
   chosenClass: "chosen",
   dragClass: "sortable-drag",
-  handle: ".drag-handle",
+  // handle: ".drag-handle",
 });
 
 let points = [... document.getElementsByClassName('word')].length;

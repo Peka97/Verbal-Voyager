@@ -89,7 +89,7 @@ function checkAnswer () {
 
     if (checkAllWordsCorrect() === true) {
         showToast('Запомнил слова? Тогда переходи к следующему шагу!');
-        toNextStep(5);
+        toNextStep(4);
         send_points('words', points);
     }
 }

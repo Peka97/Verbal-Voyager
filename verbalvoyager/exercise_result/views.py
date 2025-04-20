@@ -15,7 +15,13 @@ logger = get_logger()
 @login_required
 def exercise_result_update(request, ex_type, ex_lang, ex_id, step_num=None):
     if request.method == 'POST':
-        data = json.loads(request.body)
+        try:
+            data = json.loads(request.body)
+        except json.decoder.JSONDecodeError as err:
+            print(err)
+            print(request.body.decode('utf-8'))
+            return JsonResponse({'error': 'Invalid data'}, status=400)
+        
         logger.info(
             f'POST REQUEST:\n {ex_type}[{ex_id}] ({ex_lang}) | {data}'
         )
@@ -51,7 +57,7 @@ def exercise_result_update(request, ex_type, ex_lang, ex_id, step_num=None):
             if ex_type == 'words':
                 exercise_result.__dict__[step_num] = value
 
-                if step_num and step_num[-1] == '4':
+                if step_num and step_num[-1] == '5':
                     exercise.is_active = False
 
             elif ex_type == 'dialog':
