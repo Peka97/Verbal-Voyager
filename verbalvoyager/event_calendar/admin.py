@@ -113,9 +113,9 @@ class LessonAdmin(NestedModelAdmin):
                     else:
                         if words_queryset and words_queryset.exists():
                             lesson_plan.save()
-
+                            
                             new_exercise = ExerciseEnglishWords.objects.create(
-                                name=None,
+                                name=f"New vocabulary \"{current_form.cleaned_data.get('lesson_id').title}\"",
                                 student=lesson_plan.lesson_id.student_id,
                                 teacher=lesson_plan.lesson_id.teacher_id,
                                 is_active=True,
@@ -130,7 +130,7 @@ class LessonAdmin(NestedModelAdmin):
                 else:
                     instance.save()
 
-                current_form.save_m2m() # Сохраняем m2m для данной формы.
+                current_form.save_m2m()
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
