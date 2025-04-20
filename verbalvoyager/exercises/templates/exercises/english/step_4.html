@@ -1,43 +1,59 @@
 {% extends "exercises/english/includes/words.html" %}
 {% load static %}
+{% load exercises_filters %}
 
-{% block title %}Exercise | Step {{step}}{% endblock  %}
+{% block 'title' %} Exercise | Step {{step}}{% endblock  %}
 {% block 'style' %}
-    <link rel="stylesheet" href="{% static 'exercises/css/words/step_base.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/step_base.css' %}">
     <link rel="stylesheet" href="{% static 'exercises/css/words/step_4.css' %}">
 {% endblock  %}
 
 {% block 'words' %}
-    <!-- Title -->
-    <div class="row py-3 justify-content-center">
-
-        <!-- Alerts-->
-        <div class='row justify-content-center'>
-            <div class='col-3 pt-3 hidden'>
-                <div class='alerts pt-3'>
-                    <div id='alert-done' class="alert alert-success text-center" role="alert">
-                        Упражнение завершено!
-                    </div>
+    <!-- Words -->
+    {% for word in words %}
+        <div id="word_{{word.idx}}" class="word__block {% if word.idx != 1 %}hidden{% endif %}">
+            <div class="word-row"> 
+                <div class="word">
+                    {{ word.translation|capfirst }}
+                </div>
+            </div>
+            <div class="translate-row">
+                <div data-word="{{word.word}}" class="translate-container">
+                    {% with word_translation=word.word|get_words_list %}
+                    
+                        {% if word_translation|length > 1 %}
+                            {% for word in word_translation %}
+                                <div class="letter-container">
+                                    {% for letter in word|shuffle %}
+                                        <div class="letter">
+                                            {{ letter|upper }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="letter-container">
+                                {% for letter in word_translation|shuffle %}
+                                    <div class="letter">
+                                        {{ letter|upper }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                                
+                        {% endif %}
+                    {% endwith %}
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row words__block">
-        {% for word in words %}
-            <div id="word_{{ word.idx }}" class="col word_check word__block hidden">
-                <p class="word-translate">{{ word.translation|title }}</p>
-                <div class="word_input__block form-floating">
-                    <input id='{{word.word}}' type="text" name="translate" class="form-control word__check" id="floatingInput" placeholder='"{{ word.translation|title }}" переводится как...'>
-                    <label for="floatingInput">"{{ word.translation|title }}" переводится как...</label>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
+    {% endfor %}
+
     <div class="row btn__answer">
         <button type="button" class="btn btn-default btn__check" id="liveToastBtn">Проверить</button>
     </div>
+
 {% endblock  %}
 
 {% block 'js' %}
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script type="module" src="{% static 'exercises/js/words/step_4.js' %}"></script>
 {% endblock  %}

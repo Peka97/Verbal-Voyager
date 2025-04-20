@@ -4,93 +4,92 @@ import { pagination, updatePagination } from '../modules/pagination.js';
 import { send_points } from '../modules/send_points_fix.js';
 import { logging } from '../modules/logging.js';
 
+document.getElementById('step_1').classList.add('step-complete')
+document.getElementById('step_2').classList.add('step-complete')
+document.getElementById('step_3').classList.add('step-complete')
+
 pagination.forEach(el => {
     el.onclick = (event) => {
         updatePagination(event);
     };
 });
 
+const dropItems = [...document.querySelectorAll('.letter-container')];
+dropItems.forEach(el => {
+    new Sortable(el, {
+        animation: 150,
+        swap : true,
+        swapClass : "swap-highlight",
+        ghostClass: "ghost",
+        chosenClass: "chosen",
+        dragClass: "sortable-drag",
+    });
+})
 
-function checkAnswer() {
-    let curr_page = Number(Array.from(document.getElementsByClassName('page-item active'))[0].id.split('_')[1]);
-    let word = document.getElementById(`word_${curr_page}`);
-    let input_el = word.children[1].children[0]
-    let user_input = String(input_el.value).toLowerCase();
-    let translate = String(input_el.id).toLowerCase();
+let points = [... document.querySelectorAll('.word__block')].length;
+const toastTrigger = document.getElementById('liveToastBtn');
 
-    if (user_input === translate) {
-        check_words[word.id] = true;
-        input_el.classList.add('correct');
-        input_el.classList.remove('wrong');
-        logging(user_input, translate, 'correct');
- 
-        if (!checkAllAnswersTrue()) {
-            showToast('Правильно! Переходи к следующему слову.');
+if (toastTrigger) {
+  toastTrigger.addEventListener('click', () => {
+    checkAnswer();
+  })
+}
+
+function checkAllWordsCorrect() {
+    const wordBlockElements = [...document.querySelectorAll(".word__block")];
+
+    for (let i in wordBlockElements) {
+        if (!wordBlockElements[i].classList.contains('correct')) {
+            return false;
         }
     }
-    else {
-        showToast('Неправильно, подумай ещё раз.');
-        input_el.classList.remove('correct');
-        input_el.classList.add('wrong');
-        logging(user_input, translate, 'wrong');
+    
+    return true;
+}
+
+function getUserInput(letterElements) {
+    return [...letterElements].map(element => element.innerText.replace(/\n/g, '')).join("")
+}
+
+function checkAnswer () {
+    let currentWordBlockElement = document.querySelector(".word__block:not(.hidden)");
+    const translateContainerElement = currentWordBlockElement.querySelector(".translate-container");
+    const translate = translateContainerElement.dataset['word'];
+    const letterContainerElements = translateContainerElement.children;
+
+    let userInput;
+
+    if (letterContainerElements.length > 1) {
+        userInput = [...letterContainerElements].map(
+            element => getUserInput(element.children)
+        ).join(" ")
+    } else {
+        userInput = getUserInput(letterContainerElements);
+    }
+
+    if (userInput.toLowerCase() !== translate.toLowerCase()) {
+        logging(userInput.toLowerCase(), translate.toLowerCase(), 'wrong');
+        showToast('Неверно, подумай ещё раз.');
+
+        translateContainerElement.classList.remove("correct");
+        translateContainerElement.classList.add("wrong");
 
         if (points > 1) {
             points--;
         }
+        return;
+
+    } else {
+        logging(userInput.toLowerCase(), translate.toLowerCase(), 'correct');
+
+        translateContainerElement.classList.remove("wrong");
+        translateContainerElement.classList.add("correct");
+        currentWordBlockElement.classList.add('correct');
     }
-    
-    if (checkAllAnswersTrue()) {
-        showToast('Упражнение завершено! Переходи в Личный кабинет.');
-        // done_btn.parentElement.classList.remove('hidden');
+
+    if (checkAllWordsCorrect() === true) {
+        showToast('Запомнил слова? Тогда переходи к следующему шагу!');
         toNextStep(4);
         send_points('words', points);
     }
 }
-
-function fillCheckWords() {
-    words.forEach(el => {
-        check_words[el.id] = false;
-    })   
-}
-
-function checkAllAnswersTrue() {
-    for (let key in check_words) {
-        if (check_words[key] !== true) {
-            return false;
-        }
-    }
-    return true;
-}
-
-let words = [...document.getElementsByClassName('word__block')];
-let points = words.length;
-words[0].classList.remove('hidden');
-let check_words = {};
-let input_fields = [...document.getElementsByClassName('word__check')];
-document.getElementById('step_1').classList.add('step-complete');
-document.getElementById('step_2').classList.add('step-complete');
-document.getElementById('step_3').classList.add('step-complete');
-
-
-input_fields.forEach( (el) => set_keypress_event(el));
-
-function set_keypress_event (el) {
-    el.addEventListener('keypress', function (e) {
-        var key = e.which || e.keyCode;
-        
-        if (key === 13) { // код клавиши Enter
-            toastTrigger.click();
-        }});
-};
-
-
-/* On start */
-document.getElementById('word_1').classList.remove('hidden');
-document.getElementById('page_1').classList.add('active', 'watched');
-fillCheckWords();
-
-// const done_btn = document.getElementById('done-btn');
-const toastTrigger = document.getElementById('liveToastBtn');
-toastTrigger.addEventListener('click', () => {
-    checkAnswer();
-})

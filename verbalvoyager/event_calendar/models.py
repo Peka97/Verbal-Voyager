@@ -157,14 +157,8 @@ class Lesson(models.Model):
 
     def get_admin_edit_url(self):
         return reverse('admin:event_calendar_lesson_change', args=[quote(self.pk)])
-
-    def save(self,  *args, **kwargs):
-        result = super().save(*args, **kwargs)
-
-        if self.lesson_plan.first():
-            self.lesson_plan.first().save()
-
-        return result
+    
+    
 
     def get_lesson_time(self):
         time_end = (

@@ -6,7 +6,6 @@ from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.views.decorators.cache import cache_control
 
 from logger import get_logger, get_words_logger
 from .utils import generate_dialog, get_exercise_or_404
@@ -19,9 +18,8 @@ logger_words = get_words_logger()
 User = get_user_model()
 
 
-@cache_control(max_age=3600)
 def exercise_words(request, ex_lang, ex_id, step):
-    titles = {1: 'Запоминаем', 2: 'Выбираем', 3: 'Расставляем', 4: 'Переводим'}
+    titles = {1: 'Запоминаем', 2: 'Выбираем', 3: 'Расставляем', 4: 'По местам!', 5: 'Переводим'}
     popover_data = {
         1: {
             'title': 'Упражнение "Запоминаем"',
@@ -44,6 +42,12 @@ def exercise_words(request, ex_lang, ex_id, step):
             'Твоей задачей будет расставить слова так, чтобы напротив каждого был его перевод. Как только захочешь проверить себя, нажми внизу кнопку "Проверить": если всё правильно, то в правом нижнем углу ты увидишь уведомление об успешном прохождении.'
         },
         4: {
+            'title': 'Упражнение "По местам!"',
+            'content': 'Набираем обороты.<br>'
+            'Слово написано, но буквы перемешаны. Тебе предстоит это исправить.<br>'
+            'Хорошо запомни написание слова, тебе это пригодится на следующем шаге.'
+        },
+        5: {
             'title': 'Упражнение "Переводим"',
             'content': 'Последний и самый сложный шаг.<br>'
             'Тебе предстоит написать слово на иностранном языке целиком.<br>'
@@ -84,7 +88,6 @@ def exercise_words(request, ex_lang, ex_id, step):
     return render(request, template_name, context)
 
 
-@cache_control(max_age=3600)
 def exercise_dialog(request, ex_lang, ex_id):
     if ex_lang == 'english':
         exercise_obj = ExerciseEnglishDialog
@@ -198,7 +201,6 @@ def words_logging(request, ex_id, step_num):
     return HttpResponse({'status': 200})
 
 
-@cache_control(max_age=3600)
 def exercise_irregular_verbs(request, ex_id, step):
     titles = {1: 'Запоминаем', 2: 'Выбираем', 3: 'Расставляем', 4: 'Переводим'}
     popover_data = {

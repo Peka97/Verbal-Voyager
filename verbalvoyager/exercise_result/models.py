@@ -9,6 +9,7 @@ class AnstractExerciseWordsResult(models.Model):
     step_2 = models.SmallIntegerField(null=True, blank=True, default=None)
     step_3 = models.SmallIntegerField(null=True, blank=True, default=None)
     step_4 = models.SmallIntegerField(null=True, blank=True, default=None)
+    step_5 = models.SmallIntegerField(null=True, blank=True, default=None)
 
     def get_student(self):
         if self.exercise:

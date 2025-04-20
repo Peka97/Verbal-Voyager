@@ -2,20 +2,21 @@
 
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    {% block 'meta' %}{% endblock 'meta' %}
+<head>
+  <meta charset="utf-8">
+  {% comment %} <meta name="viewport" content="width=device-width, initial-scale=1.0"> {% endcomment %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  
+  {% block 'meta' %}{% endblock 'meta' %}
+  {% block 'preconnect' %}{% endblock 'preconnect' %}
+  {% block 'preload' %}{% endblock 'preload' %}
 
     <title>{% block title %}{% endblock  %}</title>
     <!-- Preconnect CDN -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-    <!-- Preload -->
-    <link rel="preload" as="image" href="https://verbal-voyager.ru/static/pages/images/layer-1.webp">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">   
     <!-- Favicon -->
     <link id='favicon' type="Image/x-icon" href="{% static 'pages/images/favicon.ico' %}" rel="icon">
     <!-- Bootstrap CSS -->

@@ -48,10 +48,6 @@
 				</tbody>
 			</table>
 			{% if user.is_staff %}
-			<!-- TODO:
-			Сделать две кнопки: обновить и отменить. Описание обоих кнопок сделать всплывающим, чтобы сэкономить место в интерфейсе. 
-			Отмена нужна для очистки данных по обновлению заданий к упражнениям.
-			-->	
 				<div id="panel-send-event-update" class="button-panel panel-task hidden">
 					{% csrf_token %}
 					<div id="btn-cancel-send-event-update" class="button-panel panel-lesson event-btn">
@@ -64,18 +60,6 @@
 							<i class="bi bi-send-fill send-icon"></i>
 						</span>
 					</div>
-					{% comment %} <div id="btn-cancel-send-event-update" class="event-btn">
-						<span class="tooltip">Отменить</span>
-						<span class="icon">
-							<i class="bi bi-x-circle"></i>
-						</span>
-					</div>
-					<div id="btn-send-event-update" class="event-btn">
-						<span class="tooltip">Отправить</span>
-						<span class="icon">
-							<i class="bi bi-send-fill"></i>
-						</span>
-					</div> {% endcomment %}
 				</div>
 		{% endif %}
 		</div>

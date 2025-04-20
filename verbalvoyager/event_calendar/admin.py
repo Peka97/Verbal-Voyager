@@ -15,6 +15,7 @@ from event_calendar.models import Lesson, Course, Review, ProjectType, Project, 
 from event_calendar.forms import LessonAdminForm, ProjectAdminForm
 from lesson_plan.models import EnglishLessonPlan
 from lesson_plan.admin import EnglishLessonPlanAdmin
+from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords
 from logging_app.helpers import log_action
 
 
@@ -76,10 +77,60 @@ class LessonAdmin(NestedModelAdmin):
             'fields': (('status', 'is_paid', ), 'teacher_id', 'project_id'),
         })
     )
-
     @log_action
     def save_model(self, request, obj, form, change):
-        return super().save_model(request, obj, form, change)
+        # Переопределяем метод сохранения модели для отработки метода save_formset
+
+        instance = form.save(commit=False)
+        instance.save()
+        form.save_m2m()
+        
+        return instance
+        
+    def save_formset(self, request, form, formset, change):
+        formset.save(commit=False)
+
+        for current_form in formset.forms:
+            if current_form.is_valid():
+                instance = current_form.save(commit=False)
+
+                if isinstance(instance, EnglishLessonPlan):
+                    lesson_plan = instance
+                    exercise_id = lesson_plan.exercise_id
+
+                    words_queryset = current_form.cleaned_data.get('new_vocabulary')
+
+                    if exercise_id:
+                        lesson_plan.save()
+                        current_words = set(exercise_id.words.all())
+                        
+                        if words_queryset:
+                            new_words = set(words_queryset.all())
+
+                            if any(w not in current_words for w in new_words): 
+                                exercise_id.words.set(new_words)
+                                exercise_id.save()
+                    else:
+                        if words_queryset and words_queryset.exists():
+                            lesson_plan.save()
+                            
+                            new_exercise = ExerciseEnglishWords.objects.create(
+                                name=f"New vocabulary \"{current_form.cleaned_data.get('lesson_id').title}\"",
+                                student=lesson_plan.lesson_id.student_id,
+                                teacher=lesson_plan.lesson_id.teacher_id,
+                                is_active=True,
+                            )
+                            new_exercise.save()
+
+                            lesson_plan.exercise_id = new_exercise
+                            lesson_plan.save()
+
+                            new_exercise.words.set(words_queryset.all())
+
+                else:
+                    instance.save()
+
+                current_form.save_m2m()
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)

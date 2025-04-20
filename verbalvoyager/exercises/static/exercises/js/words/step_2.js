@@ -3,6 +3,8 @@ import { toNextStep } from '../modules/next_step.js';
 import { pagination, updatePagination } from '../modules/pagination.js';
 import { send_points } from '../modules/send_points_fix.js';
 
+document.getElementById('step_1').classList.add('step-complete')
+
 pagination.forEach(el => {
     el.onclick = (event) => {
         updatePagination(event);
@@ -10,7 +12,6 @@ pagination.forEach(el => {
         checkAllWordsWatched(event);
     };
 });
-document.getElementById('step_1').classList.add('step-complete')
 let words = [...document.getElementsByClassName('word__block')];
 let points = words.length;
 

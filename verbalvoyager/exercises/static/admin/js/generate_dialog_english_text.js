@@ -2,32 +2,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const TextElement = document.querySelector('#id_text_helptext');
 
     const GenerateWrapperElement = document.createElement('div');
-    GenerateWrapperElement.style.marginLeft = '10px';
+    GenerateWrapperElement.classList.add('wrapper__block-generate')
     
     const GenerateTitleDivElement = document.createElement('div');
-    GenerateTitleDivElement.textContent = 'Генерация диалога: выбери слова, опции и нажми на плюс.';
+    GenerateTitleDivElement.classList.add('generate-title');
+    GenerateTitleDivElement.textContent = 'Генерация диалога: выбери слова, опции и нажми на иконку под этой надписью.';
     
     const GenerateOptionsWrapperElement = document.createElement('div');
 
-    const GenerateButtonElement = document.createElement('a');
+    const GenerateButtonElement = document.createElement('i');
+    GenerateButtonElement.classList.add("fa-solid", "fa-file-arrow-down", "button__generate-dialog")
     GenerateButtonElement.title = 'Сгенерировать диалог'
-    GenerateButtonElement.style.margin = 'auto'
-
-    const GenerateIconElement = document.createElement('img');
-    GenerateIconElement.src = '/static/admin/img/icon-addlink.svg'
-    GenerateIconElement.width = 20
-    GenerateIconElement.height = 20
+    GenerateButtonElement.style.color = '#FFC400'
 
     const GenerateСounterInput = document.createElement('input');
+    GenerateСounterInput.classList.add('generate-input');
     GenerateСounterInput.type = 'number';
     GenerateСounterInput.value = 6;
     GenerateСounterInput.min = 1;
     GenerateСounterInput.max = 12;
     GenerateСounterInput.id = 'generate-counter';
-    GenerateСounterInput.style.height = 'max-content';
-    GenerateСounterInput.style.width = 'max-content';
 
     const GenerateSelectLevelElement = document.createElement('select');
+    GenerateSelectLevelElement.classList.add('generate-select');
     const levels = ['Beginner', 'Elementary', 'Pre-intermediate', 'Intermediate', 'Upper-intermediate', 'Advanced', 'Proficiency'];
     levels.forEach(level => {
         const option = document.createElement('option');
@@ -35,9 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
         option.text = level;
         GenerateSelectLevelElement.appendChild(option);
     });
-    GenerateSelectLevelElement.style.height = 'max-content';
-    GenerateSelectLevelElement.style.width = 'max-content';
-    GenerateSelectLevelElement.style.margin = '0 10px'
 
     TextElement.parentNode.firstElementChild.appendChild(GenerateWrapperElement);
 
@@ -47,13 +41,12 @@ document.addEventListener('DOMContentLoaded', function() {
     GenerateOptionsWrapperElement.appendChild(GenerateСounterInput);
     GenerateOptionsWrapperElement.appendChild(GenerateSelectLevelElement);
     GenerateOptionsWrapperElement.appendChild(GenerateButtonElement);
-
-    GenerateButtonElement.appendChild(GenerateIconElement);
+    GenerateOptionsWrapperElement.appendChild(GenerateButtonLoaderElement);
 
     GenerateButtonElement.addEventListener('click', SendToGenerateText)
 
     function SendToGenerateText () {
-        GenerateButtonElement.classList.add('disabled-link');
+        changeIcons()
 
         let Words = Array();
         let WordsElements = [...document.querySelector('#id_words').children];
@@ -83,15 +76,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(data => {
                     const TextAreaElement = document.querySelector('#id_text');
                     TextAreaElement.value = data.result
-                    GenerateButtonElement.classList.remove('disabled-link');
+                    changeIcons();
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    GenerateButtonElement.classList.remove('disabled-link');
+                    changeIcons();
                 })
         } else {
             alert('Пожалуйста, сначала выберите слова и только после этого на генерацию текста.')
-            GenerateButtonElement.classList.remove('disabled-link');
+            changeIcons()
         }
         
     }
@@ -111,4 +104,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return cookieValue;
       }
+
+    function changeIcons() {
+        if (GenerateButtonElement.classList.contains('fa-file-arrow-down')) {
+            console.log('Ставим лоадер');
+            GenerateButtonElement.classList.remove('fa-file-arrow-down')
+            GenerateButtonElement.classList.add('fa-circle-notch');
+            GenerateButtonElement.classList.add('loader-animation');
+            GenerateButtonElement.classList.add('disabled-link');
+            console.log('Поставили лоадер');
+        } else {
+            console.log('Прячем лоадер');
+            GenerateButtonElement.classList.remove('fa-circle-notch');
+            GenerateButtonElement.classList.remove('loader-animation');
+            GenerateButtonElement.classList.remove('disabled-link');
+            GenerateButtonElement.classList.add('fa-file-arrow-down');
+            console.log('Убрали лоадер');
+        }
+    }
 });

@@ -1,0 +1,43 @@
+{% extends "exercises/french/includes/words.html" %}
+{% load static %}
+
+{% block title %}Exercise | Step {{step}}{% endblock  %}
+{% block 'style' %}
+    <link rel="stylesheet" href="{% static 'exercises/css/step_base.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/words/step_5.css' %}">
+{% endblock  %}
+
+{% block 'words' %}
+    <!-- Title -->
+    <div class="row py-3 justify-content-center">
+
+        <!-- Alerts-->
+        <div class='row justify-content-center'>
+            <div class='col-3 pt-3 hidden'>
+                <div class='alerts pt-3'>
+                    <div id='alert-done' class="alert alert-success text-center" role="alert">
+                        Упражнение завершено!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row words__block">
+        {% for word in words %}
+            <div id="word_{{ word.idx }}" class="col word_check word__block hidden">
+                <p class="word-translate">{{ word.translation|capfirst }}</p>
+                <div class="word_input__block form-floating">
+                    <input id="{{word.word}}" type="text" name="translate" class="form-control word__check" id="floatingInput" placeholder='"{{ word.translation|title }}" переводится как...'>
+                    <label for="{{word.word}}">"{{ word.translation|capfirst }}" переводится как...</label>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="row btn__answer">
+        <button type="button" class="btn btn-default btn__check" id="liveToastBtn">Проверить</button>
+    </div>
+{% endblock  %}
+
+{% block 'js' %}
+    <script type="module" src="{% static 'exercises/js/words/step_5.js' %}"></script>
+{% endblock  %}

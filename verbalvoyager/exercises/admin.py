@@ -72,6 +72,12 @@ class AbstractExerciseWordsAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
+        
+        if request.user.username != 'admin':
+            queryset = queryset \
+            .exclude(student__groups__name='StudentDemo') \
+            .exclude(teacher__groups__name='TeacherDemo')
+        
         return queryset.select_related('student', 'teacher').prefetch_related('words')
 
     @admin.action(description='Активировать')
@@ -84,11 +90,13 @@ class AbstractExerciseWordsAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        form.base_fields['teacher'].initial = request.user
-        form.base_fields['teacher'].queryset = User.objects.filter(
-            groups__name__in=['Teacher'])
-        form.base_fields['student'].queryset = User.objects.filter(
-            groups__name__in=['Student'])
+        
+        if request.user.username != 'admin':
+            form.base_fields['teacher'].initial = request.user
+            form.base_fields['teacher'].queryset = User.objects.filter(
+                groups__name__in=['Teacher'])
+            form.base_fields['student'].queryset = User.objects.filter(
+                groups__name__in=['Student'])
 
         return form
 
@@ -145,14 +153,33 @@ class AbstractExerciseDialogAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
+        
+        if request.user.username != 'admin':
+            queryset = queryset \
+            .exclude(student__groups__name='StudentDemo') \
+            .exclude(teacher__groups__name='TeacherDemo')
+            
         return queryset.select_related('student', 'teacher').prefetch_related('words')
+    
+    def get_autocomplete_results(self, request, queryset, search_term):
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+
+        if request.user.username != 'admin':
+            group_name = 'Student'
+            print(queryset)
+            queryset = queryset.filter(student__groups__name=group_name)
+
+        return queryset, use_distinct
 
     def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(
-            request, obj, **kwargs)
-        form.base_fields['teacher'].initial = request.user
-        form.base_fields['teacher'].queryset = User.objects.filter(
-            groups__name__in=['Teacher', ])
+        form = super().get_form(request, obj, **kwargs)
+        
+        if request.user.username != 'admin':
+            form.base_fields['teacher'].initial = request.user
+            form.base_fields['teacher'].queryset = User.objects.filter(
+                groups__name__in=['Teacher'])
+            form.base_fields['student'].queryset = User.objects.filter(
+                groups__name__in=['Student'])
 
         return form
 
@@ -161,20 +188,32 @@ class AbstractExerciseDialogAdmin(admin.ModelAdmin):
 
     class Media:
         css = {
-            'all': ('admin/css/dialog.css', )
+            'all': (
+                'admin/css/dialog.css',
+                'fontawesomefree/css/fontawesome.css',
+                'fontawesomefree/css/brands.css',
+                'fontawesomefree/css/solid.css'
+                )
         }
+        js = [
+            'admin/js/generate_dialog_ui_load_and_fetch.js',
+            
+        ]
+        
 
 
 @admin.register(ExerciseEnglishDialog)
 class ExerciseEnglishDialogAdmin(AbstractExerciseDialogAdmin):
-    class Media:
-        js = ['admin/js/generate_dialog_english_text.js',]
+    # class Media:
+    #     js = ['admin/js/generate_dialog_english_text.js',]
+    pass
 
 
 @admin.register(ExerciseFrenchDialog)
 class ExerciseFrenchDialogAdmin(AbstractExerciseDialogAdmin):
-    class Media:
-        js = ['admin/js/generate_dialog_french_text.js',]
+    pass
+    # class Media:
+    #     js = ['admin/js/generate_dialog_french_text.js',]
 
 
 @admin.register(ExerciseIrregularEnglishVerb)
@@ -217,14 +256,23 @@ class ExerciseIrregularEnglishVerbAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
+        
+        if request.user.username != 'admin':
+            queryset = queryset \
+            .exclude(student__groups__name='StudentDemo') \
+            .exclude(teacher__groups__name='TeacherDemo')
+            
         return queryset.select_related('student', 'teacher').prefetch_related('words')
 
     def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(
-            request, obj, **kwargs)
-        form.base_fields['teacher'].initial = request.user
-        form.base_fields['teacher'].queryset = User.objects.filter(
-            groups__name__in=['Teacher', ])
+        form = super().get_form(request, obj, **kwargs)
+        
+        if request.user.username != 'admin':
+            form.base_fields['teacher'].initial = request.user
+            form.base_fields['teacher'].queryset = User.objects.filter(
+                groups__name__in=['Teacher'])
+            form.base_fields['student'].queryset = User.objects.filter(
+                groups__name__in=['Student'])
 
         return form
 

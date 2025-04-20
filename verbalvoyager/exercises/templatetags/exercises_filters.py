@@ -20,6 +20,18 @@ def get_shuffled_translates(values):
     shuffle(translates)
     return translates
 
+@register.filter(name="get_words_list")
+def get_words_list(values):
+    return values.split(' ')
+
+@register.filter(name="shuffle")
+def shiffle_(values):
+    if isinstance(values, list):
+        values = values[0]
+        
+    values = list(values)
+    shuffle(values)
+    return ''.join(values)
 
 @register.filter(name="parse_to_list", is_safe=True)
 def parse_to_list(values):

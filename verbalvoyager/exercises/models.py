@@ -84,19 +84,18 @@ class AbstractExerciseWords(models.Model):
 
 
 class ExerciseEnglishWords(AbstractExerciseWords):
-
     words = models.ManyToManyField(new_eng_word, verbose_name="Слова")
     student = models.ForeignKey(
         User, on_delete=models.SET_NULL,
         related_name='words_eng_student',
-        limit_choices_to={'groups__name__in': ['Student', ]},
+        limit_choices_to={'groups__name__in': ['Student', 'StudentDemo']},
         null=True,
         verbose_name='Ученик'
     )
     teacher = models.ForeignKey(
         User, on_delete=models.SET_NULL,
         related_name='words_eng_teacher',
-        limit_choices_to={'groups__name__in': ['Teacher', ]},
+        limit_choices_to={'groups__name__in': ['Teacher', 'TeacherDemo']},
         null=True,
         verbose_name="Учитель"
     )
@@ -117,14 +116,14 @@ class ExerciseFrenchWords(AbstractExerciseWords):
     student = models.ForeignKey(
         User, on_delete=models.SET_NULL,
         related_name='words_fr_student',
-        limit_choices_to={'groups__name__in': ['Student', ]},
+        limit_choices_to={'groups__name__in': ['Student', 'StudentDemo']},
         null=True,
         verbose_name='Ученик'
     )
     teacher = models.ForeignKey(
         User, on_delete=models.SET_NULL,
         related_name='words_fr_teacher',
-        limit_choices_to={'groups__name__in': ['Teacher', ]},
+        limit_choices_to={'groups__name__in': ['Teacher', 'TeacherDemo']},
         null=True,
         verbose_name="Учитель"
     )
@@ -207,13 +206,13 @@ class ExerciseEnglishDialog(AbstractExerciseDialog):
     student = models.ForeignKey(
         User, on_delete=models.SET_NULL,
         related_name='dialog_eng_student',
-        limit_choices_to={'groups__name__in': ['Student', ]},
+        limit_choices_to={'groups__name__in': ['Student', 'StudentDemo']},
         null=True, verbose_name='Ученик')
     teacher = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         related_name='dialog_eng_teacher',
-        limit_choices_to={'groups__name__in': ['Teacher', ]},
+        limit_choices_to={'groups__name__in': ['Teacher', 'TeacherDemo']},
         null=True,
         verbose_name="Учитель")
 
@@ -233,13 +232,13 @@ class ExerciseFrenchDialog(AbstractExerciseDialog):
     student = models.ForeignKey(
         User, on_delete=models.SET_NULL,
         related_name='dialog_fr_student',
-        limit_choices_to={'groups__name__in': ['Student', ]},
+        limit_choices_to={'groups__name__in': ['Student', 'StudentDemo']},
         null=True, verbose_name='Ученик')
     teacher = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         related_name='dialog_fr_teacher',
-        limit_choices_to={'groups__name__in': ['Teacher', ]},
+        limit_choices_to={'groups__name__in': ['Teacher', 'TeacherDemo']},
         null=True,
         verbose_name="Учитель")
 
@@ -275,13 +274,13 @@ class ExerciseIrregularEnglishVerb(models.Model):
     student = models.ForeignKey(
         User, on_delete=models.SET_NULL,
         related_name='irregular_verbs_student',
-        limit_choices_to={'groups__name__in': ['Student', ]},
+        limit_choices_to={'groups__name__in': ['Student', 'StudentDemo']},
         null=True, verbose_name='Ученик')
     teacher = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         related_name='irregular_verbs_teacher',
-        limit_choices_to={'groups__name__in': ['Teacher', ]},
+        limit_choices_to={'groups__name__in': ['Teacher', 'TeacherDemo']},
         null=True,
         verbose_name="Учитель")
     is_active = models.BooleanField(default=True, verbose_name="Активен")

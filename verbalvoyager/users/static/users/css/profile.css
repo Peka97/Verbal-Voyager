@@ -285,8 +285,8 @@ div.tab-content {
                             background-color: var(--indigo-100);
                             border: var(--indigo-200) solid .2rem;
                             border-top: none;
-                            border-bottom-left-radius: 1rem;
-                            border-bottom-right-radius: 1rem;
+                            border-bottom-left-radius: 0rem;
+                            border-bottom-right-radius: 0rem;
                             border-collapse: separate;
                             text-align: center;
 
@@ -294,7 +294,7 @@ div.tab-content {
                                 cursor: default;
                                 color: #2b2b2b;
                                 font-size: 1rem;
-                                padding: .7rem;
+                                padding: .5rem;
                                 line-height: 1.1rem;
                                 text-align: center;
                                 border-radius: 20% !important;
@@ -305,7 +305,7 @@ div.tab-content {
                                 position: relative;
 
                                 &.nil {
-                                    height: 2.5rem;
+                                    /* height: 2.5rem; */
                                 }
                             }
 
@@ -789,26 +789,31 @@ div.tab-content {
     }   
 }
 
+
 @media (max-width: 426px) {
     html {
-        font-size: 12px;
+        font-size: 14px;
+    }
+
+    .col  button {
+        margin-left: auto !important;
+        margin-right: auto !important;
     }
     
-
     .events-container {
         max-height: inherit !important;
-    }
-}
-
-@media (max-width: 426px) {
-    html {
-        font-size: 10px;
     }
 
     .notification-wrap {
         margin: auto;
         max-width: 75vw !important;
         max-height: 40vw !important;
+    }
+}
+
+@media (max-width: 360px) {
+    html {
+        font-size: 12px;
     }
 }
 
@@ -902,7 +907,7 @@ OLD
 
             .event-button {
                 width: 100%;
-                border-radius: .6rem .6rem .6rem 20px !important;
+                border-radius: .3rem .6rem .6rem 20px !important;
             }
         }
 
@@ -911,7 +916,7 @@ OLD
 
             .event-button {
                 width: 100%;
-                border-radius: .6rem .6rem 20px .6rem !important;
+                border-radius: .6rem .3rem 20px .6rem !important;
             }
         }
 

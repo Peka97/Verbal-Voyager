@@ -1,5 +1,5 @@
 .hidden {
-    display: none;
+  display: none !important;
 }
 
 .hidden-anim {
@@ -343,6 +343,10 @@ body>.words__container {
                 color: white;
                 animation: slideDown 0.8s ease forwards calc(var(--i) * 0.03s);
                 animation-delay: 1.5s;
+              }
+
+              .space-placeholder {
+                width: 1rem;
               }
             }
           }
