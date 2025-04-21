@@ -77,6 +77,7 @@ class LessonAdmin(NestedModelAdmin):
             'fields': (('status', 'is_paid', ), 'teacher_id', 'project_id'),
         })
     )
+
     @log_action
     def save_model(self, request, obj, form, change):
         # Переопределяем метод сохранения модели для отработки метода save_formset
@@ -84,9 +85,9 @@ class LessonAdmin(NestedModelAdmin):
         instance = form.save(commit=False)
         instance.save()
         form.save_m2m()
-        
+
         return instance
-        
+
     def save_formset(self, request, form, formset, change):
         formset.save(commit=False)
 
@@ -94,26 +95,27 @@ class LessonAdmin(NestedModelAdmin):
             if current_form.is_valid():
                 instance = current_form.save(commit=False)
 
-                if isinstance(instance, EnglishLessonPlan):
+                if isinstance(instance, EnglishLessonPlan) and current_form.cleaned_data.get('new_vocabulary'):
                     lesson_plan = instance
                     exercise_id = lesson_plan.exercise_id
 
-                    words_queryset = current_form.cleaned_data.get('new_vocabulary')
+                    words_queryset = current_form.cleaned_data.get(
+                        'new_vocabulary')
 
                     if exercise_id:
                         lesson_plan.save()
                         current_words = set(exercise_id.words.all())
-                        
+
                         if words_queryset:
                             new_words = set(words_queryset.all())
 
-                            if any(w not in current_words for w in new_words): 
+                            if any(w not in current_words for w in new_words):
                                 exercise_id.words.set(new_words)
                                 exercise_id.save()
                     else:
                         if words_queryset and words_queryset.exists():
                             lesson_plan.save()
-                            
+
                             new_exercise = ExerciseEnglishWords.objects.create(
                                 name=f"New vocabulary \"{current_form.cleaned_data.get('lesson_id').title}\"",
                                 student=lesson_plan.lesson_id.student_id,
@@ -309,7 +311,7 @@ class ProjectAdmin(admin.ModelAdmin):
     show_full_result_count = False
     form = ProjectAdminForm
 
-    search_fields = ['students', 'project_id', 'project_type']
+    search_fields = ['name', 'students__last_name']
     autocomplete_fields = ('students', 'types')
 
     # filter_horizontal = ('students', 'types',)
