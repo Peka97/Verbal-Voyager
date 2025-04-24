@@ -210,7 +210,7 @@ taskEditButtonElements.forEach(element => {
                 
                 tasksContainerElement.insertBefore(newChecklist, tasksContainerElement.querySelector('span.new-task-button'));
             }
-        tasksContainerElement.appendChild(getTaskForm())
+        tasksContainerElement.appendChild(getTaskForm('create'))
     });
 });
 
@@ -226,7 +226,7 @@ function getTaskForm(method) {
         classNamePrefix = 'edit-'
     }
     
-    const newLessonTaskId = Date.now()
+    const newLessonTaskId = `new_${Date.now()}`
 
     let checklistElement = document.createElement(
         'div', {id: 'checklist'}
@@ -272,17 +272,17 @@ function changeTaskAdderToTask(event) {
             checklistDivElement = taskContainerElement;
         }
 
-        let newTaskDiv = getLessonTaskDiv(lessonTaskInputElements);
+        let newTaskDiv = getLessonTaskDiv(lessonTaskInputElements, false);
         let taskId = lessonTaskElement.firstChild.id
         let method;
 
-        if (taskId === undefined || lessonTaskElement.classList.contains('update-lesson-task')) {
+        if (taskId.includes('new_')) {
+            method = 'toCreate'
+        } else {
             taskId = newTaskDiv.id
             method = 'toUpdate'
-        } else {
-            method = 'toCreate'
         }
-
+        
         const lessonId = taskContainerElement.parentElement.id.split('_')[1]
 
         checklistDivElement.appendChild(newTaskDiv.element);
@@ -312,11 +312,17 @@ function taskContainerInputClean(inputCollection) {
     return {isInputClean: true, wrongInput: undefined};
 }
 
-function getLessonTaskDiv(lessonTaskInputElements) {
+function getLessonTaskDiv(lessonTaskInputElements, isNewLessonTask) {
     const newLessonTaskId = lessonTaskInputElements[0].id
 
     let lessonTaskDivElement = document.createElement('div');
-    lessonTaskDivElement.classList.add('lesson-task', 'new-lesson-task');
+    lessonTaskDivElement.classList.add('lesson-task');
+
+    if (isNewLessonTask) {
+        lessonTaskDivElement.classList.add('new-lesson-task');
+    } else {
+        lessonTaskDivElement.classList.add('update-lesson-task');
+    }
 
     let taskInputElement = document.createElement('input');
     taskInputElement.type = 'checkbox';

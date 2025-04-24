@@ -440,20 +440,28 @@ div.tab-content {
                                 border-bottom-color: red !important;
                             }
 
-                            .task-edit-icon, .task-delete-icon {
+                            .task-edit-icon,
+                            .task-delete-icon {
                                 color: var(--indigo-700);
                             }
 
-                            .edit-lesson-task, .new-lesson-task {
+                            .edit-lesson-task,
+                            .new-lesson-task {
                                 display: flex;
                                 gap: 1rem;
 
-                                .edit-task-input-name, .edit-task-input-points {
+                                .edit-task-input-name, 
+                                .new-task-input-name, 
+                                .edit-task-input-points, 
+                                .new-task-input-points {
                                     border: none;
                                     border-bottom: solid .1rem var(--indigo-700);
                                 }
 
-                                .edit-task-input-name:focus, .edit-task-input-points:focus {
+                                .edit-task-input-name:focus,
+                                .new-task-input-name:focus,
+                                .edit-task-input-points:focus,
+                                .new-task-input-points:focus {
                                     outline: none !important;
                                     border-bottom-color: var(--amber-700) !important;
                                 }

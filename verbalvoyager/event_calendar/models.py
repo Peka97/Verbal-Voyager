@@ -88,8 +88,8 @@ class LessonTask(models.Model):
         null=True
     )
 
-    def save(self, force_insert=..., force_update=..., using=..., update_fields=...):
-        return super().save(force_insert, force_update, using, update_fields)
+    def save(self, *args, **kwargs):
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name if self.name else 'None'
