@@ -167,7 +167,7 @@ test.py
 */*/fixtures/
 migrations/
 load_fixtures_data.sh
-requirements.txt
+# requirements.txt
 *dump*.json
 *.csv
 */fontawesomefree/
