@@ -36,34 +36,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run first migrations
-        working-directory: ${{ github.workspace }}/verbalvoyager/
-        env:
-          DJANGO_SETTINGS_MODULE: ${{ secrets.DJANGO_SETTINGS_MODULE }}
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-          DEBUG: ${{ secrets.DEBUG }}
-          EMAIL_LOGIN: ${{ secrets.EMAIL_LOGIN }}
-          EMAIL_PSWD: ${{ secrets.EMAIL_PSWD }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          PSQL_USER: ${{ secrets.PSQL_USER }}
-          PSQL_PSWD: ${{ secrets.PSQL_PSWD }}
-          DATABASE_URL: postgres://${{ secrets.PSQL_USER }}:${{ secrets.PSQL_PSWD }}@localhost:5432/verbalvoyagertest
-        run: python manage.py migrate
-
-      - name: Make migrations
-        working-directory: ${{ github.workspace }}/verbalvoyager/
-        env:
-          DJANGO_SETTINGS_MODULE: ${{ secrets.DJANGO_SETTINGS_MODULE }}
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-          DEBUG: ${{ secrets.DEBUG }}
-          EMAIL_LOGIN: ${{ secrets.EMAIL_LOGIN }}
-          EMAIL_PSWD: ${{ secrets.EMAIL_PSWD }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          PSQL_USER: ${{ secrets.PSQL_USER }}
-          PSQL_PSWD: ${{ secrets.PSQL_PSWD }}
-          DATABASE_URL: postgres://${{ secrets.PSQL_USER }}:${{ secrets.PSQL_PSWD }}@localhost:5432/verbalvoyagertest
-        run: python manage.py makemigrations
-
       - name: Run migrations
         working-directory: ${{ github.workspace }}/verbalvoyager/
         env:
