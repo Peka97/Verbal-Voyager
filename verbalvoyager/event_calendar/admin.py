@@ -80,59 +80,47 @@ class LessonAdmin(NestedModelAdmin):
 
     @log_action
     def save_model(self, request, obj, form, change):
-        # Переопределяем метод сохранения модели для отработки метода save_formset
+        return super().save_model(request, obj, form, change)
 
-        instance = form.save(commit=False)
-        instance.save()
-        form.save_m2m()
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
 
-        return instance
+        for formset in formsets:
+            if formset.model is EnglishLessonPlan and formset.forms[0].is_valid():
+                lesson_plan_form = formset.forms[0]
 
-    def save_formset(self, request, form, formset, change):
-        formset.save(commit=False)
+                lesson_plan = lesson_plan_form.save(commit=False)
+                exercise_id = lesson_plan.exercise_id
 
-        for current_form in formset.forms:
-            if current_form.is_valid():
-                instance = current_form.save(commit=False)
+                words_queryset = lesson_plan_form.cleaned_data.get(
+                    'new_vocabulary')
 
-                if isinstance(instance, EnglishLessonPlan) and current_form.cleaned_data.get('new_vocabulary'):
-                    lesson_plan = instance
-                    exercise_id = lesson_plan.exercise_id
+                if exercise_id:
+                    lesson_plan.save()
+                    current_words = set(exercise_id.words.all())
 
-                    words_queryset = current_form.cleaned_data.get(
-                        'new_vocabulary')
+                    if words_queryset:
+                        new_words = set(words_queryset.all())
 
-                    if exercise_id:
-                        lesson_plan.save()
-                        current_words = set(exercise_id.words.all())
-
-                        if words_queryset:
-                            new_words = set(words_queryset.all())
-
-                            if any(w not in current_words for w in new_words):
-                                exercise_id.words.set(new_words)
-                                exercise_id.save()
-                    else:
-                        if words_queryset and words_queryset.exists():
-                            lesson_plan.save()
-
-                            new_exercise = ExerciseEnglishWords.objects.create(
-                                name=f"New vocabulary \"{current_form.cleaned_data.get('lesson_id').title}\"",
-                                student=lesson_plan.lesson_id.student_id,
-                                teacher=lesson_plan.lesson_id.teacher_id,
-                                is_active=True,
-                            )
-                            new_exercise.save()
-
-                            lesson_plan.exercise_id = new_exercise
-                            lesson_plan.save()
-
-                            new_exercise.words.set(words_queryset.all())
-
+                        if any(w not in current_words for w in new_words):
+                            exercise_id.words.set(new_words)
+                            exercise_id.save()
                 else:
-                    instance.save()
+                    if words_queryset and words_queryset.exists():
+                        lesson_plan.save()
 
-                current_form.save_m2m()
+                        new_exercise = ExerciseEnglishWords.objects.create(
+                            name=f"New vocabulary \"{lesson_plan_form.cleaned_data.get('lesson_id').title}\"",
+                            student=lesson_plan.lesson_id.student_id,
+                            teacher=lesson_plan.lesson_id.teacher_id,
+                            is_active=True,
+                        )
+                        new_exercise.save()
+
+                        lesson_plan.exercise_id = new_exercise
+                        lesson_plan.save()
+
+                        new_exercise.words.set(words_queryset.all())
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
