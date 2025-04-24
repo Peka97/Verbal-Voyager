@@ -153,9 +153,6 @@ LOGGING = {
         'console': {
             'format': '%(name)-12s [%(levelname)-8s] %(name)s::%(module)s::%(lineno)s - %(message)s'
         },
-        'file': {
-            'format': '%(asctime)s [%(levelname)-8s] %(name)s::%(module)s::%(lineno)s - %(message)s'
-        }
     },
     'handlers': {
         'console': {
@@ -163,21 +160,15 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'console',
         },
-        'file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'formatter': 'file',
-            'filename': os.path.join(BASE_DIR, 'logs/django.log'),
-        },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', ],
             'level': 'ERROR',
             'propagate': True
         },
         'django.request': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', ],
             'level': 'ERROR',
             'propagate': False,
         },
