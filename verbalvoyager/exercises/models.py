@@ -2,8 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
-
-from verbalvoyager.settings import SITE_NAME
+from django.conf import settings
 from dictionary.models import EnglishWord as new_eng_word, FrenchWord as new_fr_word, IrregularEnglishVerb
 
 
@@ -63,7 +62,7 @@ class AbstractExerciseWords(models.Model):
     get_words.short_description = 'Слова в упражнении'
 
     def get_url(self):
-        return SITE_NAME + self.get_absolute_url()
+        return settings.SITE_NAME + self.get_absolute_url()
     get_words.get_url = 'Ссылка на упражнение'
 
     def save(self, *args, **kwargs):
@@ -190,7 +189,7 @@ class AbstractExerciseDialog(models.Model):
     get_words.short_description = 'Слова в упражнении'
 
     def get_url(self):
-        return SITE_NAME + self.get_absolute_url()
+        return settings.SITE_NAME + self.get_absolute_url()
 
     def __repr__(self) -> str:
         status = 'Active' if self.is_active else 'Done'
@@ -306,7 +305,7 @@ class ExerciseIrregularEnglishVerb(models.Model):
         return reverse(self.view_name, kwargs={"ex_id": self.pk, "step": '1'})
 
     def get_url(self):
-        return SITE_NAME + self.get_absolute_url()
+        return settings.SITE_NAME + self.get_absolute_url()
     get_words.get_url = 'Ссылка на упражнение'
 
     def save_model(self, request, obj, form, change):
