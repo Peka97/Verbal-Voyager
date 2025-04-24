@@ -5,7 +5,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'verbalvoyager.settings_ci')
 
 DEBUG = False
 
