@@ -38,7 +38,7 @@ jobs:
       - name: Run migrations
         working-directory: ${{ github.workspace }}/verbalvoyager/
         env:
-          DJANGO_SETTINGS_MODULE: verbalvoyager.settings_ci
+          DJANGO_SETTINGS_MODULE: ${{ secrets.DJANGO_SETTINGS_MODULE }}
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           DEBUG: ${{ secrets.DEBUG }}
           EMAIL_LOGIN: ${{ secrets.EMAIL_LOGIN }}
@@ -51,7 +51,7 @@ jobs:
       - name: Run tests with pytest
         working-directory: ${{ github.workspace }}/verbalvoyager/
         env:
-          DJANGO_SETTINGS_MODULE: verbalvoyager.settings_ci
+          DJANGO_SETTINGS_MODULE: ${{ secrets.DJANGO_SETTINGS_MODULE }}
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           DEBUG: ${{ secrets.DEBUG }}
           EMAIL_LOGIN: ${{ secrets.EMAIL_LOGIN }}
