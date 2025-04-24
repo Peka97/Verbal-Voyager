@@ -49,15 +49,19 @@ jobs:
         run: python manage.py makemigrations users
 
       - name: Make other migrations
+        working-directory: ${{ github.workspace }}/verbalvoyager/
         run: python manage.py makemigrations
 
       - name: Run migrations
+        working-directory: ${{ github.workspace }}/verbalvoyager/
         run: python manage.py migrate
 
       - name: Run tests with pytest
+        working-directory: ${{ github.workspace }}/verbalvoyager/
         run: pytest
 
       - name: Lint with Ruff
+        working-directory: ${{ github.workspace }}/verbalvoyager/
         run: |
           python -m pip install ruff
           ruff check --fix
