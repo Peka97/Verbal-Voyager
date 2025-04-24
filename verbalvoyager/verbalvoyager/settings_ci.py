@@ -78,17 +78,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'verbalvoyager.wsgi.application'
 
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'verbalvoyager',
-        'USER': os.getenv('PSQL_USER'),
-        'PASSWORD': os.getenv('PSQL_PSWD'),
-        'HOST': 'localhost',
-        'PORT': '',
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'verbalvoyagertest',
+            'USER': os.getenv('PSQL_USER'),
+            'PASSWORD': os.getenv('PSQL_PSWD'),
+            'HOST': 'localhost',
+            'PORT': '5432',
+            'TEST': {
+                'NAME': 'test_verbal_voyager',
+            },
+        }
     }
-}
 
 # Authentication
 AUTH_USER_MODEL = 'users.User'
