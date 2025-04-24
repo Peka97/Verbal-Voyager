@@ -10,19 +10,18 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-22.04
     services:
       postgres:
-        image: postgres:latest
+        image: postgres:14.17
         env:
-          POSTGRES_USER: your_user
-          POSTGRES_PASSWORD: your_password
-          POSTGRES_DB: your_db
+          POSTGRES_USER: ${{ secrets.PSQL_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.PSQL_PSWD }}
+          POSTGRES_DB: verbalvoyagertest
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U your_user"
+          --health-cmd "pg_isready -U ${{ secrets.PSQL_USER }}"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
