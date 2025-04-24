@@ -15,7 +15,7 @@ from event_calendar.models import Lesson, Course, Review, ProjectType, Project, 
 from event_calendar.forms import LessonAdminForm, ProjectAdminForm
 from lesson_plan.models import EnglishLessonPlan
 from lesson_plan.admin import EnglishLessonPlanAdmin
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseCategory
+from exercises.models import ExerciseEnglishWords, ExerciseCategory
 from logging_app.helpers import log_action
 
 

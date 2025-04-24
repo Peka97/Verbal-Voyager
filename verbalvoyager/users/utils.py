@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from exercises.models import ExerciseEnglishWords, ExerciseEnglishDialog, ExerciseIrregularEnglishVerb, ExerciseCategory
+from exercises.models import ExerciseEnglishWords, ExerciseEnglishDialog, ExerciseIrregularEnglishVerb
 
 User = get_user_model()
 

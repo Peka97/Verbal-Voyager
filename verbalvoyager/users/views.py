@@ -44,7 +44,7 @@ def user_auth(request, **kwargs):
                 
                 try:
                     init_student_demo_access(user)
-                except Exception as err:
+                except Exception:
                     logger.error(f'Fail create demo exercises: {user}', exc_info=True)
                     
                 return redirect('')

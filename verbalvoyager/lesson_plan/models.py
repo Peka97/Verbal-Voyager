@@ -1,6 +1,5 @@
 from django.db import models
 
-from exercises.models import ExerciseEnglishWords
 
 
 class EnglishLessonPlan(models.Model):
