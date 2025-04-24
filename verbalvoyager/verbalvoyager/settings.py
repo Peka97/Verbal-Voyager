@@ -1,7 +1,6 @@
 import os
 
 from pathlib import Path
-from config import CURRENT_CONFIG
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
