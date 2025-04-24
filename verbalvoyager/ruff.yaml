@@ -30,3 +30,4 @@ tool:
         - verbalvoyager
     format:
       docstring-code-line-length: true
+      
