@@ -39,13 +39,29 @@ jobs:
 
       - name: Run migrations
         working-directory: ${{ github.workspace }}/verbalvoyager/
+        env:
+          DJANGO_SETTINGS_MODULE: verbalvoyager.settings_ci
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DEBUG: ${{ secrets.DEBUG }}
+          EMAIL_LOGIN: ${{ secrets.EMAIL_LOGIN }}
+          EMAIL_PSWD: ${{ secrets.EMAIL_PSWD }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PSQL_USER: ${{ secrets.PSQL_USER }}
+          PSQL_PSWD: ${{ secrets.PSQL_PSWD }}
         run: python manage.py migrate
 
       - name: Run tests with pytest
         working-directory: ${{ github.workspace }}/verbalvoyager/
-        run: pytest
         env:
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/test_verbal_voyager"
+          DJANGO_SETTINGS_MODULE: verbalvoyager.settings_ci
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DEBUG: ${{ secrets.DEBUG }}
+          EMAIL_LOGIN: ${{ secrets.EMAIL_LOGIN }}
+          EMAIL_PSWD: ${{ secrets.EMAIL_PSWD }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PSQL_USER: ${{ secrets.PSQL_USER }}
+          PSQL_PSWD: ${{ secrets.PSQL_PSWD }}
+        run: pytest
 
       - name: Lint with Ruff
         working-directory: ${{ github.workspace }}/verbalvoyager/
