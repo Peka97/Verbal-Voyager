@@ -17,7 +17,7 @@ def exercise_result_update(request, ex_type, ex_lang, ex_id, step_num=None):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-        except json.decoder.JSONDecodeError as err:
+        except json.decoder.JSONDecodeError:
             return JsonResponse({'error': 'Invalid data'}, status=400)
         
         logger.info(
