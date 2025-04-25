@@ -46,6 +46,25 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          TIMEOUT=60
+          START_TIME=$(date +%s)
+          while true; do
+            if psql -h localhost -U "${{ secrets.PSQL_USER }}" -d verbalvoyagertest -c "SELECT 1" > /dev/null 2>&1; then
+              echo "PostgreSQL is ready"
+              break
+            fi
+            CURRENT_TIME=$(date +%s)
+            ELAPSED_TIME=$((CURRENT_TIME - START_TIME))
+            if [ "$ELAPSED_TIME" -gt "$TIMEOUT" ]; then
+              echo "Timeout waiting for PostgreSQL to be ready"
+              exit 1
+            fi
+            echo "Waiting for PostgreSQL..."
+            sleep 5
+          done
+
       - name: Make migrations for users app
         working-directory: ${{ github.workspace }}/verbalvoyager/
         run: python manage.py makemigrations users
