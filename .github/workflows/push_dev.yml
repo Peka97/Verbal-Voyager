@@ -25,6 +25,8 @@ jobs:
       postgres:
         image: postgres:14.17
         env:
+          PSQL_USER: ${{ secrets.PSQL_USER }}
+          PSQL_PSWD: ${{ secrets.PSQL_PSWD }}
           POSTGRES_DB: verbalvoyagertest
         ports:
           - 5432:5432
