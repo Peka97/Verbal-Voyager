@@ -5,8 +5,8 @@ from django.db import transaction
 from django.http import JsonResponse
 
 from logger import get_logger
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
-from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseIrregularEnglishVerbResult
+from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
+from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseRussianWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseIrregularEnglishVerbResult
 
 
 logger = get_logger()
@@ -18,8 +18,6 @@ def exercise_result_update(request, ex_type, ex_lang, ex_id, step_num=None):
         try:
             data = json.loads(request.body)
         except json.decoder.JSONDecodeError as err:
-            print(err)
-            print(request.body.decode('utf-8'))
             return JsonResponse({'error': 'Invalid data'}, status=400)
         
         logger.info(
@@ -35,6 +33,9 @@ def exercise_result_update(request, ex_type, ex_lang, ex_id, step_num=None):
             elif ex_lang == 'french':
                 exercise_obj = ExerciseFrenchWords
                 exercise_result_obj = ExerciseFrenchWordsResult
+            elif ex_lang == 'russian':
+                exercise_obj = ExerciseRussianWords
+                exercise_result_obj = ExerciseRussianWordsResult
         elif ex_type == 'dialog':
             if ex_lang == 'english':
                 exercise_obj = ExerciseEnglishDialog

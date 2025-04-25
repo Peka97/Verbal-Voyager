@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseIrregularEnglishVerbResult
+from .models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseRussianWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseIrregularEnglishVerbResult
 from .filters import TeachersListFilter, StudentsListFilter
 from logging_app.helpers import log_action
 
@@ -30,6 +30,10 @@ class ExerciseEnglishWordsResultAdmin(AbstractExerciseWordsResultAdmin):
 
 @admin.register(ExerciseFrenchWordsResult)
 class ExerciseFrenchWordsResultAdmin(AbstractExerciseWordsResultAdmin):
+    pass
+
+@admin.register(ExerciseRussianWordsResult)
+class ExerciseRussianWordsResultAdmin(AbstractExerciseWordsResultAdmin):
     pass
 
 

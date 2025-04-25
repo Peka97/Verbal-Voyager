@@ -3,7 +3,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
 from django.conf import settings
-from dictionary.models import EnglishWord as new_eng_word, FrenchWord as new_fr_word, IrregularEnglishVerb
+from dictionary.models import EnglishWord, FrenchWord, IrregularEnglishVerb
 
 
 User = get_user_model()
@@ -83,7 +83,7 @@ class AbstractExerciseWords(models.Model):
 
 
 class ExerciseEnglishWords(AbstractExerciseWords):
-    words = models.ManyToManyField(new_eng_word, verbose_name="Слова")
+    words = models.ManyToManyField(EnglishWord, verbose_name="Слова")
     student = models.ForeignKey(
         User, on_delete=models.SET_NULL,
         related_name='words_eng_student',
@@ -111,7 +111,7 @@ class ExerciseEnglishWords(AbstractExerciseWords):
 
 
 class ExerciseFrenchWords(AbstractExerciseWords):
-    words = models.ManyToManyField(new_fr_word, verbose_name="Слова")
+    words = models.ManyToManyField(FrenchWord, verbose_name="Слова")
     student = models.ForeignKey(
         User, on_delete=models.SET_NULL,
         related_name='words_fr_student',
@@ -136,6 +136,34 @@ class ExerciseFrenchWords(AbstractExerciseWords):
     class Meta:
         verbose_name = 'Fr | Words'
         verbose_name_plural = 'Fr | Words'
+        
+
+class ExerciseRussianWords(AbstractExerciseWords):
+    words = models.ManyToManyField(EnglishWord, verbose_name="Слова")
+    student = models.ForeignKey(
+        User, on_delete=models.SET_NULL,
+        related_name='words_ru_student',
+        limit_choices_to={'groups__name__in': ['Student', 'StudentDemo']},
+        null=True,
+        verbose_name='Ученик'
+    )
+    teacher = models.ForeignKey(
+        User, on_delete=models.SET_NULL,
+        related_name='words_ru_teacher',
+        limit_choices_to={'groups__name__in': ['Teacher', 'TeacherDemo']},
+        null=True,
+        verbose_name="Учитель"
+    )
+
+    def get_absolute_url(self):
+        return reverse(self.view_name, kwargs={"ex_lang": "russian", "ex_id": self.pk, "step": 1})
+
+    def __str__(self):
+        return f"{self.name} (RU)"
+
+    class Meta:
+        verbose_name = 'Ru | Words'
+        verbose_name_plural = 'Ru | Words'
 
 
 # ExerciseDialog
@@ -201,7 +229,7 @@ class AbstractExerciseDialog(models.Model):
 
 
 class ExerciseEnglishDialog(AbstractExerciseDialog):
-    words = models.ManyToManyField(new_eng_word, verbose_name="Слова")
+    words = models.ManyToManyField(EnglishWord, verbose_name="Слова")
     student = models.ForeignKey(
         User, on_delete=models.SET_NULL,
         related_name='dialog_eng_student',
@@ -227,7 +255,7 @@ class ExerciseEnglishDialog(AbstractExerciseDialog):
 
 
 class ExerciseFrenchDialog(AbstractExerciseDialog):
-    words = models.ManyToManyField(new_fr_word, verbose_name="Слова")
+    words = models.ManyToManyField(FrenchWord, verbose_name="Слова")
     student = models.ForeignKey(
         User, on_delete=models.SET_NULL,
         related_name='dialog_fr_student',

@@ -6,8 +6,7 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    if not os.getenv('DJANGO_SETTINGS_MODULE'):
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'verbalvoyager.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'verbalvoyager.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -20,5 +19,4 @@ def main():
 
 
 if __name__ == '__main__':
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'verbalvoyager.settings_ci')
     main()
