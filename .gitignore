@@ -172,3 +172,4 @@ requirements.txt
 *.csv
 */fontawesomefree/
 fix_words.py
+static/
