@@ -14,7 +14,7 @@ from logger import get_logger
 from users.forms import RegistrationUserForm, CustomPasswordResetForm
 from users.utils import get_words_learned_count, get_exercises_done_count, init_student_demo_access
 from users.forms import TimezoneForm
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
+from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 from event_calendar.models import Lesson, Project, Course
 
 
@@ -117,11 +117,13 @@ def user_account(request, current_pane):
         projects = Project.objects.filter(
             students=user).values_list('pk', flat=True).all()
         context['projects'] = projects
-        english_words, french_words = ExerciseEnglishWords.objects.filter(student=user.pk), \
-            ExerciseFrenchWords.objects.filter(student=user.pk)
+        english_words, french_words, russian_words = ExerciseEnglishWords.objects.filter(student=user.pk), \
+            ExerciseFrenchWords.objects.filter(student=user.pk), \
+            ExerciseRussianWords.objects.filter(student=user.pk)
         context['exercises_words'] = tuple(chain(
             english_words.all(),
-            french_words.all()
+            french_words.all(),
+            russian_words.all()
         ))
         irregular_verbs = ExerciseIrregularEnglishVerb.objects.filter(
             student=user.pk)

@@ -3,6 +3,7 @@
 
     .data-row {
         margin: 1rem 2rem;
+        max-width: 45vw;
 
         .col.avatar {
             max-width: fit-content;
@@ -19,6 +20,10 @@
         .name-wrap {
             display: flex;
             flex-wrap: wrap;
+
+            .row {
+                flex: 1 0 100%;
+            }
 
             .col {
                 display: flex;

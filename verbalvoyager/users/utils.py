@@ -1,3 +1,5 @@
+from itertools import chain
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from exercises.models import ExerciseEnglishWords, ExerciseEnglishDialog, ExerciseIrregularEnglishVerb
@@ -45,10 +47,7 @@ def create_demo_exercise(exercise_model, user_id):
     )
     
     if exercise_model is ExerciseEnglishDialog:
-        print('DIALOG!')
         exercise.text = demo_exercise.text
-        print(demo_exercise.text)
-        print(exercise.text)
         
     exercise.save()
     exercise.words.set(words)

@@ -81,6 +81,9 @@ function changeCheckbox(event) {
         isCompleted: changedCheckbox.checked,
         createFor: lessonId,
     }
+
+    console.dir(dataToSend);
+
     
     sendEventUpdatePanelShowCheck()
 }
@@ -225,6 +228,8 @@ function getTaskForm(method) {
     } else {
         classNamePrefix = 'edit-'
     }
+
+    console.log(classNamePrefix)
     
     const newLessonTaskId = `new_${Date.now()}`
 
@@ -275,10 +280,13 @@ function changeTaskAdderToTask(event) {
         let newTaskDiv = getLessonTaskDiv(lessonTaskInputElements, false);
         let taskId = lessonTaskElement.firstChild.id
         let method;
+        console.dir(taskId)
 
         if (taskId.includes('new_')) {
+            console.log('create')
             method = 'toCreate'
         } else {
+            console.log('update')
             taskId = newTaskDiv.id
             method = 'toUpdate'
         }
