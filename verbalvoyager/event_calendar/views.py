@@ -36,9 +36,14 @@ def update(request):
                     points=task_data['points'],
                     is_completed=task_data['isCompleted'],
                 )
-                new_task.lesson_id = Lesson.objects.get(
-                    pk=int(task_data['createFor']))
-                tasks_obj.append(new_task)
+
+                try:
+                    new_task.lesson_id = Lesson.objects.get(
+                        pk=int(task_data['createFor']))
+                    tasks_obj.append(new_task)
+                except KeyError as err:
+                    logger.error(task_data)
+                    logger.error(err, exc_info=True)
 
             with transaction.atomic():
                 LessonTask.objects.bulk_create(tasks_obj)

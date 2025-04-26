@@ -1,0 +1,250 @@
+/* Content */
+/* TODO: Move to step_base.css */
+
+@media (max-width: 1088px) {
+
+    .means__wrap,
+    .sentences__wrap {
+      margin: .2em !important;
+    }
+  }
+  
+  @media (max-width: 1024px) {
+    .words {
+      max-width: none !important;
+    }
+  }
+  
+  @media (max-width: 900px) {
+    body {
+      font-size: 14px !important;
+    }
+  }
+  
+  @media (max-width: 840px) {
+  
+    .col.means {
+      /* border-radius: 0 2em 0 0; */
+    }
+  
+    .sentences {
+      /* border-radius: 0 0 2em 2em !important; */
+  
+      .sentences__wrap {
+        max-width: 100% !important;
+        width: max-content !important;
+        margin: auto !important;
+      }
+    }
+  }
+  
+  @media (max-width: 768px) {
+    body {
+      font-size: 12px !important;
+    }
+  
+    .bi-rocket-takeoff::before {
+      font-size: 1em !important;
+    }
+  
+    .bi-question-circle::before {
+      font-size: 1.2em !important;
+    }
+  
+    .bi-play-circle::before, .word__definition_wrap > .bi-question-circle::before {
+      font-size: 1em !important;
+    }
+  
+    img.word__image {
+      max-width: 45vw !important;
+    }
+  
+    .means__list,
+    .sentences__list,
+    .means__not_found,
+    .sentences__not_found {
+      font-size: 1.2em !important;
+    }
+  }
+  
+  @media (max-width: 599px) {
+    .image__col img.word__image {
+      border-radius: 2rem 0 0 0 !important;
+    }
+  
+    .col.means {
+      border-radius: 0 2em 0 0;
+    }
+  
+    .sentences {
+      border-radius: 0 0 2em 2em !important;
+    }
+  }
+  
+  @media (max-width: 426px) {
+    body {
+      font-size: 10px !important;
+    }
+  
+    div.word__word {
+      font-size: 1rem !important;
+    }
+  
+    .bi.bi-rocket-takeoff::before {
+      line-height: 1.5em !important;
+    }
+  
+    .bi-play-circle::before, .word__definition_wrap .bi-question-circle::before {
+      font-size: .7em !important;
+    }
+  
+    .image__col {
+      display: contents !important;
+  
+      img.word__image {
+        max-width: 100% !important;
+        border-radius: 2em 2em 0 0 !important;
+      }
+    }
+  
+    .col.means {
+      border-radius: 0 !important;
+    }
+  
+    .col.means,
+    .col.translate {
+      width: 90vw !important;
+    }
+  
+    .means__list,
+    .sentences__list {
+      margin-bottom: 0 !important;
+    }
+  
+    .means__wrap,
+    .sentences__wrap {
+      margin: 0 auto !important;
+      min-width: 90vw !important;
+      width: max-content !important;
+    }
+  
+    .page-link {
+      padding: .2em .5em !important;
+    }
+  
+    .page-item:not(#prev_btn, #next_btn) {
+      display: none !important;
+    }
+  }
+  
+  @media (max-width: 321px) {
+    body {
+      font-size: 8px !important;
+    }
+  
+    .bi.bi-rocket-takeoff::before {
+      font-size: 1.2em !important;
+    }
+  
+    .bi-question-circle::before {
+      font-size: 1.1em !important;
+    }
+  
+    .col.word,
+    .col.translate {
+      padding: .5em !important;
+    }
+  
+    .word__wrap {
+      display: grid;
+      align-self: center;
+    }
+  
+    .means__list,
+    .sentences__list,
+    .means__not_found,
+    .sentences__not_found {
+      font-size: 1.5em !important;
+    }
+  }
+
+
+/* New */
+.word__block {
+  display: flex;
+  justify-content: center;
+  flex-flow: row wrap;
+}
+
+.word-row, .translate-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.word {
+  font-size: 2rem;
+}
+
+.word, .translate-container {
+  color: white;
+  width: fit-content;
+}
+
+.letter-container {
+  display: flex;
+  justify-content: center;
+  gap: .3rem;
+  margin: .3rem;
+}
+
+.letter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 4rem;
+  width: 4rem;
+
+  font-size: 2rem;
+
+  border: 2px solid var(--color-violet-pastel-dark);
+  border-radius: .5em;
+  background-color: var(--purple-900);
+  color: var(--indigo-50);
+
+  transition: background-color 0.5s;
+}
+
+.letter:hover {
+  background-color: var(--indigo-400);;
+}
+
+.translate-container.correct .letter {
+  border-color: var(--green-100);
+  background-color: var(--green-500);
+  color: white;
+}
+
+.translate-container.wrong .letter {
+  border-color: var(--red-200);
+  background-color: var(--red-400);
+  color: white;
+}
+
+.swap-highlight {
+  background-color: var(--deep-purple-a200) !important;
+  color: white !important;
+}
+
+.btn__answer {
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+@media (max-width: 426px) {
+  .letter {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1rem;
+  }
+}

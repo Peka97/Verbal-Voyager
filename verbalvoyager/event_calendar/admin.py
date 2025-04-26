@@ -95,20 +95,20 @@ class LessonAdmin(NestedModelAdmin):
                 words_queryset = lesson_plan_form.cleaned_data.get(
                     'new_vocabulary')
 
+                if not words_queryset:
+                    lesson_plan.exercise_id = None
+
                 if exercise_id:
-                    lesson_plan.save()
                     current_words = set(exercise_id.words.all())
 
-                    if words_queryset:
-                        new_words = set(words_queryset.all())
+                    new_words = set(words_queryset.all())
 
-                        if any(w not in current_words for w in new_words):
-                            exercise_id.words.set(new_words)
-                            exercise_id.save()
+                    if len(current_words) != len(new_words) or any(word not in current_words for word in new_words):
+                        exercise_id.words.set(new_words)
+                        exercise_id.save()
+
                 else:
-                    if words_queryset and words_queryset.exists():
-                        lesson_plan.save()
-
+                    if words_queryset.exists():
                         new_exercise = ExerciseEnglishWords.objects.create(
                             name=f"New vocabulary \"{lesson_plan_form.cleaned_data.get('lesson_id').title}\"",
                             student=lesson_plan.lesson_id.student_id,
@@ -116,11 +116,10 @@ class LessonAdmin(NestedModelAdmin):
                             is_active=True,
                         )
                         new_exercise.save()
+                        new_exercise.words.set(words_queryset.all())
 
                         lesson_plan.exercise_id = new_exercise
-                        lesson_plan.save()
-
-                        new_exercise.words.set(words_queryset.all())
+                lesson_plan.save()
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)

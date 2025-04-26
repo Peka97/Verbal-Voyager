@@ -59,8 +59,7 @@
 	<script src="{% static 'pages/js/popovers_on.js' %}"></script>
 	<script type="module" src="{% static 'event_calendar/js/main.js' %}"></script>
 	{% if user_is_teacher %}
-		<script type="module" src="{% static 'users/js/calendar_send_event_update_fix.js' %}"></script>
-		<script type="module" src="{% static 'users/js/add_new_lesson_task.js' %}"></script>
+		<script type="module" src="{% static 'users/js/calendar_send_event_update_fix_.js' %}"></script>
 	{% endif %}
 	{% if user.is_supervisor %}
 		<script type="module" src="{% static 'users/js/load_another_calendar.js' %}"></script>

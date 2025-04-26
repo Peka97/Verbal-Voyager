@@ -171,4 +171,4 @@ requirements.txt
 *dump*.json
 *.csv
 */fontawesomefree/
-verbalvoyager/static/
+fix_words.py
