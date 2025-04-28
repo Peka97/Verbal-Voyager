@@ -1,6 +1,6 @@
 from django.db import models
 
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
+from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 
 
 # ExerciseWordsResult
@@ -58,6 +58,14 @@ class ExerciseRussianWordsResult(AnstractExerciseWordsResult):
     class Meta:
         verbose_name = 'Ru | Результат "Слова"'
         verbose_name_plural = 'Ru | Результаты "Слова"'
+
+class ExerciseSpanishWordsResult(AnstractExerciseWordsResult):
+    exercise = models.ForeignKey(
+        ExerciseSpanishWords, on_delete=models.CASCADE, related_name='words_sp_result', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Sp | Результат "Слова"'
+        verbose_name_plural = 'Sp | Результаты "Слова"'
 
 
 # ExerciseDialogResult

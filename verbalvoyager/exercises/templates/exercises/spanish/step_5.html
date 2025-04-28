@@ -1,4 +1,4 @@
-{% extends "exercises/russian/includes/words.html" %}
+{% extends "exercises/spanish/includes/words.html" %}
 {% load static %}
 
 {% block title %}Exercise | Step {{step}}{% endblock  %}
@@ -25,10 +25,10 @@
     <div class="row words__block">
         {% for word in words %}
             <div id="word_{{ word.idx }}" class="col word_check word__block hidden">
-                <p class="word-translate">{{ word.word|capfirst }}</p>
+                <p class="word-translate">{{ word.translation|capfirst }}</p>
                 <div class="word_input__block form-floating">
-                    <input id="{{word.translation}}" type="text" name="translate" class="form-control word__check" id="floatingInput" placeholder='"{{ word.word|title }}" переводится как...'>
-                    <label for="{{word.translation}}">"{{ word.word|capfirst }}" переводится как...</label>
+                    <input id="{{word.word}}" type="text" name="translate" class="form-control word__check" id="floatingInput" placeholder='"{{ word.translation|title }}" переводится как...'>
+                    <label for="{{word.word}}">"{{ word.translation|capfirst }}" переводится как...</label>
                 </div>
             </div>
         {% endfor %}

@@ -172,6 +172,8 @@ load_fixtures_data.sh
 *.csv
 */fontawesomefree/
 verbalvoyager/static/
+load_spanish_words.py
+verbalvoyager/*.json
 
 # Исключения
 !conftest.py

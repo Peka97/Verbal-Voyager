@@ -3,7 +3,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
 from django.conf import settings
-from dictionary.models import EnglishWord, FrenchWord, IrregularEnglishVerb
+from dictionary.models import EnglishWord, FrenchWord, IrregularEnglishVerb, SpanishWord
 
 
 User = get_user_model()
@@ -165,6 +165,32 @@ class ExerciseRussianWords(AbstractExerciseWords):
         verbose_name = 'Ru | Words'
         verbose_name_plural = 'Ru | Words'
 
+class ExerciseSpanishWords(AbstractExerciseWords):
+    words = models.ManyToManyField(SpanishWord, verbose_name="Слова")
+    student = models.ForeignKey(
+        User, on_delete=models.SET_NULL,
+        related_name='words_sp_student',
+        limit_choices_to={'groups__name__in': ['Student', 'StudentDemo']},
+        null=True,
+        verbose_name='Ученик'
+    )
+    teacher = models.ForeignKey(
+        User, on_delete=models.SET_NULL,
+        related_name='words_sp_teacher',
+        limit_choices_to={'groups__name__in': ['Teacher', 'TeacherDemo']},
+        null=True,
+        verbose_name="Учитель"
+    )
+
+    def get_absolute_url(self):
+        return reverse(self.view_name, kwargs={"ex_lang": "spanish", "ex_id": self.pk, "step": 1})
+
+    def __str__(self):
+        return f"{self.name} (SP)"
+
+    class Meta:
+        verbose_name = 'Sp | Words'
+        verbose_name_plural = 'Sp | Words'
 
 # ExerciseDialog
 class AbstractExerciseDialog(models.Model):

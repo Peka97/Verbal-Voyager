@@ -2,8 +2,6 @@ import { showToast } from '/static/pages/js/modules/toast_notification.js';
 import { toNextStep } from '../modules/next_step.js';
 import { send_points } from '../modules/send_points.js';
 
-document.getElementById('step_1').classList.add('step-complete')
-document.getElementById('step_2').classList.add('step-complete')
 const dropItems = document.getElementById('translates')
 new Sortable(dropItems, {
   animation: 150,

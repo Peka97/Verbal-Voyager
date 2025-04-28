@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from logger import get_logger, get_words_logger
 from .utils import generate_dialog, get_exercise_or_404
 
-from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
+from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 
 logger = get_logger()
 logger_words = get_words_logger()
@@ -61,6 +61,8 @@ def exercise_words(request, ex_lang, ex_id, step):
         exercise_obj = ExerciseFrenchWords
     elif ex_lang == 'russian':
         exercise_obj = ExerciseRussianWords
+    elif ex_lang == 'spanish':
+        exercise_obj = ExerciseSpanishWords
     else:
         return Http404()
 
