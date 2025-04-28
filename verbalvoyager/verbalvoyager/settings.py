@@ -11,8 +11,9 @@ SECRET_KEY = CURRENT_CONFIG.SECRET_KEY
 DEBUG = CURRENT_CONFIG.DEBUG
 
 ALLOWED_HOSTS = [
-    '127.0.0.1', 'localhost', '', '::1', '158.160.153.184'
+    '127.0.0.1', 'localhost', '', '::1', '158.160.153.184', 'verbal-voyager.ru', 'www.verbal-voyager.ru',
 ]
+
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
@@ -30,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     # Libraries
     'rangefilter',  # Django Admin range filters
@@ -240,3 +242,5 @@ if DEBUG:
     SITE_NAME = 'http://127.0.0.1:8000'
 else:
     SITE_NAME = 'https://verbal-voyager.ru'
+
+SITE_ID = 1
