@@ -75,7 +75,7 @@ class IrregularEnglishVerbAdmin(admin.ModelAdmin):
 
 
 @admin.register(SpanishWord)
-class WordAdmin(admin.ModelAdmin):
+class SpanishWordAdmin(admin.ModelAdmin):
     show_full_result_count = False
     list_display = ('word', 'translation')
     search_fields = ('word', 'translation')
