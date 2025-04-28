@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'rangefilter',  # Django Admin range filters
     'fontawesomefree',  # CSS static
     'nested_admin',  # Django Admin multiinlines
+    'django_recaptcha',  # Recaptcha
 
     # Created
     'users',
@@ -157,6 +158,10 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGIN_URL = '/users/auth'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+# Recaptcha
+RECAPTCHA_PUBLIC_KEY = CURRENT_CONFIG.RECAPTCHA_PUBLIC_KEY
+RECAPTCHA_PRIVATE_KEY = CURRENT_CONFIG.RECAPTCHA_PRIVATE_KEY
 
 # Internationalization
 LANGUAGE_CODE = 'ru-ru'

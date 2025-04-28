@@ -41,84 +41,18 @@
                 <div id="auth-btn" class="col-6 auth-wrap tab-default {% if auth_show %} active {% endif %}">
                     <a href="#">Авторизация</a>
                 </div>
-                <div id="sign-up-btn" class="col-6 sign-up-wrap tab-default {% if not auth_show %} active {% endif %}">
+                <div id="sign-up-btn" class="col-6 sign-up-wrap tab-default {%if not auth_show %} active {% endif %}">
                     <a href="#">Регистрация</a>
                 </div>
             </div>
             <div id="auth-row" class="row auth {% if not auth_show %} d-none {% endif %}">
                 <div class="col auth-card">
-                    <form class="form" method='POST'>
-                        {% csrf_token %}
-                        <div class="form-title"><span>Подняться на шатл</span></div>
-
-                        <div class="row input-container">
-                            {% if auth_error %}
-                                <div class="error-wrap">
-                                    <p class="error">{{ auth_error }}</p>
-                                </div>
-                            {% endif %}
-                            
-                            <div class="input-wrap">
-                                <div class="input-group">
-                                    <input required type="login" name="login" class="input">
-                                    <span class="highlight"></span>
-                                    <span class="bar"></span>
-                                    <label>Имя пользователя</label>
-                                </div>
-                            </div>
-                            <div class="input-wrap">
-                                <div class="input-group">
-                                    <input required type="password" name="password" class="input">
-                                    <span class="highlight"></span>
-                                    <span class="bar"></span>
-                                    <label>Пароль</label>
-                                </div>
-                            </div>
-                            <a href="{% url 'reset_password' %}">
-                                Забыли пароль?
-                            </a>
-                        </div>
-                        <div class="row btn-container">
-                            <button class="btn btn-lg btn-default" type="auth">Войти</button>
-                        </div>
-                    </form>
+                    {% include "users/forms/login.html" %}
                 </div>
             </div>
             <div id="sign-up-row" class="row sign-up {% if auth_show %} d-none {% endif %}">
                 <div class="sign-up-card">
-                    <form class="form" method='POST'>
-                        {% csrf_token %}
-                        <div class="form-title"><span>Регистрация нового пилота</span></div>
-                
-                        <section class="bg-stars">
-                        <span class="star"></span>
-                        <span class="star"></span>
-                        <span class="star"></span>
-                        <span class="star"></span>
-                        </section>
-                        
-                        <div class="row input-container">
-                            {% for field in form %}
-                                <div class="input-wrap">
-                                    <div class="input-group">
-                                        {{ field }}
-                                        <span class="highlight"></span>
-                                        <span class="bar"></span>
-                                        {{ field.label_tag }}
-                                    </div>
-                                    {% if field.errors %}
-                                        {% for error in field.errors  %}
-                                            <p class="error">{{ error }}</p>
-                                        {% endfor %}
-                                    {% endif %}
-                                    
-                                </div>
-                            {% endfor %}
-                        </div>
-                        <div class="row btn-container">
-                            <button class="btn btn-lg btn-default" type="sign_up">Зарегистрировать</button>
-                        </div>
-                    </form>
+                    {% include "users/forms/register.html" %}
                 </div>
             </div>
         </div>
@@ -126,12 +60,10 @@
     <div class="row homepage-link">
         <a href="{% url "" %}">Вернуться на главную страницу</a>
     </div>
-
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 
         <script src="{% static 'users/js/auth.js' %}"></script>
-
     </body>
 </html>

@@ -1,0 +1,104 @@
+<form class="form" method="POST" action="{% url "register" %}">
+    {% csrf_token %}
+    <div class="form-title"><span>Регистрация нового пилота</span></div>
+
+    <section class="bg-stars">
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+    </section>
+    
+    <div class="row input-container">
+        <div class="input-wrap">
+            <div class="input-group">
+                <input required type="text" name="{{ sign_in_form.username.html_name }}" class="input" autofocus>
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                {{ sign_in_form.username.label_tag }}
+            </div>
+            {% if sign_in_form.username.errors %}
+                {% for error in sign_in_form.username.errors  %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="input-wrap">
+            <div class="input-group">
+                <input required type="password" name="{{ sign_in_form.password1.html_name }}" class="input" autocomplete="new-password">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                {{ sign_in_form.password1.label_tag }}
+            </div>
+            {% if sign_in_form.password1.errors %}
+                {% for error in sign_in_form.password1.errors  %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="input-wrap">
+            <div class="input-group">
+                <input required type="password" name="{{ sign_in_form.password2.html_name }}" class="input" autocomplete="new-password">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                {{ sign_in_form.password2.label_tag }}
+            </div>
+            {% if sign_in_form.password2.errors %}
+                {% for error in sign_in_form.password2.errors  %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+            
+        </div>
+
+        <div class="input-wrap">
+            <div class="input-group">
+                <input required type="text" name="{{ sign_in_form.first_name.html_name }}" class="input">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                {{ sign_in_form.first_name.label_tag }}
+            </div>
+            {% if sign_in_form.first_name.errors %}
+                {% for error in sign_in_form.first_name.errors  %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="input-wrap">
+            <div class="input-group">
+                <input required type="text" name="{{ sign_in_form.last_name.html_name }}" class="input">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                {{ sign_in_form.last_name.label_tag }}
+            </div>
+            {% if sign_in_form.last_name.errors %}
+                {% for error in sign_in_form.last_name.errors  %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="input-wrap">
+            <div class="input-group">
+                <input required type="email" name="{{ sign_in_form.email.html_name }}" class="input">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                {{ sign_in_form.email.label_tag }}
+            </div>
+            {% if sign_in_form.email.errors %}
+                {% for error in sign_in_form.email.errors  %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        {{ sign_in_form.captcha }}
+        
+    </div>
+    <div class="row btn-container">
+        <button class="btn btn-lg btn-default" type="register">Зарегистрировать</button>
+    </div>
+</form>

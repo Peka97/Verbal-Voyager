@@ -210,6 +210,28 @@ class IrregularEnglishVerb(models.Model):
 
 
 class SpanishWord(AbstractWord):
+    definition = models.CharField(
+        verbose_name='Определение',
+        max_length=350,  # 1000
+        blank=True,
+        null=True,
+        help_text='Определение слова'
+    )
+    prefix = models.CharField(
+        verbose_name='Префикс',
+        max_length=25,
+        blank=True,
+        null=True,
+        help_text='Префикс'
+    )
+    transcription = models.CharField(
+        verbose_name='Транскрипция',
+        max_length=75,  # 100
+        blank=True,
+        null=True,
+        help_text='Транскрипция слова'
+    )
+    
     def clean(self):
         super(SpanishWord, self).clean()
         existing_word = SpanishWord.objects.filter(

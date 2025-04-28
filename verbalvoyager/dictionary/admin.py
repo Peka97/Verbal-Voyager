@@ -81,14 +81,14 @@ class SpanishWordAdmin(admin.ModelAdmin):
     search_fields = ('word', 'translation')
     readonly_fields = ('another_means', )
     fieldsets = (
-        ('EnglishWord Main', {
+        ('SpanishWord Main', {
             'fields': (('word', 'translation',), 'another_means', ('prefix', )),
         }),
-        ('EnglishWord Extra', {
+        ('SpanishWord Extra', {
             'classes': ('collapse', ),
             'fields': ('transcription', 'definition', 'examples', ),
         }),
-        ('EnglishWord Media', {
+        ('SpanishWord Media', {
             'classes': ('collapse', ),
             'fields': ('image_url', 'sound_url'),
         })
