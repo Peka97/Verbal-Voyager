@@ -14,10 +14,15 @@ def sentences_split(values):
 
 
 @register.filter(name="get_shuffled_translates", is_safe=True)
-def get_shuffled_translates(values):
-    translates = [{'idx': idx + 1, 'translation': word['translation']}
-                  for idx, word in enumerate(values)]
-    shuffle(translates)
+def get_shuffled_translates(values, lang=None):
+    if lang == 'russian':
+        translates = [{'idx': idx + 1, 'word': word['word']}
+                    for idx, word in enumerate(values)]
+        shuffle(translates)
+    else:
+        translates = [{'idx': idx + 1, 'translation': word['translation']}
+                    for idx, word in enumerate(values)]
+        shuffle(translates)
     return translates
 
 @register.filter(name="get_words_list")

@@ -5,8 +5,8 @@ from django.db import transaction
 from django.http import JsonResponse
 
 from logger import get_logger
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
-from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseIrregularEnglishVerbResult
+from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
+from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseRussianWordsResult, ExerciseSpanishWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseIrregularEnglishVerbResult
 
 
 logger = get_logger()
@@ -17,9 +17,7 @@ def exercise_result_update(request, ex_type, ex_lang, ex_id, step_num=None):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-        except json.decoder.JSONDecodeError as err:
-            print(err)
-            print(request.body.decode('utf-8'))
+        except json.decoder.JSONDecodeError:
             return JsonResponse({'error': 'Invalid data'}, status=400)
         
         logger.info(
@@ -35,6 +33,12 @@ def exercise_result_update(request, ex_type, ex_lang, ex_id, step_num=None):
             elif ex_lang == 'french':
                 exercise_obj = ExerciseFrenchWords
                 exercise_result_obj = ExerciseFrenchWordsResult
+            elif ex_lang == 'russian':
+                exercise_obj = ExerciseRussianWords
+                exercise_result_obj = ExerciseRussianWordsResult
+            elif ex_lang == 'spanish':
+                exercise_obj = ExerciseSpanishWords
+                exercise_result_obj = ExerciseSpanishWordsResult
         elif ex_type == 'dialog':
             if ex_lang == 'english':
                 exercise_obj = ExerciseEnglishDialog

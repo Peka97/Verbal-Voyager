@@ -1,19 +1,17 @@
 import os
 
 from pathlib import Path
-from config import CURRENT_CONFIG
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = CURRENT_CONFIG.SECRET_KEY
+SECRET_KEY = os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'verbalvoyager.settings_ci')
 
-DEBUG = CURRENT_CONFIG.DEBUG
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    '127.0.0.1', 'localhost', '', '::1', '158.160.153.184', 'verbal-voyager.ru', 'www.verbal-voyager.ru',
+    '127.0.0.1', 'localhost', '', '::1', '158.160.153.184'
 ]
-
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
@@ -31,13 +29,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
 
     # Libraries
     'rangefilter',  # Django Admin range filters
     'fontawesomefree',  # CSS static
     'nested_admin',  # Django Admin multiinlines
-    'django_recaptcha',  # Recaptcha
 
     # Created
     'users',
@@ -61,16 +57,6 @@ MIDDLEWARE = [
     'users.middleware.TimezoneMiddleware'
 ]
 
-if CURRENT_CONFIG.DEBUG:
-    INSTALLED_APPS = [
-        *INSTALLED_APPS,
-        'debug_toolbar',
-    ]
-    MIDDLEWARE = [
-        *MIDDLEWARE,
-        'debug_toolbar.middleware.DebugToolbarMiddleware',
-    ]
-
 ROOT_URLCONF = 'verbalvoyager.urls'
 
 TEMPLATES = [
@@ -90,36 +76,14 @@ TEMPLATES = [
     },
 ]
 
-# Enable Django Admin Tools
-if CURRENT_CONFIG.admin_tools_enabled:
-    INSTALLED_APPS = [
-        'admin_tools',
-        'admin_tools.theming',
-        'admin_tools.menu',
-        'admin_tools.dashboard',
-    ] + INSTALLED_APPS
-
-    TEMPLATES[0]['APP_DIRS'] = False
-    TEMPLATES[0]['OPTIONS']['loaders'] = [
-        'admin_tools.template_loaders.Loader',
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-    ]
-    ADMIN_TOOLS_MENU = 'verbalvoyager.menu.CustomMenu'
-    ADMIN_TOOLS_APP_INDEX_DASHBOARD = 'verbalvoyager.dashboard.CustomAppIndexDashboard'
-
 WSGI_APPLICATION = 'verbalvoyager.wsgi.application'
 
-if CURRENT_CONFIG.DEBUG:
-    DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
-
-if CURRENT_CONFIG.DEBUG:
-    DATABASES = {
+DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'verbalvoyagertest',
-            'USER': 'django',
-            'PASSWORD': 'django',
+            'USER': os.getenv('PSQL_USER'),
+            'PASSWORD': os.getenv('PSQL_PSWD'),
             'HOST': 'localhost',
             'PORT': '5432',
             'TEST': {
@@ -127,21 +91,6 @@ if CURRENT_CONFIG.DEBUG:
             },
         }
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'verbalvoyager',
-            'USER': 'django',
-            'PASSWORD': CURRENT_CONFIG.psql_pswd,
-            'HOST': 'localhost',
-            'PORT': '',
-            'TEST': {
-                'NAME': 'test_verbal_voyager',
-            },
-        }
-    }
-
 
 # Authentication
 AUTH_USER_MODEL = 'users.User'
@@ -163,10 +112,6 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGIN_URL = '/users/auth'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
-
-# Recaptcha
-RECAPTCHA_PUBLIC_KEY = CURRENT_CONFIG.RECAPTCHA_PUBLIC_KEY
-RECAPTCHA_PRIVATE_KEY = CURRENT_CONFIG.RECAPTCHA_PRIVATE_KEY
 
 # Internationalization
 LANGUAGE_CODE = 'ru-ru'
@@ -198,8 +143,8 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 EMAIL_TIMEOUT = 15
-EMAIL_HOST_USER = CURRENT_CONFIG.email_login
-EMAIL_HOST_PASSWORD = CURRENT_CONFIG.email_password
+EMAIL_HOST_USER = os.getenv('EMAIL_LOGIN')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PSWD')
 
 # Logs
 LOGGING = {
@@ -210,9 +155,6 @@ LOGGING = {
         'console': {
             'format': '%(name)-12s [%(levelname)-8s] %(name)s::%(module)s::%(lineno)s - %(message)s'
         },
-        'file': {
-            'format': '%(asctime)s [%(levelname)-8s] %(name)s::%(module)s::%(lineno)s - %(message)s'
-        }
     },
     'handlers': {
         'console': {
@@ -220,32 +162,21 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'console',
         },
-        'file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'formatter': 'file',
-            'filename': os.path.join(BASE_DIR, 'logs/django.log'),
-        },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', ],
             'level': 'ERROR',
             'propagate': True
         },
         'django.request': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', ],
             'level': 'ERROR',
             'propagate': False,
         },
     }
 }
 
-OPENAI_API_KEY = CURRENT_CONFIG.OPENAI_API_KEY
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
-if DEBUG:
-    SITE_NAME = 'http://127.0.0.1:8000'
-else:
-    SITE_NAME = 'https://verbal-voyager.ru'
-
-SITE_ID = 1
+SITE_NAME = 'https://verbal-voyager.ru'

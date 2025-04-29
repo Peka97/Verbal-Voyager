@@ -4,10 +4,6 @@ import { pagination, updatePagination } from '../modules/pagination.js';
 import { send_points } from '../modules/send_points_fix.js';
 import { logging } from '../modules/logging.js';
 
-document.getElementById('step_1').classList.add('step-complete')
-document.getElementById('step_2').classList.add('step-complete')
-document.getElementById('step_3').classList.add('step-complete')
-
 pagination.forEach(el => {
     el.onclick = (event) => {
         updatePagination(event);

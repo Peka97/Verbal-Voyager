@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseIrregularEnglishVerbResult
+from .models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseRussianWordsResult, ExerciseSpanishWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseIrregularEnglishVerbResult
 from .filters import TeachersListFilter, StudentsListFilter
 from logging_app.helpers import log_action
 
@@ -8,7 +8,7 @@ from logging_app.helpers import log_action
 class AbstractExerciseWordsResultAdmin(admin.ModelAdmin):
     show_full_result_count = False
     list_display = ('get_ex_name', 'get_teacher', 'get_student',
-                    'step_1', 'step_2', 'step_3', 'step_4')
+                    'step_1', 'step_2', 'step_3', 'step_4', 'step_5')
     list_filter = [
         TeachersListFilter,
         StudentsListFilter,
@@ -30,6 +30,14 @@ class ExerciseEnglishWordsResultAdmin(AbstractExerciseWordsResultAdmin):
 
 @admin.register(ExerciseFrenchWordsResult)
 class ExerciseFrenchWordsResultAdmin(AbstractExerciseWordsResultAdmin):
+    pass
+
+@admin.register(ExerciseRussianWordsResult)
+class ExerciseRussianWordsResultAdmin(AbstractExerciseWordsResultAdmin):
+    pass
+
+@admin.register(ExerciseSpanishWordsResult)
+class ExerciseSpanishWordsResultAdmin(AbstractExerciseWordsResultAdmin):
     pass
 
 

@@ -207,3 +207,54 @@ class IrregularEnglishVerb(models.Model):
         verbose_name_plural = 'Eng | Неправильные глаголы'
 
         ordering = ['infinitive__word']
+
+
+class SpanishWord(AbstractWord):
+    definition = models.CharField(
+        verbose_name='Определение',
+        max_length=350,  # 1000
+        blank=True,
+        null=True,
+        help_text='Определение слова'
+    )
+    prefix = models.CharField(
+        verbose_name='Префикс',
+        max_length=25,
+        blank=True,
+        null=True,
+        help_text='Префикс'
+    )
+    transcription = models.CharField(
+        verbose_name='Транскрипция',
+        max_length=75,  # 100
+        blank=True,
+        null=True,
+        help_text='Транскрипция слова'
+    )
+    
+    def clean(self):
+        super(SpanishWord, self).clean()
+        existing_word = SpanishWord.objects.filter(
+            word=self.word,
+            translation=self.translation
+        ).exclude(pk=self.pk)
+        if existing_word.exists():
+            raise ValidationError(
+                f"Такое сочетание слова и перевода уже существует - {existing_word}")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+
+        another_means_words = SpanishWord.objects.filter(
+            word=self.word).exclude(pk=self.pk).all()
+        self.another_means = ', '.join(
+            [word.translation for word in another_means_words if word.translation])
+
+        super(SpanishWord, self).save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return f'{self.word} - {self.translation}'
+
+    class Meta(AbstractWord.Meta):
+        verbose_name = f'Sp | {AbstractWord.Meta.verbose_name}'
+        verbose_name_plural = f'Sp | {AbstractWord.Meta.verbose_name_plural}'

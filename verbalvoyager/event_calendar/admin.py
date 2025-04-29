@@ -15,7 +15,7 @@ from event_calendar.models import Lesson, Course, Review, ProjectType, Project, 
 from event_calendar.forms import LessonAdminForm, ProjectAdminForm
 from lesson_plan.models import EnglishLessonPlan
 from lesson_plan.admin import EnglishLessonPlanAdmin
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords
+from exercises.models import ExerciseEnglishWords, ExerciseCategory
 from logging_app.helpers import log_action
 
 
@@ -49,7 +49,7 @@ class LessonAdmin(NestedModelAdmin):
     form = LessonAdminForm
     ordering = ('-datetime', )
     autocomplete_fields = ('student_id', )
-    search_fields = ['student_id', 'lesson_id']
+    search_fields = ['id', 'student_id__last_name', 'student_id__first_name']
     list_display = ('get_lesson_time', 'title', 'status',
                     'is_paid', 'teacher_id', 'student_id')
     list_display_links = ('get_lesson_time', 'title')
@@ -119,6 +119,8 @@ class LessonAdmin(NestedModelAdmin):
                         new_exercise.words.set(words_queryset.all())
 
                         lesson_plan.exercise_id = new_exercise
+                lesson_plan.save()
+                lesson_plan.exercise_id = new_exercise
                 lesson_plan.save()
 
     def get_queryset(self, request):

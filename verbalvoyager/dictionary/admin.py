@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import EnglishWord, FrenchWord, IrregularEnglishVerb
+from .models import EnglishWord, FrenchWord, IrregularEnglishVerb, SpanishWord
 from pages.filters import ChoiceDropdownFilter
 from logging_app.helpers import log_action
 
@@ -67,6 +67,32 @@ class IrregularEnglishVerbAdmin(admin.ModelAdmin):
     autocomplete_fields = ('infinitive', )
     list_display = ('infinitive', 'past_simple', 'past_participle')
     search_fields = ('infinitive__word', 'past_simple', 'past_participle')
+    save_as = True
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
+
+
+@admin.register(SpanishWord)
+class SpanishWordAdmin(admin.ModelAdmin):
+    show_full_result_count = False
+    list_display = ('word', 'translation')
+    search_fields = ('word', 'translation')
+    readonly_fields = ('another_means', )
+    fieldsets = (
+        ('SpanishWord Main', {
+            'fields': (('word', 'translation',), 'another_means', ('prefix', )),
+        }),
+        ('SpanishWord Extra', {
+            'classes': ('collapse', ),
+            'fields': ('transcription', 'definition', 'examples', ),
+        }),
+        ('SpanishWord Media', {
+            'classes': ('collapse', ),
+            'fields': ('image_url', 'sound_url'),
+        })
+    )
     save_as = True
 
     @log_action

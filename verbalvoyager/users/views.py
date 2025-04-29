@@ -11,10 +11,9 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteVi
 from django.contrib import messages
 
 from logger import get_logger
-from users.forms import RegistrationUserForm, CustomPasswordResetForm
+from users.forms import RegistrationUserForm, CustomPasswordResetForm, AuthUserForm, TimezoneForm
 from users.utils import get_words_learned_count, get_exercises_done_count, init_student_demo_access
-from users.forms import TimezoneForm
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
+from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 from event_calendar.models import Lesson, Project, Course
 
 
@@ -22,49 +21,57 @@ logger = get_logger()
 User = get_user_model()
 
 
-def user_auth(request, **kwargs):
+def user_auth(request):
     context = {
-        'form': RegistrationUserForm(),
         'auth_show': True
     }
 
     next = request.GET.get('next')
 
     if request.POST:
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
-        # Регистрация
-        if request.POST.get('username'):
-            form = RegistrationUserForm(request.POST)
+        user = authenticate(request, username=username, password=password)
 
-            if form.is_valid():
-                user = form.save(commit=False)
-                user.save()
+        if user:
+            login(request, user)
+            return redirect(next) if next else redirect('')
+        else:
+            context['auth_error'] = 'Неправильное имя пользователя или пароль'
+    else:
+        context['auth_form'] = AuthUserForm()
+        context['sign_in_form'] = RegistrationUserForm()
 
-                login(request, user)
+    return render(request, 'users/auth.html', context)
+
+def user_register(request):
+    context = {
+        'auth_show': False
+    }
+    
+    if request.POST:
+        form = RegistrationUserForm(request.POST)
+
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.save()
+
+            login(request, user)
+            
+            try:
+                init_student_demo_access(user)
+            except Exception:
+                logger.error(f'Fail create demo exercises: {user}', exc_info=True)
                 
-                try:
-                    init_student_demo_access(user)
-                except Exception as err:
-                    logger.error(f'Fail create demo exercises: {user}', exc_info=True)
-                    
-                return redirect('')
-            else:
-                context['form'] = form
-                context['auth_show'] = False
-
-        # Авторизация
-        elif request.POST.get('login'):
-            username = request.POST.get('login')
-            password = request.POST.get('password')
-
-            user = authenticate(request, username=username, password=password)
-
-            if user:
-                login(request, user)
-                return redirect(next) if next else redirect('')
-            else:
-                context['auth_error'] = 'Неправильное имя пользователя или пароль'
-
+            return redirect('')
+        else:
+            context['sign_in_form'] = form
+            context['auth_show'] = False
+    else:
+        context['auth_form'] = AuthUserForm()
+        context['sign_in_form'] = RegistrationUserForm()
+        
     return render(request, 'users/auth.html', context)
 
 
@@ -117,11 +124,13 @@ def user_account(request, current_pane):
         projects = Project.objects.filter(
             students=user).values_list('pk', flat=True).all()
         context['projects'] = projects
-        english_words, french_words = ExerciseEnglishWords.objects.filter(student=user.pk), \
-            ExerciseFrenchWords.objects.filter(student=user.pk)
+        english_words, french_words, russian_words = ExerciseEnglishWords.objects.filter(student=user.pk), \
+            ExerciseFrenchWords.objects.filter(student=user.pk), \
+            ExerciseRussianWords.objects.filter(student=user.pk)
         context['exercises_words'] = tuple(chain(
             english_words.all(),
-            french_words.all()
+            french_words.all(),
+            russian_words.all()
         ))
         irregular_verbs = ExerciseIrregularEnglishVerb.objects.filter(
             student=user.pk)

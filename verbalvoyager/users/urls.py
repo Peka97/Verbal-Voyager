@@ -11,6 +11,7 @@ handler500 = handler_500
 
 urlpatterns = [
     path('auth', views.user_auth, name='auth'),
+    path('register', views.user_register, name='register'),
     path('account/<str:current_pane>', views.user_account, name='account'),
     path('logout', views.user_logout, name='logout'),
 

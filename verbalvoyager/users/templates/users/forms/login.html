@@ -1,0 +1,39 @@
+<form class="form" method='POST' action="{% url "auth" %}">
+    {% csrf_token %}
+    <div class="form-title"><span>Подняться на шатл</span></div>
+
+    <div class="row input-container">
+        {% if auth_error %}
+            <div class="error-wrap">
+                <p class="error">{{ auth_error }}</p>
+            </div>
+        {% endif %}
+
+        <div class="input-wrap">
+            <div class="input-group">
+                <input required type="login" name="{{ auth_form.username.html_name }}" class="input">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                {{ auth_form.username.label_tag }}
+            </div>
+        </div>
+
+        <div class="input-wrap">
+            <div class="input-group">
+                <input required type="password" name="{{ auth_form.password.html_name }}" class="input">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                {{ auth_form.password.label_tag }}
+            </div>
+        </div>
+
+        {% comment %} {{ auth_form.captcha }} {% endcomment %}
+        
+        <a href="{% url 'reset_password' %}">
+            Забыли пароль?
+        </a>
+    </div>
+    <div class="row btn-container">
+        <button class="btn btn-lg btn-default" type="login">Войти</button>
+    </div>
+</form>

@@ -2,15 +2,14 @@ from openai import OpenAI
 
 from django.shortcuts import redirect, get_object_or_404
 from django.http.response import Http404
-
-from verbalvoyager.settings import OPENAI_API_KEY
+from django.conf import settings
 from dictionary.models import EnglishWord, FrenchWord
 
 
 def generate_dialog(lang: str, word_ids: list, sentence_count: int, level: str) -> str:
     client = OpenAI(
         base_url="https://openrouter.ai/api/v1",
-        api_key=OPENAI_API_KEY,
+        api_key=settings.OPENAI_API_KEY,
     )
     # pprint(client.models.list())  # Output all models
     if lang == 'английском':

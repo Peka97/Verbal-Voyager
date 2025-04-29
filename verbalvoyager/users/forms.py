@@ -2,10 +2,22 @@ from typing import Any
 
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm, AuthenticationForm
+
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha.widgets import ReCaptchaV3
 
 
 User = get_user_model()
+
+
+class AuthUserForm(AuthenticationForm):
+    class Meta:
+        model = User
+        fields = [
+            'username',
+            'password1',
+        ]
 
 
 class RegistrationUserForm(UserCreationForm):
@@ -21,34 +33,48 @@ class RegistrationUserForm(UserCreationForm):
         max_length=50,
         label='Адрес электронной почты'
     )
+    captcha = ReCaptchaField(
+        widget=ReCaptchaV3(
+            attrs={
+                'id': 'registerCaptcha',
+            }
+        )
+    )
 
     class Meta:
         model = User
-        fields = (
+        fields = [
             'username',
             'password1',
             'password2',
             'first_name',
             'last_name',
-            'email'
-        )
+            'email',
+            'captcha'
+        ]
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super(UserCreationForm, self).__init__(*args, **kwargs)
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            super(UserCreationForm, self).__init__(*args, **kwargs)
 
-        for field in self.fields:
-            self.fields[field].widget.attrs['class'] = 'input'
-            # self.fields[field].widget.attrs['placeholder'] = field
-
+            for field in self.fields:
+                self.fields[field].widget.attrs.update({'class': 'input'})
 
 class CustomPasswordResetForm(PasswordResetForm):
     email = forms.EmailField()
 
 
 class TimezoneForm(forms.ModelForm):
+    captcha = ReCaptchaField(
+        widget=ReCaptchaV3(
+            attrs={
+                'id': 'timezoneCaptcha',
+            }
+        )
+    )
+    
     class Meta:
         model = User
-        fields = ['timezone']
+        fields = ['timezone', 'captcha']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

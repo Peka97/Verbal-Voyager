@@ -8,7 +8,7 @@ from logger import get_logger
 from pages.filters import DropdownFilter, RelatedDropdownFilter
 from .filters import TeachersListFilter, StudentsListFilter
 
-from .models import ExerciseCategory, ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
+from .models import ExerciseCategory, ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 from .forms import ExerciseDialogAdminForm, ExerciseIrregularEnglishVerbAdminForm
 from logging_app.helpers import log_action
 
@@ -108,6 +108,14 @@ class ExerciseEnglishWordsAdmin(AbstractExerciseWordsAdmin):
 
 @admin.register(ExerciseFrenchWords)
 class ExerciseFrenchWordsAdmin(AbstractExerciseWordsAdmin):
+    pass
+
+@admin.register(ExerciseRussianWords)
+class ExerciseRussianWordsAdmin(AbstractExerciseWordsAdmin):
+    pass
+
+@admin.register(ExerciseSpanishWords)
+class ExerciseSpanishWordsAdmin(AbstractExerciseWordsAdmin):
     pass
 
 

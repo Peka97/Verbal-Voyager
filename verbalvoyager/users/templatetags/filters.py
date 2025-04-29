@@ -3,8 +3,7 @@ from datetime import datetime, timedelta
 
 from logger import get_logger
 from django import template
-
-from verbalvoyager.settings import TIME_ZONE
+from django.conf import settings
 
 
 register = template.Library()
@@ -43,7 +42,7 @@ def time(value):
 
 @register.filter(name="teacher_warn_lesson")
 def teacher_warn_lesson(lesson):
-    tz_server = pytz.timezone(TIME_ZONE)
+    tz_server = pytz.timezone(settings.TIME_ZONE)
     tz_user = pytz.timezone(lesson.teacher_id.timezone)
     user_lesson_datetime = lesson.datetime.astimezone(tz_user)
 
@@ -58,7 +57,7 @@ def teacher_warn_lesson(lesson):
 
 @register.filter(name="teacher_dang_lesson")
 def teacher_dang_lesson(lesson):
-    tz_server = pytz.timezone(TIME_ZONE)
+    tz_server = pytz.timezone(settings.TIME_ZONE)
     tz_user = pytz.timezone(lesson.teacher_id.timezone)
     user_lesson_datetime = lesson.datetime.astimezone(tz_user)
 
@@ -73,7 +72,7 @@ def teacher_dang_lesson(lesson):
 
 @register.filter(name="student_warn_lesson")
 def student_warn_lesson(lesson):
-    tz_server = pytz.timezone(TIME_ZONE)
+    tz_server = pytz.timezone(settings.TIME_ZONE)
     tz_user = pytz.timezone(lesson.teacher_id.timezone)
     user_lesson_datetime = lesson.datetime.astimezone(tz_user)
 
@@ -92,7 +91,7 @@ def student_warn_lesson(lesson):
 
 @register.filter(name="student_dang_lesson")
 def student_dang_lesson(lesson):
-    tz_server = pytz.timezone(TIME_ZONE)
+    tz_server = pytz.timezone(settings.TIME_ZONE)
     tz_user = pytz.timezone(lesson.teacher_id.timezone)
     user_lesson_datetime = lesson.datetime.astimezone(tz_user)
 

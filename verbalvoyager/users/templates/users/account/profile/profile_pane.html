@@ -43,7 +43,7 @@
                         <form method='post'>
                             {% csrf_token %}
                             {% for field in timezone_form %}
-                                {{ field}}
+                                {{ field }}
                             {% endfor %}
                             <button type="submit" class="btn-default mt-2">Сохранить</button>
                         </form>

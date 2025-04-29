@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from logger import get_logger, get_words_logger
 from .utils import generate_dialog, get_exercise_or_404
 
-from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
+from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
 
 logger = get_logger()
 logger_words = get_words_logger()
@@ -59,6 +59,10 @@ def exercise_words(request, ex_lang, ex_id, step):
         exercise_obj = ExerciseEnglishWords
     elif ex_lang == 'french':
         exercise_obj = ExerciseFrenchWords
+    elif ex_lang == 'russian':
+        exercise_obj = ExerciseRussianWords
+    elif ex_lang == 'spanish':
+        exercise_obj = ExerciseSpanishWords
     else:
         return Http404()
 
@@ -71,7 +75,7 @@ def exercise_words(request, ex_lang, ex_id, step):
     [word.update({'idx': idx + 1}) for idx, word in enumerate(words)]
 
     if step == 2:
-        load_translate_vars(words)
+        load_translate_vars(words, ex_lang)
 
     template_name = f'exercises/{ex_lang}/step_{step}.html'
     context = {
@@ -128,22 +132,39 @@ def exercise_dialog(request, ex_lang, ex_id):
     return render(request, 'exercises/english/dialog.html', context)
 
 
-def load_translate_vars(words: list[dict]):  # TODO: move to Jinja filter
-    all_translates = [word['translation'] for word in words]
+def load_translate_vars(words: list[dict], ex_lang):  # TODO: move to Jinja filter
+    if ex_lang == 'russian':
+        all_translates = [word['word'] for word in words]
+        
+        for word in words:
+            all_translates_copy = all_translates.copy()
+            all_translates_copy.remove(word['word'])
 
-    for word in words:
-        all_translates_copy = all_translates.copy()
-        all_translates_copy.remove(word['translation'])
+            if len(words) > 4:
+                translate_vars = sample(all_translates_copy, 3)
+            else:
+                translate_vars = sample(all_translates_copy, len(words) - 1)
 
-        if len(words) > 4:
-            translate_vars = sample(all_translates_copy, 3)
-        else:
-            translate_vars = sample(all_translates_copy, len(words) - 1)
+            translate_vars.append(word['word'])
+            shuffle(translate_vars)
 
-        translate_vars.append(word['translation'])
-        shuffle(translate_vars)
+            word['translate_vars'] = translate_vars
+    else:
+        all_translates = [word['translation'] for word in words]
 
-        word['translate_vars'] = translate_vars
+        for word in words:
+            all_translates_copy = all_translates.copy()
+            all_translates_copy.remove(word['translation'])
+
+            if len(words) > 4:
+                translate_vars = sample(all_translates_copy, 3)
+            else:
+                translate_vars = sample(all_translates_copy, len(words) - 1)
+
+            translate_vars.append(word['translation'])
+            shuffle(translate_vars)
+
+            word['translate_vars'] = translate_vars
 
     return words
 
