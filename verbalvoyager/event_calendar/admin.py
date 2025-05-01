@@ -118,9 +118,9 @@ class LessonAdmin(NestedModelAdmin):
                         new_exercise.save()
                         new_exercise.words.set(words_queryset.all())
 
+                        lesson_plan.save()
                         lesson_plan.exercise_id = new_exercise
-                lesson_plan.save()
-                lesson_plan.exercise_id = new_exercise
+
                 lesson_plan.save()
 
     def get_queryset(self, request):
