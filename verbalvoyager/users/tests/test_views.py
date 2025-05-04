@@ -90,9 +90,6 @@ def test_user_sign_up_success(
     exercise_english_word_with_category_demo,
     exercise_english_dialog_with_category_demo,
     exercise_irregular_verbs_with_category_demo
-    # exercise_english_words_model,
-    # exercise_irregular_english_verb_model,
-    # exercise_english_dialog_model
     ):
     url = reverse('auth')
     data = {
