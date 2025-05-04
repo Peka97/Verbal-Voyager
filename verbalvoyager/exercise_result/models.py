@@ -1,7 +1,10 @@
 from django.db import models
 
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
+from logger import get_logger
+from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseSpanishDialog, ExerciseRussianDialog, ExerciseIrregularEnglishVerb
 
+
+logger = get_logger()
 
 # ExerciseWordsResult
 class AnstractExerciseWordsResult(models.Model):
@@ -10,6 +13,15 @@ class AnstractExerciseWordsResult(models.Model):
     step_3 = models.SmallIntegerField(null=True, blank=True, default=None)
     step_4 = models.SmallIntegerField(null=True, blank=True, default=None)
     step_5 = models.SmallIntegerField(null=True, blank=True, default=None)
+    
+    def set_value(self, step_num, value):
+        try:
+            self.__dict__[step_num] = value
+            
+            if step_num[-1] == '5':
+                self.exercise.is_active = False
+        except KeyError as err:
+            logger.error(err)
 
     def get_student(self):
         if self.exercise:
@@ -71,6 +83,9 @@ class ExerciseSpanishWordsResult(AnstractExerciseWordsResult):
 # ExerciseDialogResult
 class AbstractExerciseDialogResult(models.Model):
     points = models.SmallIntegerField(null=True, blank=True)
+    
+    def set_value(self, step_num, value):
+        self.points = value
 
     def get_student(self):
         if self.exercise:
@@ -113,6 +128,23 @@ class ExerciseFrenchDialogResult(AbstractExerciseDialogResult):
         verbose_name_plural = 'Fr | Результаты "Диалог"'
 
 
+class ExerciseSpanishDialogResult(AbstractExerciseDialogResult):
+    exercise = models.ForeignKey(
+        ExerciseSpanishDialog, on_delete=models.CASCADE, related_name='dialog_result', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Sp | Результат "Диалог"'
+        verbose_name_plural = 'Sp | Результаты "Диалог"'
+        
+
+class ExerciseRussianDialogResult(AbstractExerciseDialogResult):
+    exercise = models.ForeignKey(
+        ExerciseRussianDialog, on_delete=models.CASCADE, related_name='dialog_result', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Ru | Результат "Диалог"'
+        verbose_name_plural = 'Ru | Результаты "Диалог"'
+
 # ExerciseIrregularEnglishVerb
 class ExerciseIrregularEnglishVerbResult(models.Model):
     exercise = models.ForeignKey(
@@ -121,6 +153,15 @@ class ExerciseIrregularEnglishVerbResult(models.Model):
     step_1 = models.SmallIntegerField(null=True, blank=True, default=None)
     step_2 = models.SmallIntegerField(null=True, blank=True, default=None)
     step_3 = models.SmallIntegerField(null=True, blank=True, default=None)
+    
+    def set_value(self, step_num, value):
+        try:
+            self.__dict__[step_num] = value
+            
+            if step_num[-1] == '3':
+                self.exercise.is_active = False
+        except KeyError as err:
+            logger.error(err)
 
     def get_student(self):
         if self.exercise:

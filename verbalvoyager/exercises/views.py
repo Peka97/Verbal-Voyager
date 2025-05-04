@@ -10,7 +10,9 @@ from django.http import JsonResponse
 from logger import get_logger, get_words_logger
 from .utils import generate_dialog, get_exercise_or_404
 
-from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
+from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, \
+    ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, \
+    ExerciseRussianDialog, ExerciseSpanishDialog, ExerciseIrregularEnglishVerb
 
 logger = get_logger()
 logger_words = get_words_logger()
@@ -97,6 +99,10 @@ def exercise_dialog(request, ex_lang, ex_id):
         exercise_obj = ExerciseEnglishDialog
     elif ex_lang == 'french':
         exercise_obj = ExerciseFrenchDialog
+    elif ex_lang == 'russian':
+        exercise_obj = ExerciseRussianDialog
+    elif ex_lang == 'spanish':
+        exercise_obj = ExerciseSpanishDialog
     else:
         return Http404()
 
@@ -112,7 +118,6 @@ def exercise_dialog(request, ex_lang, ex_id):
     raw_text = raw_dialog[1:] if scene else raw_dialog
     messages = []
     for message in raw_text:
-        print(message)
         person_name, message_text = message.split(':', 1)
         messages.append(
             {
@@ -128,8 +133,9 @@ def exercise_dialog(request, ex_lang, ex_id):
         'scene': scene,
         'messages': messages,
         'words': words,
+        'lang': ex_lang
     }
-    return render(request, 'exercises/english/dialog.html', context)
+    return render(request, f'exercises/{ex_lang}/dialog.html', context)
 
 
 def load_translate_vars(words: list[dict], ex_lang):  # TODO: move to Jinja filter
@@ -168,6 +174,23 @@ def load_translate_vars(words: list[dict], ex_lang):  # TODO: move to Jinja filt
 
     return words
 
+def generate_dialog_json(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError as err:
+            logger.error(err, exc_info=True)
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        words = data.get('words_ids')
+        sentences_count = data.get('sentences_count')
+        level = data.get('level')
+        lang = data.get('lang')
+        dialog_text = generate_dialog(
+            lang, words, sentences_count, level=level)
+        if not dialog_text:
+            return JsonResponse({'result': 'Generate fail.'}, status=400)
+        dialog_text = dialog_text.replace('**', '')
+        return JsonResponse({'result': dialog_text})
 
 def generate_dialog_english_json(request):
     if request.method == 'POST':
@@ -183,7 +206,7 @@ def generate_dialog_english_json(request):
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except Exception as e:
-            print(e)
+            logger.error(e, exc_info=True)
             return JsonResponse({'error': str(e)}, status=500)
 
 
@@ -209,15 +232,13 @@ def words_logging(request, ex_id, step_num):
     if request.method == 'POST':
         data = json.loads(request.body)
         is_correct = data.get('is_correct')
+        
+        message = f'Words Correct Check: Ex[{ex_id}] | Step Num: {step_num} | {data}'
 
         if is_correct != 'wrong':
-            logger_words.info(
-                f'Words Correct Check: Ex[{ex_id}] | Step Num: {step_num} | {data}'
-            )
+            logger_words.info(message)
         else:
-            logger_words.error(
-                f'Words Correct Check: Ex[{ex_id}] | Step Num: {step_num} | {data}'
-            )
+            logger_words.error(message)
 
     return HttpResponse({'status': 200})
 

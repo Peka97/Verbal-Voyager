@@ -4,8 +4,9 @@ import { send_points } from '../modules/send_points_fix.js';
 
 let messages = [...document.getElementsByClassName("message")];
 let names = document.getElementById("names").dataset;
-let words_lenght = document.getElementById("words-length").dataset.wordsLength;
+let wordsLenght = document.getElementById("words-length").dataset.wordsLength;
 let words = findWords();
+console.dir(words);
 const maxWordsInSubmenu = Math.min(words.length, 3)
 
 setOrderInMessageContainer();
@@ -14,9 +15,9 @@ fillSubMenuElements();
 
 function findWords() {
     let result = Array();
-    for (let index = 1; index <= words_lenght; index++) {
-        let element_id = `word_${index}`;
-        let element = document.getElementById(element_id)
+    for (let index = 1; index <= wordsLenght; index++) {
+        let elementID = `word_${index}`;
+        let element = document.getElementById(elementID)
         result.push(element);
     }
     return result;
@@ -32,25 +33,18 @@ function setOrderInMessageContainer() {
 
 function insertDropdownInMessages() {
     messages.forEach(message => {
-        let message_text = message.innerText.toLowerCase();
+        let messageText = message.innerText.toLowerCase();
 
         words.forEach(wordEl => {
             let word = wordEl.dataset["word"]
-            const regexStr = `\\b(\\S')?(${word.toLowerCase()})('\\S)?\\b`
+            const regexStr = `(?:|(?<=\\s))([¡¿])?(${word})([!\?])?(?=\\s|)`
+            const regex = new RegExp(regexStr, 'gmi');
 
-            const regex = new RegExp(regexStr, 'g');
-            let matches = message_text.matchAll(regex);
-            if (matches) {
-                let uniquedMatches = new Object();
-                matches.forEach(match => {
-                    if (uniquedMatches[match[0]] !== 'undefined') {
-                        uniquedMatches[match[0]] = match
-                    }
-                })
-                for (let matchKey in uniquedMatches) {
-                    let matchWord = uniquedMatches[matchKey][2];
+            console.dir(messageText.matchAll(regex));
 
-                    let dropDownHTML = `
+            if (messageText.matchAll(regex)) {
+
+                let dropDownHTML = `
                         <div class="menu">
                             <div class="item" data-key="${wordEl.dataset['word']}">
                                 <a href="#" class="menu-word-link">
@@ -68,8 +62,7 @@ function insertDropdownInMessages() {
                             </div>
                         </div>
                         `
-                        message.innerHTML = message.innerHTML.replaceAll(matchWord, dropDownHTML)
-                    }
+                message.innerHTML = message.innerHTML.replaceAll(regex, dropDownHTML)
                 }
             }
         )
@@ -100,20 +93,22 @@ function fillSubMenuElements() {
 }
 
 function getWordsVariants(keyWord) {
-    let wordsCopy = shuffle(words.slice())
-    let keyWordsElement = document.querySelector(`meta[data-word=${keyWord}]`);
-    
-    let wordsList = Array();
+    const answer = words.filter(item => {
+        return item.dataset.word === keyWord
+    })[0]
 
-    for (let wordIdx=0; wordsList.length < maxWordsInSubmenu; wordIdx++) {
-        if (wordsCopy[wordIdx] !== keyWordsElement) {
-            wordsList.push(wordsCopy[wordIdx])
-        }
+    let variants = words.filter(item => {
+        return item.dataset.word !== keyWord
+    })
+
+    if (variants.length > maxWordsInSubmenu) {
+        variants = variants.slice(0, maxWordsInSubmenu)
     }
 
-    wordsList.push(keyWordsElement)
+    variants = shuffle(variants)
+    variants.push(answer)
     
-    return wordsList;
+    return variants;
 }
 
 function shuffle(array) {
@@ -132,10 +127,10 @@ function shuffle(array) {
   }
 
 
-let word_links = [... document.getElementsByClassName('submenu-word-link')];
+let wordLinks = [... document.getElementsByClassName('submenu-word-link')];
 let menus = [...document.getElementsByClassName('menu')];
 let points = menus.length;
-word_links.forEach(word_link => {
+wordLinks.forEach(word_link => {
     word_link.addEventListener('click', (event) => {
         event.preventDefault();
 

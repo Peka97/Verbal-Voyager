@@ -50,7 +50,7 @@ class ExerciseDialogAdminForm(forms.ModelForm):
         words = self.cleaned_data["words"]
 
         for word in words:
-            if word.word.lower() not in text.lower():
+            if word.word.lower() not in text.lower() and word.translation.lower() not in text.lower():
                 raise ValidationError(f'Word "{word.word}" not in text.')
 
         return cleaned_data

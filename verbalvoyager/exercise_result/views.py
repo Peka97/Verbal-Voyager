@@ -5,8 +5,7 @@ from django.db import transaction
 from django.http import JsonResponse
 
 from logger import get_logger
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
-from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseRussianWordsResult, ExerciseSpanishWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseIrregularEnglishVerbResult
+from .utils import get_exercise_class_name
 
 
 logger = get_logger()
@@ -23,33 +22,10 @@ def exercise_result_update(request, ex_type, ex_lang, ex_id, step_num=None):
         logger.info(
             f'POST REQUEST:\n {ex_type}[{ex_id}] ({ex_lang}) | {data}'
         )
+        
+        exercise_obj, exercise_result_obj = get_exercise_class_name(ex_type, ex_lang)
 
-        value = data.get('value')
-
-        if ex_type == 'words':
-            if ex_lang == 'english':
-                exercise_obj = ExerciseEnglishWords
-                exercise_result_obj = ExerciseEnglishWordsResult
-            elif ex_lang == 'french':
-                exercise_obj = ExerciseFrenchWords
-                exercise_result_obj = ExerciseFrenchWordsResult
-            elif ex_lang == 'russian':
-                exercise_obj = ExerciseRussianWords
-                exercise_result_obj = ExerciseRussianWordsResult
-            elif ex_lang == 'spanish':
-                exercise_obj = ExerciseSpanishWords
-                exercise_result_obj = ExerciseSpanishWordsResult
-        elif ex_type == 'dialog':
-            if ex_lang == 'english':
-                exercise_obj = ExerciseEnglishDialog
-                exercise_result_obj = ExerciseEnglishDialogResult
-            elif ex_lang == 'french':
-                exercise_obj = ExerciseFrenchDialog
-                exercise_result_obj = ExerciseFrenchDialogResult
-        elif ex_type == 'irregular_verbs':
-            exercise_obj = ExerciseIrregularEnglishVerb
-            exercise_result_obj = ExerciseIrregularEnglishVerbResult
-        else:
+        if not exercise_obj or not exercise_result_obj:
             return JsonResponse({'error': 'Invalid exercise type'}, status=400)
 
         with transaction.atomic():
@@ -57,22 +33,10 @@ def exercise_result_update(request, ex_type, ex_lang, ex_id, step_num=None):
             exercise_result, _ = exercise_result_obj.objects.get_or_create(
                 exercise_id=exercise.id,
             )
-
-            if ex_type == 'words':
-                exercise_result.__dict__[step_num] = value
-
-                if step_num and step_num[-1] == '5':
-                    exercise.is_active = False
-
-            elif ex_type == 'dialog':
-                exercise_result.points = value
-                exercise.is_active = False
-
-            elif ex_type == 'irregular_verbs':
-                exercise_result.__dict__[step_num] = value
-
-                if step_num and step_num[-1] == '3':
-                    exercise.is_active = False
+            
+            value = data.get('value')
+            
+            exercise_result.set_value(step_num, value)
 
             exercise.save()
             exercise_result.save()

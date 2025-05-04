@@ -10,6 +10,7 @@ Django==5.1.2
 django-admin-rangefilter==0.13.2
 django-debug-toolbar==5.1.0
 django-nested-admin==4.1.1
+django-recaptcha==4.1.0
 exceptiongroup==1.2.2
 fontawesomefree==6.6.0
 gunicorn==22.0.0

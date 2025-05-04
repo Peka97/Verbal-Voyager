@@ -3,12 +3,19 @@
 
 {% block 'title' %} Exercise Dialog | Step {{step}}{% endblock  %}
 {% block 'meta' %}
-    <meta id="exercise_lang" data-exercise-lang="english">
+    <meta id="exercise_lang" data-exercise-lang="{{ex_lang}}">
     <meta id="names" data-name-1="{{name_1}}" data-name-2="{{name_2}}">
     <meta id="words-length" data-words-length="{{words|length}}">
-    {% for word in words %}
-        <meta id="word_{{word.idx}}" data-word="{{word.word}}" data-translation="{{word.translation}}">
-    {% endfor %}
+    {% if ex_lang != "russian" %}
+        {% for word in words %}
+            <meta id="word_{{word.idx}}" data-word="{{word.word}}" data-translation="{{word.translation}}">
+        {% endfor %}
+    {% else %}
+        {% for word in words %}
+            <meta id="word_{{word.idx}}" data-word="{{word.translation}}" data-translation="{{word.word}}">
+        {% endfor %}
+    {% endif %}
+    
 {% endblock 'meta' %}
 {% block 'style' %}
     <link rel="stylesheet" href="{% static 'pages/css/base.css' %}">
