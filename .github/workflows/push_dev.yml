@@ -47,6 +47,9 @@ jobs:
           PSQL_USER: ${{ secrets.PSQL_USER }}
           PSQL_PSWD: ${{ secrets.PSQL_PSWD }}
           DATABASE_URL: postgres://${{ secrets.PSQL_USER }}:${{ secrets.PSQL_PSWD }}@localhost:5432/verbalvoyagertest
+          RECAPTCHA_PUBLIC_KEY: ${{secrets.RECAPTCHA_PUBLIC_KEY  }}
+          RECAPTCHA_PRIVATE_KEY: ${{secrets.RECAPTCHA_PRIVATE_KEY  }}
+
         run: python manage.py makemigrations users
 
       - name: Make other migrations
@@ -61,6 +64,8 @@ jobs:
           PSQL_USER: ${{ secrets.PSQL_USER }}
           PSQL_PSWD: ${{ secrets.PSQL_PSWD }}
           DATABASE_URL: postgres://${{ secrets.PSQL_USER }}:${{ secrets.PSQL_PSWD }}@localhost:5432/verbalvoyagertest
+          RECAPTCHA_PUBLIC_KEY: ${{secrets.RECAPTCHA_PUBLIC_KEY  }}
+          RECAPTCHA_PRIVATE_KEY: ${{secrets.RECAPTCHA_PRIVATE_KEY  }}
         run: python manage.py makemigrations
 
       - name: Run migrations
@@ -75,6 +80,8 @@ jobs:
           PSQL_USER: ${{ secrets.PSQL_USER }}
           PSQL_PSWD: ${{ secrets.PSQL_PSWD }}
           DATABASE_URL: postgres://${{ secrets.PSQL_USER }}:${{ secrets.PSQL_PSWD }}@localhost:5432/verbalvoyagertest
+          RECAPTCHA_PUBLIC_KEY: ${{secrets.RECAPTCHA_PUBLIC_KEY  }}
+          RECAPTCHA_PRIVATE_KEY: ${{secrets.RECAPTCHA_PRIVATE_KEY  }}
         run: python manage.py migrate
 
       - name: Run tests
@@ -89,6 +96,8 @@ jobs:
           PSQL_USER: ${{ secrets.PSQL_USER }}
           PSQL_PSWD: ${{ secrets.PSQL_PSWD }}
           DATABASE_URL: postgres://${{ secrets.PSQL_USER }}:${{ secrets.PSQL_PSWD }}@localhost:5432/verbalvoyagertest
+          RECAPTCHA_PUBLIC_KEY: ${{secrets.RECAPTCHA_PUBLIC_KEY  }}
+          RECAPTCHA_PRIVATE_KEY: ${{secrets.RECAPTCHA_PRIVATE_KEY  }}
         run: pytest
 
       - name: Lint with Ruff
