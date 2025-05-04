@@ -105,8 +105,8 @@ function getWordsVariants(keyWord) {
         variants = variants.slice(0, maxWordsInSubmenu)
     }
 
-    variants = shuffle(variants)
     variants.push(answer)
+    variants = shuffle(variants)
     
     return variants;
 }
