@@ -95,4 +95,4 @@ jobs:
         working-directory: ${{ github.workspace }}/verbalvoyager/
         run: |
           python -m pip install ruff
-          ruff check --fix
+          ruff check
