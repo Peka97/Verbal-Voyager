@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'rangefilter',  # Django Admin range filters
     'fontawesomefree',  # CSS static
     'nested_admin',  # Django Admin multiinlines
+    'django_recaptcha',  # Recaptcha
 
     # Created
     'users',
