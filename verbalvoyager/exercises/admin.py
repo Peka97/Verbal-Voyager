@@ -8,7 +8,10 @@ from logger import get_logger
 from pages.filters import DropdownFilter, RelatedDropdownFilter
 from .filters import TeachersListFilter, StudentsListFilter
 
-from .models import ExerciseCategory, ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
+from .models import ExerciseCategory, ExerciseEnglishWords, ExerciseFrenchWords, \
+    ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, \
+    ExerciseFrenchDialog, ExerciseRussianDialog, ExerciseSpanishDialog, \
+    ExerciseIrregularEnglishVerb
 from .forms import ExerciseDialogAdminForm, ExerciseIrregularEnglishVerbAdminForm
 from logging_app.helpers import log_action
 
@@ -205,23 +208,26 @@ class AbstractExerciseDialogAdmin(admin.ModelAdmin):
         }
         js = [
             'admin/js/generate_dialog_ui_load_and_fetch.js',
-            
         ]
         
 
 
 @admin.register(ExerciseEnglishDialog)
 class ExerciseEnglishDialogAdmin(AbstractExerciseDialogAdmin):
-    # class Media:
-    #     js = ['admin/js/generate_dialog_english_text.js',]
     pass
 
 
 @admin.register(ExerciseFrenchDialog)
 class ExerciseFrenchDialogAdmin(AbstractExerciseDialogAdmin):
     pass
-    # class Media:
-    #     js = ['admin/js/generate_dialog_french_text.js',]
+
+@admin.register(ExerciseRussianDialog)
+class ExerciseRussianDialogAdmin(AbstractExerciseDialogAdmin):
+    pass
+
+@admin.register(ExerciseSpanishDialog)
+class ExerciseSpanishDialogAdmin(AbstractExerciseDialogAdmin):
+    pass
 
 
 @admin.register(ExerciseIrregularEnglishVerb)

@@ -3,7 +3,7 @@ from openai import OpenAI
 from django.shortcuts import redirect, get_object_or_404
 from django.http.response import Http404
 from django.conf import settings
-from dictionary.models import EnglishWord, FrenchWord
+from dictionary.models import EnglishWord, FrenchWord, SpanishWord
 
 
 def generate_dialog(lang: str, word_ids: list, sentence_count: int, level: str) -> str:
@@ -11,14 +11,22 @@ def generate_dialog(lang: str, word_ids: list, sentence_count: int, level: str) 
         base_url="https://openrouter.ai/api/v1",
         api_key=settings.OPENAI_API_KEY,
     )
-    # pprint(client.models.list())  # Output all models
-    if lang == 'английском':
+    
+    if lang in ('english', 'russian'):
         word_obj = EnglishWord
-    if lang == 'французском':
+    elif lang == 'french':
         word_obj = FrenchWord
+    elif lang == 'spanish':
+        word_obj = SpanishWord
+    else:
+        return
 
     word_objects = [word_obj.objects.get(pk=word_id) for word_id in word_ids]
-    words = ', '.join(word.word for word in word_objects)
+    
+    if lang == 'russian':
+        words = ', '.join(word.translation for word in word_objects)
+    else:
+        words = ', '.join(word.word for word in word_objects)
 
     completion = client.chat.completions.create(
         extra_headers={

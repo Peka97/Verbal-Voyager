@@ -76,8 +76,10 @@ function changeIcons() {
 function SendToGenerateText (wordsIDs, sentencesCount, level) {
     if (wordsIDs.length > 0) {
         const siteName = window.location.href.split('/').slice(0, 3).join('/');
-        const lang = window.location.href.split('/')[5].slice(8, -6);
-        let url = `${siteName}/exercises/dialog/json/generate_dialog/${lang}`
+        const exerciseName = window.location.href.split('/')[5];
+        const regex = /exercise(\w+)dialog/;
+        const match = exerciseName.match(regex);
+        const url = `${siteName}/exercises/dialog/json/generate_dialog`;
         
         fetch(url, {
             method: 'POST',
@@ -89,7 +91,8 @@ function SendToGenerateText (wordsIDs, sentencesCount, level) {
                 {
                     'words_ids': wordsIDs,
                     'sentences_count': sentencesCount,
-                    'level': level
+                    'level': level,
+                    'lang': match[1]
                 }),
             })
             .then(response => response.json())

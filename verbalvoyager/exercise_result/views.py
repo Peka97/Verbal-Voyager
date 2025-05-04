@@ -5,8 +5,8 @@ from django.db import transaction
 from django.http import JsonResponse
 
 from logger import get_logger
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
-from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseRussianWordsResult, ExerciseSpanishWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseIrregularEnglishVerbResult
+from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseSpanishDialog, ExerciseRussianDialog, ExerciseIrregularEnglishVerb
+from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseRussianWordsResult, ExerciseSpanishWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseSpanishDialogResult, ExerciseRussianDialogResult, ExerciseIrregularEnglishVerbResult
 
 
 logger = get_logger()
@@ -46,6 +46,12 @@ def exercise_result_update(request, ex_type, ex_lang, ex_id, step_num=None):
             elif ex_lang == 'french':
                 exercise_obj = ExerciseFrenchDialog
                 exercise_result_obj = ExerciseFrenchDialogResult
+            elif ex_lang == 'spanish':
+                exercise_obj = ExerciseSpanishDialog
+                exercise_result_obj = ExerciseSpanishDialogResult
+            elif ex_lang == 'russian':
+                exercise_obj = ExerciseRussianDialog
+                exercise_result_obj = ExerciseRussianDialogResult
         elif ex_type == 'irregular_verbs':
             exercise_obj = ExerciseIrregularEnglishVerb
             exercise_result_obj = ExerciseIrregularEnglishVerbResult

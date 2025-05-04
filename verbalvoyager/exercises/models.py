@@ -305,6 +305,57 @@ class ExerciseFrenchDialog(AbstractExerciseDialog):
         verbose_name = 'Fr | Dialog'
         verbose_name_plural = 'Fr | Dialog'
 
+class ExerciseRussianDialog(AbstractExerciseDialog):
+    words = models.ManyToManyField(EnglishWord, verbose_name="Слова")
+    student = models.ForeignKey(
+        User, on_delete=models.SET_NULL,
+        related_name='dialog_ru_student',
+        limit_choices_to={'groups__name__in': ['Student', 'StudentDemo']},
+        null=True, verbose_name='Ученик')
+    teacher = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        related_name='dialog_ru_teacher',
+        limit_choices_to={'groups__name__in': ['Teacher', 'TeacherDemo']},
+        null=True,
+        verbose_name="Учитель")
+
+    def get_absolute_url(self):
+        return reverse(self.view_name, kwargs={"ex_lang": "russian", "ex_id": self.pk})
+
+    def __str__(self) -> str:
+        return f"{self.name} (RU)"
+
+    class Meta:
+        verbose_name = 'Ru | Dialog'
+        verbose_name_plural = 'Ru | Dialog'
+
+
+class ExerciseSpanishDialog(AbstractExerciseDialog):
+    words = models.ManyToManyField(SpanishWord, verbose_name="Слова")
+    student = models.ForeignKey(
+        User, on_delete=models.SET_NULL,
+        related_name='dialog_sp_student',
+        limit_choices_to={'groups__name__in': ['Student', 'StudentDemo']},
+        null=True, verbose_name='Ученик')
+    teacher = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        related_name='dialog_sp_teacher',
+        limit_choices_to={'groups__name__in': ['Teacher', 'TeacherDemo']},
+        null=True,
+        verbose_name="Учитель")
+
+    def get_absolute_url(self):
+        return reverse(self.view_name, kwargs={"ex_lang": "spanish", "ex_id": self.pk})
+
+    def __str__(self) -> str:
+        return f"{self.name} (SP)"
+
+    class Meta:
+        verbose_name = 'Sp | Dialog'
+        verbose_name_plural = 'Sp | Dialog'
+
 
 # Irregular Verb
 class ExerciseIrregularEnglishVerb(models.Model):

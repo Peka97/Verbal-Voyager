@@ -21,6 +21,8 @@ urlpatterns = [
          views.exercise_irregular_verbs, name='exercise_irregular_verbs'),
 
     # Dialogs Generate
+    path('dialog/json/generate_dialog',
+         views.generate_dialog_json, name='generate_dialog_json'),
     path('dialog/json/generate_dialog/english',
          views.generate_dialog_english_json, name='generate_dialog_english_json'),
     path('dialog/json/generate_dialog/french',

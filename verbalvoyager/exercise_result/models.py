@@ -1,6 +1,6 @@
 from django.db import models
 
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
+from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseSpanishDialog, ExerciseRussianDialog, ExerciseIrregularEnglishVerb
 
 
 # ExerciseWordsResult
@@ -112,6 +112,23 @@ class ExerciseFrenchDialogResult(AbstractExerciseDialogResult):
         verbose_name = 'Fr | Результат "Диалог"'
         verbose_name_plural = 'Fr | Результаты "Диалог"'
 
+
+class ExerciseSpanishDialogResult(AbstractExerciseDialogResult):
+    exercise = models.ForeignKey(
+        ExerciseSpanishDialog, on_delete=models.CASCADE, related_name='dialog_result', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Sp | Результат "Диалог"'
+        verbose_name_plural = 'Sp | Результаты "Диалог"'
+        
+
+class ExerciseRussianDialogResult(AbstractExerciseDialogResult):
+    exercise = models.ForeignKey(
+        ExerciseRussianDialog, on_delete=models.CASCADE, related_name='dialog_result', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Ru | Результат "Диалог"'
+        verbose_name_plural = 'Ru | Результаты "Диалог"'
 
 # ExerciseIrregularEnglishVerb
 class ExerciseIrregularEnglishVerbResult(models.Model):
