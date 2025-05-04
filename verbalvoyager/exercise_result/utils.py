@@ -1,5 +1,5 @@
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseSpanishDialog, ExerciseRussianDialog, ExerciseIrregularEnglishVerb
-from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseRussianWordsResult, ExerciseSpanishWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseSpanishDialogResult, ExerciseRussianDialogResult, ExerciseIrregularEnglishVerbResult
+from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseSpanishDialog, ExerciseRussianDialog, ExerciseIrregularEnglishVerb # noqa 
+from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseRussianWordsResult, ExerciseSpanishWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseSpanishDialogResult, ExerciseRussianDialogResult, ExerciseIrregularEnglishVerbResult # noqa 
 
 from logger import get_logger
 
