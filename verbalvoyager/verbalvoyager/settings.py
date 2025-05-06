@@ -190,8 +190,8 @@ if CURRENT_CONFIG.DEBUG:
 else:
     # CDN
     STATIC_URL = 'https://cdn.verbal-voyager.ru/static/'
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static') 
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    STATICFILES_STORAGE = 'flexible_manifest_staticfiles.storage.ManifestStaticFilesStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
