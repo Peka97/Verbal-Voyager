@@ -1,12 +1,11 @@
 import { showToast } from '/static/pages/js/modules/toast_notification.js';
-import { send_points } from '../modules/send_points_fix.js';
+import { send_points } from '../modules/send_points.js';
 
 
 let messages = [...document.getElementsByClassName("message")];
-let names = document.getElementById("names").dataset;
+// let names = document.getElementById("names").dataset;
 let wordsLenght = document.getElementById("words-length").dataset.wordsLength;
 let words = findWords();
-console.dir(words);
 const maxWordsInSubmenu = Math.min(words.length, 3)
 
 setOrderInMessageContainer();
@@ -31,38 +30,71 @@ function setOrderInMessageContainer() {
         }
 }}
 
+function replaceTextIgnoringHTMLDOM(element, word, replacementHTML) {
+    const walker = document.createTreeWalker(
+      element,
+      NodeFilter.SHOW_TEXT,
+      null,
+      false
+    );
+  
+    let node;
+    while ((node = walker.nextNode())) {
+      if (node.parentNode.nodeName !== 'SCRIPT' && node.parentNode.nodeName !== 'STYLE') {
+        const regex = new RegExp(`(?:(?<=\\s)|^)([¡¿])?(${word})(?:['s])?([!\?.,]*)?(?=\\s|$)`, 'gi');
+        let text = node.textContent;
+        let match;
+        let lastIndex = 0;
+        const fragment = document.createDocumentFragment();
+  
+        while ((match = regex.exec(text)) !== null) {
+            fragment.appendChild(document.createTextNode(text.substring(lastIndex, match.index)));
+
+            const tempDiv = document.createElement('span');
+
+            tempDiv.innerHTML = match[1] ? match[1] : '' + replacementHTML + (match[0].replace(word, '') ? match[0].replace(word, '') : '');
+            // tempDiv.innerHTML = match[1] ? match[1] : '' + replacementHTML + (match[3] ? match[3] : ''); // Old
+            fragment.appendChild(tempDiv);
+
+            lastIndex = match.index + match[0].length;
+        }
+  
+        fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
+        node.parentNode.replaceChild(fragment, node);
+      }
+    }
+  }
+
 function insertDropdownInMessages() {
     messages.forEach(message => {
         let messageText = message.innerText.toLowerCase();
-
+        
         words.forEach(wordEl => {
             let word = wordEl.dataset["word"]
-            const regexStr = `(?:|(?<=\\s))([¡¿])?(${word})([!\?])?(?=\\s|)`
+            const regexStr = `(?:(?<=\\s)|^)([¡¿])?(${word})(?:['s])?([!\?.,]*)?(?=\\s|$)`
             const regex = new RegExp(regexStr, 'gmi');
 
-            console.dir(messageText.matchAll(regex));
-
             if (messageText.matchAll(regex)) {
-
                 let dropDownHTML = `
-                        <div class="menu">
-                            <div class="item" data-key="${wordEl.dataset['word']}">
-                                <a href="#" class="menu-word-link">
-                                <span class='word-rus'> ${wordEl.dataset['translation'].toLowerCase()} </span>
-                                <svg viewBox="0 0 360 360" xml:space="preserve">
-                                    <g id="SVGRepo_iconCarrier">
-                                    <path
-                                        id="XMLID_225_"
-                                        d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393 c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393 s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"
-                                    ></path>
-                                    </g>
-                                </svg>
-                                </a>
-                                <div class="dropdown submenu"></div>
-                            </div>
+                    <div class="menu">
+                        <div class="item" data-key="${wordEl.dataset['word']}">
+                            <a href="#" class="menu-word-link">
+                            <span class='word-rus'> ${wordEl.dataset['translation'].toLowerCase()} </span>
+                            <svg viewBox="0 0 360 360" xml:space="preserve">
+                                <g id="SVGRepo_iconCarrier">
+                                <path
+                                    id="XMLID_225_"
+                                    d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393 c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393 s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"
+                                ></path>
+                                </g>
+                            </svg>
+                            </a>
+                            <div class="dropdown submenu"></div>
                         </div>
-                        `
-                message.innerHTML = message.innerHTML.replaceAll(regex, dropDownHTML)
+                    </div>
+                    `
+                replaceTextIgnoringHTMLDOM(message, word, dropDownHTML)
+                // message.innerHTML = message.innerHTML.replaceAll(regex, dropDownHTML)
                 }
             }
         )
@@ -76,6 +108,7 @@ function fillSubMenuElements() {
     dropDownSubmenu.forEach(subMenu => {
         const keyWord = subMenu.parentElement.dataset['key'];
         const wordsVariants = getWordsVariants(keyWord)
+        console.dir(wordsVariants);
 
         for(var i=0;i < wordsVariants.length; i++) {
             let subMenuElement = document.createElement('div')
