@@ -178,10 +178,15 @@ LOCALE_PATHS = [
 TIME_ZONE = 'Europe/Saratov'
 USE_TZ = False
 
-
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+if CURRENT_CONFIG.DEBUG:
+    STATIC_URL = '/static/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+else:
+    # CDN
+    STATIC_URL = 'https://cdn.verbal-voyager.ru/static/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static') 
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
