@@ -1,8 +1,3 @@
 # Verbal Voyager Site
 
-Stack:
- - Python 3.10;
- - Django 5.1.2;
- - Gunicorn 22;
- - NGINX 1.18;
- - PostgreSQL 14.12;
+Данная ветка используется исключительно для разработки на отдельном контуре.
