@@ -135,7 +135,7 @@ def exercise_dialog(request, ex_lang, ex_id):
         'words': words,
         'lang': ex_lang
     }
-    return render(request, f'exercises/{ex_lang}/dialog.html', context)
+    return render(request, f'exercises/dialog.html', context)
 
 
 def load_translate_vars(words: list[dict], ex_lang):  # TODO: move to Jinja filter
