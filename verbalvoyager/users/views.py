@@ -11,6 +11,7 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteVi
 from django.contrib.auth.decorators import login_required
 
 from logger import get_logger
+from users.services.cache import user_cache
 from users.forms import RegistrationUserForm, CustomPasswordResetForm, AuthUserForm, TimezoneForm
 from users.utils import get_words_learned_count, get_exercises_done_count, init_student_demo_access
 from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
@@ -74,15 +75,16 @@ def user_register(request):
         
     return render(request, 'users/auth.html', context)
 
-
+@user_cache
 def user_logout(request):
-    cache.delete(f'user_{request.user.id}_data')  # Удалите ваш ключ кэша
     logout(request)
     return redirect('')
 
 
 # TODO: кэширование объектов отдельно: уроки, проекты, упражнения и т.д.
+
 @login_required(login_url="/users/auth")
+@user_cache
 def user_account(request):
     user = request.user
     current_pane = request.GET.get('pane')

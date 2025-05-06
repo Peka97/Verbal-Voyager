@@ -1,3 +1,7 @@
+const viewportHeight = window.innerHeight;
+
 document.addEventListener("scroll", event => {
-    document.body.style.cssText = `--scrollTop: ${window.scrollY}px`
+    if (window.scrollY < viewportHeight) {
+        document.body.style.cssText = `--scrollTop: ${window.scrollY}px`
+    }
 })

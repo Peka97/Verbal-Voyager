@@ -2,6 +2,10 @@
     --background-color: #0f0b2c;
 }
 
+html {
+    scroll-behavior: smooth; /* Включает плавную прокрутку для всей страницы */
+}
+
 body {
     font-family: 'Roboto', sans-serif;
     background-color: var(--background-color);

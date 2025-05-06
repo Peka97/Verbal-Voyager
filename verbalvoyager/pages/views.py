@@ -36,7 +36,7 @@ def handler_500(request, exception=None):
     }
     return render(request, 'pages/error.html', context, status=500)
 
-# @cache_page(60*15, key_prefix='index_view')
+@cache_page(60*60*24)
 def index(request):
     context = {}
 
@@ -55,6 +55,8 @@ def index(request):
         'english': Project.objects.filter(course_id__name='Английский язык').count(),
         'french': Project.objects.filter(course_id__name='Французский язык').count(),
         'spanish': Project.objects.filter(course_id__name='Испанский язык').count(),
+        'russian': Project.objects.filter(course_id__name='Русский язык').count(),
+        'сhinese': Project.objects.filter(course_id__name='Китайский язык').count(),
     }
 
     return render(request, 'pages/index.html', context)
@@ -83,7 +85,6 @@ def portfolio(request):
 def about_project(request):
     context = {}
     return render(request, 'pages/about.html', context)
-
 
 def contacts(request):
     context = {}
