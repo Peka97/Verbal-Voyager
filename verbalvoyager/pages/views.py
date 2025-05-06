@@ -1,6 +1,9 @@
 
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
+from django.views.decorators.cache import cache_page
+
+
 
 from event_calendar.models import Review, Course, Project
 from logger import get_logger
@@ -33,7 +36,7 @@ def handler_500(request, exception=None):
     }
     return render(request, 'pages/error.html', context, status=500)
 
-
+# @cache_page(60*15, key_prefix='index_view')
 def index(request):
     context = {}
 

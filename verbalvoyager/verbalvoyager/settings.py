@@ -193,6 +193,28 @@ else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     STATICFILES_STORAGE = 'flexible_manifest_staticfiles.storage.ManifestStaticFilesStorage'
 
+# Redis
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": CURRENT_CONFIG.REDIS_DEFAULT_LOCATION,
+        # "OPTIONS": {
+        #     "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        #     "CONNECTION_POOL_KWARGS": {"max_connections": 100},
+        # }
+    },
+    "sessions": {  
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": CURRENT_CONFIG.REDIS_SESSION_LOCATION,  
+    }
+}
+
+
+# Опционально: Настройка сессий для использования Redis
+# SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+# SESSION_CACHE_ALIAS = "default"
+# DJANGO_REDIS_IGNORE_EXCEPTIONS = True
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

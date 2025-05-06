@@ -10,10 +10,17 @@ register = template.Library()
 
 logger = get_logger()
 
-
+# Old
+# @register.filter(name="type_names_to_list")
+# def type_names_to_list(value):
+#     return [proj_type.name for proj_type in value]
 @register.filter(name="type_names_to_list")
-def type_names_to_list(value):
-    return [proj_type.name for proj_type in value]
+def type_names_to_list(project):
+    # Проверяем, есть ли предзагруженные типы
+    if hasattr(project, 'prefetched_types'):
+        return [t.name for t in project.prefetched_types]
+    # Fallback для случая без prefetch
+    return list(project.types.values_list('name', flat=True))
 
 
 @register.filter(name="join_student_names")

@@ -1,10 +1,10 @@
 <div class="content calendar-container">
 	<div class="col-12 calendar-title-wrap">
-		{% if user.is_supervisor %}
+		{% if user_is_supervisor %}
 		<span class="calendar-left-button fa fa-chevron-left" id="prev_teacher"> </span>
 		{% endif %}
 		<h4 class="calendar-title">Календарь</h4>
-		{% if user.is_supervisor %}
+		{% if user_is_supervisor %}
 		<span class="calendar-right-button fa fa-chevron-right" id="next_teacher"> </span>
 		{% endif %}
 	</div>

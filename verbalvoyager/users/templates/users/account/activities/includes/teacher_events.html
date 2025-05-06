@@ -38,29 +38,29 @@
                                         
                                 <br>
                                 <div class='lesson-types'>
-                                
-                                    {% with tags=lesson.project_id.types.all|type_names_to_list %}
-                                        
-                                    <div class="tooltip-container">
-                                        {% if "Персональный" in tags %}
-                                            <span class="tooltip">Персональный</span>
-                                            <i class="bi bi-person-fill"></i>
-                                        {% elif "Групповой" in tags %}
-                                            <span class="tooltip">Групповой</span>
-                                            <i class="bi bi-people-fill"></i>
-                                        {% endif %}
-                                    </div>
-
-                                    <div class="tooltip-container">
-                                        {% if "Онлайн" in tags %}
-                                            <span class="tooltip">Онлайн</span>
-                                            <i class="bi bi-laptop"></i>
-                                        {% elif "Оффлайн" in tags %}
-                                            <span class="tooltip">В студии</span>
-                                            <i class="bi bi-door-open"></i>
-                                        {% endif %}
-                                    </div>
-                                    {% endwith %}
+                                    {% if lesson.project_id %}
+                                        {% with tags=lesson.prefetched_project|type_names_to_list %}
+                                            <div class="tooltip-container">
+                                                {% if "Персональный" in tags %}
+                                                    <span class="tooltip">Персональный</span>
+                                                    <i class="bi bi-person-fill"></i>
+                                                {% elif "Групповой" in tags %}
+                                                    <span class="tooltip">Групповой</span>
+                                                    <i class="bi bi-people-fill"></i>
+                                                {% endif %}
+                                            </div>
+        
+                                            <div class="tooltip-container">
+                                                {% if "Онлайн" in tags %}
+                                                    <span class="tooltip">Онлайн</span>
+                                                    <i class="bi bi-laptop"></i>
+                                                {% elif "Оффлайн" in tags %}
+                                                    <span class="tooltip">В студии</span>
+                                                    <i class="bi bi-door-open"></i>
+                                                {% endif %}
+                                            </div>
+                                        {% endwith %}
+                                    {% endif %}
                                 </div>
 
                                 {{ event|join_student_names }}

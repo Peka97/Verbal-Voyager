@@ -85,7 +85,8 @@ class LessonTask(models.Model):
         on_delete=models.CASCADE,
         related_name='lesson_tasks',
         blank=True,
-        null=True
+        null=True,
+        db_index=True
     )
 
     def save(self, *args, **kwargs):
@@ -116,7 +117,8 @@ class Lesson(models.Model):
         help_text="Поле заполняется автоматически, если остаётся пустым"
     )
     datetime = models.DateTimeField(
-        verbose_name='Дата и время урока'
+        verbose_name='Дата и время урока',
+        db_index=True
     )
     duration = models.SmallIntegerField(
         verbose_name='Продолжительность',
@@ -132,19 +134,21 @@ class Lesson(models.Model):
     )
     student_id = models.ForeignKey(
         User,
-        related_name='lessons_new_student',
+        related_name='lesson_student',
         limit_choices_to={'groups__name__in': ['Student', ]},
         on_delete=models.CASCADE,
         verbose_name="Ученик",
-        null=True
+        null=True,
+        db_index=True
     )
     teacher_id = models.ForeignKey(
         User,
         verbose_name="Учитель",
         limit_choices_to={'groups__name__in': ['Teacher', ]},
         on_delete=models.CASCADE,
-        related_name='lessons_new_teacher',
-        null=True
+        related_name='lesson_teacher',
+        null=True,
+        db_index=True
     )
     project_id = models.ForeignKey(
         'Project',
@@ -152,7 +156,8 @@ class Lesson(models.Model):
         on_delete=models.CASCADE,
         related_name='lessons_new_project',
         blank=True,
-        null=True
+        null=True,
+        db_index=True
     )
 
     def get_admin_edit_url(self):
@@ -242,7 +247,8 @@ class Project(models.Model):
     )
     types = models.ManyToManyField(
         ProjectType,
-        verbose_name='Тип проекта'
+        verbose_name='Тип проекта',
+        related_name='project_id'
     )
     students = models.ManyToManyField(
         User,

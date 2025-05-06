@@ -1,20 +1,20 @@
 from collections import defaultdict
 from itertools import chain
 
+from django.core.cache import cache
+from django.db.models import Prefetch
 from django.urls import reverse
-from django.shortcuts import render
-from django.contrib.auth import authenticate, login, logout, get_user_model
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
-
-from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteView
+from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteView
+from django.contrib.auth.decorators import login_required
 
 from logger import get_logger
 from users.forms import RegistrationUserForm, CustomPasswordResetForm, AuthUserForm, TimezoneForm
 from users.utils import get_words_learned_count, get_exercises_done_count, init_student_demo_access
 from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
-from event_calendar.models import Lesson, Project, Course
+from event_calendar.models import Lesson, LessonTask, Project, Course, ProjectType
 
 
 logger = get_logger()
@@ -76,16 +76,26 @@ def user_register(request):
 
 
 def user_logout(request):
+    cache.delete(f'user_{request.user.id}_data')  # Удалите ваш ключ кэша
     logout(request)
     return redirect('')
 
 
+# TODO: кэширование объектов отдельно: уроки, проекты, упражнения и т.д.
 @login_required(login_url="/users/auth")
-def user_account(request, current_pane):
+def user_account(request):
     user = request.user
-
+    current_pane = request.GET.get('pane')
+    
+    # if current_pane and current_pane not in ['activities', 'profile', 'exercises']:
+    #     current_pane = 'activities'
+    #     return redirect('account')
+    # if not current_pane:
+    #     current_pane = 'activities'
+    
     context = {
-        'user_is_teacher': user.is_teacher()
+        'user_is_teacher': user.is_teacher(),
+        'user_is_supervisor': user.is_supervisor(),
     }
 
     if request.method == 'POST':
@@ -100,16 +110,37 @@ def user_account(request, current_pane):
     else:
         context['timezone_form'] = TimezoneForm(instance=request.user)
 
-    if user.is_supervisor():
+    if context['user_is_supervisor']:
         context['teachers'] = tuple(
             User.objects.filter(groups__name='Teacher').exclude(username='admin').values_list('pk', flat=True))
 
     if context['user_is_teacher']:
         projects = Project.objects.filter(
             teacher_id=user).values_list('pk', flat=True).all()
+        project_types_prefetch = Prefetch(
+            'types',
+            queryset=ProjectType.objects.only('name'),
+            to_attr='prefetched_types'
+        )
+        projects_prefetch = Prefetch(
+            'project_id',
+            queryset=Project.objects.only('id'
+            ).prefetch_related(project_types_prefetch),
+            to_attr='prefetched_project'
+        )
+        
         lessons_obj = Lesson.objects.filter(
             teacher_id=user
-        ).prefetch_related('lesson_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
+        ).prefetch_related(
+            'lesson_tasks',
+            projects_prefetch
+        ).select_related('teacher_id', 'student_id', 'project_id'
+        ).order_by('datetime').only(
+            'id', 'title', 'datetime', 'duration', 'is_paid', 'status', 
+            'teacher_id__first_name', 'teacher_id__last_name', 'teacher_id__timezone',
+            'student_id__first_name', 'student_id__last_name', 'student_id__timezone',
+            'project_id',
+        ).all()
         lessons = defaultdict(list)
 
         for lesson in lessons_obj:
@@ -169,6 +200,24 @@ def user_account(request, current_pane):
 
     return render(request, 'users/account/account.html', context)
 
+
+# TODO: обновление таймзоны без обновления страницы
+# def json_update_timezone(request):
+#     if request.method == 'POST':
+#         try:
+#             timezone = json.loads(request.body)['timezone']
+#         except (KeyError, json.decoder.JSONDecodeError):
+#             return JsonResponse({'error': 'Invalid data'}, status=400)
+        
+#         print(timezone)
+        
+#         user = User.objects.get(request.user.id)
+#         print(user)
+#         # user.timezone = timezone
+#         # user.save()
+        
+#         return JsonResponse({'result': 'Timezone updated'}, status=200)
+        
 
 class CustomPasswordResetView(PasswordResetView):
     form_class = CustomPasswordResetForm
