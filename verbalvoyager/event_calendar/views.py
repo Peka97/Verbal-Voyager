@@ -1,3 +1,5 @@
+from encodings.punycode import T
+import logging
 import json
 from collections import defaultdict
 
@@ -5,12 +7,14 @@ from django.http import JsonResponse
 from django.db import transaction
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
+from django.db.models import Prefetch
+from django.core.cache import cache
 
-from logger import get_logger
 from .models import Lesson, LessonTask
+from event_calendar.models import Lesson, LessonTask, Project, Course, ProjectType
 
 
-logger = get_logger()
+logger = logging.getLogger('django')
 User = get_user_model()
 
 
@@ -21,6 +25,7 @@ def filter_lessons_by_student(request, student_id):
 
 def update(request):
     data = json.loads(request.body)
+    students_id_to_clear_cache = []
 
     if data.get('tasks'):
         tasks_to_create = data['tasks']['toCreate']
@@ -41,6 +46,7 @@ def update(request):
                     new_task.lesson_id = Lesson.objects.get(
                         pk=int(task_data['createFor']))
                     tasks_obj.append(new_task)
+                    students_id_to_clear_cache.append(new_task.lesson_id.student_id.id)
                 except KeyError as err:
                     logger.error(task_data)
                     logger.error(err, exc_info=True)
@@ -68,13 +74,21 @@ def update(request):
                     if task_data.get('isCompleted'):
                         updated_task.is_completed = task_data['isCompleted']
                         updated_fields.add('is_completed')
+                    
+                    students_id_to_clear_cache.append(updated_task.lesson_id.student_id.id)
 
             with transaction.atomic():
                 LessonTask.objects.bulk_update(
                     tasks.values(), updated_fields)
 
         if tasks_to_delete:
-            LessonTask.objects.filter(pk__in=tasks_to_delete).delete()
+            task_objs_to_delete = LessonTask.objects.filter(pk__in=tasks_to_delete)
+            students_id_to_clear_cache.extend(
+                task_objs_to_delete.values_list(
+                    'lesson_id__student_id', flat=True
+                ).distinct()
+            )
+            task_objs_to_delete.delete()
 
     if data.get('lessons'):
         lesson_obj = Lesson.objects.filter(pk__in=data['lessons'].keys()).all()
@@ -89,23 +103,54 @@ def update(request):
                     updated_lesson.status = lesson_status['performing']
                 if lesson_status.get('payment') is not None:
                     updated_lesson.is_paid = lesson_status['payment']
+                
+                students_id_to_clear_cache.append(updated_lesson.student_id.id)
 
         with transaction.atomic():
             Lesson.objects.bulk_update(
                 lessons.values(), ('status', 'is_paid',))
+    
+    cache.delete_pattern(f"user_{request.user.id}_lessons*")
+    cache.delete_pattern(f"user_{request.user.id}_lesson_tasks*")
+    for student_id in students_id_to_clear_cache:
+        print(student_id)
+        cache.delete_pattern(f"user_{student_id}_lessons*")
+        cache.delete_pattern(f"user_{student_id}_lesson_tasks*")
 
     return JsonResponse({'status': 'OK'})
 
 
+# TODO: рефактор под StreamingHttpResponse
 def load_teacher_lessons(request, teacher_id):
     context = {}
 
     teacher = User.objects.get(pk=teacher_id)
     teacher_name = f"{teacher.last_name} {teacher.first_name}"
 
+    project_types_prefetch = Prefetch(
+        'types',
+        queryset=ProjectType.objects.only('name'),
+        to_attr='prefetched_types'
+    )
+    projects_prefetch = Prefetch(
+        'project_id',
+        queryset=Project.objects.only('id'
+        ).prefetch_related(project_types_prefetch),
+        to_attr='prefetched_project'
+    )
+    
     lessons_obj = Lesson.objects.filter(
         teacher_id=teacher_id
-    ).prefetch_related('lesson_tasks').select_related('teacher_id', 'student_id').order_by('datetime').all()
+    ).prefetch_related(
+        'lesson_tasks',
+        projects_prefetch
+    ).select_related('teacher_id', 'student_id', 'project_id'
+    ).order_by('datetime').only(
+        'id', 'title', 'datetime', 'duration', 'is_paid', 'status', 
+        'teacher_id__first_name', 'teacher_id__last_name', 'teacher_id__timezone',
+        'student_id__first_name', 'student_id__last_name', 'student_id__timezone',
+        'project_id',
+    ).all()
     lessons = defaultdict(list)
 
     for lesson in lessons_obj:

@@ -196,24 +196,44 @@ else:
 # Redis
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": CURRENT_CONFIG.REDIS_DEFAULT_LOCATION,
-        # "OPTIONS": {
-        #     "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        #     "CONNECTION_POOL_KWARGS": {"max_connections": 100},
-        # }
+        "OPTIONS": {
+            "SOCKET_CONNECT_TIMEOUT": 5,
+            "SOCKET_TIMEOUT": 5,
+            "IGNORE_EXCEPTIONS": True,
+            "PICKLE_VERSION": -1,
+        },
+        "KEY_PREFIX": "verbalvoyager_cache_",
     },
     "sessions": {  
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": CURRENT_CONFIG.REDIS_SESSION_LOCATION,  
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": CURRENT_CONFIG.REDIS_SESSION_LOCATION,
+        "OPTIONS": {
+            "SOCKET_CONNECT_TIMEOUT": 5,
+            "SOCKET_TIMEOUT": 5,
+            "IGNORE_EXCEPTIONS": True,
+            "PICKLE_VERSION": -1,
+        },
+        "KEY_PREFIX": "verbalvoyager_session_",
+        "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+        "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
     }
 }
 
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "sessions"
+SESSION_COOKIE_AGE = 1209600 
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_SAVE_EVERY_REQUEST = True
+if not CURRENT_CONFIG.DEBUG:
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    CSRF_COOKIE_SECURE = True
 
-# Опционально: Настройка сессий для использования Redis
-# SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-# SESSION_CACHE_ALIAS = "default"
-# DJANGO_REDIS_IGNORE_EXCEPTIONS = True
+if DEBUG:
+    from django.core.cache import cache
+    cache.clear()
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -232,37 +252,44 @@ EMAIL_HOST_PASSWORD = CURRENT_CONFIG.email_password
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-
     'formatters': {
-        'console': {
-            'format': '%(name)-12s [%(levelname)-8s] %(name)s::%(module)s::%(lineno)s - %(message)s'
+        'default': {
+            'format': "%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
         },
-        'file': {
-            'format': '%(asctime)s [%(levelname)-8s] %(name)s::%(module)s::%(lineno)s - %(message)s'
-        }
     },
     'handlers': {
         'console': {
             'level': 'ERROR',
             'class': 'logging.StreamHandler',
-            'formatter': 'console',
+            'formatter': 'default',
         },
-        'file': {
+        'django_file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'formatter': 'file',
-            'filename': os.path.join(BASE_DIR, 'logs/django.log'),
+            'filename': CURRENT_CONFIG.DJANGO_LOG_FILE_PATH,
+            'formatter': 'default'
+        },
+        'words_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': CURRENT_CONFIG.WORDS_LOG_FILE_PATH,
+            'formatter': 'default'
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'django_file'],
             'level': 'ERROR',
             'propagate': True
         },
         'django.request': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'django_file'],
             'level': 'ERROR',
+            'propagate': True,
+        },
+        'words': {
+            'handlers': ['words_file',],
+            'level': 'INFO',
             'propagate': False,
         },
     }

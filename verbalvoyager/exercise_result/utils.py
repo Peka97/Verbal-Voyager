@@ -1,9 +1,10 @@
+import logging
+
 from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseSpanishDialog, ExerciseRussianDialog, ExerciseIrregularEnglishVerb # noqa 
 from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseRussianWordsResult, ExerciseSpanishWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseSpanishDialogResult, ExerciseRussianDialogResult, ExerciseIrregularEnglishVerbResult # noqa 
 
-from logger import get_logger
 
-logger = get_logger()
+logger = logging.getLogger('django')
 
 def get_exercise_class_name(ex_type: str, ex_lang: str) -> tuple:
     ex_type =  ''.join(map(lambda word: word.capitalize(), ex_type.split("_")))

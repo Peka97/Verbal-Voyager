@@ -56,22 +56,22 @@
                                 <div class="tooltip-container">
                                     {% if event.status == 'P' %}
                                         <span class="tooltip">Запланирован</span>
-                                        <i class="bi bi-clock performing-status" name={{lsn.status}}></i>
+                                        <i class="bi bi-clock performing-status" name={{event.status}}></i>
                                     {% elif event.status == 'C' %}
                                         <span class="tooltip">Отменён</span>
-                                        <i class="bi bi-x-circle performing-status" name={{lsn.status}}></i>
+                                        <i class="bi bi-x-circle performing-status" name={{event.status}}></i>
                                     {% elif event.status == 'M' %}
                                         <span class="tooltip">Пропущен</span>
-                                        <i class="bi bi-person-x performing-status" name={{lsn.status}}></i>
+                                        <i class="bi bi-person-x performing-status" name={{event.status}}></i>
                                     {% else %}
                                         <span class="tooltip">Проведён</span>
-                                        <i class="bi bi-check-circle performing-status" name={{lsn.status}}></i> 
+                                        <i class="bi bi-check-circle performing-status" name={{event.status}}></i> 
                                     {% endif %}
                                     </div>
 
                                 <div class="tooltip-container">
-                                    <span class="tooltip">{% if lsn.is_paid %}Оплачен{% else %}Не оплачен{% endif %}</span>
-                                    <i class="bi bi-wallet payment-status {% if lsn.is_paid %} paid {% else %} not-paid {% endif %}"></i>
+                                    <span class="tooltip">{% if event.is_paid %}Оплачен{% else %}Не оплачен{% endif %}</span>
+                                    <i class="bi bi-wallet payment-status {% if event.is_paid %} paid {% else %} not-paid {% endif %}"></i>
                                 </div>
                             </div>
 
@@ -99,72 +99,6 @@
                                 </div>
                             {% else %}
                                 <span class="not-tasks"> заданий нет </span>
-                            {% endif %}
-                        {% endwith %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endfor %}
-
-{% for event in new_events %}
-    <div name='{{ event.datetime.day }}.{{ event.datetime.month }}.{{ event.datetime.year }}' class="event-card">
-        <div class="accordion accordion-flush" id="accordionFlushExample">
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ event.pk }}" aria-expanded="false" aria-controls="flush-collapse{{ event.pk }}">
-                        <div class="event-name"> 
-                            {% if event.datetime.minute < 10 %}
-                                {% with prefix=0 %}
-                                    {{ event.datetime.hour }}:{{ prefix }}{{ event.datetime.minute}} (SRT)
-                                {% endwith %}
-                            {% else %}
-                                {% with prefix="" %}
-                                    {{ event.datetime.hour }}:{{ prefix }}{{ event.datetime.minute}} (SRT)
-                                {% endwith %}
-                            {% endif %}
-                            <br>
-                            <i class="bi bi-mortarboard-fill"></i>
-                            {{ event.teacher_id.last_name }} {{ event.teacher_id.first_name }}
-                        </div>
-                        <div class="event-info">
-                            {% if event.status == 'P' %}
-                                <i class="bi bi-clock text-warning"></i> 
-                            {% elif event.status == 'C' %}
-                                <i class="bi bi-x-circle text-danger"></i>
-                            {% else %}
-                                <i class="bi bi-check-circle text-success"></i> 
-                            {% endif %}
-
-                            {% if event.is_paid %}
-                                <i class="bi bi-wallet text-success"></i>
-                            {% else %}
-                                <i class="bi bi-wallet text-danger"></i> 
-                            {% endif %}
-                            <br>
-                            {{ event.title }}
-                        </div>
-                    </button>
-                </h2>
-                <div id="flush-collapse{{ event.pk }}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                    <div class="accordion-body">
-                        {% with event.lesson_tasks.all as tasks %}
-                            {% if tasks %}
-                                <span style='font-weight: lighter; color: indigo'>Tasks: </span>
-                                <ul>
-                                    {% for task in tasks %}
-                                        {% if task.base_name %}
-                                            <li>{{ task.base_name }}</li>
-                                        {% elif task.custom_name %}
-                                            <li>{{ task.custom_name }}</li>
-                                        {% endif %}
-                                            
-                                        {% endfor %}
-                                </ul>
-                                {% else %}
-                                    <span style='font-weight: lighter; color: indigo'>Tasks: </span>
-                                    -
                             {% endif %}
                         {% endwith %}
                     </div>

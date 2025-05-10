@@ -77,6 +77,7 @@ function checkAnswer () {
 
     } else {
         logging(userInput.toLowerCase(), translate.toLowerCase(), 'correct');
+        showToast('Правильно! Переходи к следующему слову.');
 
         translateContainerElement.classList.remove("wrong");
         translateContainerElement.classList.add("correct");

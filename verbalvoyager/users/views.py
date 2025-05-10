@@ -1,6 +1,9 @@
+from ast import match_case
+import logging
 from collections import defaultdict
 from itertools import chain
 
+from django.db.models import Count
 from django.core.cache import cache
 from django.db.models import Prefetch
 from django.urls import reverse
@@ -10,15 +13,12 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteView
 from django.contrib.auth.decorators import login_required
 
-from logger import get_logger
-from users.services.cache import user_cache
+from users.services.cache import get_cached_user_account_teacher, get_cached_lessons, get_cached_courses, get_cached_projects, get_cached_english_words, get_cached_french_words, get_cached_russian_words, get_cached_spanish_words,  get_cached_english_irregular_verbs, get_cached_english_dialogs, get_cached_french_dialogs, get_cached_russian_dialogs, get_cached_spanish_dialogs
 from users.forms import RegistrationUserForm, CustomPasswordResetForm, AuthUserForm, TimezoneForm
 from users.utils import get_words_learned_count, get_exercises_done_count, init_student_demo_access
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb
-from event_calendar.models import Lesson, LessonTask, Project, Course, ProjectType
 
 
-logger = get_logger()
+logger = logging.getLogger('django')
 User = get_user_model()
 
 
@@ -36,6 +36,7 @@ def user_auth(request):
         user = authenticate(request, username=username, password=password)
 
         if user:
+            request.session.flush()
             login(request, user)
             return redirect(next) if next else redirect('')
         else:
@@ -58,6 +59,7 @@ def user_register(request):
             user = form.save(commit=False)
             user.save()
 
+            request.session.flush()
             login(request, user)
             
             try:
@@ -75,25 +77,16 @@ def user_register(request):
         
     return render(request, 'users/auth.html', context)
 
-@user_cache
 def user_logout(request):
+    request.session.flush()
     logout(request)
     return redirect('')
 
 
-# TODO: кэширование объектов отдельно: уроки, проекты, упражнения и т.д.
-
 @login_required(login_url="/users/auth")
-@user_cache
 def user_account(request):
     user = request.user
     current_pane = request.GET.get('pane')
-    
-    # if current_pane and current_pane not in ['activities', 'profile', 'exercises']:
-    #     current_pane = 'activities'
-    #     return redirect('account')
-    # if not current_pane:
-    #     current_pane = 'activities'
     
     context = {
         'user_is_teacher': user.is_teacher(),
@@ -101,14 +94,7 @@ def user_account(request):
     }
 
     if request.method == 'POST':
-        form = TimezoneForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Часовой пояс успешно обновлен.')
-            url = reverse('account', kwargs={'current_pane': 'profile'})
-            return redirect(url)
-        else:
-            messages.error(request, 'Ошибка при обновлении часового пояса.')
+        set_user_timezone(request)
     else:
         context['timezone_form'] = TimezoneForm(instance=request.user)
 
@@ -117,32 +103,7 @@ def user_account(request):
             User.objects.filter(groups__name='Teacher').exclude(username='admin').values_list('pk', flat=True))
 
     if context['user_is_teacher']:
-        projects = Project.objects.filter(
-            teacher_id=user).values_list('pk', flat=True).all()
-        project_types_prefetch = Prefetch(
-            'types',
-            queryset=ProjectType.objects.only('name'),
-            to_attr='prefetched_types'
-        )
-        projects_prefetch = Prefetch(
-            'project_id',
-            queryset=Project.objects.only('id'
-            ).prefetch_related(project_types_prefetch),
-            to_attr='prefetched_project'
-        )
-        
-        lessons_obj = Lesson.objects.filter(
-            teacher_id=user
-        ).prefetch_related(
-            'lesson_tasks',
-            projects_prefetch
-        ).select_related('teacher_id', 'student_id', 'project_id'
-        ).order_by('datetime').only(
-            'id', 'title', 'datetime', 'duration', 'is_paid', 'status', 
-            'teacher_id__first_name', 'teacher_id__last_name', 'teacher_id__timezone',
-            'student_id__first_name', 'student_id__last_name', 'student_id__timezone',
-            'project_id',
-        ).all()
+        lessons_obj = get_cached_user_account_teacher(user)
         lessons = defaultdict(list)
 
         for lesson in lessons_obj:
@@ -150,58 +111,84 @@ def user_account(request):
 
         lessons = tuple(lessons.values())
     else:
-        lessons = Lesson.objects.filter(
-            student_id=user
-        ).prefetch_related('lesson_tasks', 'project_id__types').select_related('teacher_id', 'student_id', 'project_id',).order_by('datetime').all()
-
-        projects = Project.objects.filter(
-            students=user).values_list('pk', flat=True).all()
+        lessons = get_cached_lessons(user)
+        projects = get_cached_projects(user)
         context['projects'] = projects
-        english_words, french_words, russian_words = ExerciseEnglishWords.objects.filter(student=user.pk), \
-            ExerciseFrenchWords.objects.filter(student=user.pk), \
-            ExerciseRussianWords.objects.filter(student=user.pk)
-        context['exercises_words'] = tuple(chain(
-            english_words.all(),
-            french_words.all(),
-            russian_words.all()
-        ))
-        irregular_verbs = ExerciseIrregularEnglishVerb.objects.filter(
-            student=user.pk)
+        context['exercises'] = get_user_exercises(user, projects)
 
-        context['exercises_irregular_verbs'] = irregular_verbs.filter(
-            is_active=True).all()
-        english_dialogs, french_dialogs = ExerciseEnglishDialog.objects.filter(
-            student=user.pk), ExerciseFrenchDialog.objects.filter(student=user.pk)
-        dialogs = chain(
-            english_dialogs.filter(is_active=True).all(),
-            french_dialogs.filter(is_active=True).all()
-        )
-
-        context['exercises_dialogs'] = dialogs
-        context['statistics'] = {}
-        context['statistics']['lessons_done_count'] = lessons.filter(
-            status='D').count()
-        context['statistics']['exercises_done_count'] = get_exercises_done_count(
-            english_words,
-            french_words,
-            irregular_verbs,
-            english_dialogs,
-            french_dialogs
-        )
-        context['statistics']['words_learned_count'] = get_words_learned_count(
-            english_words,
-            french_words,
-            irregular_verbs,
-            english_dialogs,
-            french_dialogs
-        )
+        # Временно отключена статистика
+        # context['statistics'] = {}
+        # context['statistics']['lessons_done_count'] = lessons.filter(
+        #     status='D').count()
+        # context['statistics']['exercises_done_count'] = get_exercises_done_count(
+        #     english_words,
+        #     french_words,
+        #     irregular_verbs,
+        #     english_dialogs,
+        #     french_dialogs
+        # )
+        # context['statistics']['words_learned_count'] = get_words_learned_count(
+        #     english_words,
+        #     french_words,
+        #     irregular_verbs,
+        #     english_dialogs,
+        #     french_dialogs
+        # )
 
     context['events'] = lessons
-    context['courses'] = tuple(Course.objects.all())
+    context['courses'] = get_cached_courses(request.user)
     context['current_pane'] = current_pane
 
     return render(request, 'users/account/account.html', context)
 
+def set_user_timezone(request):
+    form = TimezoneForm(request.POST, instance=request.user)
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'Часовой пояс успешно обновлен.')
+        url = reverse('account', kwargs={'current_pane': 'profile'})
+        return redirect(url)
+    else:
+        messages.error(request, 'Ошибка при обновлении часового пояса.')
+
+def get_user_exercises(user, projects):
+    result = []
+    unique_courses = {p.course_id.name for p in projects}
+    
+    for course in unique_courses:
+        match course:
+            case "Английский язык":
+                result.append(
+                    get_cached_english_words(user)
+                )
+                result.append(
+                    get_cached_english_dialogs(user)
+                )
+                result.append(
+                    get_cached_english_irregular_verbs(user)
+                )
+            case "Французский язык":
+                result.append(
+                    get_cached_french_words(user)
+                )
+                result.append(
+                    get_cached_french_dialogs(user)
+                )
+            case "Русский язык":
+                result.append(
+                    get_cached_russian_words(user)
+                )
+                result.append(
+                    get_cached_russian_dialogs(user)
+                )
+            case "Испанский язык":
+                result.append(
+                    get_cached_spanish_words(user)
+                )
+                result.append(
+                    get_cached_spanish_dialogs(user)
+                )
+    return result
 
 # TODO: обновление таймзоны без обновления страницы
 # def json_update_timezone(request):

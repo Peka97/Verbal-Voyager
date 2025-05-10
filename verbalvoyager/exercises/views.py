@@ -1,4 +1,5 @@
 import json
+import logging
 from random import sample, shuffle
 
 from django.http import HttpResponse, Http404
@@ -7,15 +8,14 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
-from logger import get_logger, get_words_logger
 from .utils import generate_dialog, get_exercise_or_404
 
 from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, \
     ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, \
     ExerciseRussianDialog, ExerciseSpanishDialog, ExerciseIrregularEnglishVerb
 
-logger = get_logger()
-logger_words = get_words_logger()
+logger = logging.getLogger('django')
+logger_words = logging.getLogger('words')
 
 User = get_user_model()
 
@@ -240,7 +240,7 @@ def words_logging(request, ex_id, step_num):
         else:
             logger_words.error(message)
 
-    return HttpResponse({'status': 200})
+        return HttpResponse({'status': 200})
 
 
 def exercise_irregular_verbs(request, ex_id, step):

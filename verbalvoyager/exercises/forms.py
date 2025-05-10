@@ -1,12 +1,11 @@
+import logging
 
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
-from logger import get_logger
 
-
-logger = get_logger()
+logger = logging.getLogger('django')
 User = get_user_model()
 
 

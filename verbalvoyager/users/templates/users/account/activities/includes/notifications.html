@@ -1,57 +1,24 @@
 {% load static %}
 
 <div class="col notification-wrap">
-    <div class="col-12 notification-title-wrap">
-        <h4 class="notification-title">Уведомления</h4>
-    </div>
-    {% if not exercises_words and not exercises_irregular_verbs and not exercises_dialogs %}
+	<div class="col-12 notification-title-wrap">
+		<h4 class="notification-title">Уведомления</h4>
+	</div>
+	{% if not exercises %}
         <div class="row notification">
-            <p class='notification-text'>
-                Новых уведомлений пока что нет
-            </p>
+            <p class="notification-text">Новых уведомлений пока что нет</p>
         </div>
-    {% endif %}
-
-    {% if exercises_words %}
-        {% for exercise_words in exercises_words %}
-            {% if exercise_words.is_active %}
+	{% else %}
+        {% for exercise_type in exercises %}
+            {% for exercise in exercise_type %}
                 <div class="row notification">
-                    <p class='notification-text'>
-                        <i class="bi bi-bell-fill"></i> Новое упражнение: 
-                        <a href={{ exercise_words.get_absolute_url }} class="exercise">
-                            {% comment %} <i class="exercise-icon word-icon"></i> {% endcomment %}
-                            {{ exercise_words }}
-                        </a>
+                    <p class="notification-text">
+                        <i class="bi bi-bell-fill"></i>
+                        Новое упражнение:
+                        <a href="{{ exercise.get_absolute_url }}" class="exercise">{{ exercise.name }}</a>
                     </p>
                 </div>
-            {% endif %}
-        {% endfor %}
-    {% endif %}
-
-    {% if exercises_irregular_verbs %}
-        {% for exercise_irregular_verbs in exercises_irregular_verbs %}
-            <div class="row notification">
-                <p class='notification-text'>
-                    <i class="bi bi-bell-fill"></i> Новое упражнение:
-                    <a href={{ exercise_irregular_verbs.get_absolute_url }} class="exercise">
-                        {{ exercise_irregular_verbs }}
-                    </a>
-                </p>
-            </div>
-        {% endfor %}
-    {% endif %}
-
-    {% if exercises_dialogs %}
-        {% for exercise_dialog in exercises_dialogs %}
-            <div class="row notification">
-                <p class='notification-text'>
-                    <i class="bi bi-bell-fill"></i> Новое упражнение: 
-                    <a href={{ exercise_dialog.get_absolute_url }} class="exercise">
-                        {% comment %} <i class="exercise-icon dialog-icon"></i> {% endcomment %}
-                        {{ exercise_dialog }}
-                    </a>
-                </p>
-            </div>
-        {% endfor %}
-    {% endif %}
+            {% endfor %}
+        {% endfor %} 
+	{% endif %}
 </div>

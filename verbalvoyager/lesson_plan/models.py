@@ -1,7 +1,6 @@
 from django.db import models
 
 
-
 class EnglishLessonPlan(models.Model):
     lesson_id = models.ForeignKey(
         'event_calendar.Lesson',

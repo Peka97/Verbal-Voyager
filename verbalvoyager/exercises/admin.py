@@ -1,22 +1,21 @@
+import logging
+
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 
-from logger import get_logger
-
-from pages.filters import DropdownFilter, RelatedDropdownFilter
 from .filters import TeachersListFilter, StudentsListFilter
-
 from .models import ExerciseCategory, ExerciseEnglishWords, ExerciseFrenchWords, \
     ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, \
     ExerciseFrenchDialog, ExerciseRussianDialog, ExerciseSpanishDialog, \
     ExerciseIrregularEnglishVerb
 from .forms import ExerciseDialogAdminForm, ExerciseIrregularEnglishVerbAdminForm
+from pages.filters import DropdownFilter, RelatedDropdownFilter
 from logging_app.helpers import log_action
 
 
-logger = get_logger()
+logger = logging.getLogger('django')
 
 User = get_user_model()
 

@@ -1,14 +1,14 @@
+import logging
 import json
 
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import JsonResponse
 
-from logger import get_logger
 from .utils import get_exercise_class_name
 
 
-logger = get_logger()
+logger = logging.getLogger('django')
 
 
 @login_required
