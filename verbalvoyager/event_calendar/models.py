@@ -29,8 +29,8 @@ class Review(models.Model):
         verbose_name='Название курса',
         on_delete=models.CASCADE,
         related_name='reviews',
-        blank=True,  # TODO: remove?
-        null=True,  # TODO: remove?
+        blank=True,
+        null=True
     )
     text = models.TextField(
         verbose_name='Отзыв',
@@ -72,11 +72,11 @@ class LessonTask(models.Model):
     )
     points = models.SmallIntegerField(
         verbose_name='Баллы',
-        default=1,
+        default=1
     )
     is_completed = models.BooleanField(
         verbose_name='Задача завершена',
-        default=False,
+        default=False
     )
     lesson_id = models.ForeignKey(
         'Lesson',
@@ -205,6 +205,7 @@ class ProjectTask(models.Model):
             projects = Project.objects.filter(tasks=self.pk)
             for project in projects:
                 project.save()
+
         except FieldError:
             pass
 
@@ -252,7 +253,7 @@ class Project(models.Model):
     students = models.ManyToManyField(
         User,
         verbose_name='Студенты',
-        limit_choices_to={'groups__name__in': ['Student', ]},
+        limit_choices_to={'groups__name__in': ['Student', ]}
     )
     teacher_id = models.ForeignKey(
         User,
@@ -265,7 +266,7 @@ class Project(models.Model):
     from_date = models.DateField(
         verbose_name='Дата начала',
         null=True,
-        blank=True,
+        blank=True
     )
     to_date = models.DateField(
         verbose_name='Дата окончания',
@@ -275,7 +276,7 @@ class Project(models.Model):
     lesson_1 = models.DateTimeField(
         verbose_name='Время первого урока в неделе',
         null=True,
-        blank=True,
+        blank=True
     )
     lesson_1_duration = models.IntegerField(
         verbose_name='Длительность урока',
@@ -335,8 +336,8 @@ class Project(models.Model):
 
     def set_progress(self):
         if self.tasks.count() > 0:
-            self.progress = self.tasks.filter(
-                is_completed=False).count() * 100 / self.tasks.count()
+            self.progress = self.tasks \
+                .filter(is_completed=False).count() * 100 / self.tasks.count()
         else:
             self.progress = 0
 

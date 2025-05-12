@@ -1,10 +1,10 @@
 {% extends 'pages/extends/base.html' %}
+{% load cache %}
 {% load static %}
 {% load tz %}
 
-{% comment %} {% load filters %} {% endcomment %}
 
-{% block title %}Профиль{% endblock  %}
+{% block 'title' %}Профиль{% endblock 'title' %}
 
 {% block 'meta' %}
 	{% if user_is_supervisor %}
@@ -20,9 +20,9 @@
 	<link rel="stylesheet" href="{% static 'users/css/profile_pane.css' %}">
 	<link rel="stylesheet" href="{% static 'users/css/exercises_pane.css' %}">
 	<link rel="stylesheet" href="{% static 'users/css/checkbox.css' %}">
-{% endblock  %}
+{% endblock 'style' %}
 
-{% block content %}
+{% block 'content' %}
 <div class="container page">
 	<div class='container-nav-profile'>
 		<ul class="nav nav-tabs profile" id="Tab" role="tablist">
@@ -32,25 +32,31 @@
 			<li class="nav-item profile" role="presentation">
 				<button class="nav-link profile {% if current_pane == 'profile' %} active {% endif %}" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="{% if current_pane == 'profile' %} true {% else %} false {% endif %}">Профиль</button>
 			</li>
-			{% comment %} <li class="nav-item profile" role="presentation">
+			<li class="nav-item profile" role="presentation">
 				<button class="nav-link profile {% if current_pane == 'exercises' %} active {% endif %}" id="exercises-tab" data-bs-toggle="tab" data-bs-target="#exercises-tab-pane" type="button" role="tab" aria-controls="exercises-tab-pane" aria-selected="{% if current_pane == 'exercises' %} true {% else %} false {% endif %}">Упражнения</button>
-			</li> {% endcomment %}
+			</li>
 		</ul>
 	
 		<div class="tab-content" id="TabContent">
 			<div class="tab-pane fade {% if current_pane == 'activities' %} show active {% endif %}" id="activities-tab-pane" role="tabpanel" aria-labelledby="activities-tab" tabindex="0">
-				{% include "users/account/activities/activities_pane.html" %}
+				{% comment %} {% cache 3600 "activities" request.user.id %} {% endcomment %}
+					{% include "users/account/activities/activities_pane.html" %}
+				{% comment %} {% endcache %} {% endcomment %}
 			</div>
 			<div class="tab-pane fade {% if current_pane == 'profile' %} show active {% endif %}" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-				{% include "users/account/profile/profile_pane.html" %}
+				{% comment %} {% cache 3600 "profile" request.user.id %} {% endcomment %}
+					{% include "users/account/profile/profile_pane.html" %}
+				{% comment %} {% endcache %} {% endcomment %}
 			</div>
 			<div class="tab-pane fade {% if current_pane == 'exercises' %} show active {% endif %}" id="exercises-tab-pane" role="tabpanel" aria-labelledby="exercises-tab" tabindex="0">
-				{% include "users/account/exercises/exercises_pane.html" %}	
+				{% comment %} {% cache 3600 "exercises" request.user.id %} {% endcomment %}
+					{% include "users/account/exercises/exercises_pane.html" %}
+				{% comment %} {% endcache %} {% endcomment %}
 			</div>
 		</div>
 	</div>
 </body>
-{% endblock content %}
+{% endblock 'content' %}
 
 {% block 'js' %}
 	<!-- JQuery -->
@@ -70,4 +76,4 @@
 		const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 		document.cookie = "django_timezone=" + timezone;
 	</script>
-{% endblock  %}
+{% endblock 'js' %}

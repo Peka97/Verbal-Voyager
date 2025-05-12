@@ -77,7 +77,7 @@
                                 {% for lsn in event %}
                                     <div id="lesson_{{ lsn.pk }}" class="lesson-info">
                                         
-                                        {% with lsn.lesson_tasks.all as tasks %}
+                                        {% with lsn.prefetched_tasks as tasks %}
                                         <span class='task-student-name'>{{ lsn.student_id }}</span>
 
 
@@ -135,7 +135,7 @@
                                 {% endfor %}
                                 
                             {% else %}
-                                {% with lesson.lesson_tasks.all as tasks %}
+                                {% with lesson.prefetched_tasks as tasks %}
                                     <div id="lesson_{{ lesson.pk }}" class="lesson-info">
                                         <div class="event-count event-status-changer pr-2">
                                             {% comment %} <span class='task-student-name'>{{ lesson.student_id }}</span> {% endcomment %}

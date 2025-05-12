@@ -53,6 +53,7 @@ class AbstractExerciseWordsAdmin(admin.ModelAdmin):
     ]
     save_as = True
     actions = ['make_active', 'make_inactive']
+    readonly_fields = ['created_at', ]
 
     fieldsets = (
         ('ExerciseWord Main', {
@@ -60,7 +61,7 @@ class AbstractExerciseWordsAdmin(admin.ModelAdmin):
         }),
         ('ExerciseWord Options', {
             'classes': ('collapse', ),
-            'fields': ('teacher', 'is_active', 'external_access'),
+            'fields': ('teacher', 'is_active', 'external_access', 'created_at',),
         })
     )
 
@@ -74,12 +75,12 @@ class AbstractExerciseWordsAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        
+
         if request.user.username != 'admin':
             queryset = queryset \
-            .exclude(student__groups__name='StudentDemo') \
-            .exclude(teacher__groups__name='TeacherDemo')
-        
+                .exclude(student__groups__name='StudentDemo') \
+                .exclude(teacher__groups__name='TeacherDemo')
+
         return queryset.select_related('student', 'teacher').prefetch_related('words')
 
     @admin.action(description='Активировать')
@@ -92,7 +93,7 @@ class AbstractExerciseWordsAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        
+
         if request.user.username != 'admin':
             form.base_fields['teacher'].initial = request.user
             form.base_fields['teacher'].queryset = User.objects.filter(
@@ -112,9 +113,11 @@ class ExerciseEnglishWordsAdmin(AbstractExerciseWordsAdmin):
 class ExerciseFrenchWordsAdmin(AbstractExerciseWordsAdmin):
     pass
 
+
 @admin.register(ExerciseRussianWords)
 class ExerciseRussianWordsAdmin(AbstractExerciseWordsAdmin):
     pass
+
 
 @admin.register(ExerciseSpanishWords)
 class ExerciseSpanishWordsAdmin(AbstractExerciseWordsAdmin):
@@ -142,13 +145,14 @@ class AbstractExerciseDialogAdmin(admin.ModelAdmin):
         ('is_active', DropdownFilter),
         ('external_access', DropdownFilter),
     ]
+    readonly_fields = ['created_at', ]
     fieldsets = (
         ('ExerciseDialog Main', {
             'fields': (('name', 'category', 'student'), 'words', 'text'),
         }),
         ('ExerciseDialog Options', {
             'classes': ('collapse', ),
-            'fields': ('teacher', 'is_active', 'external_access'),
+            'fields': ('teacher', 'is_active', 'external_access', 'created_at'),
         })
     )
     save_as = True
@@ -163,14 +167,14 @@ class AbstractExerciseDialogAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        
+
         if request.user.username != 'admin':
             queryset = queryset \
-            .exclude(student__groups__name='StudentDemo') \
-            .exclude(teacher__groups__name='TeacherDemo')
-            
+                .exclude(student__groups__name='StudentDemo') \
+                .exclude(teacher__groups__name='TeacherDemo')
+
         return queryset.select_related('student', 'teacher').prefetch_related('words')
-    
+
     def get_autocomplete_results(self, request, queryset, search_term):
         queryset, use_distinct = super().get_search_results(request, queryset, search_term)
 
@@ -183,7 +187,7 @@ class AbstractExerciseDialogAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        
+
         if request.user.username != 'admin':
             form.base_fields['teacher'].initial = request.user
             form.base_fields['teacher'].queryset = User.objects.filter(
@@ -203,12 +207,11 @@ class AbstractExerciseDialogAdmin(admin.ModelAdmin):
                 'fontawesomefree/css/fontawesome.css',
                 'fontawesomefree/css/brands.css',
                 'fontawesomefree/css/solid.css'
-                )
+            )
         }
         js = [
             'admin/js/generate_dialog_ui_load_and_fetch.js',
         ]
-        
 
 
 @admin.register(ExerciseEnglishDialog)
@@ -220,9 +223,11 @@ class ExerciseEnglishDialogAdmin(AbstractExerciseDialogAdmin):
 class ExerciseFrenchDialogAdmin(AbstractExerciseDialogAdmin):
     pass
 
+
 @admin.register(ExerciseRussianDialog)
 class ExerciseRussianDialogAdmin(AbstractExerciseDialogAdmin):
     pass
+
 
 @admin.register(ExerciseSpanishDialog)
 class ExerciseSpanishDialogAdmin(AbstractExerciseDialogAdmin):
@@ -248,13 +253,14 @@ class ExerciseIrregularEnglishVerbAdmin(admin.ModelAdmin):
         ('is_active', DropdownFilter),
         ('external_access', DropdownFilter),
     ]
+    readonly_fields = ['created_at', ]
     fieldsets = (
         ('ExerciseIrregularVerb Main', {
             'fields': (('name', 'category', 'student'), 'words', ),
         }),
         ('ExerciseDialog Options', {
             'classes': ('collapse', ),
-            'fields': ('teacher', 'is_active', 'external_access'),
+            'fields': ('teacher', 'is_active', 'external_access', 'created_at'),
         })
     )
     save_as = True
@@ -269,17 +275,17 @@ class ExerciseIrregularEnglishVerbAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        
+
         if request.user.username != 'admin':
             queryset = queryset \
-            .exclude(student__groups__name='StudentDemo') \
-            .exclude(teacher__groups__name='TeacherDemo')
-            
+                .exclude(student__groups__name='StudentDemo') \
+                .exclude(teacher__groups__name='TeacherDemo')
+
         return queryset.select_related('student', 'teacher').prefetch_related('words')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        
+
         if request.user.username != 'admin':
             form.base_fields['teacher'].initial = request.user
             form.base_fields['teacher'].queryset = User.objects.filter(

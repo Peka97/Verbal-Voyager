@@ -9,16 +9,14 @@
             <p class="notification-text">Новых уведомлений пока что нет</p>
         </div>
 	{% else %}
-        {% for exercise_type in exercises %}
-            {% for exercise in exercise_type %}
-                <div class="row notification">
-                    <p class="notification-text">
-                        <i class="bi bi-bell-fill"></i>
-                        Новое упражнение:
-                        <a href="{{ exercise.get_absolute_url }}" class="exercise">{{ exercise.name }}</a>
-                    </p>
-                </div>
-            {% endfor %}
+        {% for exercise in exercises %}
+            <div class="row notification">
+                <p class="notification-text">
+                    <i class="bi bi-bell-fill"></i>
+                    Новое упражнение:
+                    <a href="{{ exercise.get_absolute_url }}" class="exercise">{{ exercise.name }}</a>
+                </p>
+            </div>
         {% endfor %} 
 	{% endif %}
 </div>

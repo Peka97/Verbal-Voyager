@@ -4,6 +4,7 @@ from django.contrib.admin import SimpleListFilter
 from django.core.exceptions import FieldError
 
 from pages.filters import DROPDOWN_TEMPLATE_PATH
+from users.services.cache import get_cached_admin_user_in_group
 
 
 User = get_user_model()
@@ -18,8 +19,7 @@ class AbstractUserListFilter(SimpleListFilter):
         super().__init__(request, params, model, model_admin)
 
     def lookups(self, request, model_admin):
-        users = User.objects.filter(
-            groups__name=self.user_group).order_by('last_name', 'first_name')
+        users = get_cached_admin_user_in_group(self.user_group)
 
         return [
             (user.pk, _(f'{user.last_name} {user.first_name}')) for user in users

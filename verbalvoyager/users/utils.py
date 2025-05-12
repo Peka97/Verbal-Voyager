@@ -6,34 +6,23 @@ from exercises.models import ExerciseEnglishWords, ExerciseEnglishDialog, Exerci
 User = get_user_model()
 
 
-def get_words_learned_count(*args):
-    count = 0
-
-    for exercise_type in args:
-        queryset = exercise_type.filter(is_active=False).prefetch_related(
-            'words').all()
-
-        for exercise in queryset:
-            count += exercise.words.count()
-
-    return count
+def get_words_learned_count(exercises):
+    return sum(len(ex.prefetched_words) for ex in exercises)
 
 
-def get_exercises_done_count(*args):
-    count = 0
-
-    for exercise_type in args:
-        count += exercise_type.filter(is_active=False).count()
-
-    return count
+def get_exercises_done_count(exercises):
+    return sum(1 for ex in exercises if ex.is_active)
 
 
 def init_student_demo_access(user: User):
     student_demo_group, _ = Group.objects.get_or_create(name='StudentDemo')
     user.groups.add(student_demo_group.id)
-    create_demo_exercise(ExerciseEnglishWords, user.id)
-    create_demo_exercise(ExerciseIrregularEnglishVerb, user.id)
-    create_demo_exercise(ExerciseEnglishDialog, user.id)
+    exercises = [
+        ExerciseEnglishWords, ExerciseEnglishDialog, ExerciseIrregularEnglishVerb
+    ]
+
+    for exercise_type in exercises:
+        create_demo_exercise(exercise_type, user.id)
 
 
 def create_demo_exercise(exercise_model, user_id):

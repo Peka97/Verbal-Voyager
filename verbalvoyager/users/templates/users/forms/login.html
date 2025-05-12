@@ -1,4 +1,4 @@
-<form class="form" method='POST' action="{% url "auth" %}">
+<form class="form" method='POST' action="{% url "auth" %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}">
     {% csrf_token %}
     <div class="form-title"><span>Подняться на шатл</span></div>
 

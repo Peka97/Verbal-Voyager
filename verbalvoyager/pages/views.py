@@ -43,7 +43,7 @@ def index(request):
     for review in reviews:
         review['created_at'] = review['created_at'].strftime("%d.%m.%Y")
 
-    context['courses'] = get_cached_courses(request.user)
+    context['courses'] = get_cached_courses()
     context['reviews'] = reviews
     # context['student_count'] = {
     #     'english': Project.objects.filter(course_id__name='Английский язык').count(),

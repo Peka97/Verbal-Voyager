@@ -1,18 +1,18 @@
+{% load cache %}
 {% load static %}
 
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  {% comment %} <meta name="viewport" content="width=device-width, initial-scale=1.0"> {% endcomment %}
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   
   {% block 'meta' %}{% endblock 'meta' %}
-  <link rel="preconnect" href="https://cdn.verbal-voyager.ru">
+    <link rel="preconnect" href="https://cdn.verbal-voyager.ru">
   {% block 'preconnect' %}{% endblock 'preconnect' %}
   {% block 'preload' %}{% endblock 'preload' %}
 
-    <title>{% block title %}{% endblock  %}</title>
+    <title>{% block 'title' %}{% endblock 'title' %}</title>
     <!-- Preconnect CDN -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
@@ -41,8 +41,11 @@
     {% block 'style' %}{% endblock  %}
   </head>
   <body>
-    {% include 'pages/includes/navbar.html' %}
-    {% block content %}{% endblock  %}
+    {% cache 3600 "navbar" request.user.id %}
+      {% include 'pages/includes/navbar.html' %}
+    {% endcache %} 
+    {% block 'content' %}{% endblock 'content' %}
+
     {% comment %} {% include 'pages/includes/footer.html' %} {% endcomment %}
 
     <!-- Toogle Alerts -->
@@ -54,6 +57,6 @@
 
     <!-- Custom JS -->
     <script defer src="{% static 'pages/js/navbar.js' %}"></script>
-    {% block 'js' %}{% endblock  %}
+    {% block 'js' %}{% endblock 'js' %}
   </body>
 </html>

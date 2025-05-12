@@ -3,6 +3,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
 from django.conf import settings
+from django.utils import timezone
 
 from dictionary.models import EnglishWord, FrenchWord, IrregularEnglishVerb, SpanishWord
 
@@ -51,6 +52,11 @@ class AbstractExerciseWords(models.Model):
         verbose_name='Внешний доступ к упражнению',
         default=False,
         help_text='Если установлено, любой может получить доступ к упражнению без регистрации или авторизации',
+    )
+    created_at = models.DateTimeField(
+        verbose_name='Дата создания',
+        auto_now_add=True,
+        null=True
     )
 
     def get_words(self):
@@ -137,7 +143,7 @@ class ExerciseFrenchWords(AbstractExerciseWords):
     class Meta:
         verbose_name = 'Fr | Words'
         verbose_name_plural = 'Fr | Words'
-        
+
 
 class ExerciseRussianWords(AbstractExerciseWords):
     words = models.ManyToManyField(EnglishWord, verbose_name="Слова")
@@ -165,6 +171,7 @@ class ExerciseRussianWords(AbstractExerciseWords):
     class Meta:
         verbose_name = 'Ru | Words'
         verbose_name_plural = 'Ru | Words'
+
 
 class ExerciseSpanishWords(AbstractExerciseWords):
     words = models.ManyToManyField(SpanishWord, verbose_name="Слова")
@@ -194,6 +201,8 @@ class ExerciseSpanishWords(AbstractExerciseWords):
         verbose_name_plural = 'Sp | Words'
 
 # ExerciseDialog
+
+
 class AbstractExerciseDialog(models.Model):
     view_name = 'exercise_dialog'
 
@@ -221,6 +230,11 @@ class AbstractExerciseDialog(models.Model):
         verbose_name='Внешний доступ к упражнению',
         default=False,
         help_text='Если установлено, любой может получить доступ к упражнению без регистрации или авторизации',
+    )
+    created_at = models.DateTimeField(
+        verbose_name='Дата создания',
+        auto_now_add=True,
+        null=True
     )
 
     def save(self, *args, **kwargs):
@@ -305,6 +319,7 @@ class ExerciseFrenchDialog(AbstractExerciseDialog):
     class Meta:
         verbose_name = 'Fr | Dialog'
         verbose_name_plural = 'Fr | Dialog'
+
 
 class ExerciseRussianDialog(AbstractExerciseDialog):
     words = models.ManyToManyField(EnglishWord, verbose_name="Слова")
@@ -393,6 +408,11 @@ class ExerciseIrregularEnglishVerb(models.Model):
         verbose_name='Внешний доступ к упражнению',
         default=False,
         help_text='Если установлено, любой может получить доступ к упражнению без регистрации или авторизации',
+    )
+    created_at = models.DateTimeField(
+        verbose_name='Дата создания',
+        auto_now_add=True,
+        null=True
     )
 
     def get_words(self):

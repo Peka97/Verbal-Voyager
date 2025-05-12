@@ -2,10 +2,7 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %} Главная {% endblock  %}
-{% block 'preconnect' %}
-
-{% endblock 'preconnect' %}
+{% block 'title' %} Главная {% endblock 'title' %}
 {% block 'preload' %}
   <link rel="preload" as="image" href="https://cdn.verbal-voyager.ru/static/pages/images/layer-1.webp">
 {% endblock 'preload' %}
@@ -14,17 +11,17 @@
 	<script type="module" src="{% static "pages/js/parallax.js" %}"></script>
 	<link rel="stylesheet" href="{% static 'pages/css/index.css' %}">
   
-{% endblock  %}
+{% endblock 'style' %}
 
-{% block content %}
+{% block 'content' %}
 <!-- Preview  -->
 <div class="main-header">
 	<div class="layers planet">
-		<div class="layer layer-base layer-animated"></div>
-		<div class="layer layer-ground layer-animated"></div>
-		<div class="layer layer-3 layer-animated"></div>
-		<div class="layer layer-4 layer-animated"></div>
-		<div class="layer layer-5 layer-animated"></div>
+		<div class="layer layer-base"></div>
+		<div class="layer layer-ground"></div>
+		<div class="layer layer-3"></div>
+		<div class="layer layer-4"></div>
+		<div class="layer layer-5"></div>
 		<div class="layer preview-wrapper">
 			<div class="preview-container">
 				<div class="astronaut-container">
@@ -238,4 +235,4 @@
       </div>
     </div> {% endcomment %}
   </div>
-{% endblock content %}
+{% endblock 'content' %}

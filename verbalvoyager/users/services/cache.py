@@ -2,253 +2,335 @@ from itertools import chain
 
 
 from django.core.cache import cache
+from django.conf import settings
 from django.db.models import Prefetch
+from django.contrib.auth import get_user_model
 
 from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb, ExerciseSpanishWords, ExerciseRussianDialog, ExerciseSpanishDialog
 from event_calendar.models import Lesson, LessonTask, Project, Course, ProjectType
+from dictionary.models import EnglishWord, IrregularEnglishVerb, FrenchWord, SpanishWord
 
 
-# def user_cache(view_func):
-#     def _wrapped_view(request, *args, **kwargs):
-#         CACHE_KEY_PREFIX = f"user_{request.user.id}_{request.path}"
-#         return cache_page(
-#             60 * 15,
-#             key_prefix=CACHE_KEY_PREFIX
-#         )(view_func)(request, *args, **kwargs)
-#     return _wrapped_view
+VERSION = settings.CACHES['default']['OPTIONS']['VERSION']
+User = get_user_model()
 
-# def session_cache(view_func):
-#     def _wrapped_view(request, *args, **kwargs):
-#         CACHE_KEY_PREFIX = f"user_{request.session.session_key}_{request.path}"
-#         return cache_page(
-#             60 * 15,
-#             key_prefix=CACHE_KEY_PREFIX
-#         )(view_func)(request, *args, **kwargs)
-#     return _wrapped_view
 
-def get_cached_courses(user):
-    cache_key = f"user_{user.id}_courses_v2"
-    courses = cache.get_or_set(
-        cache_key,
-        lambda: tuple(Course.objects.all()),
+def get_cached_user_groups(user):
+    CACHE_KEY = f"user_{user.id}_groups_{VERSION}"
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: user.objects.get(id=user.id).groups,
+        timeout=3600
+    )
+
+
+def get_cached_courses():
+    CACHE_KEY = f"global_courses_{VERSION}"
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: Course.objects.all(),
         timeout=60*60*24*7
     )
-    return courses
 
-def get_cached_user_account_teacher(user):
-    cache_key = f"user_{user.id}_lessons_v2"
-    lessons = cache.get(cache_key)
-    
-    if lessons is not None:
-        return lessons
+# def get_cached_user_account_teacher(user):
+#     CACHE_KEY = f"user_{user.id}_lessons_{VERSION}"
+#     lessons = cache.get(CACHE_KEY)
 
-    projects_cache_key = f"user_{user.id}_projects"
-    project_ids = cache.get_or_set(
+#     if lessons is not None:
+#         return lessons
+
+#     lessons = get_cached_lessons_for_teacher(user)
+
+#     cache.set(CACHE_KEY, lessons, 3600)
+#     return lessons
+
+
+def get_cached_projects_for_teacher(user):
+    projects_cache_key = f"user_{user.id}_projects_{VERSION}"
+    return cache.get_or_set(
         projects_cache_key,
-        lambda: tuple(Project.objects.filter(teacher_id=user).values_list('pk', flat=True)),
-        3600
+        lambda: Project.objects.filter(
+            teacher_id=user).values_list('pk', flat=True),
+        timeout=3600
     )
 
-    project_types_prefetch = Prefetch(
-        'types',
-        queryset=cache.get_or_set(
-            'all_project_types',
-            lambda: ProjectType.objects.only('name'),
-            86400
-        ),
-        to_attr='prefetched_types'
+
+def get_cached_projects_for_student(user):
+    projects_cache_key = f"user_{user.id}_projects_{VERSION}"
+    return cache.get_or_set(
+        projects_cache_key,
+        lambda: Project.objects.filter(
+            student_id=user).values_list('pk', flat=True),
+        timeout=3600
     )
 
-    lessons = list(Lesson.objects.filter(
-        teacher_id=user
-    ).prefetch_related(
-        'lesson_tasks',
+
+def get_cached_lessons_for_student(user):
+    CACHE_KEY = f"user_{user.id}_lessons_{VERSION}"
+
+    prefatches = (
         Prefetch(
-            'project_id',
-            queryset=Project.objects.filter(id__in=project_ids)
-                      .prefetch_related(project_types_prefetch)
-                      .only('id'),
-            to_attr='prefetched_project'
+            'lesson_tasks',
+            queryset=LessonTask.objects.all(),
+            to_attr='prefetched_tasks'),
+        Prefetch(
+            'project_id__types',
+            queryset=ProjectType.objects.only('name').all(),
+            to_attr='prefetched_types'
         )
-    ).select_related(
-        'teacher_id', 'student_id', 'project_id'
-    ).only(
+    )
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: Lesson.objects.filter(
+            student_id=user
+        ).prefetch_related(
+            *prefatches
+        ).select_related(
+            'teacher_id', 'project_id', 'student_id'
+        ).order_by('datetime'),
+        timeout=3600
+    )
+
+
+def get_cached_lessons_for_teacher(user):
+    CACHE_KEY = f"user_{user.id}_lessons_{VERSION}"
+
+    prefatches = (
+        Prefetch('lesson_tasks', queryset=LessonTask.objects.all(),
+                 to_attr='prefathed_tasks'),
+        Prefetch('project_id__types', queryset=ProjectType.objects.only(
+            'name').all(), to_attr='prefathed_types')
+    )
+    lesson_fields = (
         'id', 'title', 'datetime', 'duration', 'is_paid', 'status',
         'teacher_id__first_name', 'teacher_id__last_name', 'teacher_id__timezone',
         'student_id__first_name', 'student_id__last_name', 'student_id__timezone',
-        'project_id',
-    ).order_by('datetime'))
+        'project_id'
+    )
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: Lesson.objects.filter(
+            teacher_id=user
+        ).prefetch_related(
+            *prefatches
+        ).select_related(
+            'teacher_id', 'project_id', 'student_id'
+        ).only(*lesson_fields).order_by('datetime'),
+        timeout=3600
+    )
 
-    cache.set(cache_key, lessons, 1800)
-    return lessons
 
-def get_cached_lessons(user):
-    cache_key = f"user_{user.id}_lessons_v3"
-    lessons = cache.get(cache_key)
-    
-    if lessons:
-        return lessons
+def get_cached_lessons_for_other_teacher(user, teacher_id):
+    CACHE_KEY = f"user_{user.id}_lessons_for_{teacher_id}_{VERSION}"
 
-    lessons = tuple(Lesson.objects.filter(
-        student_id=user
-    ).prefetch_related(
-        Prefetch('lesson_tasks', queryset=LessonTask.objects.only('id', 'name')),
-        Prefetch('project_id__types', queryset=ProjectType.objects.only('name'))
-    ).select_related(
-        'teacher_id', 'project_id', 'student_id'
-    ).order_by('datetime'))
+    prefatches = (
+        Prefetch('lesson_tasks', queryset=LessonTask.objects.all(),
+                 to_attr='prefetched_tasks'),
+        Prefetch('project_id__types', queryset=ProjectType.objects.only(
+            'name').all(), to_attr='prefetched_types')
+    )
+    lesson_fields = (
+        'id', 'title', 'datetime', 'duration', 'is_paid', 'status',
+        'teacher_id__first_name', 'teacher_id__last_name', 'teacher_id__timezone',
+        'student_id__first_name', 'student_id__last_name', 'student_id__timezone',
+        'project_id'
+    )
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: Lesson.objects.filter(
+            teacher_id=teacher_id
+        ).prefetch_related(
+            *prefatches
+        ).select_related(
+            'teacher_id', 'project_id', 'student_id'
+        ).only(*lesson_fields).order_by('datetime'),
+        timeout=3600
+    )
 
-    cache.set(cache_key, lessons, timeout=60*30)
-    return lessons
 
 def get_cached_projects(user):
-    cache_key = f"user_{user.id}_projects_v3"
-    projects = cache.get(cache_key)
-    
-    if projects:
-        return projects
-    
-    projects = tuple(Project.objects.filter(
+    CACHE_KEY = f"user_{user.id}_projects_{VERSION}"
+
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: Project.objects.filter(
             students=user
         ).prefetch_related(
-            Prefetch('course_id', queryset=Course.objects.only('name'),)
-        ).only('pk', 'course_id__name'))
-    cache.set(cache_key, projects, 1800)
-    return projects
-
-def get_cached_english_words(user):
-    cache_key = f"user_{user.id}_english_words_v4"
-
-    words = cache.get_or_set(
-        cache_key,
-        lambda: tuple(ExerciseEnglishWords.objects.filter(
-            student=user
-        )),
-        timeout=60*60*24
+            Prefetch('course_id', queryset=Course.objects.only('name').all(),)
+        ).only('pk', 'course_id__name'),
+        timeout=3600
     )
-    return words
 
-def get_cached_french_words(user):
-    cache_key = f"user_{user.id}_french_words_v2"
-    words = cache.get(cache_key)
-    
-    if words:
-        return words
 
-    words = cache.get_or_set(
-        cache_key,
-        lambda: tuple(ExerciseFrenchWords.objects.filter(
-            student=user
-        ).only('id', 'name')),
-        timeout=60*60*24
+def get_cached_user_english_words(user):
+    CACHE_KEY = f"user_{user.id}_exercises_exercise_english_words_{VERSION}"
+    prefetched_words = Prefetch(
+        'words',
+        queryset=EnglishWord.objects.all(),
+        to_attr='prefetched_words'
     )
-    return words
 
-def get_cached_russian_words(user):
-    cache_key = f"user_{user.id}_russian_words_v2"
-    words = cache.get(cache_key)
-    
-    if words:
-        return words
-
-    words = cache.get_or_set(
-        cache_key,
-        lambda: tuple(ExerciseRussianWords.objects.filter(
-            student=user
-        ).only('id', 'name')),
-        timeout=60*60*24
-    )
-    return words
-
-def get_cached_spanish_words(user):
-    cache_key = f"user_{user.id}_spanish_words_v2"
-    words = cache.get(cache_key)
-    
-    if words:
-        return words
-
-    words = cache.get_or_set(
-        cache_key,
-        lambda: tuple(ExerciseSpanishWords.objects.filter(
-            student=user
-        ).only('id', 'name')),
-        timeout=60*60*24
-    )
-    return words
-    
-
-def get_cached_english_irregular_verbs(user):
-    cache_key = f"user_{user.id}_english_irregular_verbs_v2"
     return cache.get_or_set(
-        cache_key,
-        lambda: list(ExerciseIrregularEnglishVerb.objects.filter(
+        CACHE_KEY,
+        lambda: ExerciseEnglishWords.objects.filter(
+            student=user
+        ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
+        timeout=60*60*24
+    )
+
+
+def get_cached_user_french_words(user):
+    CACHE_KEY = f"user_{user.id}_exercises_exercise_french_words_{VERSION}"
+    prefetched_words = Prefetch(
+        'words',
+        queryset=FrenchWord.objects.all(),
+        to_attr='prefetched_words'
+    )
+
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: ExerciseFrenchWords.objects.filter(
+            student=user
+        ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
+        timeout=60*60*24
+    )
+
+
+def get_cached_user_russian_words(user):
+    CACHE_KEY = f"user_{user.id}_exercises_exercise_russian_words_{VERSION}"
+    prefetched_words = Prefetch(
+        'words',
+        queryset=EnglishWord.objects.all(),
+        to_attr='prefetched_words'
+    )
+
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: ExerciseRussianWords.objects.filter(
+            student=user
+        ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
+        timeout=60*60*24
+    )
+
+
+def get_cached_user_spanish_words(user):
+    CACHE_KEY = f"user_{user.id}_exercises_exercise_spanish_words_{VERSION}"
+    prefetched_words = Prefetch(
+        'words',
+        queryset=SpanishWord.objects.all(),
+        to_attr='prefetched_words'
+    )
+
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: ExerciseSpanishWords.objects.filter(
+            student=user
+        ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
+        timeout=60*60*24
+    )
+
+
+def get_cached_user_english_irregular_verbs(user):
+    CACHE_KEY = f"user_{user.id}_exercises_exercise_english_irregular_verbs_{VERSION}"
+    prefetched_english_words = Prefetch(
+        'infinitive',
+        queryset=EnglishWord.objects.all(),
+        to_attr='prefetched_word'
+    )
+    prefetched_english_verb = Prefetch(
+        'words',
+        queryset=IrregularEnglishVerb.objects.prefetch_related(
+            prefetched_english_words).all(),
+        to_attr='prefetched_words'
+    )
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: ExerciseIrregularEnglishVerb.objects.filter(
             student=user,
             is_active=True
-        ).only('id', 'name')),
+        ).prefetch_related(prefetched_english_verb).only('id', 'name', 'is_active', 'created_at', 'words__infinitive').order_by('is_active', '-created_at').all(),
         timeout=60*60*24
     )
 
-def get_cached_english_dialogs(user):
-    cache_key = f"user_{user.id}_english_dialogs_v2"
-    dialogs = cache.get(cache_key)
-    
-    if dialogs:
-        return dialogs
-    
-    dialogs = cache.get_or_set(
-        cache_key,
-        lambda: tuple(ExerciseEnglishDialog.objects.filter(
-            student=user
-        ).only('id', 'name')),
-        timeout=60*60*24
-    )
-    return dialogs
 
-def get_cached_french_dialogs(user):
-    cache_key = f"user_{user.id}_french_dialogs_v2"
-    dialogs = cache.get(cache_key)
-    
-    if dialogs:
-        return dialogs
-    
-    dialogs = cache.get_or_set(
-        cache_key,
-        lambda: tuple(ExerciseFrenchDialog.objects.filter(
-            student=user
-        ).only('id', 'name')),
-        timeout=60*60*24
+def get_cached_user_english_dialogs(user):
+    CACHE_KEY = f"user_{user.id}_exercises_exercise_english_dialogs_{VERSION}"
+    prefetched_words = Prefetch(
+        'words',
+        queryset=EnglishWord.objects.all(),
+        to_attr='prefetched_words'
     )
-    return dialogs
 
-def get_cached_russian_dialogs(user):
-    cache_key = f"user_{user.id}_russian_dialogs_v2"
-    dialogs = cache.get(cache_key)
-    
-    if dialogs:
-        return dialogs
-    
-    dialogs = cache.get_or_set(
-        cache_key,
-        lambda: tuple(ExerciseRussianDialog.objects.filter(
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: ExerciseEnglishDialog.objects.filter(
             student=user
-        ).only('id', 'name')),
+        ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
         timeout=60*60*24
     )
-    return dialogs
 
-def get_cached_spanish_dialogs(user):
-    cache_key = f"user_{user.id}_spanish_dialogs_v2"
-    dialogs = cache.get(cache_key)
-    
-    if dialogs:
-        return dialogs
-    
-    dialogs = cache.get_or_set(
-        cache_key,
-        lambda: tuple(ExerciseSpanishDialog.objects.filter(
+
+def get_cached_user_french_dialogs(user):
+    CACHE_KEY = f"user_{user.id}_exercises_exercise_french_dialogs_{VERSION}"
+    prefetched_words = Prefetch(
+        'words',
+        queryset=FrenchWord.objects.all(),
+        to_attr='prefetched_words'
+    )
+
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: ExerciseFrenchDialog.objects.filter(
             student=user
-        ).only('id', 'name')),
+        ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
         timeout=60*60*24
     )
-    return dialogs
-    
+
+
+def get_cached_user_russian_dialogs(user):
+    CACHE_KEY = f"user_{user.id}_exercises_exercise_russian_dialogs_{VERSION}"
+    prefetched_words = Prefetch(
+        'words',
+        queryset=EnglishWord.objects.all(),
+        to_attr='prefetched_words'
+    )
+
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: ExerciseRussianDialog.objects.filter(
+            student=user
+        ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
+        timeout=60*60*24
+    )
+
+
+def get_cached_user_spanish_dialogs(user):
+    CACHE_KEY = f"user_{user.id}_exercises_exercise_spanish_dialogs_{VERSION}"
+
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: ExerciseSpanishDialog.objects.filter(
+            student=user
+        ).prefetch_related('words').only('id', 'name', 'is_active', 'created_at').all(),
+        timeout=60*60*24
+    )
+
+
+def get_cached_all_teachers():
+    CACHE_KEY = f'global_users_in_group_teachers_{VERSION}'
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: User.objects.filter(groups__name='Teacher').exclude(
+            username='admin').values_list('pk', flat=True),
+        timeout=3600
+    )
+
+
+def get_cached_admin_user_in_group(group_name):
+    CACHE_KEY = f'global_admin_users_in_group_{group_name}_{VERSION}'
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: User.objects.filter(
+            groups__name=group_name).order_by('last_name', 'first_name'),
+        timeout=3600
+    )

@@ -13,7 +13,7 @@
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ event.pk }}" aria-expanded="false" aria-controls="flush-collapse{{ event.pk }}">
                         <div class="event-name"> 
 
-                            {% with tags=event.project_id.types.all|type_names_to_list %}
+                            {% with tags=event.prefetched_types|type_names_to_list %}
                             <div class='lesson-types'>
                                 <div class="tooltip-container">
                                     {% if "Персональный" in tags %}
@@ -83,7 +83,7 @@
                 </h2>
                 <div id="flush-collapse{{ event.pk }}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                     <div class="accordion-body">
-                        {% with event.lesson_tasks.all as tasks %}
+                        {% with event.prefetched_tasks as tasks %}
                             <span class='task-header' style='font-weight: lighter; color: indigo'>Tasks: </span>
                             
                             {% if tasks %}

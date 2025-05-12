@@ -203,10 +203,13 @@ CACHES = {
             "SOCKET_TIMEOUT": 5,
             "IGNORE_EXCEPTIONS": True,
             "PICKLE_VERSION": -1,
+            "VERSION": CURRENT_CONFIG.REDIS_VERSION,
         },
-        "KEY_PREFIX": "verbalvoyager_cache_",
+        "KEY_PREFIX": "vv",
+        "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+        "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
     },
-    "sessions": {  
+    "sessions": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": CURRENT_CONFIG.REDIS_SESSION_LOCATION,
         "OPTIONS": {
@@ -214,8 +217,9 @@ CACHES = {
             "SOCKET_TIMEOUT": 5,
             "IGNORE_EXCEPTIONS": True,
             "PICKLE_VERSION": -1,
+            "VERSION": CURRENT_CONFIG.REDIS_VERSION,
         },
-        "KEY_PREFIX": "verbalvoyager_session_",
+        "KEY_PREFIX": "vv:s",
         "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
         "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
     }
@@ -223,7 +227,7 @@ CACHES = {
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "sessions"
-SESSION_COOKIE_AGE = 1209600 
+SESSION_COOKIE_AGE = 1209600
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
 SESSION_SAVE_EVERY_REQUEST = True
