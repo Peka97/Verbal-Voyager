@@ -1,6 +1,5 @@
 import logging
 import json
-from sys import exc_info
 
 from django.http import JsonResponse
 from django.db import transaction

@@ -13,7 +13,7 @@ User = get_user_model()
 @receiver([post_save, post_delete], sender=Group)
 def invalidate_groups_cache(sender, instance, **kwargs):
     try:
-        cache.delete_pattern(f"global_*_users_in_group_*")
+        cache.delete_pattern("global_*_users_in_group_*")
     except Exception as err:
         logger.error(err, exc_info=True)
 
@@ -21,6 +21,6 @@ def invalidate_groups_cache(sender, instance, **kwargs):
 @receiver([post_save, post_delete], sender=User)
 def invalidate_users_cache(sender, instance, **kwargs):
     try:
-        cache.delete_pattern(f"global_*_users_in_group_*")
+        cache.delete_pattern("global_*_users_in_group_*")
     except Exception as err:
         logger.error(err, exc_info=True)

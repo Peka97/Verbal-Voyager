@@ -1,4 +1,3 @@
-from itertools import chain
 
 
 from django.core.cache import cache

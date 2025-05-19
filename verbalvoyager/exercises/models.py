@@ -3,7 +3,6 @@ from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
 from django.conf import settings
-from django.utils import timezone
 
 from dictionary.models import EnglishWord, FrenchWord, IrregularEnglishVerb, SpanishWord
 

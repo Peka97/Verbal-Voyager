@@ -137,7 +137,7 @@ def exercise_dialog(request, ex_lang, ex_id):
         'words': words,
         'lang': ex_lang
     }
-    return render(request, f'exercises/dialog.html', context)
+    return render(request, 'exercises/dialog.html', context)
 
 
 # TODO: move to Jinja filter

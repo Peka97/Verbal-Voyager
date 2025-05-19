@@ -1,4 +1,3 @@
-from csv import Error
 import time
 from bs4 import BeautifulSoup
 
@@ -7,7 +6,6 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 
-from urllib3.exceptions import ReadTimeoutError
 from selenium.common.exceptions import TimeoutException, WebDriverException
 
 

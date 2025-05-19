@@ -2,7 +2,6 @@ from typing import Any
 
 import pytz
 from django.contrib.auth.models import AbstractUser, AnonymousUser
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.core.cache import cache
 

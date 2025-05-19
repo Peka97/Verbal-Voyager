@@ -1,17 +1,14 @@
-from encodings.punycode import T
 import logging
 import json
 from collections import defaultdict
 
 from django.http import JsonResponse
-from django.db import transaction
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
-from django.db.models import Prefetch
 from django.core.cache import cache
 
 from .utils import create_tasks, update_tasks, delete_tasks, update_lessons
-from event_calendar.models import Lesson, Project, ProjectType
+from event_calendar.models import Lesson
 from users.services.cache import get_cached_lessons_for_other_teacher
 
 
