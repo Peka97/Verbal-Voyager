@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import EnglishWord, FrenchWord, IrregularEnglishVerb, SpanishWord
+from .models import EnglishWord, FrenchWord, FrenchVerb, IrregularEnglishVerb, SpanishWord
 from pages.filters import ChoiceDropdownFilter
 from logging_app.helpers import log_action
 
@@ -54,6 +54,38 @@ class FrenchWordAdmin(admin.ModelAdmin):
             'fields': ('image_url', 'sound_url'),
         })
     )
+    save_as = True
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
+
+
+@admin.register(FrenchVerb)
+class FrenchVerbAdmin(admin.ModelAdmin):
+    show_full_result_count = False
+    autocomplete_fields = ('infinitive', )
+    list_display = ('infinitive', 'participe_present', 'participe_passe')
+    search_fields = ('infinitive__word',
+                     'participe_present', 'participe_passe')
+    fieldsets = (
+        ('FrenchVerb Main', {
+            'fields': ('infinitive', 'participe_present', 'participe_passe',),
+        }),
+        ('FrenchVerb Indicatif présent', {
+            'classes': ('collapse', ),
+            'fields': (
+                'indicatif_j',
+                'indicatif_tu',
+                'indicatif_il',
+                'indicatif_nous',
+                'indicatif_vous',
+                'indicatif_ils',
+
+            ),
+        })
+    )
+
     save_as = True
 
     @log_action

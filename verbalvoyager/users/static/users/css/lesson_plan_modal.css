@@ -1,0 +1,311 @@
+.modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 1000;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow-y: auto;
+	width: 100%;
+	height: 100%;
+}
+
+.modal-content {
+	border: 1px solid #888;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+	max-height: 90vh;
+	overflow-y: auto;
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	width: 90%;
+	max-width: 800px;
+	position: relative;
+}
+
+.open-modal-btn {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.lesson-modal {
+	display: none;
+	position: fixed;
+	z-index: 1000;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.7);
+}
+
+.close-modal {
+	position: absolute;
+	right: 20px;
+	top: 15px;
+	font-size: 28px;
+	color: #aaa;
+	cursor: pointer;
+}
+
+.edit-modal,
+.save-modal {
+	position: absolute;
+	right: 50px;
+	top: 25px;
+	font-size: 18px;
+	color: hsl(266, 60%, 57%);
+	cursor: pointer;
+}
+
+.edit-modal:hover,
+.save-modal:hover {
+	color: hwb(266 23% 35%) !important;
+}
+
+.modal-header {
+	border-bottom: 1px solid #eee;
+	padding-bottom: 15px;
+	margin-bottom: 20px;
+}
+
+.modal-title {
+	color: #2c3e50;
+	margin: 0;
+	display: inline-block;
+}
+
+.theme-badge {
+	display: inline-block;
+	background: #3498db;
+	color: white;
+	padding: 5px 10px;
+	border-radius: 20px;
+	font-size: 14px;
+	margin-left: 15px;
+}
+
+.aims-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 20px;
+	margin-bottom: 25px;
+}
+
+.aim-card {
+	background: white;
+	padding: 15px;
+	border-radius: 8px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.aim-card h3 {
+	margin-top: 0;
+	font-size: 18px;
+	color: #2c3e50;
+	display: flex;
+	align-items: center;
+}
+
+.aims-list {
+	padding-left: 20px;
+	margin-bottom: 0;
+}
+
+.aims-list li {
+	margin-bottom: 8px;
+	line-height: 1.4;
+}
+
+/* Облако слов */
+.words-cloud {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-top: 10px;
+}
+
+.word-tag {
+	background: #e8f4fc;
+	color: #2980b9;
+	padding: 5px 12px;
+	border-radius: 20px;
+	font-size: 14px;
+	border: 1px solid #d6eaf8;
+}
+
+.materials-section {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 20px;
+	margin-top: 20px;
+}
+
+.info-card {
+	background: white;
+	padding: 15px;
+	border-radius: 8px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.info-card h3 {
+	margin-top: 0;
+	font-size: 18px;
+	color: #2c3e50;
+	display: flex;
+	align-items: center;
+}
+
+.btn {
+	padding: 10px 20px;
+	border-radius: 6px;
+	border: none;
+	cursor: pointer;
+	font-weight: 500;
+}
+
+@media (max-width: 768px) {
+	.modal-body {
+		padding: 0 !important;
+	}
+
+	.modal-content {
+		width: 95%;
+		margin: 35% auto 5% auto !important;
+		padding: 1rem;
+	}
+
+	.aims-grid,
+	.materials-section {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 425px) {
+	.modal-header {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.modal-title {
+		display: flex;
+		flex-wrap: wrap;
+		max-width: 100%;
+		width: 100%;
+	}
+
+	.theme-badge {
+		display: flex;
+		margin: 0;
+		max-width: 100%;
+		width: fit-content;
+		word-break: break-word;
+	}
+}
+
+.edit-btn {
+	background: none;
+	border: none;
+	color: #3498db;
+	cursor: pointer;
+	font-size: 18px;
+	padding: 5px;
+}
+
+.edit-btn:hover {
+	color: #2980b9;
+}
+
+.edit-mode .aim-card,
+.edit-mode .info-card {
+	background: #fffde7;
+}
+
+.edit-field {
+	width: auto;
+	padding: 8px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-family: inherit;
+	font-size: inherit;
+	margin: 0.3rem;
+}
+
+.edit-area {
+	width: 100%;
+	min-height: 100px;
+	padding: 8px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-family: inherit;
+	font-size: inherit;
+	resize: vertical;
+}
+
+.delete-item-btn {
+	margin-left: 8px;
+	cursor: pointer;
+	color: #ff4444;
+	font-weight: bold;
+}
+
+.add-aim-button,
+.add-word-button {
+	display: flex;
+	justify-self: end;
+	margin-top: 10px;
+	padding: 5px 10px;
+	background-color: #4caf50;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 14px;
+}
+
+.add-aim-button:hover,
+.add-word-button:hover {
+	background-color: #45a049;
+}
+
+.word-input {
+	width: 100px;
+	padding: 2px 5px;
+}
+
+.aims-list li,
+.word-tag {
+	display: flex;
+	align-items: center;
+	margin-bottom: 5px;
+}
+
+.words-cloud {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.words-container {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	flex-grow: 1;
+}
+
+.add-word-button {
+	order: 999;
+	margin-left: auto;
+}
+
+.body-no-scroll {
+	overflow: hidden;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+}

@@ -74,7 +74,7 @@ def exercise_words(request, ex_lang, ex_id, step):
     if redirect:
         return redirect
 
-    words = exercise.words.all().values()
+    words = exercise.words.all().values()  # type: ignore
     [word.update({'idx': idx + 1}) for idx, word in enumerate(words)]
 
     if step == 2:
@@ -112,7 +112,8 @@ def exercise_dialog(request, ex_lang, ex_id):
     if redirect:
         return redirect
 
-    raw_dialog = list(filter(lambda s: len(s) > 1, exercise.text.split('\n')))
+    raw_dialog = list(filter(lambda s: len(s) > 1,
+                      exercise.text.split('\n')))  # type: ignore
 
     scene = raw_dialog[0] if raw_dialog[0].startswith(
         'Scene:') or raw_dialog[0].startswith('Situation:') else None
@@ -127,7 +128,7 @@ def exercise_dialog(request, ex_lang, ex_id):
             }
         )
 
-    words = exercise.words.all().values()
+    words = exercise.words.all().values()  # type: ignore
     [word.update({'idx': idx + 1}) for idx, word in enumerate(words)]
 
     context = {
@@ -246,6 +247,8 @@ def words_logging(request, ex_id, step_num):
 
         return HttpResponse({'status': 200})
 
+    return HttpResponse({'status': 400})
+
 
 def exercise_irregular_verbs(request, ex_id, step):
     titles = {1: 'Запоминаем', 2: 'Выбираем', 3: 'Расставляем', 4: 'Переводим'}
@@ -284,7 +287,7 @@ def exercise_irregular_verbs(request, ex_id, step):
     if redirect:
         return redirect
 
-    words = exercise.words.select_related(
+    words = exercise.words.select_related(  # type: ignore
         'infinitive').values(
             'id',
             'infinitive__word',

@@ -5,13 +5,13 @@ from django.core.exceptions import ValidationError
 class AbstractWord(models.Model):
     word = models.CharField(
         verbose_name='Слово в оригинале',
-        max_length=50,  # 100
+        max_length=50,
         null=True,
         blank=True,
     )
     translation = models.CharField(
         verbose_name='Перевод на русский',
-        max_length=100,  # 255
+        max_length=100,
         null=True,
         blank=True,
     )
@@ -24,7 +24,7 @@ class AbstractWord(models.Model):
     )
     another_means = models.CharField(
         verbose_name='Другие значения',
-        max_length=400,  # 500
+        max_length=400,
         blank=True,
         null=True,
         editable=False
@@ -38,7 +38,7 @@ class AbstractWord(models.Model):
     )
     image_url = models.URLField(
         verbose_name='Изображение',
-        max_length=150,  # 300
+        max_length=150,
         blank=True,
         null=True,
         help_text='Ссылка на изображение слова.'
@@ -93,7 +93,7 @@ class EnglishWord(AbstractWord):
     )
     definition = models.CharField(
         verbose_name='Определение',
-        max_length=350,  # 1000
+        max_length=350,
         blank=True,
         null=True,
         help_text='Определение слова'
@@ -107,7 +107,7 @@ class EnglishWord(AbstractWord):
     )
     transcription = models.CharField(
         verbose_name='Транскрипция',
-        max_length=75,  # 100
+        max_length=75,
         blank=True,
         null=True,
         help_text='Транскрипция слова'
@@ -134,7 +134,7 @@ class EnglishWord(AbstractWord):
         super(EnglishWord, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
-        return f'{self.word} ({self.speech_code}) - {self.translation}'
+        return f'{self.word} ({self.get_speech_code_display()}) - {self.translation}'
 
     class Meta(AbstractWord.Meta):
         verbose_name = f'Eng | {AbstractWord.Meta.verbose_name}'
@@ -181,6 +181,56 @@ class FrenchWord(AbstractWord):
         verbose_name_plural = f'Fr | {AbstractWord.Meta.verbose_name_plural}'
 
 
+class FrenchVerb(models.Model):
+    infinitive = models.ForeignKey(
+        verbose_name='Инфинитив',
+        to=FrenchWord,
+        on_delete=models.SET_NULL,
+        related_name='verb',
+        blank=True,
+        null=True,
+    )
+    participe_present = models.CharField(
+        verbose_name='Причастие настоящего времени',
+        max_length=50,
+    )
+    participe_passe = models.CharField(
+        verbose_name='Причастие прошедшего времени',
+        max_length=50,
+    )
+    indicatif_j = models.CharField(
+        verbose_name='Indicatif présent je',
+        max_length=50,
+    )
+    indicatif_tu = models.CharField(
+        verbose_name='Indicatif présent tu',
+        max_length=50,
+    )
+    indicatif_il = models.CharField(
+        verbose_name='Indicatif présent il/elle',
+        max_length=50,
+    )
+    indicatif_nous = models.CharField(
+        verbose_name='Indicatif présent nous',
+        max_length=50,
+    )
+    indicatif_vous = models.CharField(
+        verbose_name='Indicatif présent vous',
+        max_length=50,
+    )
+    indicatif_ils = models.CharField(
+        verbose_name='Indicatif présent ils/elles',
+        max_length=50,
+    )
+
+    def __str__(self) -> str:
+        return f'{self.infinitive.word if self.infinitive else self.infinitive} - {self.participe_present} - {self.participe_passe}'
+
+    class Meta:
+        verbose_name = 'Fr | Неправильный глагол'
+        verbose_name_plural = 'Fr | Неправильные глаголы'
+
+
 class IrregularEnglishVerb(models.Model):
     infinitive = models.ForeignKey(
         verbose_name='Инфинитив',
@@ -212,7 +262,7 @@ class IrregularEnglishVerb(models.Model):
 class SpanishWord(AbstractWord):
     definition = models.CharField(
         verbose_name='Определение',
-        max_length=350,  # 1000
+        max_length=350,
         blank=True,
         null=True,
         help_text='Определение слова'
@@ -226,12 +276,12 @@ class SpanishWord(AbstractWord):
     )
     transcription = models.CharField(
         verbose_name='Транскрипция',
-        max_length=75,  # 100
+        max_length=75,
         blank=True,
         null=True,
         help_text='Транскрипция слова'
     )
-    
+
     def clean(self):
         super(SpanishWord, self).clean()
         existing_word = SpanishWord.objects.filter(

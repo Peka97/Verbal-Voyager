@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 
 from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb, ExerciseSpanishWords, ExerciseRussianDialog, ExerciseSpanishDialog
 from event_calendar.models import Lesson, LessonTask, Project, Course, ProjectType
+from lesson_plan.models import EnglishLessonPlan
 from dictionary.models import EnglishWord, IrregularEnglishVerb, FrenchWord, SpanishWord
 
 
@@ -99,7 +100,9 @@ def get_cached_lessons_for_teacher(user):
         Prefetch('lesson_tasks', queryset=LessonTask.objects.all(),
                  to_attr='prefathed_tasks'),
         Prefetch('project_id__types', queryset=ProjectType.objects.only(
-            'name').all(), to_attr='prefathed_types')
+            'name').all(), to_attr='prefathed_types'),
+        Prefetch('lesson_plan', queryset=EnglishLessonPlan.objects.all(),
+                 to_attr='prefathed_plan')
     )
     lesson_fields = (
         'id', 'title', 'datetime', 'duration', 'is_paid', 'status',

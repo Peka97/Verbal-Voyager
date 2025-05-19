@@ -166,12 +166,6 @@ html, body {
     }
 }
 
-@media (max-width: 375px) {
-    html, body {
-        /* font-size: 8px; */
-    }
-}
-
 body {
     font-family: 'Roboto', sans-serif;
     background-color: var(--background-color);

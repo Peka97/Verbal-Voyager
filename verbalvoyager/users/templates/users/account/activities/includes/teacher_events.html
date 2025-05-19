@@ -159,6 +159,72 @@
                                                 <span class="tooltip">{% if lsn.is_paid %}Оплачен{% else %}Не оплачен{% endif %}</span>
                                                 <i class="bi bi-wallet payment-status {% if lesson.is_paid %} paid {% else %} not-paid {% endif %}"></i>
                                             </div>
+                                            <div class="tooltip-container open-modal-btn" id="lesson_{{ lesson.prefathed_plan.pk }}_OpenModal">
+                                                <span class="tooltip">План урока</span>
+                                                <i class="bi bi-card-list lesson-plan"></i>
+                                            </div>
+                                        </div>
+                                        <div class="modal lesson-plan hidden" id="lesson_{{ lesson.prefathed_plan.pk }}_PlanModal">
+                                            <div class="modal-content">
+                                                <span class="close-modal">&times;</span>
+                                                <i class="bi bi-pen-fill edit-modal"></i>
+                                                <i class="fas fa-save save-modal hidden"></i>
+                                                <!-- Заголовок -->
+                                                <div class="modal-header">
+                                                    <h2 class="modal-title">📝 План урока</h2>
+                                                    <div class="theme-badge">{{ lesson.prefathed_plan.theme }}</div>
+                                                </div>
+
+                                                <!-- Основной контент -->
+                                                <div class="modal-body">
+                                                
+                                                    <!-- Цели урока -->
+                                                    <div class="aims-section">
+                                                        <div class="aims-grid">
+                                                            <div class="aim-card main-aims">
+                                                                <h3>🎯 Основные цели</h3>
+                                                                <ul class="aims-list">
+                                                                {% for aim in lesson.prefathed_plan.main_aims.all %}
+                                                                <li>{{ aim.name }}</li>
+                                                                {% endfor %}
+                                                                </ul>
+                                                            </div>
+                                                        
+                                                            <div class="aim-card subsidiary-aims">
+                                                                <h3>✨ Подзадачи</h3>
+                                                                <ul class="aims-list">
+                                                                {% for aim in lesson.prefathed_plan.subsidiary_aims.all %}
+                                                                <li>{{ aim.name }}</li>
+                                                                {% endfor %}
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Новые слова -->
+                                                    <div class="vocabulary-section">
+                                                        <h3>📖 Новые слова</h3>
+                                                        <div class="words-cloud">
+                                                            {% for word in lesson.prefathed_plan.new_vocabulary.all %}
+                                                                <span class="word-tag">{{ word.word }}</span>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Материалы и процессы -->
+                                                    <div class="materials-section">
+                                                        <div class="info-card materials-list">
+                                                            <h3>📚 Материалы</h3>
+                                                            <p>{{ lesson.prefathed_plan.materials|default:"Не указаны" }}</p>
+                                                        </div>
+                                                        
+                                                        <div class="info-card process-list">
+                                                            <h3>🔗 Процессы и ресурсы</h3>
+                                                            <p>{{ lesson.prefathed_plan.processes|default:"Не указаны" }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class='task-container'>
                                             <span class='task-container-header' style='font-weight: lighter; color: indigo'>Tasks: </span>

@@ -56,15 +56,11 @@ h2 {
     h2 {
         font-size: 36px;
     }
-    img {
-    }
 }
 
 @media (max-width: 575px) {
     h2 {
         font-size: 28px;
-    }
-    img {
     }
 }
 
@@ -80,8 +76,6 @@ h4 {
     h4 {
         font-size: 20px;
     }
-    img {
-    }
 }
 
 h5 {
@@ -91,8 +85,6 @@ h5 {
 @media (max-width: 767px) {
     h5 {
         font-size: 18px;
-    }
-    img {
     }
 }
 
