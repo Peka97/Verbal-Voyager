@@ -13,7 +13,33 @@
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ lesson.pk }}" aria-expanded="false" aria-controls="flush-collapse{{ lesson.pk }}">
                             <div class="event-name">
-                                {{ lesson.datetime|localtime|datetime_plus_duration:lesson.duration }}
+                                <div class='lesson-types'>
+                                    {{ lesson.datetime|localtime|datetime_plus_duration:lesson.duration }}
+
+                                    {% if lesson.project_id %}
+                                        {% with tags=lesson.project_id.types.all|project_types_to_list %}
+                                            <div class="tooltip-container">
+                                                {% if "Одиночный" in tags %}
+                                                    <span class="tooltip">Одиночный</span>
+                                                    <i class="bi bi-person-fill"></i>
+                                                {% elif "Групповой" in tags %}
+                                                    <span class="tooltip">Групповой</span>
+                                                    <i class="bi bi-people-fill"></i>
+                                                {% endif %}
+                                            </div>
+        
+                                            <div class="tooltip-container">
+                                                {% if "Онлайн" in tags %}
+                                                    <span class="tooltip">Онлайн</span>
+                                                    <i class="bi bi-laptop"></i>
+                                                {% elif "Оффлайн" in tags %}
+                                                    <span class="tooltip">В студии</span>
+                                                    <i class="bi bi-door-open"></i>
+                                                {% endif %}
+                                            </div>
+                                        {% endwith %}
+                                    {% endif %}
+                                </div>
 
                                 {% if event|length > 1 %}
                                 
@@ -35,33 +61,6 @@
                                     {% endif %}
                                     
                                 {% endif %}
-                                        
-                                <br>
-                                <div class='lesson-types'>
-                                    {% if lesson.project_id %}
-                                        {% with tags=lesson.prefetched_project|type_names_to_list %}
-                                            <div class="tooltip-container">
-                                                {% if "Персональный" in tags %}
-                                                    <span class="tooltip">Персональный</span>
-                                                    <i class="bi bi-person-fill"></i>
-                                                {% elif "Групповой" in tags %}
-                                                    <span class="tooltip">Групповой</span>
-                                                    <i class="bi bi-people-fill"></i>
-                                                {% endif %}
-                                            </div>
-        
-                                            <div class="tooltip-container">
-                                                {% if "Онлайн" in tags %}
-                                                    <span class="tooltip">Онлайн</span>
-                                                    <i class="bi bi-laptop"></i>
-                                                {% elif "Оффлайн" in tags %}
-                                                    <span class="tooltip">В студии</span>
-                                                    <i class="bi bi-door-open"></i>
-                                                {% endif %}
-                                            </div>
-                                        {% endwith %}
-                                    {% endif %}
-                                </div>
 
                                 {{ event|join_student_names }}
 
@@ -77,9 +76,8 @@
                                 {% for lsn in event %}
                                     <div id="lesson_{{ lsn.pk }}" class="lesson-info">
                                         
-                                        {% with lsn.prefetched_tasks as tasks %}
+                                        {% with lsn.lesson_tasks as tasks %}
                                         <span class='task-student-name'>{{ lsn.student_id }}</span>
-
 
                                         <div class="event-count event-status-changer pr-2">
                                             <div class="tooltip-container">
@@ -101,13 +99,74 @@
                                                 <span class="tooltip">{% if lsn.is_paid %}Оплачен{% else %}Не оплачен{% endif %}</span>
                                                 <i class="bi bi-wallet payment-status {% if lsn.is_paid %} paid {% else %} not-paid {% endif %}"></i>
                                             </div>
+                                            <div class="tooltip-container open-modal-btn" id="lesson_{{ lsn.pk }}_OpenModal">
+                                                <span class="tooltip">План урока</span>
+                                                <i class="bi bi-card-list lesson-plan {% if not lsn.lesson_plan %} empty {% endif %}"></i>
+                                            </div>
+                                        </div>
+                                        <div class="modal lesson-plan hidden" id="lesson_{{ lsn.pk }}_PlanModal">
+                                            <div class="modal-content">
+                                                <span class="close-modal">&times;</span>
+                                                <i class="bi bi-pen-fill edit-modal"></i>
+                                                <i class="fas fa-save save-modal hidden"></i>
+                                                <div class="modal-header">
+                                                    <h2 class="modal-title">📝 План урока</h2>
+                                                    <div class="theme-badge">{{ lsn.lesson_plan.theme }}</div>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                
+                                                    <div class="aims-section">
+                                                        <div class="aims-grid">
+                                                            <div class="aim-card main-aims">
+                                                                <h3>🎯 Основные цели</h3>
+                                                                <ul class="aims-list">
+                                                                {% for aim in lsn.lesson_plan.main_aims.all %}
+                                                                <li>{{ aim.name }}</li>
+                                                                {% endfor %}
+                                                                </ul>
+                                                            </div>
+                                                        
+                                                            <div class="aim-card subsidiary-aims">
+                                                                <h3>✨ Подзадачи</h3>
+                                                                <ul class="aims-list">
+                                                                {% for aim in lsn.lesson_plan.subsidiary_aims.all %}
+                                                                <li>{{ aim.name }}</li>
+                                                                {% endfor %}
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="vocabulary-section">
+                                                        <h3>📖 Новые слова</h3>
+                                                        <div class="words-cloud">
+                                                            {% for word in lsn.lesson_plan.new_vocabulary.all %}
+                                                                <span class="word-tag">{{ word.word }}</span>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="materials-section">
+                                                        <div class="info-card materials-list">
+                                                            <h3>📚 Материалы</h3>
+                                                            <p>{{ lsn.lesson_plan.materials|default:"" }}</p>
+                                                        </div>
+                                                        
+                                                        <div class="info-card process-list">
+                                                            <h3>🔗 Процессы и ресурсы</h3>
+                                                            <p>{{ lsn.lesson_plan.processes|default:"" }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class='task-container'>
                                             <span class='task-container-header' style='font-weight: lighter; color: indigo'>Tasks: </span>
 
                                             {% if tasks %}
                                                 <div class='checklist'>
-                                                    {% for task in tasks %}
+                                                    {% for task in tasks.all %}
                                                         <div class='lesson-task'>
                                                             <input {% if task.is_completed %} checked {% endif %} name="task" type="checkbox" id="{{ task.pk }}">
                                                             <label for="{{ task.pk }}">{{ task.name }} ({{task.points}} point{{task.points|pluralize}})
@@ -135,7 +194,7 @@
                                 {% endfor %}
                                 
                             {% else %}
-                                {% with lesson.prefetched_tasks as tasks %}
+                                {% with lesson.lesson_tasks as tasks %}
                                     <div id="lesson_{{ lesson.pk }}" class="lesson-info">
                                         <div class="event-count event-status-changer pr-2">
                                             {% comment %} <span class='task-student-name'>{{ lesson.student_id }}</span> {% endcomment %}
@@ -159,32 +218,29 @@
                                                 <span class="tooltip">{% if lsn.is_paid %}Оплачен{% else %}Не оплачен{% endif %}</span>
                                                 <i class="bi bi-wallet payment-status {% if lesson.is_paid %} paid {% else %} not-paid {% endif %}"></i>
                                             </div>
-                                            <div class="tooltip-container open-modal-btn" id="lesson_{{ lesson.prefathed_plan.pk }}_OpenModal">
+                                            <div class="tooltip-container open-modal-btn" id="lesson_{{ lesson.lesson_plan.pk }}_OpenModal">
                                                 <span class="tooltip">План урока</span>
-                                                <i class="bi bi-card-list lesson-plan"></i>
+                                                <i class="bi bi-card-list lesson-plan {% if not lesson.lesson_plan %} empty {% endif %}"></i>
                                             </div>
                                         </div>
-                                        <div class="modal lesson-plan hidden" id="lesson_{{ lesson.prefathed_plan.pk }}_PlanModal">
+                                        <div class="modal lesson-plan hidden" id="lesson_{{ lesson.lesson_plan.pk }}_PlanModal">
                                             <div class="modal-content">
                                                 <span class="close-modal">&times;</span>
                                                 <i class="bi bi-pen-fill edit-modal"></i>
                                                 <i class="fas fa-save save-modal hidden"></i>
-                                                <!-- Заголовок -->
                                                 <div class="modal-header">
                                                     <h2 class="modal-title">📝 План урока</h2>
-                                                    <div class="theme-badge">{{ lesson.prefathed_plan.theme }}</div>
+                                                    <div class="theme-badge">{{ lesson.lesson_plan.theme }}</div>
                                                 </div>
 
-                                                <!-- Основной контент -->
                                                 <div class="modal-body">
                                                 
-                                                    <!-- Цели урока -->
                                                     <div class="aims-section">
                                                         <div class="aims-grid">
                                                             <div class="aim-card main-aims">
                                                                 <h3>🎯 Основные цели</h3>
                                                                 <ul class="aims-list">
-                                                                {% for aim in lesson.prefathed_plan.main_aims.all %}
+                                                                {% for aim in lesson.lesson_plan.main_aims.all %}
                                                                 <li>{{ aim.name }}</li>
                                                                 {% endfor %}
                                                                 </ul>
@@ -193,34 +249,32 @@
                                                             <div class="aim-card subsidiary-aims">
                                                                 <h3>✨ Подзадачи</h3>
                                                                 <ul class="aims-list">
-                                                                {% for aim in lesson.prefathed_plan.subsidiary_aims.all %}
-                                                                <li>{{ aim.name }}</li>
+                                                                {% for aim in lesson.lesson_plan.subsidiary_aims.all %}
+                                                                    <li>{{ aim.name }}</li>
                                                                 {% endfor %}
                                                                 </ul>
                                                             </div>
                                                         </div>
                                                     </div>
 
-                                                    <!-- Новые слова -->
                                                     <div class="vocabulary-section">
                                                         <h3>📖 Новые слова</h3>
                                                         <div class="words-cloud">
-                                                            {% for word in lesson.prefathed_plan.new_vocabulary.all %}
+                                                            {% for word in lesson.lesson_plan.new_vocabulary.all %}
                                                                 <span class="word-tag">{{ word.word }}</span>
                                                             {% endfor %}
                                                         </div>
                                                     </div>
 
-                                                    <!-- Материалы и процессы -->
                                                     <div class="materials-section">
                                                         <div class="info-card materials-list">
                                                             <h3>📚 Материалы</h3>
-                                                            <p>{{ lesson.prefathed_plan.materials|default:"Не указаны" }}</p>
+                                                            <p>{{ lesson.lesson_plan.materials|default:"" }}</p>
                                                         </div>
                                                         
                                                         <div class="info-card process-list">
                                                             <h3>🔗 Процессы и ресурсы</h3>
-                                                            <p>{{ lesson.prefathed_plan.processes|default:"Не указаны" }}</p>
+                                                            <p>{{ lesson.lesson_plan.processes|default:"" }}</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -231,7 +285,7 @@
 
                                             {% if tasks %}
                                                 <div class='checklist'>
-                                                    {% for task in tasks %}
+                                                    {% for task in tasks.all %}
                                                         <div class='lesson-task'>
                                                             <input {% if task.is_completed %} checked {% endif %} name="task" type="checkbox" id="{{ task.pk }}">
                                                             <label for="{{ task.pk }}">{{ task.name }} ({{task.points}} point{{task.points|pluralize}})</label>

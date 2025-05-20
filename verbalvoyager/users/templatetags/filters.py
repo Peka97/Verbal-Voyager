@@ -11,16 +11,9 @@ register = template.Library()
 logger = get_logger()
 
 
-@register.filter(name="type_names_to_list")
-def type_names_to_list(project):
-    try:
-        if hasattr(project, 'prefetched_types'):
-            return [t.name for t in project.prefetched_types]
-        
-        return list(project.types.values_list('name', flat=True))
-    except AttributeError:
-        return None
-        
+@register.filter(name="project_types_to_list")
+def project_types_to_list(project_types):
+    return [project_type.name for project_type in project_types]
 
 
 @register.filter(name="join_student_names")

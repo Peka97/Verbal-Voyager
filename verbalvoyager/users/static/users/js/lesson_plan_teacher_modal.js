@@ -83,9 +83,9 @@ function enableEditing() {
 	addManagementButtons();
 }
 
-function sendUpdateToServer(lesson_plan_id, dataToSend) {
+function sendUpdateToServer(lesson_id, dataToSend) {
 	const siteName = window.location.href.split("/").slice(0, 3).join("/");
-	let url = `${siteName}/lesson_plan/json/update/${lesson_plan_id}/`;
+	let url = `${siteName}/lesson_plan/json/update/${lesson_id}/`;
 	let token = document.getElementsByName("csrfmiddlewaretoken")[0].defaultValue;
 
 	if (!token) {
@@ -451,8 +451,8 @@ function saveChanges() {
 	updateContent(currentValues);
 
 	// Отправляем на сервер
-	const lessonPlanDID = currentModal.id.split("_")[1];
-	sendUpdateToServer(lessonPlanDID, currentValues);
+	const lessonID = currentModal.id.split("_")[1];
+	sendUpdateToServer(lessonID, currentValues);
 
 	// Выходим из режима редактирования
 	exitEditMode(true);

@@ -11,42 +11,44 @@
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ event.pk }}" aria-expanded="false" aria-controls="flush-collapse{{ event.pk }}">
-                        <div class="event-name"> 
-
-                            {% with tags=event.prefetched_types|type_names_to_list %}
+                        <div class="event-name">
                             <div class='lesson-types'>
-                                <div class="tooltip-container">
-                                    {% if "Персональный" in tags %}
-                                        <span class="tooltip">Персональный</span>
-                                        <i class="bi bi-person-fill"></i>
-                                    {% elif "Групповой" in tags %}
-                                        <span class="tooltip">Групповой</span>
-                                        <i class="bi bi-people-fill"></i>
-                                    {% endif %}
-                                </div>
 
-                                <div class="tooltip-container">
-                                    {% if "Онлайн" in tags %}
-                                        <span class="tooltip">Онлайн</span>
-                                        <i class="bi bi-laptop"></i>
-                                    {% elif "Оффлайн" in tags %}
-                                        <span class="tooltip">В студии</span>
-                                        <i class="bi bi-door-open"></i>
-                                    {% endif %}
-                                </div>
+                                {{ event.datetime|localtime|datetime_plus_duration:event.duration }}
+                            
+                                {% if event.project_id %}
+
+                                    {% with tags=event.project_id.types.all|project_types_to_list %}
+                                    <div class='lesson-types'>
+                                        <div class="tooltip-container">
+                                            {% if "Одиночный" in tags %}
+                                                <span class="tooltip">Одиночный</span>
+                                                <i class="bi bi-person-fill"></i>
+                                            {% elif "Групповой" in tags %}
+                                                <span class="tooltip">Групповой</span>
+                                                <i class="bi bi-people-fill"></i>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="tooltip-container">
+                                            {% if "Онлайн" in tags %}
+                                                <span class="tooltip">Онлайн</span>
+                                                <i class="bi bi-laptop"></i>
+                                            {% elif "Оффлайн" in tags %}
+                                                <span class="tooltip">В студии</span>
+                                                <i class="bi bi-door-open"></i>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endwith %}
+                                {% endif %}
                             </div>
-                            {% endwith %}
-
-
-                            {{ event.datetime|localtime|datetime_plus_duration:event.duration }}
 
                             {% if event|student_dang_lesson %}
                                 <i class="bi bi-exclamation-octagon"></i>
                             {% elif event|student_warn_lesson %}
                                 <i class="bi bi-exclamation-triangle"></i>
                             {% endif %}
-
-                            <br>
 
                             <i class="bi bi-mortarboard-fill" style='color: indigo'></i>
                             {{ event.teacher_id.last_name }} {{ event.teacher_id.first_name }}
@@ -75,20 +77,83 @@
                                 </div>
                             </div>
 
-                            <br>
-
                             {{ event.title }}
                         </div>
                     </button>
                 </h2>
                 <div id="flush-collapse{{ event.pk }}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                     <div class="accordion-body">
+                        <div class="event-count event-status-changer pr-2">
+                            {% if event.lesson_plan %}
+                                <div class="tooltip-container open-modal-btn" id="lesson_{{ event.lesson_plan.pk }}_OpenModal">
+                                    <span class="tooltip">План урока</span>
+                                    <i class="bi bi-card-list lesson-plan"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="modal lesson-plan hidden" id="lesson_{{ event.lesson_plan.pk }}_PlanModal">
+                                <div class="modal-content">
+                                    <span class="close-modal">&times;</span>
+                                    <div class="modal-header">
+                                        <h2 class="modal-title">📝 План урока</h2>
+                                        <div class="theme-badge">{{ event.lesson_plan.theme }}</div>
+                                    </div>
+
+                                    <div class="modal-body">
+                                    
+                                        <div class="aims-section">
+                                            <div class="aims-grid">
+                                                <div class="aim-card main-aims">
+                                                    <h3>🎯 Основные цели</h3>
+                                                    <ul class="aims-list">
+                                                    {% for aim in event.lesson_plan.main_aims.all %}
+                                                    <li>{{ aim.name }}</li>
+                                                    {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            
+                                                <div class="aim-card subsidiary-aims">
+                                                    <h3>✨ Подзадачи</h3>
+                                                    <ul class="aims-list">
+                                                    {% for aim in event.lesson_plan.subsidiary_aims.all %}
+                                                    <li>{{ aim.name }}</li>
+                                                    {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="vocabulary-section">
+                                            <h3>📖 Новые слова</h3>
+                                            <div class="words-cloud">
+                                                {% for word in event.lesson_plan.prefetched_vocabulary %}
+                                                    <span class="word-tag">{{ word.word }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+
+                                        <div class="materials-section">
+                                            <div class="info-card materials-list">
+                                                <h3>📚 Материалы</h3>
+                                                <p>{{ event.lesson_plan.materials|default:"Не указаны" }}</p>
+                                            </div>
+                                            
+                                            <div class="info-card process-list">
+                                                <h3>🔗 Процессы и ресурсы</h3>
+                                                <p>{{ event.lesson_plan.processes|default:"Не указаны" }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         {% with event.prefetched_tasks as tasks %}
                             <span class='task-header' style='font-weight: lighter; color: indigo'>Tasks: </span>
                             
                             {% if tasks %}
                                 <div class='checklist'>
-                                    {% for task in tasks %}
+                                    {% for task in tasks.all %}
                                         <div class='lesson-task'>
                                             <input disabled {% if task.is_completed %} checked {% endif %} value="1" name="r" type="checkbox" id="{{ task.pk }}">
                                             <label for="{{ task.pk }}">

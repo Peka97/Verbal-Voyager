@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 
 from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb, ExerciseSpanishWords, ExerciseRussianDialog, ExerciseSpanishDialog
 from event_calendar.models import Lesson, LessonTask, Project, Course, ProjectType
-from lesson_plan.models import EnglishLessonPlan
+from lesson_plan.models import EnglishLessonPlan, EnglishLessonMainAims, EnglishLessonSubsidiaryAims
 from dictionary.models import EnglishWord, IrregularEnglishVerb, FrenchWord, SpanishWord
 
 
@@ -67,17 +67,32 @@ def get_cached_projects_for_student(user):
 
 def get_cached_lessons_for_student(user):
     CACHE_KEY = f"user_{user.id}_lessons_{VERSION}"
+    lesson_plan_prefatches = (
+        Prefetch('new_vocabulary', queryset=EnglishWord.objects.only('word'),),
+        Prefetch('main_aims', queryset=EnglishLessonMainAims.objects.all(),),
+        Prefetch('subsidiary_aims',
+                 queryset=EnglishLessonSubsidiaryAims.objects.all(),)
+    )
+    project_types_prefatches = (
+        Prefetch('types', queryset=ProjectType.objects.only('name'),),
+    )
 
     prefatches = (
+        Prefetch('lesson_tasks', queryset=LessonTask.objects.all(),),
+        Prefetch('project_id',
+                 queryset=Project.objects.prefetch_related(
+                     *project_types_prefatches).all()),
         Prefetch(
-            'lesson_tasks',
-            queryset=LessonTask.objects.all(),
-            to_attr='prefetched_tasks'),
-        Prefetch(
-            'project_id__types',
-            queryset=ProjectType.objects.only('name').all(),
-            to_attr='prefetched_types'
+            'lesson_plan',
+            queryset=EnglishLessonPlan.objects.prefetch_related(
+                *lesson_plan_prefatches).all(),
         )
+    )
+    lesson_fields = (
+        'id', 'title', 'datetime', 'duration', 'is_paid', 'status',
+        'teacher_id__first_name', 'teacher_id__last_name', 'teacher_id__timezone',
+        'student_id__first_name', 'student_id__last_name', 'student_id__timezone',
+        'project_id'
     )
     return cache.get_or_set(
         CACHE_KEY,
@@ -86,22 +101,34 @@ def get_cached_lessons_for_student(user):
         ).prefetch_related(
             *prefatches
         ).select_related(
-            'teacher_id', 'project_id', 'student_id'
-        ).order_by('datetime'),
+            'teacher_id', 'student_id'
+        ).only(*lesson_fields).order_by('datetime'),
         timeout=3600
     )
 
 
 def get_cached_lessons_for_teacher(user):
     CACHE_KEY = f"user_{user.id}_lessons_{VERSION}"
+    lesson_plan_prefatches = (
+        Prefetch('new_vocabulary', queryset=EnglishWord.objects.only('word'),),
+        Prefetch('main_aims', queryset=EnglishLessonMainAims.objects.all(),),
+        Prefetch('subsidiary_aims',
+                 queryset=EnglishLessonSubsidiaryAims.objects.all(),)
+    )
+    project_types_prefatches = (
+        Prefetch('types', queryset=ProjectType.objects.only('name'),),
+    )
 
     prefatches = (
-        Prefetch('lesson_tasks', queryset=LessonTask.objects.all(),
-                 to_attr='prefathed_tasks'),
-        Prefetch('project_id__types', queryset=ProjectType.objects.only(
-            'name').all(), to_attr='prefathed_types'),
-        Prefetch('lesson_plan', queryset=EnglishLessonPlan.objects.all(),
-                 to_attr='prefathed_plan')
+        Prefetch('lesson_tasks', queryset=LessonTask.objects.all(),),
+        Prefetch('project_id',
+                 queryset=Project.objects.prefetch_related(
+                     *project_types_prefatches).all()),
+        Prefetch(
+            'lesson_plan',
+            queryset=EnglishLessonPlan.objects.prefetch_related(
+                *lesson_plan_prefatches).all(),
+        )
     )
     lesson_fields = (
         'id', 'title', 'datetime', 'duration', 'is_paid', 'status',
@@ -116,7 +143,7 @@ def get_cached_lessons_for_teacher(user):
         ).prefetch_related(
             *prefatches
         ).select_related(
-            'teacher_id', 'project_id', 'student_id'
+            'teacher_id', 'student_id'
         ).only(*lesson_fields).order_by('datetime'),
         timeout=3600
     )

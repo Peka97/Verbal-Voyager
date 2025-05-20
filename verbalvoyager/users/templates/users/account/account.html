@@ -69,6 +69,9 @@
 
 	{% if user_is_teacher %}
 		<script type="module" src="{% static 'users/js/calendar_send_event_update_fix_.js' %}"></script>
+		<script type="module" src="{% static 'users/js/lesson_plan_teacher_modal.js' %}" defer></script>
+	{% else %}
+		<script type="module" src="{% static 'users/js/lesson_plan_student_modal.js' %}" defer></script>
 	{% endif %}
 	{% if user_is_supervisor %}
 		<script type="module" src="{% static 'users/js/load_another_calendar.js' %}"></script>
@@ -78,6 +81,5 @@
 		const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 		document.cookie = "django_timezone=" + timezone;
 	</script>
-	<script type="module" src="{% static 'users/js/lesson_plan_modal.js' %}" defer></script>
 
 {% endblock 'js' %}

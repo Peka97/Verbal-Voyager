@@ -196,7 +196,8 @@ else:
 # Redis
 CACHES = {
     "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
+        # "BACKEND": "django_redis.cache.RedisCache",
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
         "LOCATION": CURRENT_CONFIG.REDIS_DEFAULT_LOCATION,
         "OPTIONS": {
             "SOCKET_CONNECT_TIMEOUT": 5,

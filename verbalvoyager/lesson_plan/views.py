@@ -3,21 +3,49 @@ import json
 
 from django.http import JsonResponse
 from django.db import transaction
+from django.db.models import Prefetch
 
 from .models import EnglishLessonPlan, EnglishLessonMainAims, EnglishLessonSubsidiaryAims
+from event_calendar.models import Lesson
 from dictionary.models import EnglishWord
 
 logger = logging.getLogger('django')
 
 
-def json_update_lesson_plan(request, lesson_plan_id):
+def json_update_lesson_plan(request, lesson_id):
     if request.method == 'POST':
         errors = {}
 
         try:
             data = json.loads(request.body)
-            lesson_plan = EnglishLessonPlan.objects.prefetch_related(
-                'new_vocabulary', 'main_aims', 'subsidiary_aims').get(pk=lesson_plan_id)
+            lesson_plan_prefetch = (
+                Prefetch(
+                    'new_vocabulary',
+                    queryset=EnglishWord.objects.all(),
+                ),
+                Prefetch(
+                    'main_aims',
+                    queryset=EnglishLessonMainAims.objects.all(),
+                ),
+                Prefetch(
+                    'subsidiary_aims',
+                    queryset=EnglishLessonSubsidiaryAims.objects.all(),
+                )
+            )
+            prefetched = Prefetch(
+                'lesson_plan',
+                queryset=EnglishLessonPlan.objects.prefetch_related(
+                    *lesson_plan_prefetch).all(),
+            )
+
+            lesson = Lesson.objects.prefetch_related(
+                prefetched).get(pk=lesson_id)
+
+            try:
+                lesson_plan = lesson.lesson_plan
+            except EnglishLessonPlan.DoesNotExist:
+                lesson_plan = EnglishLessonPlan.objects.create(
+                    lesson_id=lesson)
 
             with transaction.atomic():
                 simple_fields = ['theme', 'materials', 'processes']
@@ -63,7 +91,7 @@ def json_update_lesson_plan(request, lesson_plan_id):
 
             return JsonResponse({'message': 'Обновлено.'}, status=200)
 
-        except EnglishLessonPlan.DoesNotExist:
+        except Lesson.DoesNotExist:
             return JsonResponse({'message': 'План урока не найден.', 'errors': errors}, status=404)
         except Exception as e:
             logger.error(f'Error updating lesson plan: {e}', exc_info=True)
