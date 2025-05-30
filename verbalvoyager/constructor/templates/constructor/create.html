@@ -1,0 +1,65 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конструктор урока</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <link rel="stylesheet" href="{% static "constructor/css/create.css" %}" type="text/css">
+</head>
+<body>
+    <div class="section">
+        <h1>Конструктор урока</h1>
+        {% csrf_token %}
+
+        <!-- 1. Выбор слов -->
+        <div class="section">
+            <h2>1. Слова</h2>
+            <div class="autocomplete-container">
+                <input type="text" class="autocomplete-input" placeholder="Search..." autocomplete="off">
+                <div class="autocomplete-dropdown">
+                    {% for word in words  %}
+                        <div class="autocomplete-item" data-id="{{word.pk}}">{{word.word}}</div>
+                    {% endfor %}
+                </div>
+                <div class="selected-items"></div>
+            </div>
+        </div>
+        
+
+        <!-- 2. Список упражнений -->
+        <div class="section">
+            <h2>2. Структура</h2>
+            <button id="add-module-btn">+ Добавить модуль</button>
+            <ul id="module-list">
+                <!-- Сюда добавляются упражнения -->
+            </ul>
+        </div>
+
+        <!-- 3. Сохранение -->
+        <button id="save-order">Сохранить набор упражнений</button>
+
+        <!-- Модальное окно выбора модуля -->
+        <div id="module-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Выберите модуль</h2>
+                <div class="exercise-tiles">
+                    {% for exercise_type in exercise_types %}
+                    <div class="exercise-tile" data-id="{{exercise_type.id}}" data-name="{{exercise_type.name}}" data-description="{{exercise_type.description}}">
+                        <h3>{{ exercise_type.name }}</h3>
+                        <p>{{ exercise_type.description }}</p>
+                        <div class="exercise-preview">
+                            <img src="https://placehold.co/188x120" alt="">
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'constructor/js/create.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Упражнение к уроку</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }
+        
+        /* Боковые панели */
+        .sidebar {
+            width: 250px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+        
+        .left-sidebar {
+            border-right: 1px solid #ddd;
+        }
+        
+        .right-sidebar {
+            border-left: 1px solid #ddd;
+        }
+        
+        /* Основное содержание */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            background-color: #fff;
+            max-width: 100%;
+            overflow-y: auto;
+        }
+        
+        /* Секции упражнения */
+        .section {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .section-content {
+            line-height: 1.6;
+        }
+        
+        /* Навигация */
+        .nav-item {
+            padding: 8px 0;
+            cursor: pointer;
+        }
+        
+        .nav-item.active {
+            font-weight: bold;
+            color: #0066cc;
+        }
+        
+        /* Словарь */
+        .vocabulary-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        /* Мобильная версия */
+        .mobile-toggle {
+            display: none;
+            padding: 10px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 5px;
+        }
+        
+        .current-section {
+            display: none;
+            padding: 10px;
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 1024px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                display: none;
+            }
+            
+            .mobile-toggle {
+                display: block;
+            }
+            
+            .current-section {
+                display: block;
+            }
+            
+            .main-content {
+                order: 2;
+            }
+            
+            .left-sidebar {
+                order: 1;
+            }
+            
+            .right-sidebar {
+                order: 3;
+            }
+            
+            .sidebar.active {
+                display: block;
+            }
+        }
+        
+        /* Медиа для планшетов */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .sidebar {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Левая панель - словарь -->
+    <div class="sidebar left-sidebar">
+        <button class="mobile-toggle">Словарь</button>
+        <div class="current-section">Текущий раздел: 1.1</div>
+        <h3>Словарь</h3>
+        <div class="vocabulary-item">
+            <strong>Word 1</strong> - определение 1
+        </div>
+        <div class="vocabulary-item">
+            <strong>Word 2</strong> - определение 2
+        </div>
+        <div class="vocabulary-item">
+            <strong>Word 3</strong> - определение 3
+        </div>
+        <!-- Добавьте больше слов по необходимости -->
+    </div>
+    
+    <!-- Основное содержание -->
+    <div class="main-content">
+        <div class="section" id="section1">
+            <h2 class="section-title">1. Введение</h2>
+            <div class="section-content">
+                <p>Здесь будет текст введения к уроку. Это может быть несколько абзацев с объяснением темы.</p>
+                <div class="exercise">
+                    <h3>Упражнение 1.1</h3>
+                    <p>Выполните следующие действия:</p>
+                    <ol>
+                        <li>Первый шаг упражнения</li>
+                        <li>Второй шаг упражнения</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section" id="section2">
+            <h2 class="section-title">2. Основная часть</h2>
+            <div class="section-content">
+                <p>Основная часть урока с важной информацией.</p>
+                
+                <div class="subsection" id="section2-1">
+                    <h3>2.1 Подраздел</h3>
+                    <p>Содержание подраздела.</p>
+                    <div class="video-container">
+                        <!-- Здесь может быть видео -->
+                        <div style="background: #eee; padding: 20px; text-align: center;">
+                            [Видео контент]
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="exercise">
+                    <h3>Упражнение 2.2</h3>
+                    <p>Практическое задание.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section" id="section3">
+            <h2 class="section-title">3. Заключение</h2>
+            <div class="section-content">
+                <p>Итоги урока и заключительные мысли.</p>
+                <div class="exercise">
+                    <h3>Упражнение 3.1</h3>
+                    <p>Финальное задание для закрепления материала.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Правая панель - навигация -->
+    <div class="sidebar right-sidebar">
+        <button class="mobile-toggle">Навигация</button>
+        <div class="current-section">Текущий раздел: 1.1</div>
+        <h3>Навигация</h3>
+        <div class="nav-item active" data-section="section1">1. Введение</div>
+        <div class="nav-item" data-section="section2">2. Основная часть</div>
+        <div class="nav-item" data-section="section3">3. Заключение</div>
+        <!-- Добавьте больше пунктов навигации по необходимости -->
+    </div>
+    
+    <script>
+        // Мобильное меню
+        document.querySelectorAll('.mobile-toggle').forEach(button => {
+            button.addEventListener('click', function() {
+                const sidebar = this.parentElement;
+                sidebar.classList.toggle('active');
+            });
+        });
+        
+        // Навигация по разделам
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Удаляем активный класс у всех элементов
+                document.querySelectorAll('.nav-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+                
+                // Добавляем активный класс текущему элементу
+                this.classList.add('active');
+                
+                // Прокручиваем к выбранному разделу
+                const sectionId = this.getAttribute('data-section');
+                document.getElementById(sectionId).scrollIntoView({
+                    behavior: 'smooth'
+                });
+                
+                // Обновляем текущий раздел в мобильной версии
+                document.querySelectorAll('.current-section').forEach(el => {
+                    el.textContent = `Текущий раздел: ${this.textContent.split('.')[0]}`;
+                });
+            });
+        });
+        
+        // Отслеживание текущего раздела при прокрутке
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('.section');
+            let currentSection = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                
+                if (pageYOffset >= (sectionTop - 100)) {
+                    currentSection = section.id;
+                }
+            });
+            
+            if (currentSection) {
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('data-section') === currentSection) {
+                        item.classList.add('active');
+                        
+                        // Обновляем текущий раздел в мобильной версии
+                        document.querySelectorAll('.current-section').forEach(el => {
+                            el.textContent = `Текущий раздел: ${item.textContent.split('.')[0]}`;
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

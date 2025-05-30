@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'event_calendar',
     'lesson_plan',
     'logging_app',
+    'constructor',
 ]
 
 MIDDLEWARE = [
@@ -192,6 +193,17 @@ else:
     STATIC_URL = 'https://cdn.verbal-voyager.ru/static/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     STATICFILES_STORAGE = 'flexible_manifest_staticfiles.storage.ManifestStaticFilesStorage'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
+
+# Для корректного отображения русских имен файлов
+FILE_UPLOAD_PERMISSIONS = 0o644
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
 
 # Redis
 CACHES = {

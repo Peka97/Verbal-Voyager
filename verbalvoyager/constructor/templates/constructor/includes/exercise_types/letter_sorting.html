@@ -1,0 +1,40 @@
+{% for word in words %}
+    <div id="word_{{word.idx}}" class="word__block {% if word.idx != 1 %}hidden{% endif %}">
+        <div class="word-row"> 
+            <div class="word">
+                {{ word.translation|capfirst }}
+            </div>
+        </div>
+        <div class="translate-row">
+            <div data-word="{{word.word}}" class="translate-container">
+                {% with word_translation=word.word|get_words_list %}
+                
+                    {% if word_translation|length > 1 %}
+                        {% for word in word_translation %}
+                            <div class="letter-container">
+                                {% for letter in word|shuffle %}
+                                    <div class="letter">
+                                        {{ letter|upper }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="letter-container">
+                            {% for letter in word_translation|shuffle %}
+                                <div class="letter">
+                                    {{ letter|upper }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+<div class="row btn__answer">
+    <button type="button" class="btn btn-default btn__check" id="liveToastBtn">Проверить</button>
+</div>

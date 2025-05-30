@@ -1,0 +1,19 @@
+<div class='row pagination'>
+    <div class='col'>
+    <nav aria-label="words">
+        <ul class="pagination">
+        <li id='prev_btn' class="page-item disabled">
+            <button type='button' class="page-link" href="#">Пред.</button>
+        </li>
+            {% for num in words_count_range %}
+            <li id='page_{{num}}' class="page-item">
+                <button type='button' class="page-link" href="#">{{num}}</button>
+            </li>
+            {% endfor %}
+        <li id='next_btn' class="page-item">
+            <button type='button' class="page-link" href="#">След.</button>
+        </li>
+        </ul>
+    </nav>
+    </div>
+</div>

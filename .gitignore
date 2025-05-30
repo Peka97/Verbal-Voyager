@@ -171,15 +171,13 @@ load_fixtures_data.sh
 # requirements.txt
 *dump*.json
 *.csv
-<<<<<<< HEAD
 fix_words.py
 verbalvoyager/static/*
-=======
 */fontawesomefree/
 verbalvoyager/static/
 load_spanish_words.py
 verbalvoyager/*.json
+verbalvoyager/media/
 
 # Исключения
 !conftest.py
->>>>>>> origin/dev

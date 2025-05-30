@@ -1,10 +1,14 @@
 import json
+import logging
 import requests
 import re
 
 from django.http import JsonResponse
 
 from .models import EnglishWord
+from .utils import get_word_class_name
+
+logger = logging.getLogger('django')
 
 
 def load_from_api(request, lang):
@@ -110,3 +114,26 @@ def parse_word_data(word_api, answer):
             answer['another_means'].append(
                 mean_api['translation']['text'])
     return answer
+
+
+def get_translation(request, lang):
+    if request.method == 'POST':
+        try:
+            words = json.loads(request.body)
+            print(words)
+
+            result = {}
+            word_object = get_word_class_name(lang)
+            for word in words:
+                word_qs = word_object.objects.filter(word=word)
+                if word_qs.exists():
+                    result[word] = {
+                        'id': word_qs.first().id,
+                        'translations': [
+                            word_obj.translation for word_obj in word_qs.all()]
+                    }
+
+            return JsonResponse({'result': result}, status=200)
+        except Exception as e:
+            logger.error(f'Error getting translation: {e}', exc_info=True)
+            return JsonResponse({'message': 'Что-то пошло не так.'}, status=500)

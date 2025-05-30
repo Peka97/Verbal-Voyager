@@ -1,8 +1,15 @@
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.db.models import Q, Case, When, Value, IntegerField
+
 
 from .models import EnglishWord, FrenchWord, FrenchVerb, IrregularEnglishVerb, SpanishWord
+from .models import Language, Word, Translation, EnglishWordDetail, FrenchWordDetail, SpanishWordDetail, RussianWordDetail
+from .models import NewEnglishVerb, NewFrenchVerb
 from pages.filters import ChoiceDropdownFilter
 from logging_app.helpers import log_action
+from .filters import WordLanguageFilter
 
 
 @admin.register(EnglishWord)
@@ -130,3 +137,166 @@ class SpanishWordAdmin(admin.ModelAdmin):
     @log_action
     def save_model(self, request, obj, form, change):
         return super().save_model(request, obj, form, change)
+
+
+class BaseAdmin(admin.ModelAdmin):
+    show_full_result_count = False
+
+
+# class WordDetailInline(admin.TabularInline):
+#     model =
+#     extra = 0
+#     min_num = 1
+#     max_num = 1
+
+#     def get_queryset(self, request):
+#         return super().get_queryset(request).select_related('word')
+
+
+@admin.register(Language)
+class LanguageAdmin(BaseAdmin):
+    list_display = ('name', )
+    search_fields = ('name', )
+
+
+@admin.register(Word)
+class WordAdmin(BaseAdmin):
+    list_display = ('word', 'language', 'created_at', 'updated_at')
+    search_fields = ('word', )
+    list_select_related = ('language',)
+    list_filter = (
+        ('language', admin.RelatedOnlyFieldListFilter),
+    )
+    ordering = ('word',)
+    # inlines = [SourceWordDetailInline,]
+
+    def has_details(self, obj):
+        return obj.details is not None
+    has_details.boolean = True
+    has_details.short_description = _('Has details')
+
+    def get_search_results(self, request, queryset, search_term):
+        if not search_term:
+            return queryset, False
+
+        queryset = queryset.filter(word__icontains=search_term)
+
+        vector = SearchVector('word', config='english')
+        query = SearchQuery(search_term, config='english')
+        queryset = queryset.annotate(
+            rank=SearchRank(vector, query),
+            exact_match=Case(
+                When(word__iexact=search_term, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            )
+        ).order_by('-exact_match', '-rank', 'word')
+
+        return queryset, False
+
+
+@admin.register(Translation)
+class TranslationAdmin(BaseAdmin):
+    search_fields = ('source_word__word', 'target_word__word')
+    autocomplete_fields = ('source_word', 'target_word')
+    list_display = ('source_word', 'target_word', )
+    search_fields = ('source_word__word', 'target_word__word')
+    list_filter = (WordLanguageFilter,)
+    ordering = ('source_word__word', 'target_word__word')
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('source_word', 'target_word')
+
+    def get_search_results(self, request, queryset, search_term):
+        if not search_term:
+            return queryset, False
+
+        queryset = queryset.filter(
+            Q(source_word__word__icontains=search_term) |
+            Q(target_word__word__icontains=search_term)
+        )
+
+        vector = SearchVector('source_word__word', 'target_word__word')
+        query = SearchQuery(search_term)
+        queryset = queryset.annotate(
+            rank=SearchRank(vector, query)
+        ).order_by('-rank', 'source_word__word')
+
+        return queryset, False
+
+
+class AbstractWordDetailAdmin(BaseAdmin):
+    list_display = ('word',)
+    search_fields = ('word__word', )
+    autocomplete_fields = ('word', )
+
+
+@admin.register(EnglishWordDetail)
+class EnglishWordDetailAdmin(AbstractWordDetailAdmin):
+    pass
+
+
+@admin.register(FrenchWordDetail)
+class FrenchWordDetailAdmin(AbstractWordDetailAdmin):
+    pass
+
+
+@admin.register(SpanishWordDetail)
+class SpanishWordDetailAdmin(AbstractWordDetailAdmin):
+    pass
+
+
+@admin.register(RussianWordDetail)
+class RussianWordDetailAdmin(AbstractWordDetailAdmin):
+    pass
+
+
+@admin.register(NewEnglishVerb)
+class NewEnglishVerbAdmin(admin.ModelAdmin):
+    show_full_result_count = False
+    autocomplete_fields = ('infinitive', )
+    list_display = ('infinitive', 'past_simple', 'past_participle')
+    search_fields = ('infinitive__word', 'past_simple', 'past_participle')
+    save_as = True
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('infinitive')
+
+
+@admin.register(NewFrenchVerb)
+class NewFrenchVerbAdmin(admin.ModelAdmin):
+    show_full_result_count = False
+    autocomplete_fields = ('infinitive', )
+    list_display = ('infinitive', 'participe_present', 'participe_passe')
+    search_fields = ('infinitive__word',
+                     'participe_present', 'participe_passe')
+    fieldsets = (
+        ('FrenchVerb Main', {
+            'fields': ('infinitive', 'participe_present', 'participe_passe',),
+        }),
+        ('FrenchVerb Indicatif présent', {
+            'classes': ('collapse', ),
+            'fields': (
+                'indicatif_j',
+                'indicatif_tu',
+                'indicatif_il',
+                'indicatif_nous',
+                'indicatif_vous',
+                'indicatif_ils',
+
+            ),
+        })
+    )
+
+    save_as = True
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('infinitive')

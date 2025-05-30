@@ -20,6 +20,7 @@ urlpatterns = [
     path('exercise_result/', include('exercise_result.urls')),
     path('event_calendar/', include('event_calendar.urls')),
     path('lesson_plan/', include('lesson_plan.urls')),
+    path('constructor/', include('constructor.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:

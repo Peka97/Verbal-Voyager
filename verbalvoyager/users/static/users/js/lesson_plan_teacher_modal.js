@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
 	const closeBtnElements = document.querySelectorAll(".close-modal");
 	const editBtnElements = document.querySelectorAll(".edit-modal");
 	const saveBtnElements = document.querySelectorAll(".save-modal");
+	const sendWordsForTransplationBtnElements = document.querySelectorAll(".translate-word-button");
+	const sendWordsModalElement = document.getElementById("translation-modal");
 
 	// Открытие модального окна
 	openBtnElements.forEach((btn) => {
@@ -49,6 +51,22 @@ document.addEventListener("DOMContentLoaded", function () {
 		if (currentModal && event.target === currentModal) {
 			onModalClose();
 		}
+	});
+
+	sendWordsForTransplationBtnElements.forEach((btn) => {
+		btn.addEventListener("click", function () {
+			const wordTags = currentModal.querySelectorAll(".word-tag");
+			const words = Array.from(wordTags).map((tag) => {
+				if (tag.firstChild.textContent !== "") {
+					return tag.firstChild.textContent.trim();
+				} else {
+					return tag.firstChild.value.trim();
+				}
+			});
+
+			const translations = sendWordsForTranslation(words);
+			showTranslationsModal(translations);
+		});
 	});
 });
 
@@ -110,7 +128,6 @@ function sendUpdateToServer(lesson_id, dataToSend) {
 			return;
 		} else {
 			resp.json().then((data) => {
-				console.dir(data.errors);
 				const errors = Object.entries(data.errors)
 					.map(([key, value]) => `${value}`)
 					.join(".</br>");
@@ -266,6 +283,8 @@ function addAimManagementButtons(selector, addButtonText) {
 }
 
 function addWordManagementButtons() {
+	const wordCheckButton = currentModal.querySelector(".translate-word-button");
+	wordCheckButton.classList.remove("hidden");
 	const wordsCloud = currentModal.querySelector(".words-cloud");
 
 	// Добавляем крестики к существующим словам
@@ -377,6 +396,18 @@ function restoreOriginalStyle() {
 	});
 }
 
+function allWordsClean() {
+	for (let i = 0; i < currentModal.querySelectorAll(".word-tag").length; i++) {
+		let word = currentModal.querySelectorAll(".word-tag")[i];
+
+		if (!word.id) {
+			console.log("Слово не переведено");
+			return [false, word];
+		}
+	}
+	return [true, undefined];
+}
+
 function saveChanges() {
 	if (!hasChanges) {
 		if (confirm("Нет изменений для сохранения. Хотите выйти из режима редактирования?")) {
@@ -384,16 +415,22 @@ function saveChanges() {
 			return;
 		}
 	}
+	const allWordsHaveTranslate = allWordsClean();
+
+	if (allWordsHaveTranslate[0] === false) {
+		alert(`К слову ${allWordsHaveTranslate[1].firstChild.value} не выбран перевод.`);
+		return;
+	}
 
 	// Удаляем все пустые поля слов перед сохранением и убираем кнопки удаления
-	currentModal.querySelectorAll(".word-tag").forEach((word) => {
-		const deleteBtn = word.querySelector(".delete-item-btn");
-		word.removeChild(deleteBtn);
-		const input = word.querySelector("input");
-		if (input && !input.value.trim()) {
-			word.remove();
-		}
-	});
+	// currentModal.querySelectorAll(".word-tag").forEach((word) => {
+	// 	const deleteBtn = word.querySelector(".delete-item-btn");
+	// 	word.removeChild(deleteBtn);
+	// 	const input = word.querySelector("input");
+	// 	if (input && !input.value.trim()) {
+	// 		word.remove();
+	// 	}
+	// });
 
 	// Собираем текущие значения
 	const currentValues = {
@@ -440,11 +477,7 @@ function saveChanges() {
 
 	// Собираем новые слова
 	currentModal.querySelectorAll(".word-tag").forEach((word) => {
-		const value = word.querySelector("input")?.value || word.textContent;
-		console.dir(word);
-		if (value.trim()) {
-			currentValues.new_vocabulary.push(value);
-		}
+		currentValues.new_vocabulary.push(word.id.split("_")[1]);
 	});
 
 	// Обновляем DOM с новыми значениями
@@ -472,14 +505,19 @@ function updateContent(values) {
 	currentModal.querySelector(".theme-badge").textContent = values.theme;
 
 	// Обновляем слова
-	const wordsCloud = currentModal.querySelector(".words-cloud");
-	wordsCloud.innerHTML = "";
-	values.new_vocabulary.forEach((word) => {
-		const wordTag = document.createElement("span");
-		wordTag.className = "word-tag";
-		wordTag.textContent = word;
-		wordsCloud.appendChild(wordTag);
-	});
+	// const wordsCloud = currentModal.querySelector(".words-cloud");
+
+	// wordsCloud.innerHTML = "";
+	// values.new_vocabulary.forEach((wordID) => {
+	// 	const oldWordTag = document.getElementById(`word_${wordID}`);
+	// 	// const oldWordTag = currentModal.querySelector(`span#word_${wordID}.word-tag`);
+	// 	// console.dir(oldWordTag);
+
+	// 	const wordTag = document.createElement("span");
+	// 	wordTag.className = "word-tag";
+	// 	wordTag.textContent = wordID;
+	// 	wordsCloud.appendChild(wordTag);
+	// });
 
 	// Обновляем материалы
 	currentModal.querySelector(".materials-list p").textContent = values.materials;
@@ -501,4 +539,144 @@ function onModalClose() {
 		currentModal = undefined;
 		document.body.classList.remove("body-no-scroll");
 	}
+}
+
+// Функция отправки слов на сервер
+async function sendWordsForTranslation(dataToSend) {
+	const siteName = window.location.href.split("/").slice(0, 3).join("/");
+	const lang = "english";
+	let url = `${siteName}/dictionary/json/get_translation/${lang}/`;
+	let token = document.getElementsByName("csrfmiddlewaretoken")[0].defaultValue;
+	console.log(url);
+
+	if (!token) {
+		console.log("Couldn't find token");
+		return;
+	}
+
+	let data = {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+			"X-CSRFToken": token,
+		},
+		body: JSON.stringify(dataToSend),
+	};
+
+	fetch(url, data).then((resp) => {
+		if (resp.ok) {
+			showToast("Выберите перевод для слов.");
+			resp.json().then((data) => {
+				showTranslationsModal(data);
+			});
+		} else {
+			resp.json().then((data) => {
+				const errors = Object.entries(data.errors)
+					.map(([key, value]) => `${value}`)
+					.join(".</br>");
+
+				showToast(
+					`
+					Ошибка отправки слов. Код ${resp.status}.</br>
+					Ошибки: ${errors}
+					`
+				);
+			});
+		}
+	});
+}
+
+function replaceInputWithSpan(element) {
+	// Переносим текст из value в textNode
+	const textNode = document.createTextNode(element.firstChild.value);
+	textNode.textContent = element.firstChild.value;
+
+	// Заменяем input (и кнопку, если была) новым span
+	element.firstChild.replaceWith(textNode);
+
+	return element;
+}
+
+// Функция отображения модального окна с переводами
+function showTranslationsModal(translations) {
+	const translationModal = document.getElementById("translation-modal");
+	const wordsContainer = document.getElementById("words-container");
+	wordsContainer.innerHTML = "";
+
+	// Создаем плитки для каждого слова
+	Object.entries(translations.result).forEach(([originalWord, options]) => {
+		const wordTile = document.createElement("div");
+		wordTile.className = "word-tile";
+		const wordId = options.id;
+		const translations = options.translations;
+
+		wordTile.innerHTML = `
+      <div class="word-original">${originalWord}</div>
+      <div class="translations-list">
+        ${translations
+					.map(
+						(option, index) => `
+          <div id="${wordId}" class="translation-option ${index === 0 ? "selected" : ""}" 
+               data-word="${originalWord}" 
+               data-translation="${option}">
+            ${option}
+          </div>
+        `
+					)
+					.join("")}
+      </div>
+    `;
+
+		wordsContainer.appendChild(wordTile);
+	});
+
+	// Показываем модальное окно
+	translationModal.classList.remove("hidden");
+
+	// Обработчики событий для выбора перевода
+	document.querySelectorAll(".translation-option").forEach((option) => {
+		option.addEventListener("click", function () {
+			// Убираем выделение у всех вариантов этого слова
+			const word = this.getAttribute("data-word");
+			document
+				.querySelectorAll(`.translation-option[data-word="${word}"]`)
+				.forEach((opt) => opt.classList.remove("selected"));
+
+			// Выделяем выбранный вариант
+			this.classList.add("selected");
+		});
+	});
+
+	// Закрытие модального окна
+	document.querySelector(".close-translation-modal").onclick = () => {
+		translationModal.classList.add("hidden");
+	};
+
+	// Подтверждение выбора
+	document.getElementById("confirm-translations").onclick = () => {
+		const selectedTranslations = {};
+
+		document.querySelectorAll(".translation-option.selected").forEach((option) => {
+			const word = option.getAttribute("data-word");
+			selectedTranslations[word] = option.id;
+		});
+
+		translationModal.style.display = "none";
+
+		Object.entries(selectedTranslations).forEach(([word, word_id]) => {
+			const wordTagElement = [...currentModal.querySelectorAll(".word-tag")].find((el) => {
+				if (el.firstChild.localName == "input") {
+					return el.firstChild.value.toLowerCase().includes(word);
+				} else {
+					return el.firstChild.textContent.toLowerCase().includes(word);
+				}
+			});
+			if (wordTagElement.firstChild.localName === "input") {
+				wordTagElement.replaceWith(replaceInputWithSpan(wordTagElement));
+			}
+
+			wordTagElement.id = `word_${word_id}`;
+		});
+	};
 }
