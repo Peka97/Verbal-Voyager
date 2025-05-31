@@ -5,14 +5,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Конструктор урока</title>
+    <title>{% block title %}Конструктор урока{% endblock %}</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <link rel="stylesheet" href="{% static "constructor/css/create.css" %}" type="text/css">
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
     <div class="section">
-        <h1>Конструктор урока</h1>
+        <h1>{% block heading %}Конструктор урока{% endblock %}</h1>
         {% csrf_token %}
+        <div class="lesson-meta">
+            <div class="form-group">
+                <label for="constructor-name">Название конструктора:</label>
+                <input type="text" id="constructor-name" class="form-control" 
+                    placeholder="Мой конструктор уроков" required
+                    value="{% block constructor_name %}{% endblock %}">
+            </div>
+            
+            <div class="form-group">
+                <label for="lesson-title">Название урока:</label>
+                <input type="text" id="lesson-title" class="form-control" 
+                    placeholder="Мой новый урок" required
+                    value="{% block lesson_title %}{% endblock %}">
+            </div>
+            
+            <div class="form-group">
+                <label for="lesson-description">Описание урока:</label>
+                <textarea id="lesson-description" class="form-control" 
+                        placeholder="Описание урока...">{% block lesson_description %}{% endblock %}</textarea>
+            </div>
+        </div>
 
         <!-- 1. Выбор слов -->
         <div class="section">
@@ -20,11 +42,13 @@
             <div class="autocomplete-container">
                 <input type="text" class="autocomplete-input" placeholder="Search..." autocomplete="off">
                 <div class="autocomplete-dropdown">
-                    {% for word in words  %}
+                    {% for word in words %}
                         <div class="autocomplete-item" data-id="{{word.pk}}">{{word.word}}</div>
                     {% endfor %}
                 </div>
-                <div class="selected-items"></div>
+                <div class="selected-items">
+                    {% block selected_words %}{% endblock %}
+                </div>
             </div>
         </div>
         
@@ -48,8 +72,8 @@
                 <h2>Выберите модуль</h2>
                 <div class="exercise-tiles">
                     {% for exercise_type in exercise_types %}
-                    <div class="exercise-tile" data-id="{{exercise_type.id}}" data-name="{{exercise_type.name}}" data-description="{{exercise_type.description}}">
-                        <h3>{{ exercise_type.name }}</h3>
+                    <div class="exercise-tile" data-id="{{exercise_type.id}}" data-name="{{exercise_type.name}}" data-code="{{exercise_type.code}}" data-description="{{exercise_type.description}}">
+                        <h3>{{ exercise_type.name }} ({{exercise_type.code}})</h3>
                         <p>{{ exercise_type.description }}</p>
                         <div class="exercise-preview">
                             <img src="https://placehold.co/188x120" alt="">
@@ -60,6 +84,8 @@
             </div>
         </div>
     </div>
-    <script src="{% static 'constructor/js/create.js' %}"></script>
+    <script type="module" src="{% static 'constructor/js/create.js' %}"></script>
+    <script type="module" src="{% static 'constructor/js/edit.js' %}"></script>
+
 </body>
 </html>

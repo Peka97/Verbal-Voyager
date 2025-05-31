@@ -194,3 +194,82 @@ button:hover {
 .selected-tag button:hover {
 	color: #333;
 }
+
+/* Вложенность */
+.nested-module-list {
+	padding-left: 20px;
+	margin: 10px 0;
+	border-left: 2px solid #ddd;
+}
+
+.section-module {
+	background-color: #f9f9f9;
+	border-radius: 5px;
+	margin-bottom: 10px;
+}
+
+.sortable-ghost {
+	opacity: 0.5;
+	background: #c8ebfb;
+}
+
+.sortable-active {
+	min-height: 50px;
+	background-color: #f0f0f0;
+	transition: background-color 0.3s;
+}
+
+.lesson-meta {
+	background: #f5f5f5;
+	padding: 20px;
+	border-radius: 8px;
+	margin-bottom: 30px;
+}
+
+.form-group {
+	margin-bottom: 15px;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: bold;
+}
+
+.form-control {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 16px;
+}
+
+textarea.form-control {
+	min-height: 80px;
+	resize: vertical;
+}
+
+/* Для режима редактирования секции */
+.section-module.editing .nested-module-list > li {
+	pointer-events: none;
+	opacity: 0.7;
+}
+
+/* Для заголовка секции */
+.section-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px;
+	background: #f5f5f5;
+	border-radius: 4px;
+}
+
+/* Для формы редактирования */
+.edit-form {
+	display: none;
+	padding: 10px;
+	background: #f8f9fa;
+	border-radius: 4px;
+	margin-top: 5px;
+}

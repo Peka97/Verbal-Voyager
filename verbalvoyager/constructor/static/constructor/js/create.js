@@ -1,3 +1,10 @@
+import { initEditMode } from "/static/constructor/js/edit.js";
+
+const state = {
+	selectedItems: [],
+	exerciseTypes: {},
+};
+
 document.addEventListener("DOMContentLoaded", function () {
 	const input = document.querySelector(".autocomplete-input");
 	const dropdown = document.querySelector(".autocomplete-dropdown");
@@ -8,10 +15,31 @@ document.addEventListener("DOMContentLoaded", function () {
 		id: item.dataset.id,
 		name: item.textContent.trim(),
 	}));
-	const state = {
-		selectedItems: [],
-		exerciseTypes: {},
-	};
+
+	// Проверка режима редактирования
+	if (window.EDIT_MODE && typeof initEditMode === "function") {
+		initEditMode(window.LESSON_DATA);
+	}
+
+	// Инициализация данных для редактирования
+	if (window.lessonData) {
+		document.getElementById("constructor-name").value = window.lessonData.constructorName;
+		document.getElementById("lesson-title").value = window.lessonData.title;
+		document.getElementById("lesson-description").value = window.lessonData.description;
+
+		// Загрузка выбранных слов
+		window.lessonData.wordIds.forEach((wordId) => {
+			const wordItem = document.querySelector(`.autocomplete-item[data-id="${wordId}"]`);
+			if (wordItem) addSelectedWord(wordItem);
+		});
+
+		// Загрузка структуры упражнений
+		if (window.lessonData.structure) {
+			window.lessonData.structure.forEach((module) => {
+				addModuleToStructure(module);
+			});
+		}
+	}
 
 	exerciseTypes.forEach((item) => {
 		state.exerciseTypes[item.dataset.id] = {
@@ -146,7 +174,6 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
 
 			document.getElementById("selected-words-count").textContent = state.selectedItems.length;
-			console.log("Выбранные слова:", state.selectedItems);
 		});
 	});
 
@@ -175,40 +202,44 @@ document.addEventListener("DOMContentLoaded", function () {
 			modal.style.display = "none";
 		}
 	});
-
 	// 3. Выбор типа упражнения
 	document.querySelectorAll(".exercise-tile").forEach((tile) => {
 		tile.addEventListener("click", function () {
-			const typeId = this.dataset.id; // оставляем как есть (числовой ID)
+			const typeId = this.dataset.id;
+			const typeCode = this.dataset.code;
 			const typeData = state.exerciseTypes[typeId];
-			const typeName = typeData.name.toLowerCase(); // для удобства сравнения
+			const typeName = typeData.name.toLowerCase();
+
+			// Определяем, куда добавлять новый модуль (в корень или в выбранный раздел)
+			const targetList = document.querySelector(".sortable-active") || document.getElementById("module-list");
 
 			const li = document.createElement("li");
-			li.dataset.id = typeId; // сохраняем числовой ID
-			li.dataset.type = typeName; // добавляем атрибут с именем типа
+			li.dataset.id = typeId;
+			li.dataset.type = typeCode;
 
 			// В зависимости от типа создаем разный контент
-			switch (
-				typeName // сравниваем по имени типа
-			) {
+			switch (typeName) {
 				case "section":
+					const sectionId = `section-${Date.now()}`;
+					li.dataset.sectionId = sectionId;
 					li.innerHTML = `
-                    <div class="module-content">
-                        <div class="module-header">
-                            <strong>${typeData.name}</strong>
-                            <span class="section-title">Новый раздел</span>
-                            <div class="module-actions">
-                                <button class="edit-module">✏️</button>
-                                <button class="remove-exercise">×</button>
+                        <div class="module-content">
+                            <div class="module-header">
+                                <strong>${typeData.name}</strong>
+                                <span class="section-title">Новый раздел</span>
+                                <div class="module-actions">
+                                    <button class="edit-module">✏️</button>
+                                    <button class="remove-exercise">×</button>
+                                </div>
                             </div>
+                            <ul class="nested-module-list" data-section-id="${sectionId}"></ul>
                         </div>
-                    </div>
-                    <div class="edit-form" style="display: none;">
-                        <input type="text" class="edit-section-title" placeholder="Название раздела">
-                        <button class="save-edit">Сохранить</button>
-                        <button class="cancel-edit">Отмена</button>
-                    </div>
-                `;
+                        <div class="edit-form" style="display: none;">
+                            <input type="text" class="edit-section-title" placeholder="Название раздела">
+                            <button class="save-edit">Сохранить</button>
+                            <button class="cancel-edit">Отмена</button>
+                        </div>
+                    `;
 					break;
 
 				case "text":
@@ -275,7 +306,7 @@ document.addEventListener("DOMContentLoaded", function () {
 							<button class="save-edit">Сохранить</button>
 							<button class="cancel-edit">Отмена</button>
 						</div>
-    `;
+    					`;
 					break;
 
 				default: // Стандартные упражнения
@@ -296,140 +327,286 @@ document.addEventListener("DOMContentLoaded", function () {
 				li.remove();
 			});
 
-			// Обработчики только для специальных модулей
-			if (["section", "text", "video url", "document"].includes(typeName)) {
-				// Обработчик редактирования
-				li.querySelector(".edit-module").addEventListener("click", function () {
-					const content = li.querySelector(".module-content");
-					const editForm = li.querySelector(".edit-form");
-					content.style.display = "none";
-					editForm.style.display = "block";
+			// Обработчики для секций
+			if (typeName === "section") {
+				const editBtn = li.querySelector(".edit-module");
+				const saveBtn = li.querySelector(".save-edit");
+				const cancelBtn = li.querySelector(".cancel-edit");
+				const title = li.querySelector(".section-title");
+				const editForm = li.querySelector(".edit-form");
+				const editInput = editForm?.querySelector(".edit-section-title");
 
-					switch (typeName) {
-						case "section":
-							editForm.querySelector(".edit-section-title").value = li.querySelector(".section-title").textContent;
-							break;
-						case "text":
-							editForm.querySelector(".edit-text-content").value = li.querySelector(".text-preview").textContent;
-							break;
-						case "video url":
-							editForm.querySelector(".edit-video-url").value = li.querySelector(".video-preview").dataset.url || "";
-							break;
-					}
-				});
+				if (editBtn && saveBtn && cancelBtn && title && editForm && editInput) {
+					// Редактирование
+					editBtn.addEventListener("click", () => {
+						editInput.value = title.textContent;
+						editForm.style.display = "block";
+					});
 
-				// Обработчик сохранения
-				li.querySelector(".save-edit").addEventListener("click", function () {
-					const content = li.querySelector(".module-content");
-					const editForm = li.querySelector(".edit-form");
-					content.style.display = "block";
+					// Сохранение
+					saveBtn.addEventListener("click", () => {
+						title.textContent = editInput.value;
+						editForm.style.display = "none";
+					});
+
+					// Отмена
+					cancelBtn.addEventListener("click", () => {
+						editForm.style.display = "none";
+					});
+				}
+			}
+
+			// Обработчики для специальных модулей
+			if (["text", "video url", "document"].includes(typeName)) {
+				const moduleContent = li.querySelector(".module-content");
+				const editForm = li.querySelector(".edit-form");
+
+				// Находим элементы для каждого типа модуля
+				if (typeName === "text") {
+					const textPreview = li.querySelector(".text-preview");
+					const textInput = li.querySelector(".edit-text-content");
+
+					li.querySelector(".edit-module")?.addEventListener("click", () => {
+						moduleContent.style.display = "none";
+						editForm.style.display = "block";
+						textInput.value = textPreview.textContent;
+					});
+
+					li.querySelector(".save-edit")?.addEventListener("click", () => {
+						moduleContent.style.display = "block";
+						editForm.style.display = "none";
+						textPreview.textContent = textInput.value;
+					});
+				}
+
+				if (typeName === "video url") {
+					const videoPreview = li.querySelector(".video-preview");
+					const urlInput = li.querySelector(".edit-video-url");
+
+					li.querySelector(".edit-module")?.addEventListener("click", () => {
+						moduleContent.style.display = "none";
+						editForm.style.display = "block";
+						urlInput.value = videoPreview.dataset.url || "";
+					});
+
+					li.querySelector(".save-edit")?.addEventListener("click", () => {
+						moduleContent.style.display = "block";
+						editForm.style.display = "none";
+						const url = urlInput.value;
+						videoPreview.dataset.url = url; // Сохраняем URL в data-атрибут
+						videoPreview.innerHTML = url ? `<p>Видео: ${url}</p>` : "";
+					});
+				}
+
+				if (typeName === "document") {
+					const docPreview = li.querySelector(".document-preview");
+					const nameInput = li.querySelector(".edit-document-name");
+					const fileInput = li.querySelector(".edit-document-file");
+
+					li.querySelector(".edit-module")?.addEventListener("click", () => {
+						moduleContent.style.display = "none";
+						editForm.style.display = "block";
+					});
+
+					li.querySelector(".save-edit")?.addEventListener("click", () => {
+						moduleContent.style.display = "block";
+						editForm.style.display = "none";
+						const fileName = fileInput.files[0]?.name || "";
+						const docName = nameInput.value.trim();
+						docPreview.textContent = docName
+							? fileName
+								? `${docName} (${fileName})`
+								: docName
+							: fileName || "Документ не выбран";
+					});
+				}
+
+				// Общий обработчик отмены для всех типов
+				li.querySelector(".cancel-edit")?.addEventListener("click", () => {
+					moduleContent.style.display = "block";
 					editForm.style.display = "none";
-
-					switch (typeName) {
-						case "section":
-							li.querySelector(".section-title").textContent = editForm.querySelector(".edit-section-title").value;
-							break;
-						case "text":
-							li.querySelector(".text-preview").textContent = editForm.querySelector(".edit-text-content").value;
-							break;
-						case "video url":
-							const url = editForm.querySelector(".edit-video-url").value;
-							li.querySelector(".video-preview").dataset.url = url;
-							li.querySelector(".video-preview").innerHTML = url ? `<p>Видео: ${url}</p>` : "";
-							break;
-						case "document":
-							const docNameInput = editForm.querySelector(".edit-document-name");
-							const docFileInput = editForm.querySelector(".edit-document-file");
-							const docName = docNameInput.value.trim();
-							const fileName = docFileInput.files[0] ? docFileInput.files[0].name : "";
-
-							if (docFileInput.files[0]) {
-								li.querySelector(".document-preview").textContent = docName ? `${docName} (${fileName})` : fileName;
-							} else if (docName) {
-								li.querySelector(".document-preview").textContent = docName;
-							} else {
-								li.querySelector(".document-preview").textContent = "Документ не выбран";
-							}
-							break;
-					}
-				});
-
-				// Обработчик отмены
-				li.querySelector(".cancel-edit").addEventListener("click", function () {
-					li.querySelector(".module-content").style.display = "block";
-					li.querySelector(".edit-form").style.display = "none";
 				});
 			}
 
-			document.getElementById("module-list").appendChild(li);
+			targetList.appendChild(li);
 			modal.style.display = "none";
+
+			// Инициализируем Sortable для новой секции
+			if (typeName === "section") {
+				initNestedSortable(li.querySelector(".nested-module-list"));
+			}
 		});
 	});
 
 	// 4. Сортировка упражнений
-	new Sortable(document.getElementById("module-list"), {
-		animation: 150,
-		ghostClass: "sortable-ghost",
-	});
+	function initSortable() {
+		// Общие настройки для всех Sortable
+		const commonSortableOptions = {
+			animation: 150,
+			ghostClass: "sortable-ghost",
+			handle: ".module-header",
+			draggable: "li",
+			group: {
+				name: "nested-modules",
+				pull: true,
+				put: true,
+			},
+			fallbackOnBody: true,
+			swapThreshold: 0.65,
+		};
+
+		// Основной список
+		new Sortable(document.getElementById("module-list"), {
+			...commonSortableOptions,
+			onStart: function () {
+				document.querySelectorAll(".nested-module-list").forEach((list) => {
+					list.classList.add("sortable-active");
+				});
+			},
+			onEnd: function () {
+				document.querySelectorAll(".nested-module-list").forEach((list) => {
+					list.classList.remove("sortable-active");
+				});
+			},
+		});
+
+		// Инициализация существующих вложенных списков
+		document.querySelectorAll(".nested-module-list").forEach((list) => {
+			initNestedSortable(list);
+		});
+	}
+
+	function initNestedSortable(listElement) {
+		new Sortable(listElement, {
+			animation: 150,
+			ghostClass: "sortable-ghost",
+			group: {
+				name: "nested-modules",
+				pull: true,
+				put: true,
+			},
+			handle: ".module-header",
+			onAdd: function (evt) {
+				// Обновляем parentId при перемещении элемента
+				evt.item.dataset.parentId = evt.to.closest("[data-section-id]")?.dataset.sectionId;
+			},
+		});
+	}
+
+	// Инициализируем Sortable при загрузке страницы
+	initSortable();
 
 	// 5. Сохранение набора
 	document.getElementById("save-order").addEventListener("click", async function () {
-		try {
-			const formData = new FormData();
-			const exercises = [];
+		const formData = new FormData();
 
-			// Собираем данные о модулях
-			document.querySelectorAll("#module-list li").forEach((li, index) => {
-				const typeId = li.dataset.id;
-				const typeName = li.dataset.type;
-				const exerciseData = {
-					type_id: typeId,
-					type_name: typeName,
-				};
+		const constructorName = document.getElementById("constructor-name").value;
+		const lessonTitle = document.getElementById("lesson-title").value;
+		const lessonDescription = document.getElementById("lesson-description").value;
 
-				if (typeName === "document") {
-					const nameInput = li.querySelector(".edit-document-name");
-					exerciseData.document_name = nameInput ? nameInput.value.trim() : "";
+		if (!constructorName || !lessonTitle) {
+			alert("Заполните обязательные поля!");
+			return;
+		}
 
-					const fileInput = li.querySelector(".edit-document-file");
-					if (fileInput && fileInput.files[0]) {
-						formData.append(`document_${index}`, fileInput.files[0]);
+		if (state.selectedItems.length === 0) {
+			alert("Выберите хотя бы одно слово!");
+			return;
+		}
+
+		const data = {
+			name: constructorName,
+			title: lessonTitle,
+			description: lessonDescription,
+			word_ids: state.selectedItems.map((item) => item.id),
+			structure: [],
+		};
+
+		function processModule(el) {
+			const moduleData = {
+				type_name: el.dataset.type,
+				config: {},
+				children: [],
+			};
+
+			// Заполняем конфиг в зависимости от типа
+			switch (el.dataset.type) {
+				case "section":
+					moduleData.config.title = el.querySelector(".section-title")?.textContent || "";
+					break;
+				case "text":
+					moduleData.config.content = el.querySelector(".text-preview")?.textContent || "";
+					break;
+				case "document":
+					const nameInput = el.querySelector(".edit-document-name");
+					const fileInput = el.querySelector(".edit-document-file");
+					if (nameInput) moduleData.document_name = nameInput.value;
+					if (fileInput?.files[0]) {
+						formData.append(`document_${data.structure.length}`, fileInput.files[0]);
 					}
+					break;
+			}
+
+			// Обрабатываем вложенные модули
+			if (el.dataset.type === "section") {
+				const nestedList = el.querySelector(".nested-module-list");
+				if (nestedList) {
+					nestedList.querySelectorAll("li").forEach((child) => {
+						moduleData.children.push(processModule(child));
+					});
 				}
+			}
 
-				exercises.push(exerciseData);
-			});
+			return moduleData;
+		}
 
-			formData.append(
-				"data",
-				JSON.stringify({
-					word_ids: state.selectedItems.map((item) => item.id),
-					structure: exercises,
-				})
-			);
+		const structure = [];
+		document.querySelectorAll("#module-list > li").forEach((module) => {
+			structure.push(processModule(module));
+		});
 
-			const siteName = window.location.href.split("/").slice(0, 3).join("/");
-			const url = `${siteName}/constructor/create/`;
-			const token = document.getElementsByName("csrfmiddlewaretoken")[0].defaultValue;
+		formData.append(
+			"data",
+			JSON.stringify({
+				name: constructorName,
+				title: lessonTitle,
+				description: lessonDescription,
+				word_ids: state.selectedItems.map((item) => item.id),
+				structure: structure,
+			})
+		);
+
+		// Добавляем файлы, если они есть
+		document.querySelectorAll('input[type="file"]').forEach((input, index) => {
+			if (input.files.length > 0) {
+				formData.append(`document_${index}`, input.files[0]);
+			}
+		});
+
+		try {
+			const url =
+				window.INITIAL_DATA && window.INITIAL_DATA.isEdit
+					? `/constructor/edit/${window.INITIAL_DATA.constructorId}/`
+					: "/constructor/create/";
 
 			const response = await fetch(url, {
 				method: "POST",
-				headers: {
-					"X-CSRFToken": token,
-				},
 				body: formData,
+				headers: {
+					"X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+				},
 			});
 
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.message || "Server error");
-			}
-
 			const result = await response.json();
-			window.location.href = result.redirect_url || "/";
+
+			if (result.status === "success") {
+				window.location.href = result.redirect_url;
+			} else {
+				alert(result.message || "Произошла ошибка при сохранении");
+			}
 		} catch (error) {
 			console.error("Error:", error);
-			alert("Ошибка при сохранении: " + error.message);
+			alert("Произошла ошибка при сохранении");
 		}
 	});
 });

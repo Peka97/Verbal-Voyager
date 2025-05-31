@@ -1,0 +1,13 @@
+<div class="lesson-section">
+    {% if module.title %}
+    <h2 class="section-title">{{ module.title }}</h2>
+    {% endif %}
+    {% if module.description %}
+    <p class="section-description">{{ module.description }}</p>
+    {% endif %}
+    <div class="section-content">
+        {% for child in children %}
+            {{ child|safe }}
+        {% endfor %}
+    </div>
+</div>

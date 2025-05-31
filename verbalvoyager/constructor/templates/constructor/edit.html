@@ -1,0 +1,37 @@
+{% extends "constructor/create.html" %}
+{% load static %}
+
+{% block title %}Редактирование урока{% endblock %}
+{% block heading %}Редактирование урока{% endblock %}
+
+{% block constructor_name %}{{ lesson_page.structure.name }}{% endblock %}
+{% block lesson_title %}{{ lesson_page.title }}{% endblock %}
+{% block lesson_description %}{{ lesson_page.description }}{% endblock %}
+
+{% block selected_words %}
+    {% for word in lesson_page.words.all %}
+    <div class="selected-word" data-id="{{ word.id }}">
+        {{ word.word }}
+        <span class="remove-word">×</span>
+    </div>
+    {% endfor %}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<script src="{% static 'constructor/js/edit.js' %}"></script>
+<script>
+// Передаем данные для редактирования
+window.EDIT_MODE = true;
+window.LESSON_DATA = {
+    id: {{ lesson_page.id }},
+    constructorId: {{ lesson_page.structure.id }},
+    words: [
+        {% for word in lesson_page.words.all %}
+        {id: {{ word.id }}, text: "{{ word.word|escapejs }}"}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ],
+    structure: {{ lesson_page.structure.config.structure|json_script|safe }}
+};
+</script>
+{% endblock %}

@@ -1,17 +1,21 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.db.models import JSONField
+from django_json_widget.widgets import JSONEditorWidget
+from django.db import models
 
-from .models import ExerciseType, Exercise, ExerciseConstructor, Document
+
+from .models import ModuleType, LessonPage, LessonPageConstructor, Document
 
 
-@admin.register(ExerciseType)
+@admin.register(ModuleType)
 class ExerciseTypeAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name', 'description', 'template_name')
     search_fields = ('name',)
     ordering = ('name',)
 
 
-@admin.register(Exercise)
+@admin.register(LessonPage)
 class ExerciseAdmin(admin.ModelAdmin):
     list_display = ('pk', 'title', 'description',
                     'is_active', 'created_at', 'updated_at')
@@ -20,11 +24,14 @@ class ExerciseAdmin(admin.ModelAdmin):
     autocomplete_fields = ('words',)
 
 
-@admin.register(ExerciseConstructor)
+@admin.register(LessonPageConstructor)
 class ExerciseConstructorAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name', 'description', 'config')
     search_fields = ('name',)
     ordering = ('pk',)
+    formfield_overrides = {
+        JSONField: {'widget': JSONEditorWidget},
+    }
 
 
 @admin.register(Document)

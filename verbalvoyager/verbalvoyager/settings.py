@@ -24,6 +24,10 @@ CSRF_TRUSTED_ORIGINS = [
 
 # Application definition
 INSTALLED_APPS = [
+    # New Admin UI
+    # "admin_interface",
+    # "colorfield",
+
     # Default
     'django.contrib.admin',
     'django.contrib.auth',
@@ -38,6 +42,7 @@ INSTALLED_APPS = [
     'fontawesomefree',  # CSS static
     'nested_admin',  # Django Admin multiinlines
     'django_recaptcha',  # Recaptcha
+    'django_json_widget',  # Django Admin JSON Widget
 
     # Created
     'users',
@@ -50,6 +55,9 @@ INSTALLED_APPS = [
     'logging_app',
     'constructor',
 ]
+
+# X_FRAME_OPTIONS = "SAMEORIGIN"
+# SILENCED_SYSTEM_CHECKS = ["security.W019"]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
