@@ -34,10 +34,10 @@ class Document(models.Model):
 class ModuleType(models.Model):
     """Тип упражнения (например, "Подставить пропуски", "Разбить по категориям" и т.д.)"""
     name = models.CharField(max_length=20)
-    code = models.CharField(max_length=20, blank=True)
+    code = models.CharField(max_length=25, blank=True)
     description = models.TextField(blank=True)
     template_name = models.CharField(
-        max_length=20,
+        max_length=50,
         help_text="Имя шаблона для рендеринга"
     )
 
@@ -83,38 +83,59 @@ class LessonPageConstructor(models.Model):
     def render_structure(self, extra_context=None):
         """Рендеринг структуры с дополнительным контекстом"""
         from django.template.loader import render_to_string
+        from django.core.exceptions import ObjectDoesNotExist
 
-        def render_module(module_data, render_children_only=False):
+        section_counter = 1
+
+        if not hasattr(self, 'config') or not isinstance(self.config, dict):
+            return "<div class='error'>Invalid lesson configuration</div>"
+
+        def render_module(module_data, depth=0):
+            nonlocal section_counter
             try:
-                module_type = ModuleType.objects.get(
-                    code=module_data['type_name'])
+                if not isinstance(module_data, dict):
+                    return ""
 
-                # Если нужно рендерить только детей (для вложенных модулей)
-                if render_children_only:
-                    children_html = []
-                    for child in module_data.get('children', []):
-                        children_html.append(render_module(child))
-                    return "".join(children_html)
+                module_type = ModuleType.objects.get(
+                    code=module_data.get('type_name'))
 
                 context = {
                     'module': module_data,
-                    'children': []
+                    'depth': depth,
+                    'words': extra_context.get('words', []) if extra_context else [],
                 }
 
-                # Добавляем дополнительный контекст
-                if extra_context:
-                    context.update(extra_context)
+                # Для секций сначала рендерим детей, затем передаем их в контекст
+                if module_type.code == 'section':
+                    context['section_id'] = f'section_{section_counter}'
+                    section_counter += 1
 
-                # Рендерим вложенные модули (только их содержимое, без оберток)
-                for child in module_data.get('children', []):
-                    context['children'].append(render_module(
-                        child, render_children_only=True))
+                    children_html = []
+                    for child in module_data.get('children', []):
+                        child_html = render_module(child, depth + 1)
+                        if child_html:
+                            children_html.append(child_html)
+                    context['children'] = children_html
+                # Для других типов модулей просто рендерим их как есть
+                else:
+                    # Если у не-секционного модуля есть дети (что маловероятно), рендерим их внутри
+                    children_html = []
+                    for child in module_data.get('children', []):
+                        child_html = render_module(child, depth + 1)
+                        if child_html:
+                            children_html.append(child_html)
+                    context['children'] = children_html
 
-                return render_to_string(
-                    f"constructor/includes/exercise_types/{module_type.template_name}",
-                    context
-                )
-            except ModuleType.DoesNotExist:
-                return ""
+                template_path = f"constructor/includes/exercise_types/{module_type.template_name}"
+                return render_to_string(template_path, context)
 
-        return "".join(render_module(module) for module in self.config.get('structure', []))
+            except ObjectDoesNotExist:
+                return f"<div class='error'>Module type {module_data.get('type_name')} not found. Module data: {module_data}</div>"
+            except Exception as e:
+                return f"<div class='error'>Error rendering module: {str(e)}</div>"
+
+        structure = self.config.get('structure', [])
+        if not structure:
+            return "<div class='info'>Упражнение не содержит модулей</div>"
+
+        return "".join(render_module(module) for module in structure if module)

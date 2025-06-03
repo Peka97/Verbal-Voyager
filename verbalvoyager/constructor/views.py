@@ -1,3 +1,4 @@
+from django.views.decorators.http import require_GET
 import json
 import logging
 
@@ -128,6 +129,7 @@ class LessonPageView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['words'] = self.object.words.all()
         try:
             context['rendered_content'] = self.object.structure.render_structure(
                 extra_context={
@@ -140,3 +142,53 @@ class LessonPageView(DetailView):
                 'rendered_content'] = f"<div class='error'>Ошибка загрузки урока: {str(e)}</div>"
 
         return context
+
+
+class TestLessonPageView(DetailView):
+    model = LessonPage
+    template_name = 'constructor/lesson_page_test.html'
+    context_object_name = 'lesson_page'
+    pk_url_kwarg = 'lesson_page_id'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(LessonPage, pk=self.kwargs['lesson_page_id'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['words'] = self.object.words.all()
+        try:
+            context['rendered_content'] = self.object.structure.render_structure(
+                extra_context={
+                    'words': self.object.words.all(),
+                    'request': self.request  # Если нужно в шаблонах
+                }
+            )
+            # print(context['rendered_content'])
+        except Exception as e:
+            context[
+                'rendered_content'] = f"<div class='error'>Ошибка загрузки урока: {str(e)}</div>"
+
+        return context
+
+
+@require_GET
+def word_examples(request):
+    word_ids = request.GET.get('word_ids', '').split(',')
+    word_ids = [int(id) for id in word_ids]
+
+    examples = []
+
+    for word in Word.objects.filter(pk__in=word_ids):
+        for translation in word.translations_from.all():
+            if translation.examples and isinstance(translation.examples, list):
+                for example in translation.examples:
+                    text = example.get('text')
+
+                    if not text:
+                        continue
+
+                    examples.append({
+                        'text': text,
+                    })
+
+    return JsonResponse({'examples': examples})

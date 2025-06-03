@@ -1,21 +1,90 @@
 {% load static %}
 
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Упражнение к уроку</title>
+    <title>{{ lesson_page.title }}</title>
+    <link rel="stylesheet" href="{% static 'constructor/css/lesson_page.css' %}" type="text/css">
 </head>
 <body>
-<div class="lesson-container">
-    <h1>{{ lesson_page.title }}</h1>
-    <p class="description">{{ lesson_page.description }}</p>
-    
-    <div class="lesson-content">
-        {{ rendered_content|safe }}
+    <!-- Левая панель - словарь -->
+    <div class="sidebar left-sidebar">
+        <button class="mobile-toggle">Словарь</button>
+        <div class="current-section">Текущий раздел: 1. Введение</div>
+        <h3>Словарь урока</h3>
+        {% for word in words %}
+            <div class="vocabulary-item">
+                <strong>{{ word }}</strong>
+            </div>
+        {% endfor %}
     </div>
-</div>
+    
+    <!-- Основное содержание -->
+    <div class="main-content">
+        {{ rendered_content|safe }}
+        {% comment %} <div class="section" id="section1">
+            <h2 class="section-title">1. Введение</h2>
+            <div class="section-content">
+                <p>Добро пожаловать на урок английского языка. Сегодня мы будем изучать новые слова и грамматические конструкции, которые помогут вам улучшить ваши навыки общения.</p>
+                <div class="exercise">
+                    <h3>Упражнение 1.1: Знакомство с лексикой</h3>
+                    <p>Выполните следующие действия:</p>
+                    <ol>
+                        <li>Прочитайте все слова из словаря слева</li>
+                        <li>Попробуйте составить предложение с каждым словом</li>
+                        <li>Запишите свои предложения в тетрадь</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section" id="section2">
+            <h2 class="section-title">2. Основная часть</h2>
+            <div class="section-content">
+                <p>В этой части урока мы углубимся в грамматические правила и попрактикуемся в использовании новой лексики.</p>
+                
+                <div class="subsection" id="section2-1">
+                    <h3>2.1 Present Simple Tense</h3>
+                    <p>Present Simple используется для выражения регулярных действий, привычек и общеизвестных фактов.</p>
+                    <div class="video-container">
+                        <!-- Здесь может быть видео -->
+                        <div style="background: #f1f8fe; padding: 30px; text-align: center; border-radius: 5px; border: 1px dashed #3498db;">
+                            [Видео: Объяснение Present Simple]
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="exercise">
+                    <h3>Упражнение 2.2: Практика Present Simple</h3>
+                    <p>Составьте 5 предложений в Present Simple, используя слова из словаря.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section" id="section3">
+            <h2 class="section-title">3. Заключение</h2>
+            <div class="section-content">
+                <p>Сегодня мы изучили новую лексику и основы Present Simple. Регулярная практика поможет вам закрепить эти знания.</p>
+                <div class="exercise">
+                    <h3>Упражнение 3.1: Итоговое задание</h3>
+                    <p>Напишите короткий рассказ (8-10 предложений) о своем дне, используя Present Simple и новые слова из урока.</p>
+                </div>
+            </div>
+        </div> {% endcomment %}
+    </div>
+    
+    <!-- Правая панель - навигация -->
+    <div class="sidebar right-sidebar">
+        <button class="mobile-toggle">Навигация по уроку</button>
+        <div class="current-section">Текущий раздел: 1. Введение</div>
+        <h3>Содержание</h3>
+        {% comment %} <div class="nav-item active" data-section="section1">1. Введение</div>
+        <div class="nav-item" data-section="section2">2. Основная часть</div>
+        <div class="nav-item" data-section="section3">3. Заключение</div> {% endcomment %}
+    </div>
+    <script type="module" src="{% static 'constructor/js/navigation.js' %}"></script>
+    <script type="module" src="{% static 'constructor/js/word_sorter.js' %}"></script>
 </body>
 </html>

@@ -1,0 +1,30 @@
+{% load lesson_filters %}
+
+<div class="section-content">
+    <div class="word-sorter-activity">
+        <div class="categories-header">
+            {% for category in module.config.categories %}
+                <div class="category-header" data-category-id="{{ category.id }}">
+                    <h3>{{ category.name }}</h3>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="categories-content">
+            {% for category in module.config.categories %}
+                <div class="category-words" data-category-id="{{ category.id }}">
+                    <div class="words-dropzone"></div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="words-pool">
+            {% for assignment in module.config.assignments %}
+                <div class="word" data-word-id="{{ assignment.word_id }}" 
+                     draggable="true" data-category-id="{{ assignment.category_id }}">
+                    {{ assignment.word_id|get_word_text }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

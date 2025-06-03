@@ -7,7 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Конструктор урока{% endblock %}</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/compromise@14.8.0/builds/compromise.min.js"></script>
+    
     <link rel="stylesheet" href="{% static "constructor/css/create.css" %}" type="text/css">
+
     {% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -84,6 +87,8 @@
             </div>
         </div>
     </div>
+    <script type="module" src="{% static 'constructor/js/compromise.js' %}"></script>
+
     <script type="module" src="{% static 'constructor/js/create.js' %}"></script>
     <script type="module" src="{% static 'constructor/js/edit.js' %}"></script>
 

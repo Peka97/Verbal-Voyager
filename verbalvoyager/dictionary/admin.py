@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
-from django.db.models import Q, Case, When, Value, IntegerField
+from django.db.models import Q, Case, When, Value, IntegerField, JSONField
+from django_json_widget.widgets import JSONEditorWidget
 
 
 from .models import EnglishWord, FrenchWord, FrenchVerb, IrregularEnglishVerb, SpanishWord
@@ -203,6 +204,9 @@ class TranslationAdmin(BaseAdmin):
     search_fields = ('source_word__word', 'target_word__word')
     list_filter = (WordLanguageFilter,)
     ordering = ('source_word__word', 'target_word__word')
+    formfield_overrides = {
+        JSONField: {'widget': JSONEditorWidget},
+    }
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('source_word', 'target_word')

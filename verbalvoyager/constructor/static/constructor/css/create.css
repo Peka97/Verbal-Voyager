@@ -3,13 +3,23 @@ body {
 	max-width: 800px;
 	margin: 0 auto;
 	padding: 20px;
+	background-color: #001a3e;
 }
 .section {
 	margin-bottom: 30px;
 	padding: 15px;
 	border: 1px solid #ddd;
 	border-radius: 5px;
+	background-color: #5e35b1;
 }
+
+h1,
+h2,
+h3,
+h4 {
+	color: #ffc400;
+}
+
 h2 {
 	margin-top: 0;
 }
@@ -47,6 +57,11 @@ button {
 	border-radius: 3px;
 	cursor: pointer;
 }
+
+button.remove-word {
+	padding: 0 !important;
+	width: 1.5rem;
+}
 button:hover {
 	background: #388e3c;
 }
@@ -60,8 +75,9 @@ button:hover {
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0.5);
 }
+
 .modal-content {
-	background-color: #fefefe;
+	background-color: #5e35b1;
 	margin: 5% auto;
 	padding: 20px;
 	border-radius: 5px;
@@ -70,12 +86,27 @@ button:hover {
 	max-height: 80vh;
 	overflow-y: auto;
 }
+.modal-content {
+	overflow: -moz-scrollbars-none;
+	overflow: auto;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+.modal-content::-webkit-scrollbar {
+	width: 0 !important;
+}
+
 .close {
-	color: #aaa;
+	color: #d32f2f;
 	float: right;
 	font-size: 28px;
 	font-weight: bold;
 	cursor: pointer;
+}
+
+.close:hover {
+	color: #b71c1c;
 }
 .exercise-tiles {
 	display: grid;
@@ -84,26 +115,32 @@ button:hover {
 	margin-top: 20px;
 }
 .exercise-tile {
-	border: 1px solid #ddd;
-	border-radius: 5px;
-	padding: 15px;
+	display: flex;
+	flex-direction: column;
+	background-color: #4a148c;
+	border: 0.15rem solid #ddd;
+	border-radius: 1rem;
+	padding: 1rem;
 	cursor: pointer;
 	transition: all 0.2s;
+	box-shadow: 0.2rem 0.2rem 0.2rem 0.2rem rgba(0, 0, 0, 0.15);
 }
 .exercise-tile:hover {
-	transform: translateY(-3px);
-	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+	transform: translateY(-0.2rem);
+	box-shadow: 0.1rem 0.1rem 0.1rem 0.1rem rgba(0, 0, 0, 0.15);
+	border-color: #ffe57f;
 }
 .exercise-tile h3 {
 	margin-top: 0;
 	margin-bottom: 10px;
 }
 .exercise-tile p {
-	color: #666;
+	color: white;
 	font-size: 0.9em;
-	margin-bottom: 15px;
+	margin: 0.4rem 0;
 }
 .exercise-preview {
+	margin-top: auto;
 	width: 100%;
 	height: 120px;
 	background-color: #f5f5f5;
@@ -174,10 +211,12 @@ button:hover {
 }
 
 .selected-tag {
-	background-color: #e0e0e0;
+	color: #ffc400;
+	background-color: #4a148c;
 	padding: 4px 8px;
 	border-radius: 4px;
-	font-size: 13px;
+	font-size: 1rem;
+	font-weight: bold;
 	display: flex;
 	align-items: center;
 }
@@ -186,13 +225,13 @@ button:hover {
 	background: none;
 	border: none;
 	cursor: pointer;
-	margin-left: 4px;
-	color: #666;
-	font-size: 12px;
+	margin-left: 0.3rem;
+	color: #d32f2f;
+	font-size: 1.5rem;
 }
 
 .selected-tag button:hover {
-	color: #333;
+	color: #b71c1c;
 }
 
 /* Вложенность */
@@ -220,10 +259,10 @@ button:hover {
 }
 
 .lesson-meta {
-	background: #f5f5f5;
-	padding: 20px;
+	/* background: #f5f5f5; */
+	/* padding: 1rem; */
 	border-radius: 8px;
-	margin-bottom: 30px;
+	/* margin-bottom: 30px; */
 }
 
 .form-group {
@@ -232,13 +271,14 @@ button:hover {
 
 .form-group label {
 	display: block;
-	margin-bottom: 5px;
+	margin-bottom: 0.3rem;
+	margin-left: 0.6rem;
 	font-weight: bold;
 }
 
 .form-control {
-	width: 100%;
-	padding: 10px;
+	width: -webkit-fill-available;
+	padding: 0.5rem;
 	border: 1px solid #ddd;
 	border-radius: 4px;
 	font-size: 16px;
@@ -272,4 +312,152 @@ textarea.form-control {
 	background: #f8f9fa;
 	border-radius: 4px;
 	margin-top: 5px;
+}
+
+/* Word Sorter Module Styles */
+.categories-container {
+	margin-bottom: 20px;
+}
+
+.category-item {
+	display: flex;
+	align-items: center;
+	margin-bottom: 8px;
+}
+
+.category-item input {
+	flex-grow: 1;
+	padding: 8px;
+	margin-right: 8px;
+}
+
+.words-list {
+	margin-top: 15px;
+}
+
+.word-item {
+	display: flex;
+	align-items: center;
+	padding: 8px;
+	border-bottom: 1px solid #eee;
+}
+
+.word-item select {
+	margin-left: auto;
+	padding: 5px;
+}
+
+.add-category-btn {
+	background: #f0f0f0;
+	border: 1px dashed #ccc;
+	padding: 8px 15px;
+	cursor: pointer;
+	margin-top: 10px;
+}
+
+.add-category-btn:hover {
+	background: #e0e0e0;
+}
+
+.word-sorter-preview ul {
+	padding-left: 20px;
+}
+
+/* Sentence Builder specific styles */
+.sentence-source-toggle {
+	margin-bottom: 20px;
+	display: flex;
+	gap: 15px;
+}
+
+.sentence-source-toggle label {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	cursor: pointer;
+}
+
+.sentences-list,
+.database-examples-list {
+	margin: 10px 0;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.sentence-item,
+.example-item {
+	display: flex;
+	gap: 10px;
+	align-items: flex-start;
+}
+
+.sentence-input {
+	flex-grow: 1;
+	min-height: 60px;
+	padding: 8px;
+}
+
+.example-text,
+.example-translation {
+	padding: 5px;
+}
+
+.example-text {
+	font-weight: bold;
+}
+
+.example-translation {
+	color: #666;
+	font-style: italic;
+}
+
+.error-message {
+	color: #d32f2f;
+	font-size: 0.8em;
+	margin-top: 5px;
+}
+
+.add-sentence-btn,
+.load-examples-btn,
+.add-example-btn {
+	padding: 5px 10px;
+	background: #f0f0f0;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.remove-sentence-btn {
+	background: none;
+	border: none;
+	color: #d32f2f;
+	font-size: 1.2em;
+	cursor: pointer;
+	padding: 0 5px;
+}
+
+.add-example-btn {
+	padding: 5px 10px;
+	background: #f0f0f0;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.add-example-btn:hover {
+	background: #e0e0e0;
+}
+
+/* Стили для состояния "добавлено" */
+.add-example-btn[data-added="true"] {
+	background: #4caf50;
+	color: white;
+}
+
+/* Стили для состояния "уже добавлено" */
+.add-example-btn[data-duplicate="true"] {
+	background: #ff9800;
+	color: white;
 }

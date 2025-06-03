@@ -1,4 +1,4 @@
-<div class="lesson-section">
+{% comment %} <div class="lesson-section">
     {% if module.title %}
     <h2 class="section-title">{{ module.title }}</h2>
     {% endif %}
@@ -10,4 +10,21 @@
             {{ child|safe }}
         {% endfor %}
     </div>
+</div> {% endcomment %}
+
+<div class="section" id="{{section_id}}">
+    {% with section=module.config %}
+        {% if section.title %}
+            <h2 class="section-title">{{ section.title }}</h2>
+        {% endif %}
+        <div class="section-content">
+            {% if section.description %}
+                <p class="section-description">Добро пожаловать на урок английского языка. Сегодня мы будем изучать новые слова и грамматические конструкции, которые помогут вам улучшить ваши навыки общения.</p>
+            {% endif %}
+            {% comment %} {{ children }} {% endcomment %}
+            {% for child in children %}
+                {{ child|safe }}
+            {% endfor %}
+        </div>
+    {% endwith %}
 </div>
