@@ -416,14 +416,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		const editForm = li.querySelector(".edit-form");
 
 		// Общие обработчики для всех типов
-		li.querySelector(".remove-exercise")?.addEventListener("click", function (e) {
-			e.stopPropagation();
-			li.remove();
-		});
-		li.querySelector(".cancel-edit")?.addEventListener("click", () => {
-			moduleContent.style.display = "block";
-			editForm.style.display = "none";
-		});
+		addCommonEditHandlers(li, moduleContent, editForm);
 
 		switch (typeCode) {
 			case "section":
@@ -531,17 +524,11 @@ document.addEventListener("DOMContentLoaded", function () {
 			const container = li.querySelector(".sentences-list");
 			container.innerHTML = "";
 
-			console.dir(sentences);
-
 			sentences.forEach((sentence, index) => {
 				const sentenceEl = document.createElement("div");
 				sentenceEl.className = "sentence-item";
 
 				const { found: isValid, sentence: processedSentence } = containsSelectedWords(sentence);
-
-				console.dir(sentence);
-				console.dir(processedSentence);
-				console.dir(isValid);
 
 				sentence = processedSentence;
 
@@ -602,10 +589,6 @@ document.addEventListener("DOMContentLoaded", function () {
 				const { found, sentence: newSentenceText } = containsSelectedWords(this.value);
 
 				if (found) {
-					// if (!sentences.includes(newSentenceText)) {
-					// 	console.dir("PUSH");
-					// 	sentences.push(newSentenceText);
-					// }
 					this.style.borderColor = "";
 					newSentenceEl.querySelector(".error-message")?.remove();
 				} else {
@@ -685,17 +668,6 @@ document.addEventListener("DOMContentLoaded", function () {
 							const found = checkWordsContain.found;
 							const newSentenceText = checkWordsContain.sentence;
 
-							// const { found, newSentenceText } = ;
-							console.log(`Original text: ${text}`);
-							console.log(`Checked text: ${newSentenceText}`);
-							console.log(!sentences.includes(text));
-							console.log(!sentences.includes(newSentenceText));
-							console.log(found);
-
-							if (sentences.includes(text) && !sentences.includes(newSentenceText)) {
-								// delete sentences[sentences.findIndex(sentences)];
-							}
-
 							if (!sentences.includes(text) && !sentences.includes(newSentenceText) && found) {
 								text = newSentenceText;
 								sentences.push(text);
@@ -721,7 +693,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		li.querySelector(".edit-module").addEventListener("click", function () {
 			moduleContent.style.display = "none";
 			editForm.style.display = "block";
-			console.dir(sentences);
 
 			// Восстанавливаем выбранные предложения
 			renderSentencesList();
@@ -740,14 +711,6 @@ document.addEventListener("DOMContentLoaded", function () {
 					sentences.push(text);
 				}
 			});
-			// Проверяем, что все предложения содержат выбранные слова
-			// const allValid = sentences.every((s) => containsSelectedWords(s));
-
-			// if (!allValid) {
-			// alert("Некоторые предложения не содержат выбранных слов. Пожалуйста, исправьте или удалите их.");
-			// return;
-			// }
-			console.dir(sentences);
 
 			// Сохраняем предложения
 			li.dataset.sentences = JSON.stringify(sentences);
@@ -1195,6 +1158,25 @@ document.addEventListener("DOMContentLoaded", function () {
 							assignments: JSON.parse(el.dataset.assignments || "[]"),
 						};
 						break;
+					case "sentence_builder":
+						try {
+							const sentences = JSON.parse(el.dataset.sentences || "[]");
+							// Валидация предложений
+							if (Array.isArray(sentences)) {
+								moduleData.config = {
+									sentences: sentences
+										.map((s) => (typeof s === "string" ? s.trim() : String(s)))
+										.filter((s) => s.length > 0),
+								};
+							} else {
+								moduleData.config = { sentences: [] };
+								console.warn("Sentences data is not an array");
+							}
+						} catch (e) {
+							moduleData.config = { sentences: [] };
+							console.error("Error parsing sentences data", e);
+						}
+						break;
 				}
 
 				// Обрабатываем вложенные модули
@@ -1261,3 +1243,36 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	}
 });
+
+function addCommonEditHandlers(li, moduleContent, editForm) {
+	// editBtn, saveBtn, cancelBtn, contentEl, formEl, restoreContent
+	li.querySelector(".remove-exercise")?.addEventListener("click", function (e) {
+		e.stopPropagation();
+		li.remove();
+	});
+	li.querySelector(".cancel-edit")?.addEventListener("click", () => {
+		moduleContent.style.display = "block";
+		editForm.style.display = "none";
+	});
+
+	// editBtn.addEventListener("click", () => {
+	// 	contentEl.style.display = "none";
+	// 	formEl.style.display = "block";
+	// 	restoreContent();
+	// });
+
+	// saveBtn.addEventListener("click", () => {
+	// 	if (formEl.querySelectorAll(".error-message").length > 0) {
+	// 		alert("Некоторые поля содержат ошибки. Пожалуйста, исправьте их.");
+	// 		return;
+	// 	}
+
+	// 	contentEl.style.display = "block";
+	// 	formEl.style.display = "none";
+	// });
+
+	// cancelBtn.addEventListener("click", () => {
+	// 	contentEl.style.display = "block";
+	// 	formEl.style.display = "none";
+	// });
+}

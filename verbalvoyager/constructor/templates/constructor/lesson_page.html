@@ -6,7 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ lesson_page.title }}</title>
+    
     <link rel="stylesheet" href="{% static 'constructor/css/lesson_page.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'constructor/css/sentence_builder.css' %}" type="text/css">
+
 </head>
 <body>
     <!-- Левая панель - словарь -->
@@ -84,7 +87,10 @@
         <div class="nav-item" data-section="section2">2. Основная часть</div>
         <div class="nav-item" data-section="section3">3. Заключение</div> {% endcomment %}
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script type="module" src="{% static 'constructor/js/navigation.js' %}"></script>
     <script type="module" src="{% static 'constructor/js/word_sorter.js' %}"></script>
+    <script type="module" src="{% static 'constructor/js/sentence_builder.js' %}"></script>
+
 </body>
 </html>
