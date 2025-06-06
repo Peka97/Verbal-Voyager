@@ -679,6 +679,7 @@ class RussianWordDetail(models.Model):
     class Meta:
         verbose_name = 'Ru | Детали'
         verbose_name_plural = 'Ru | Детали'
+        unique_together = ('word', 'image_url')
 
 
 class NewEnglishVerb(models.Model):

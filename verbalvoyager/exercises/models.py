@@ -485,6 +485,7 @@ class ExerciseWords(models.Model):
     )
     words = models.ManyToManyField(
         Translation,
+        related_name='exercise_words',
         verbose_name='Слова',
         help_text='Слова, которые будут в упражнении'
     )
@@ -520,7 +521,7 @@ class ExerciseWords(models.Model):
     get_words.short_description = 'Слова в упражнении'
 
     def get_absolute_url(self):
-        return reverse(self.view_name, kwargs={"ex_lang": self.lang, "ex_id": self.pk, "step": '1'})
+        return reverse(self.view_name, kwargs={"ex_type": "words", "ex_lang": self.lang, "ex_id": self.pk, "step": '1'})
 
     def get_url(self):
         return settings.SITE_NAME + self.get_absolute_url()

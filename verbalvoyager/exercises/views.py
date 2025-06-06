@@ -14,7 +14,8 @@ from .utils import generate_dialog, get_exercise_or_404
 from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, \
     ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, \
     ExerciseRussianDialog, ExerciseSpanishDialog, ExerciseIrregularEnglishVerb, ExerciseWords
-from dictionary.models import Translation, Word, WordDetail
+from dictionary.models import Language, Translation, Word, EnglishWordDetail, RussianWordDetail, \
+    FrenchWordDetail, SpanishWordDetail
 
 logger = logging.getLogger('django')
 logger_words = logging.getLogger('words')
@@ -375,29 +376,44 @@ def new_exercise_words(request, ex_type, ex_lang, ex_id, step):
     # else:
     #     return Http404()
 
-    exercise, redirect = get_exercise_or_404(request, exercise_obj, ex_id)
+    # exercise, redirect = get_exercise_or_404(request, exercise_obj, ex_id)
 
-    if redirect:
-        return redirect
+    # if redirect:
+    #     return redirect
 
-    # details_prefetched = Prefetch('details', queryset=WordDetail.objects.all())
+    source_details_prefetched = Prefetch(
+        'englishworddetail', queryset=EnglishWordDetail.objects.all())
+    target_details_prefetched = Prefetch(
+        'russianworddetail', queryset=RussianWordDetail.objects.all())
+    lang_prefetched = Prefetch('language', queryset=Language.objects.all())
 
-    words_prefetched = [
-        Prefetch('source_word', queryset=Word.objects.all()),
-        Prefetch('target_word', queryset=Word.objects.all()),
+    translations_prefetched = [
+        Prefetch(
+            'source_word',
+            queryset=Word.objects
+            .prefetch_related(source_details_prefetched, lang_prefetched).all()
+        ),
+        Prefetch(
+            'target_word',
+            queryset=Word.objects
+            .prefetch_related(target_details_prefetched, lang_prefetched).all()
+        ),
+
     ]
 
-    Prefetch('words', queryset=Translation.objects.prefetch_related(
-        *words_prefetched).all())
+    words_prefetched = Prefetch('words', queryset=Translation.objects.prefetch_related(
+        *translations_prefetched).all())
 
-    translations = exercise.words.all()  # type: ignore
-    print(tuple(translations)[
-          0].target_word.russianworddetail.first())
+    exercise_qs = exercise_obj.objects.prefetch_related(
+        words_prefetched)
+    exercise = exercise_qs.get(pk=ex_id)
+
+    translations_qs = exercise.words  # type: ignore
 
     # [word.update({'idx': idx + 1}) for idx, word in enumerate(translations)]
 
-    if step == 2:
-        load_translate_vars(translations, ex_lang)
+    # if step == 2:
+    #     load_translate_vars(translations_qs, ex_lang)
 
     template_name = f'exercises/words/step_{step}.html'
     context = {
@@ -407,9 +423,9 @@ def new_exercise_words(request, ex_type, ex_lang, ex_id, step):
         'step': step,
         'title': titles[step],
         'popover': popover_data[step],
-        'translations': translations,
-        'shuffled_translates': translations,
-        'words_count_range': range(1, len(translations) + 1)
+        'translations': translations_qs.all(),
+        # 'shuffled_translates': translations_qs,
+        'words_count_range': range(1, translations_qs.count() + 1)
     }
 
     return render(request, template_name, context)
