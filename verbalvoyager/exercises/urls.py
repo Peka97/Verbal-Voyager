@@ -9,6 +9,10 @@ handler404 = handler_404
 handler500 = handler_500
 
 urlpatterns = [
+    # [New] ExerciseWords
+    path('v2/<str:ex_type>/<str:ex_lang>/<int:ex_id>/<int:step>',
+         views.new_exercise_words, name='new_exercise_words'),
+
     # Words
     path('words/<str:ex_lang>/<int:ex_id>/<int:step>',
          views.exercise_words, name='exercise_words'),

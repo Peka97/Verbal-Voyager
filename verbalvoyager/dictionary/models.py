@@ -1,7 +1,4 @@
-from gettext import translation
 from django.db import models
-from django.db.models import Exists, OuterRef
-
 from django.core.exceptions import ValidationError
 
 
@@ -60,8 +57,8 @@ class AbstractWord(models.Model):
 
     class Meta:
         abstract = True
-        verbose_name = '[TO DELETE] Слово'
-        verbose_name_plural = '[TO DELETE] Слова'
+        verbose_name = 'Слово'
+        verbose_name_plural = 'Слова'
 
         indexes = [models.Index(fields=['word',]), ]
         ordering = ['word']
@@ -344,6 +341,7 @@ class Word(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
+        # return "%(class)s"
         return self.word
 
     class Meta:

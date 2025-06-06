@@ -182,8 +182,8 @@ class WordAdmin(BaseAdmin):
 
         queryset = queryset.filter(word__icontains=search_term)
 
-        vector = SearchVector('word', config='english')
-        query = SearchQuery(search_term, config='english')
+        vector = SearchVector('word')
+        query = SearchQuery(search_term)
         queryset = queryset.annotate(
             rank=SearchRank(vector, query),
             exact_match=Case(
@@ -220,11 +220,21 @@ class TranslationAdmin(BaseAdmin):
             Q(target_word__word__icontains=search_term)
         )
 
-        vector = SearchVector('source_word__word', 'target_word__word')
+        vector = SearchVector('source_word', 'target_word')
         query = SearchQuery(search_term)
         queryset = queryset.annotate(
-            rank=SearchRank(vector, query)
-        ).order_by('-rank', 'source_word__word')
+            rank=SearchRank(vector, query),
+            exact_match=Case(
+                When(source_word__word__iexact=search_term, then=Value(3)),
+                When(source_word__word__iexact=search_term, then=Value(3)),
+                When(source_word__word__istartswith=search_term, then=Value(2)),
+                When(source_word__word__istartswith=search_term, then=Value(2)),
+                When(source_word__word__icontains=search_term, then=Value(1)),
+                When(source_word__word__icontains=search_term, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            )
+        ).order_by('-exact_match', '-rank', 'source_word', 'target_word')
 
         return queryset, False
 

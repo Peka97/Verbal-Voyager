@@ -9,7 +9,7 @@ from .filters import TeachersListFilter, StudentsListFilter
 from .models import ExerciseCategory, ExerciseEnglishWords, ExerciseFrenchWords, \
     ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, \
     ExerciseFrenchDialog, ExerciseRussianDialog, ExerciseSpanishDialog, \
-    ExerciseIrregularEnglishVerb
+    ExerciseIrregularEnglishVerb, ExerciseWords
 from .forms import ExerciseDialogAdminForm, ExerciseIrregularEnglishVerbAdminForm
 from pages.filters import DropdownFilter, RelatedDropdownFilter
 from logging_app.helpers import log_action
@@ -295,8 +295,50 @@ class ExerciseIrregularEnglishVerbAdmin(admin.ModelAdmin):
 
         return form
 
+    # TODO: remove or rework
     def clean(self):
         cleaned_data = super(ExerciseIrregularEnglishVerb, self).clean()
         field_value = cleaned_data.get('field_name')
         if not field_value:
             raise ValidationError('No value for field_name')
+
+
+@admin.register(ExerciseWords)
+class ExerciseWordsAdmin(admin.ModelAdmin):
+    show_full_result_count = False
+    search_fields = [
+        'pk', 'student__pk', 'student__first_name', 'student__last_name',
+        'name', 'words__source_word', 'words__target_word'
+    ]
+    autocomplete_fields = ('words', 'student', 'teacher')
+    filter_horizontal = ('words', )
+    list_display = (
+        'pk', 'name', 'is_active', 'student', 'teacher',
+        'get_words', 'external_access', 'source_link'
+    )
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+
+        if request.user.username != 'admin':
+            queryset = queryset \
+                .exclude(student__groups__name='StudentDemo') \
+                .exclude(teacher__groups__name='TeacherDemo')
+
+        return queryset.select_related('student', 'teacher').prefetch_related('words')
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+
+        if request.user.username != 'admin':
+            form.base_fields['teacher'].initial = request.user
+            form.base_fields['teacher'].queryset = User.objects.filter(
+                groups__name__in=['Teacher'])
+            form.base_fields['student'].queryset = User.objects.filter(
+                groups__name__in=['Student'])
+
+        return form
+
+    def source_link(self, obj):
+        return mark_safe(f'<a href={obj.get_url()}>Перейти<a>')
+    source_link.short_description = 'Ссылка на упражнение'

@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.conf import settings
 
-from dictionary.models import EnglishWord, FrenchWord, IrregularEnglishVerb, SpanishWord
+from dictionary.models import EnglishWord, FrenchWord, IrregularEnglishVerb, SpanishWord, Translation, Language
 
 
 User = get_user_model()
@@ -450,4 +450,94 @@ class ExerciseIrregularEnglishVerb(models.Model):
 
     class Meta:
         verbose_name = verbose_name_plural = 'Eng | Irregular Verb '
+        ordering = ['-is_active']
+
+
+class ExerciseWords(models.Model):
+    view_name = 'new_exercise_words'
+
+    name = models.CharField(
+        default=None,
+        blank=True,
+        null=True,
+        max_length=50,
+        verbose_name='Название упражнения',
+        help_text="Поле заполняется автоматически, если остаётся пустым"
+    )
+    category = models.ForeignKey(
+        ExerciseCategory,
+        verbose_name='Категория упражнения',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        help_text='Категория, связывающая упражнение с чем-либо, например, учебник, книга или фильм'
+    )
+    is_active = models.BooleanField(default=True, verbose_name="Активен")
+    external_access = models.BooleanField(
+        verbose_name='Внешний доступ к упражнению',
+        default=False,
+        help_text='Если установлено, любой может получить доступ к упражнению без регистрации или авторизации',
+    )
+    created_at = models.DateTimeField(
+        verbose_name='Дата создания',
+        auto_now_add=True,
+        null=True
+    )
+    words = models.ManyToManyField(
+        Translation,
+        verbose_name='Слова',
+        help_text='Слова, которые будут в упражнении'
+    )
+    lang = models.ForeignKey(
+        Language,
+        verbose_name='Используемый язык',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+    )
+    student = models.ForeignKey(
+        User, on_delete=models.SET_NULL,
+        related_name='words_student',
+        limit_choices_to={'groups__name__in': ['Student', 'StudentDemo']},
+        null=True,
+        verbose_name='Ученик'
+    )
+    teacher = models.ForeignKey(
+        User, on_delete=models.SET_NULL,
+        related_name='words_teacher',
+        limit_choices_to={'groups__name__in': ['Teacher', 'TeacherDemo']},
+        null=True,
+        verbose_name="Учитель"
+    )
+
+    def get_words(self):
+        words = [
+            f'{word.source_word} - {word.target_word}<br>' for word in self.words.all()
+        ]
+        return format_html(' '.join(words))
+
+    get_words.allow_tags = True
+    get_words.short_description = 'Слова в упражнении'
+
+    def get_absolute_url(self):
+        return reverse(self.view_name, kwargs={"ex_lang": self.lang, "ex_id": self.pk, "step": '1'})
+
+    def get_url(self):
+        return settings.SITE_NAME + self.get_absolute_url()
+    get_words.get_url = 'Ссылка на упражнение'
+
+    def save(self, *args, **kwargs):
+        if not self.name:
+            student_exercises_count = self.__class__.objects.filter(
+                student=self.student).count()
+            self.name = f"Words {student_exercises_count + 1}"
+
+        return super().save(*args, **kwargs)
+
+    def __repr__(self) -> str:
+        status = 'Active' if self.is_active else 'Done'
+        return f"{self.pk} - {self.student} - {status}"
+
+    class Meta:
+        # abstract = True
         ordering = ['-is_active']
