@@ -292,7 +292,7 @@ class RussianWordDetailAdmin(AbstractWordDetailAdmin):
 class NewEnglishVerbAdmin(admin.ModelAdmin):
     show_full_result_count = False
     autocomplete_fields = ('infinitive', )
-    list_display = ('infinitive', 'past_simple', 'past_participle')
+    list_display = ('infinitive__word', 'past_simple', 'past_participle')
     search_fields = ('infinitive__word', 'past_simple', 'past_participle')
     save_as = True
 

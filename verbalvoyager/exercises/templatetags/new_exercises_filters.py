@@ -78,6 +78,8 @@ def highlight(values):
 
 @register.filter
 def get_word_details(word):
+    print(word)
+    print(type(word))
     match word.language.name:
         case 'English':
             return word.englishworddetail if hasattr(word, 'englishworddetail') else None

@@ -24,6 +24,8 @@ urlpatterns = [
     # Irregular Verbs
     path('irregular_verbs/<int:ex_id>/<int:step>',
          views.exercise_irregular_verbs, name='exercise_irregular_verbs'),
+    path('irregular_verbs/v2/<int:ex_id>/<int:step>',
+         views.new_exercise_irregular_verbs, name='new_exercise_irregular_verbs'),
 
     # Dialogs Generate
     path('dialog/json/generate_dialog',
