@@ -27,8 +27,6 @@ def load_from_api(word: Word):
 
     word_api_word = resp[0]
 
-    print(f"[Word] {word.word} have {len(word_api_word.get('meanings'))} means")
-
     for mean in word_api_word['meanings']:
         # if mean['translation']['text'] == translation:
 
@@ -107,7 +105,6 @@ def load_from_api(word: Word):
                 definition=definition,
                 examples=examples,
                 prefix=prefix,
-
             )
         except IntegrityError as e:
             print(f"[Error] {word.word} - {translation}")

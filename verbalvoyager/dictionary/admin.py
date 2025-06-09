@@ -1,16 +1,16 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db.models import Q, Case, When, Value, IntegerField, JSONField
 from django_json_widget.widgets import JSONEditorWidget
-
 
 from .models import EnglishWord, FrenchWord, FrenchVerb, IrregularEnglishVerb, SpanishWord
 from .models import Language, Word, Translation, EnglishWordDetail, FrenchWordDetail, SpanishWordDetail, RussianWordDetail
 from .models import NewEnglishVerb, NewFrenchVerb
 from pages.filters import ChoiceDropdownFilter
 from logging_app.helpers import log_action
-from .filters import WordLanguageFilter
+from .filters import WordLanguageFilter, InvalidWordsFilter
+from .services.normalizers import normalize_words
 
 
 @admin.register(EnglishWord)
@@ -167,8 +167,10 @@ class WordAdmin(BaseAdmin):
     list_select_related = ('language',)
     list_filter = (
         ('language', admin.RelatedOnlyFieldListFilter),
+        InvalidWordsFilter,
     )
     ordering = ('word',)
+    actions = ['normalize_words_action',]
     # inlines = [SourceWordDetailInline,]
 
     def has_details(self, obj):
@@ -195,12 +197,33 @@ class WordAdmin(BaseAdmin):
 
         return queryset, False
 
+    def normalize_words_action(self, request, queryset):
+        try:
+            normalize_words(queryset)
+
+            message = "Слова успешно нормализованы!"
+            level = messages.SUCCESS
+
+            self.message_user(request, message, level, extra_tags='safe')
+
+        except Exception as e:
+            self.message_user(request, str(e), messages.ERROR)
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if not request.user.is_superuser:
+
+            if 'normalize_words_action' in actions:
+                del actions['normalize_words_action']
+        return actions
+
 
 @admin.register(Translation)
 class TranslationAdmin(BaseAdmin):
+    save_as = True
     search_fields = ('source_word__word', 'target_word__word')
     autocomplete_fields = ('source_word', 'target_word')
-    list_display = ('source_word', 'target_word', )
+    list_display = ('source_word__word', 'target_word__word', )
     search_fields = ('source_word__word', 'target_word__word')
     list_filter = (WordLanguageFilter,)
     ordering = ('source_word__word', 'target_word__word')

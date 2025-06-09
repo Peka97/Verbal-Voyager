@@ -10,7 +10,7 @@ from .models import ExerciseCategory, ExerciseEnglishWords, ExerciseFrenchWords,
     ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, \
     ExerciseFrenchDialog, ExerciseRussianDialog, ExerciseSpanishDialog, \
     ExerciseIrregularEnglishVerb, ExerciseWords
-from .forms import ExerciseDialogAdminForm, ExerciseIrregularEnglishVerbAdminForm
+from .forms import ExerciseDialogAdminForm, ExerciseIrregularEnglishVerbAdminForm, NewWordsExerciseForm
 from pages.filters import DropdownFilter, RelatedDropdownFilter
 from logging_app.helpers import log_action
 
@@ -305,7 +305,9 @@ class ExerciseIrregularEnglishVerbAdmin(admin.ModelAdmin):
 
 @admin.register(ExerciseWords)
 class ExerciseWordsAdmin(admin.ModelAdmin):
+    form = NewWordsExerciseForm
     show_full_result_count = False
+    save_as = True
     search_fields = [
         'pk', 'student__pk', 'student__first_name', 'student__last_name',
         'name', 'words__source_word', 'words__target_word'
@@ -342,3 +344,12 @@ class ExerciseWordsAdmin(admin.ModelAdmin):
     def source_link(self, obj):
         return mark_safe(f'<a href={obj.get_url()}>Перейти<a>')
     source_link.short_description = 'Ссылка на упражнение'
+
+    def clean(self):
+        super().clean()
+
+        if self.pk:
+            for translation in self.words.all():
+                if translation.source_word.language != self.lang:
+                    raise ValidationError(
+                        f'Слово "{translation}" не подходит для языка "{self.lang.name}"')

@@ -1,3 +1,4 @@
+from attr import has
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
@@ -526,14 +527,6 @@ class ExerciseWords(models.Model):
     def get_url(self):
         return settings.SITE_NAME + self.get_absolute_url()
     get_words.get_url = 'Ссылка на упражнение'
-
-    def save(self, *args, **kwargs):
-        if not self.name:
-            student_exercises_count = self.__class__.objects.filter(
-                student=self.student).count()
-            self.name = f"Words {student_exercises_count + 1}"
-
-        return super().save(*args, **kwargs)
 
     def __repr__(self) -> str:
         status = 'Active' if self.is_active else 'Done'

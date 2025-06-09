@@ -4,6 +4,8 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
+from .models import ExerciseWords
+
 
 logger = logging.getLogger('django')
 User = get_user_model()
@@ -58,5 +60,31 @@ class ExerciseDialogAdminForm(forms.ModelForm):
 class ExerciseIrregularEnglishVerbAdminForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
+
+        return cleaned_data
+
+
+class NewWordsExerciseForm(forms.ModelForm):
+    class Meta:
+        model = ExerciseWords
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        lang = cleaned_data.get('lang')
+        translations = cleaned_data.get('words')
+
+        if not lang:
+            raise ValidationError('Поле "Язык" не заполнено.')
+
+        for translation in translations.all():
+            print(translation.source_word)
+            print(translation.source_word.language)
+
+            if translation.source_word.language != lang:
+                raise ValidationError(
+                    f'Слово "{translation}" не подходит для языка "{lang.name}"'
+                )
 
         return cleaned_data

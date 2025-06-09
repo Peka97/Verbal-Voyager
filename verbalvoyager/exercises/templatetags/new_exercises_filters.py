@@ -80,11 +80,13 @@ def highlight(values):
 def get_word_details(word):
     match word.language.name:
         case 'English':
-            print(type(word.englishworddetail))
-            return word.englishworddetail
+            return word.englishworddetail if hasattr(word, 'englishworddetail') else None
+        case 'French':
+            return word.frenchworddetail if hasattr(word, 'frenchworddetail') else None
+        case 'Spanish':
+            return word.spanishworddetail if hasattr(word, 'spanishworddetail') else None
         case 'Russian':
-            print(type(word.russianworddetail))
-            return word.russianworddetail.first()
+            return word.russianworddetail.first() if hasattr(word, 'russianworddetail') else None
 
 
 @register.filter

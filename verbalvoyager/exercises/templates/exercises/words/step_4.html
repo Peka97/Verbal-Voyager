@@ -18,7 +18,7 @@
                 </div>
             </div>
             <div class="translate-row">
-                <div data-word="{{translation.source_word}}" class="translate-container">
+                <div data-word="{{translation.source_word.word}}" class="translate-container">
                     {% with word_translation=translation.source_word.word|get_words_list %}
                     
                         {% if word_translation|length > 1 %}

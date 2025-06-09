@@ -107,8 +107,6 @@ def get_footer_words(soup):
 
 
 def get_word(url):
-    print(f'[URL] {url}')
-
     soup = get_page_soup(url)
 
     if 'Не найдены результаты для' in soup.text:
@@ -166,12 +164,13 @@ def collect_urls(letter, page_num):
 
 
 if __name__ == '__main__':
-
     import os
     import django
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'verbalvoyager.settings')
     django.setup()
-    from dictionary.models import FrenchWord, FrenchVerb
+    from dictionary.models import Translation, Word
+    from django.db.models import Q
+
     # load_words_from_site()
 
     # with open('./urls.json', 'w') as file:
@@ -179,43 +178,43 @@ if __name__ == '__main__':
 
     # urls = get_urls()
     # for url in urls:
-    service = Service(ChromeDriverManager().install())
-    options = get_options()
+    # service = Service(ChromeDriverManager().install())
+    # options = get_options()
 
-    lowercase_letters = list('qrstuvwxyz')
+    # lowercase_letters = list('qrstuvwxyz')
 
-    for letter in lowercase_letters:
-        page_num = 1
+    # for letter in lowercase_letters:
+    #     page_num = 1
 
-        while page_num > 0:
-            print(f'[CURRENT] {letter}:{page_num}')
+    #     while page_num > 0:
+    #         print(f'[CURRENT] {letter}:{page_num}')
 
-            with get_driver(options) as driver:
-                urls = collect_urls(letter, page_num)
+    #         with get_driver(options) as driver:
+    #             urls = collect_urls(letter, page_num)
 
-            time.sleep(5)
+    #         time.sleep(5)
 
-            if not urls:
-                break
-            print('Urls collected...')
+    #         if not urls:
+    #             break
+    #         print('Urls collected...')
 
-            for url in urls:
+    #         for url in urls:
 
-                word = url.split('/')[-1]
-                if FrenchVerb.objects.filter(infinitive__word=word).exists():
-                    print(f'[VERB] {word}-verb exists. Skipping...')
-                    continue
+    #             word = url.split('/')[-1]
+    #             if FrenchVerb.objects.filter(infinitive__word=word).exists():
+    #                 print(f'[VERB] {word}-verb exists. Skipping...')
+    #                 continue
 
-                with get_driver(options) as driver:
-                    word = get_word(BASE_URL + url)
-                time.sleep(5)
-                if not word:
-                    continue
+    #             with get_driver(options) as driver:
+    #                 word = get_word(BASE_URL + url)
+    #             time.sleep(5)
+    #             if not word:
+    #                 continue
 
-                word.save()
-                print(f'[WORD] {word.infinitive} was collected.')
+    #             word.save()
+    #             print(f'[WORD] {word.infinitive} was collected.')
 
-            page_num += 1
+    #         page_num += 1
     # words = []
 
     # for url in urls:
@@ -225,4 +224,59 @@ if __name__ == '__main__':
 
     # save_words([word,])
 
-    driver.quit()
+    # driver.quit()
+
+    # from skyeng import load_from_api
+
+    # exclused = [
+
+    # ]
+
+    # words_qs = Word.objects
+
+    # for word in words_qs.all():
+    #     new_word = word.word.lower()
+    #     word.word = new_word
+
+    #     try:
+    #         word.save()
+    #     except django.db.utils.IntegrityError:
+    #         existing_word_qs = Word.objects.filter(
+    #             word=new_word, language=word.language)
+
+    #         translation_qs = Translation.objects.filter(source_word=word)
+    #         if translation_qs.exists():
+    #             translation = translation_qs.first()
+    #             translation.source_word = existing_word_qs.first()
+    #             print(f'Update translations: {translation}')
+
+    #         translation_qs = Translation.objects.filter(target_word=word)
+    #         if translation_qs.exists():
+    #             translation = translation_qs.first()
+    #             translation.target_word = existing_word_qs.first()
+    #             print(f'Update translations: {translation}')
+
+    #         if existing_word_qs.exists():
+    #             word.delete()
+    #             print(f"Delete word: [{word}].")
+
+    # print(f"Existing word: [{existing_word}].")
+
+    # translations_qs = Translation.objects.filter(source_word=word)
+    # for translation in translations_qs:
+    #     translation.source_word = word.word.rstrip(' ')
+    #     print(f"Replaced: {translation.source_word}.")
+    #     translation.save()
+    # new_word = word.word.replace(' **', '').replace(' *', '')
+    # word.word = new_word
+    # # print(f"Old: {word}. New: {new_word}.")
+    # try:
+    #     word.save()
+    # except django.db.utils.IntegrityError:
+    #     translations_qs = Translation.objects.filter(source_word=word)
+    #     for translation in translations_qs:
+    #         translation.source_word = new_word
+    #         print(f"Replaced: {translation.source_word}.")
+    #         translation.save()
+    # print(f"Old: {word}. New: {new_word}.")
+    # print(word)

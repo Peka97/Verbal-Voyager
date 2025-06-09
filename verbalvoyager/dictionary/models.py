@@ -342,7 +342,7 @@ class Word(models.Model):
 
     def __str__(self):
         # return "%(class)s"
-        return self.word
+        return f"{self.word} [{self.language}]"
 
     class Meta:
         verbose_name = 'Слово'
@@ -595,7 +595,7 @@ class Translation(models.Model):
         ]
 
     def __str__(self):
-        return f"[{self.pk}] {self.source_word} ({self.part_of_speech}) -> {self.target_word} "
+        return f"[{self.pk}] {self.source_word.word} [{self.part_of_speech} \ {self.source_word.language.name}] -> {self.target_word.word} [{self.part_of_speech} \ {self.target_word.language.name}]"
 
 
 class WordDetail(models.Model):
@@ -669,6 +669,7 @@ class RussianWordDetail(models.Model):
     )
     image_url = models.URLField(
         blank=True,
+        null=True,
         verbose_name='Изображение',
         help_text='Ссылка на изображение слова.'
     )
@@ -679,7 +680,13 @@ class RussianWordDetail(models.Model):
     class Meta:
         verbose_name = 'Ru | Детали'
         verbose_name_plural = 'Ru | Детали'
-        unique_together = ('word', 'image_url')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['word', 'image_url'],
+                name='unique_word_image_url',
+                condition=~models.Q(image_url='') & ~models.Q(image_url=None),
+            ),
+        ]
 
 
 class NewEnglishVerb(models.Model):

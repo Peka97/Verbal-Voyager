@@ -15,7 +15,7 @@
                 {% for translation in translations %}
                     <div class='row word' id="word_{{ translation.target_word.pk }}">
                         <div class='col'>
-                            <span>{{ translation.source_word }}</span>
+                            <span>{{ translation.source_word.word }}</span>
                         </div>
                     </div>
                 {% endfor %}

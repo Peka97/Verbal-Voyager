@@ -43,3 +43,24 @@ class WordLanguageFilter(admin.SimpleListFilter):
         if self.value():
             return queryset.filter(source_word__language_id=self.value())
         return queryset
+
+
+class InvalidWordsFilter(admin.SimpleListFilter):
+    title = 'Некорректные слова'
+    parameter_name = 'invalid'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('invalid', 'Некорректные слова'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'invalid':
+            return queryset.filter(
+                Q(word__contains=' **') |
+                Q(word__contains=' *') |
+                Q(word__endswith=' ') |
+                Q(word__regex=r'[A-ZА-ЯЁ].$') |
+                Q(word__regex=r'^[A-ZА-ЯЁ]')
+            )
+        return queryset

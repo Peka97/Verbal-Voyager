@@ -1,12 +1,26 @@
 import logging
 
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.dispatch import receiver
 from django.core.cache import cache
+from django.core.exceptions import ValidationError
 
-from .models import ExerciseCategory, ExerciseEnglishWords, ExerciseEnglishDialog, ExerciseIrregularEnglishVerb, ExerciseFrenchWords, ExerciseFrenchDialog, ExerciseRussianWords, ExerciseRussianDialog, ExerciseSpanishWords, ExerciseSpanishDialog
 
+from .models import ExerciseCategory, ExerciseEnglishWords, ExerciseEnglishDialog, ExerciseIrregularEnglishVerb, ExerciseFrenchWords, ExerciseFrenchDialog, ExerciseRussianWords, ExerciseRussianDialog, ExerciseSpanishWords, ExerciseSpanishDialog, ExerciseWords
+from dictionary.models import Translation, Word
 logger = logging.getLogger('django')
+
+
+@receiver(m2m_changed, sender=ExerciseWords.words.through)
+def validate_words_m2m(sender, instance, action, **kwargs):
+    if action == "pre_add":  # проверяем перед добавлением новых слов
+        for word_id in kwargs.get('pk_set', []):
+            translation = Translation.objects.get(
+                pk=word_id)  # замените на вашу модель
+            if translation.source_word.language != instance.lang:
+                raise ValidationError(
+                    f'Слово "{translation}" не подходит для языка "{instance.lang}"'
+                )
 
 
 @receiver([post_save, post_delete], sender=ExerciseCategory)

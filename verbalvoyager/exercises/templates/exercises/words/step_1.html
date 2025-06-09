@@ -31,8 +31,11 @@
                                 {% if translation.prefix %}
                                     <span class="word__prefix">({{translation.prefix}})</span>
                                 {% endif %}
-                                {{translation.source_word.word|capfirst}}
-                                <span class="word__speech_code"> ({{translation.speech_code}})</span>
+                                {{translation.source_word.word|capfirst}} {% if source_word_details.genus %} ({{source_word_details.genus}}){% endif %}
+
+                                {% if translation.get_part_of_speech_display != "none" %}
+                                    <span class="word__speech_code"> ({{translation.get_part_of_speech_display}})</span>
+                                {% endif %}
                             </div>
                             {% if source_word_details.transcription %}
                                 <p class="word__transcription">[ {{ source_word_details.transcription }} ]</p>
