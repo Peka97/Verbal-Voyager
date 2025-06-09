@@ -88,3 +88,30 @@ class NewWordsExerciseForm(forms.ModelForm):
                 )
 
         return cleaned_data
+
+
+class NewExerciseDialogAdminForm(forms.ModelForm):
+    def clean(self):
+        cleaned_data = super().clean()
+
+        text = self.cleaned_data.get("text")
+        if not text:
+            raise ValidationError('Поле "Текст" не заполнено.')
+
+        for line in text.split('\n'):
+            if line == '\r':
+                continue
+
+            if 'Scene:' not in line and ':' not in line:
+                logger.error(f'Invalid line: {line}')
+                raise ValidationError(
+                    f'Не выполнены требования к полю "Текст". Они прописаны под полем. [ Реплика с ошибкой: {line} ]')
+
+        translations = self.cleaned_data["words"]
+
+        for translation in translations:
+            if translation.source_word.word.lower() not in text.lower() and translation.target_word.word.lower() not in text.lower():
+                raise ValidationError(
+                    f'Word "{translation.source_word.word}" not in text.')
+
+        return cleaned_data

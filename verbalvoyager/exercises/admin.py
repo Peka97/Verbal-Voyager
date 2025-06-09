@@ -11,7 +11,7 @@ from .models import ExerciseCategory, ExerciseEnglishWords, ExerciseFrenchWords,
     ExerciseFrenchDialog, ExerciseRussianDialog, ExerciseSpanishDialog, \
     ExerciseIrregularEnglishVerb, ExerciseWords, NewExerciseIrregularEnglishVerb, \
     ExerciseDialog
-from .forms import ExerciseDialogAdminForm, ExerciseIrregularEnglishVerbAdminForm, NewWordsExerciseForm
+from .forms import ExerciseDialogAdminForm, ExerciseIrregularEnglishVerbAdminForm, NewWordsExerciseForm, NewExerciseDialogAdminForm
 from pages.filters import DropdownFilter, RelatedDropdownFilter
 from logging_app.helpers import log_action
 
@@ -421,7 +421,7 @@ class NewExerciseIrregularEnglishVerbAdmin(admin.ModelAdmin):
 @admin.register(ExerciseDialog)
 class ExerciseDialogAdmin(admin.ModelAdmin):
     show_full_result_count = False
-    form = ExerciseDialogAdminForm
+    form = NewExerciseDialogAdminForm
     search_fields = ['pk', 'student__pk', 'student__first_name',
                      'student__last_name', 'name']
     autocomplete_fields = ('words', 'student')

@@ -291,8 +291,8 @@ class ExerciseEnglishDialog(AbstractExerciseDialog):
         return f"{self.name} (ENG)"
 
     class Meta:
-        verbose_name = 'Eng | Dialog'
-        verbose_name_plural = 'Eng | Dialog'
+        verbose_name = '[TO DELETE] Eng | Dialog'
+        verbose_name_plural = '[TO DELETE] Eng | Dialog'
 
 
 class ExerciseFrenchDialog(AbstractExerciseDialog):
@@ -317,8 +317,8 @@ class ExerciseFrenchDialog(AbstractExerciseDialog):
         return f"{self.name} (FR)"
 
     class Meta:
-        verbose_name = 'Fr | Dialog'
-        verbose_name_plural = 'Fr | Dialog'
+        verbose_name = '[TO DELETE] Fr | Dialog'
+        verbose_name_plural = '[TO DELETE] Fr | Dialog'
 
 
 class ExerciseRussianDialog(AbstractExerciseDialog):
@@ -343,8 +343,8 @@ class ExerciseRussianDialog(AbstractExerciseDialog):
         return f"{self.name} (RU)"
 
     class Meta:
-        verbose_name = 'Ru | Dialog'
-        verbose_name_plural = 'Ru | Dialog'
+        verbose_name = '[TO DELETE] Ru | Dialog'
+        verbose_name_plural = '[TO DELETE] Ru | Dialog'
 
 
 class ExerciseSpanishDialog(AbstractExerciseDialog):
@@ -369,8 +369,8 @@ class ExerciseSpanishDialog(AbstractExerciseDialog):
         return f"{self.name} (SP)"
 
     class Meta:
-        verbose_name = 'Sp | Dialog'
-        verbose_name_plural = 'Sp | Dialog'
+        verbose_name = '[TO DELETE] Sp | Dialog'
+        verbose_name_plural = '[TO DELETE] Sp | Dialog'
 
 
 # Irregular Verb
@@ -696,8 +696,9 @@ class ExerciseDialog(models.Model):
         return super().save(*args, **kwargs)
 
     def get_words(self):
+
         words = [
-            f'{word.word} - {word.translation}<br>' for word in self.words.all()
+            f'{translation.source_word.word} - {translation.source_word.word}<br>' for translation in self.words.all()
         ]
         return format_html(' '.join(words))
 

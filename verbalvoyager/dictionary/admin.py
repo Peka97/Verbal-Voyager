@@ -308,7 +308,7 @@ class NewEnglishVerbAdmin(admin.ModelAdmin):
 class NewFrenchVerbAdmin(admin.ModelAdmin):
     show_full_result_count = False
     autocomplete_fields = ('infinitive', )
-    list_display = ('infinitive', 'participe_present', 'participe_passe')
+    list_display = ('infinitive__word', 'participe_present', 'participe_passe')
     search_fields = ('infinitive__word',
                      'participe_present', 'participe_passe')
     fieldsets = (

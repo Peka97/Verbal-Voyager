@@ -1,0 +1,62 @@
+{% extends "exercises/extends/base.html" %}
+{% load static %}
+
+{% block 'title' %} Exercise Dialog | Step {{step}}{% endblock  %}
+{% block 'meta' %}
+    <meta id="exercise_lang" data-exercise-lang="{{ex_lang}}">
+    <meta id="names" data-name-1="{{name_1}}" data-name-2="{{name_2}}">
+    <meta id="words-length" data-words-length="{{translations|length}}">
+    {% if ex_lang != "Russian" %}
+        {% for translation in translations %}
+            <meta id="word_{{ forloop.counter }}" data-word="{{translation.source_word.word}}" data-translation="{{translation.target_word.word}}">
+        {% endfor %}
+    {% else %}
+        {% for translation in translations %}
+            <meta id="word_{{ forloop.counter }}" data-word="{{translation.target_word.word}}" data-translation="{{translation.source_word.word}}">
+        {% endfor %}
+    {% endif %}
+    
+{% endblock 'meta' %}
+{% block 'style' %}
+    <link rel="stylesheet" href="{% static 'pages/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/exercise.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/dialogs/dialog.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/dialogs/dropdown.css' %}">
+{% endblock  %}
+
+{% block 'content' %}
+<div class="container wrapper">
+    <div class="btn-exit-wrap">
+        <a href="{% url 'account' %}"><i class="bi bi-box-arrow-left"></i></a>
+    </div>
+    {% csrf_token %}
+    <div class='row scene-container'>
+        {% if scene %}
+            <div class='col scene-text'>
+                {{ scene }}
+            </div>
+        {% endif %}
+    </div>
+    {% for message in messages %}
+        <div class='row message-container'>
+            <div class='row message-row'>
+                <div class='col avatar-container'>
+                    <img class='avatar' width='50' height='50' src="{% static "users/images/default_avatar.webp" %}" alt="User photo">
+                    <span class='person-name'>{{ message.from }}</span>
+                </div>
+                <div class='col text-container'>
+                    <div class='message'>
+                        {{ message.text }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+
+{% block 'js' %}
+    <script type="module" src="{% static 'exercises/js/dialogs/dialog.js' %}"></script>
+    <script type="module" src="{% static 'exercises/js/modules/send_points_fix.js' %}"></script>
+{% endblock  %}

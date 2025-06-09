@@ -95,7 +95,7 @@
             </div>
             <p>
               {% for letter in title %}
-                <span {% if letter == " " %} class="space-placeholder" {% endif %} style="--i:{{forloop.counter0}}">{{letter}}</span>
+                <span {% if letter == " " %} class="space-placeholder" {% endif %} style="--i:{{ forloop.counter0 }}">{{letter}}</span>
               {% endfor %}
             </p>
           </div>
