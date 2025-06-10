@@ -43,7 +43,6 @@ class ExerciseDialogAdminForm(forms.ModelForm):
                 continue
 
             if 'Scene:' not in line and ':' not in line:
-                logger.error(f'Invalid line: {line}')
                 raise ValidationError(
                     f'Не выполнены требования к полю "Текст". Они прописаны под полем. [ Реплика с ошибкой: {line} ]')
 

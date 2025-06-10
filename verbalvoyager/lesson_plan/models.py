@@ -1,7 +1,6 @@
 from django.db import models
 
 
-
 class EnglishLessonPlan(models.Model):
     lesson_id = models.ForeignKey(
         'event_calendar.Lesson',
@@ -75,7 +74,7 @@ class EnglishLessonPlan(models.Model):
         if self.theme:
             return f"{self.theme} [{self.pk}]"
         else:
-            return f"LessonPlan for {self.lesson_id.title}[{self.pk}]"
+            return f"LessonPlan for Lesson_{self.lesson_id}[{self.pk}]"
 
     class Meta:
         verbose_name = 'План урока'

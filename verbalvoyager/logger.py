@@ -10,9 +10,11 @@ def get_logger(level=logging.ERROR):
 
     if settings.LOGGING['handlers'].get('file'):
         if level == logging.DEBUG:
-            handler = logging.FileHandler(settings.CURRENT_CONFIG.DEBUG_LOG_FILE_PATH)
+            handler = logging.FileHandler(
+                settings.CURRENT_CONFIG.DEBUG_LOG_FILE_PATH)
         else:
-            handler = logging.FileHandler(settings.CURRENT_CONFIG.DJANGO_LOG_FILE_PATH)
+            handler = logging.FileHandler(
+                settings.CURRENT_CONFIG.DJANGO_LOG_FILE_PATH)
 
         handler.setFormatter(logging.Formatter(log_format))
         logger.addHandler(handler)
@@ -22,11 +24,13 @@ def get_logger(level=logging.ERROR):
 
 def get_words_logger(level=logging.ERROR):
     logger = logging.getLogger('words')
+    logger.propagate = False
     logger.setLevel(level)
     log_format = "%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 
     if settings.LOGGING['handlers'].get('file'):
-        handler = logging.FileHandler(settings.CURRENT_CONFIG.WORDS_LOG_FILE_PATH)
+        handler = logging.FileHandler(
+            settings.CURRENT_CONFIG.WORDS_LOG_FILE_PATH)
 
         handler.setFormatter(logging.Formatter(log_format))
         logger.addHandler(handler)

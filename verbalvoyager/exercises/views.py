@@ -14,6 +14,7 @@ from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWo
     ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, \
     ExerciseRussianDialog, ExerciseSpanishDialog, ExerciseIrregularEnglishVerb
 
+# TODO: rework
 logger = get_logger()
 logger_words = get_words_logger()
 
@@ -21,7 +22,8 @@ User = get_user_model()
 
 
 def exercise_words(request, ex_lang, ex_id, step):
-    titles = {1: 'Запоминаем', 2: 'Выбираем', 3: 'Расставляем', 4: 'По местам!', 5: 'Переводим'}
+    titles = {1: 'Запоминаем', 2: 'Выбираем',
+              3: 'Расставляем', 4: 'По местам!', 5: 'Переводим'}
     popover_data = {
         1: {
             'title': 'Упражнение "Запоминаем"',
@@ -138,10 +140,11 @@ def exercise_dialog(request, ex_lang, ex_id):
     return render(request, f'exercises/dialog.html', context)
 
 
-def load_translate_vars(words: list[dict], ex_lang):  # TODO: move to Jinja filter
+# TODO: move to Jinja filter
+def load_translate_vars(words: list[dict], ex_lang):
     if ex_lang == 'russian':
         all_translates = [word['word'] for word in words]
-        
+
         for word in words:
             all_translates_copy = all_translates.copy()
             all_translates_copy.remove(word['word'])
@@ -174,6 +177,7 @@ def load_translate_vars(words: list[dict], ex_lang):  # TODO: move to Jinja filt
 
     return words
 
+
 def generate_dialog_json(request):
     if request.method == 'POST':
         try:
@@ -191,6 +195,7 @@ def generate_dialog_json(request):
             return JsonResponse({'result': 'Generate fail.'}, status=400)
         dialog_text = dialog_text.replace('**', '')
         return JsonResponse({'result': dialog_text})
+
 
 def generate_dialog_english_json(request):
     if request.method == 'POST':
@@ -232,7 +237,7 @@ def words_logging(request, ex_id, step_num):
     if request.method == 'POST':
         data = json.loads(request.body)
         is_correct = data.get('is_correct')
-        
+
         message = f'Words Correct Check: Ex[{ex_id}] | Step Num: {step_num} | {data}'
 
         if is_correct != 'wrong':

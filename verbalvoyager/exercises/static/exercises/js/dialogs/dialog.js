@@ -108,7 +108,6 @@ function fillSubMenuElements() {
     dropDownSubmenu.forEach(subMenu => {
         const keyWord = subMenu.parentElement.dataset['key'];
         const wordsVariants = getWordsVariants(keyWord)
-        console.dir(wordsVariants);
 
         for(var i=0;i < wordsVariants.length; i++) {
             let subMenuElement = document.createElement('div')
