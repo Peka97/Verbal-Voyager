@@ -11,7 +11,7 @@ SECRET_KEY = CURRENT_CONFIG.SECRET_KEY
 DEBUG = CURRENT_CONFIG.DEBUG
 
 ALLOWED_HOSTS = [
-    '127.0.0.1', 'localhost', '', '::1', '158.160.153.184', 'verbal-voyager.ru', 'www.verbal-voyager.ru',
+    '127.0.0.1', 'localhost', '', '::1', '158.160.153.184', 'verbal-voyager.ru', 'www.verbal-voyager.ru', 'cdn.verbal-voyager.ru'
 ]
 
 INTERNAL_IPS = [
@@ -20,7 +20,7 @@ INTERNAL_IPS = [
 
 # CSRF
 CSRF_TRUSTED_ORIGINS = [
-    'http://verbal-voyager.ru', 'http://www.verbal-voyager.ru', 'https://verbal-voyager.ru', 'https://www.verbal-voyager.ru']
+    'http://verbal-voyager.ru', 'http://cdn.verbal-voyager.ru', 'http://www.verbal-voyager.ru', 'https://verbal-voyager.ru', 'https://www.verbal-voyager.ru', 'http://cdn.verbal-voyager.ru']
 
 # Application definition
 INSTALLED_APPS = [
