@@ -6,6 +6,7 @@ from django.contrib.admin.sites import AdminSite
 
 
 from dictionary.models import EnglishWord, IrregularEnglishVerb
+
 from exercises.models import ExerciseCategory, ExerciseEnglishWords, ExerciseEnglishDialog, \
     ExerciseIrregularEnglishVerb
 
