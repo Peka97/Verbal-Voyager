@@ -1,6 +1,5 @@
 
 from django import forms
-from django.forms import ModelForm
 from django.contrib.auth import get_user_model
 
 from .models import Lesson
@@ -9,7 +8,7 @@ from .models import Lesson
 User = get_user_model()
 
 
-class LessonForm(ModelForm):
+class LessonForm(forms.ModelForm):
     title = forms.CharField(
         max_length=50,
         widget=forms.TextInput(

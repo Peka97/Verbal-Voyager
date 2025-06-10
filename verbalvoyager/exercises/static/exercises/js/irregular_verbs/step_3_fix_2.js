@@ -1,80 +1,80 @@
-import { showToast } from '/static/pages/js/modules/toast_notification.js';
-import { pagination, updatePagination } from '../modules/pagination.js';
-import { send_points } from '../modules/send_points_fix.js';
+import { showToast } from "/static/pages/js/modules/toast_notification.js";
+import { pagination, updatePagination } from "../modules/pagination.js";
+import { send_points } from "../modules/send_points_fix.js";
 
-pagination.forEach(el => {
-    el.onclick = (event) => {
-        updatePagination(event);
-    };
+pagination.forEach((el) => {
+	el.onclick = (event) => {
+		updatePagination(event);
+	};
 });
-document.getElementById('step_1').classList.add('step-complete')
-let words = [...document.getElementsByClassName('word__block')];
+document.getElementById("step_1").classList.add("step-complete");
+let words = [...document.getElementsByClassName("word__block")];
 let points = words.length;
 
-let wordRows = [...document.getElementsByClassName('word__block')]
+let wordRows = [...document.getElementsByClassName("word__block")];
 let allWords = Array();
 
-
-wordRows.forEach(wordRow => {
-    [...wordRow.children].forEach(wordCol => {
-        allWords.push(wordCol.innerText.replace(/\s+/g, ''))
-    })
-    
-})
+wordRows.forEach((wordRow) => {
+	[...wordRow.children].forEach((wordCol) => {
+		allWords.push(wordCol.innerText.replace(/\s+/g, ""));
+	});
+});
 
 function getRandomWordId() {
-    let idx = Math.floor(Math.random() * 3)
-    return idx
+	let idx = Math.floor(Math.random() * 3);
+	return idx;
 }
 
 function shuffle(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
-   
-    while (0 !== currentIndex) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-   
-      temporaryValue = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = temporaryValue;
-    }
-   
-    return array;
+	var currentIndex = array.length,
+		temporaryValue,
+		randomIndex;
+
+	while (0 !== currentIndex) {
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex -= 1;
+
+		temporaryValue = array[currentIndex];
+		array[currentIndex] = array[randomIndex];
+		array[randomIndex] = temporaryValue;
+	}
+
+	return array;
 }
 
 function getRandomWords(exclude) {
-    let wordsVariants = allWords.slice();
-    wordsVariants.splice(wordsVariants.indexOf(exclude), 1);
-    return wordsVariants.slice(0, 3)
+	let wordsVariants = allWords.slice();
+	wordsVariants.splice(wordsVariants.indexOf(exclude), 1);
+	return wordsVariants.slice(0, 3);
 }
 
 function insertDropdownInWordRows() {
-    for (let i=0; i < wordRows.length; i++) {
-        let currentWordRow = wordRows[i];
-        let RandomWordIndexOne = getRandomWordId();
-        let RandomWordIndexTwo;
+	for (let i = 0; i < wordRows.length; i++) {
+		let currentWordRow = wordRows[i];
+		let RandomWordIndexOne = getRandomWordId();
+		let RandomWordIndexTwo;
 
-        do {
-            RandomWordIndexTwo = getRandomWordId();
-        } while (RandomWordIndexOne === RandomWordIndexTwo);
+		do {
+			RandomWordIndexTwo = getRandomWordId();
+		} while (RandomWordIndexOne === RandomWordIndexTwo);
 
-        let choosenRandomWordOne = currentWordRow.children[RandomWordIndexOne];
-        let choosenRandomWordTwo = currentWordRow.children[RandomWordIndexTwo];
+		let choosenRandomWordOne = currentWordRow.children[RandomWordIndexOne];
+		let choosenRandomWordTwo = currentWordRow.children[RandomWordIndexTwo];
 
-        let currentWordOne = choosenRandomWordOne.innerText.replace(/\s+/g, '');
-        let currentWordTwo = choosenRandomWordTwo.innerText.replace(/\s+/g, '');
+		let currentWordOne = choosenRandomWordOne.innerText.replace(/\s+/g, "");
+		let currentWordTwo = choosenRandomWordTwo.innerText.replace(/\s+/g, "");
 
-        let wordVariantsOne = getRandomWords(currentWordOne);
-        let wordVariantsTwo = getRandomWords(currentWordTwo);
+		let wordVariantsOne = getRandomWords(currentWordOne);
+		let wordVariantsTwo = getRandomWords(currentWordTwo);
 
-        wordVariantsOne.push(currentWordOne);
-        wordVariantsTwo.push(currentWordTwo);
+		wordVariantsOne.push(currentWordOne);
+		wordVariantsTwo.push(currentWordTwo);
 
-        wordVariantsOne = shuffle(wordVariantsOne);
-        wordVariantsTwo = shuffle(wordVariantsTwo);
+		wordVariantsOne = shuffle(wordVariantsOne);
+		wordVariantsTwo = shuffle(wordVariantsTwo);
 
-        choosenRandomWordOne.innerHTML = `
-        <div class="menu">
+		choosenRandomWordOne.innerHTML = `
+        <div class="word__main menu">
             <div class="item" data-key="${currentWordOne}">
                 <a href="#" class="menu-word-link">
                     <span class="word-rus">choose a word</span>
@@ -101,9 +101,9 @@ function insertDropdownInWordRows() {
                 </div>
             </div>
         </div>
-        `
-        choosenRandomWordTwo.innerHTML = `
-        <div class="menu">
+        `;
+		choosenRandomWordTwo.innerHTML = `
+        <div class="word__main menu">
             <div class="item" data-key="${currentWordTwo}">
                 <a href="#" class="menu-word-link">
                     <span class="word-rus">choose a word</span>
@@ -130,49 +130,47 @@ function insertDropdownInWordRows() {
                 </div>
             </div>
         </div>
-        `
-    }
+        `;
+	}
 }
 
-wordRows.forEach(wordRow => {
-    wordRow.addEventListener('click', (event) => {
-        event.preventDefault();
+wordRows.forEach((wordRow) => {
+	wordRow.addEventListener("click", (event) => {
+		event.preventDefault();
 
-        let el = event.target
-        const menu = el.parentElement.parentElement.parentElement.parentElement
-        const key = el.parentElement.parentElement.parentElement.dataset.key.toLowerCase();
-        const chosen = el.firstChild.data.toLowerCase();
+		let el = event.target;
+		const menu = el.parentElement.parentElement.parentElement.parentElement;
+		const key = el.parentElement.parentElement.parentElement.dataset.key.toLowerCase();
+		const chosen = el.firstChild.data.toLowerCase();
 
-        if (key != chosen) {
-            menu.classList.remove('correct');
-            menu.classList.add('wrong');
-            if (points > 1) {
-                points--;
-            }
-        } else {
-            menu.firstElementChild.firstElementChild.firstElementChild.innerText = key
-            menu.classList.remove('wrong');
-            menu.classList.add('correct');
-        }
+		if (key != chosen) {
+			menu.classList.remove("correct");
+			menu.classList.add("wrong");
+			if (points > 1) {
+				points--;
+			}
+		} else {
+			menu.firstElementChild.firstElementChild.firstElementChild.innerText = key;
+			menu.classList.remove("wrong");
+			menu.classList.add("correct");
+		}
 
-        allWordsCorrect();
-    })
-})
-
-
+		allWordsCorrect();
+	});
+});
 
 function allWordsCorrect() {
-    let menus = [...document.getElementsByClassName('menu')];
+	let menus = [...document.getElementsByClassName("menu")];
 
-    for (let i=0; i < menus.length; i++) {
-        if (!menus[i].classList.contains('correct')) {
-            return false;
-        }
-    }
+	for (let i = 0; i < menus.length; i++) {
+		if (!menus[i].classList.contains("correct")) {
+			return false;
+		}
+	}
 
-    send_points('irregular_verbs', points);
-    showToast('Упражнение завершено! Переходи в Личный кабинет.');
-    // toNextStep(2)
+	send_points("irregular_verbs", points);
+	showToast("Упражнение завершено! Переходи в Личный кабинет.");
+	// toNextStep(2)
 }
 
-insertDropdownInWordRows()
+insertDropdownInWordRows();

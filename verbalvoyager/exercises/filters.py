@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
-from django.utils.translation import gettext_lazy as _
 from django.contrib.admin import SimpleListFilter
+from django.utils.translation import gettext_lazy as _
 
 from pages.filters import DROPDOWN_TEMPLATE_PATH
 

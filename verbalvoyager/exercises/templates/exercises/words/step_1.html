@@ -1,0 +1,30 @@
+{% extends "exercises/words/includes/words.html" %}
+{% load static %}
+
+{% block 'title' %} Exercise | Step {{step}}{% endblock  %}
+{% block 'style' %}
+    <link rel="stylesheet" href="{% static 'exercises/css/step_base.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/words/step_1.css' %}">
+{% endblock  %}
+
+{% block 'words' %}
+{{ ex_lang }}
+    <!-- Words -->
+    {% for translation in translations %}
+        {% if ex_lang != 'Russian' %}
+            {% with source_word=translation.source_word target_word=translation.target_word %}
+                {% include "exercises/words/includes/words_review.html" %}
+            {% endwith %}
+        {% else %}
+            {% with source_word=translation.target_word target_word=translation.source_word %}
+                {% include "exercises/words/includes/words_review.html" %}
+            {% endwith %}
+        {% endif %}
+        
+    {% endfor %}
+
+{% endblock  %}
+
+{% block 'js' %}
+    <script type="module" src="{% static 'exercises/js/new_words/step_1.js' %}"></script>
+{% endblock  %}

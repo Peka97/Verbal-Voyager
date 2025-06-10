@@ -1,22 +1,25 @@
 import json
+import logging
 from random import sample, shuffle
 
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.db.models import Prefetch
 
-from logger import get_logger, get_words_logger
-from .utils import generate_dialog, get_exercise_or_404
+
+from .utils import generate_dialog, get_exercise_or_404, new_generate_dialog
 
 from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, \
     ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, \
-    ExerciseRussianDialog, ExerciseSpanishDialog, ExerciseIrregularEnglishVerb
+    ExerciseRussianDialog, ExerciseSpanishDialog, ExerciseIrregularEnglishVerb, \
+    ExerciseWords, NewExerciseIrregularEnglishVerb, ExerciseDialog
+from dictionary.models import Language, Translation, Word, EnglishWordDetail, RussianWordDetail, \
+    FrenchWordDetail, SpanishWordDetail, NewEnglishVerb, EnglishWordDetail
 
-# TODO: rework
-logger = get_logger()
-logger_words = get_words_logger()
+logger = logging.getLogger('django')
+logger_words = logging.getLogger('words')
 
 User = get_user_model()
 
@@ -75,7 +78,7 @@ def exercise_words(request, ex_lang, ex_id, step):
     if redirect:
         return redirect
 
-    words = exercise.words.all().values()
+    words = exercise.words.all().values()  # type: ignore
     [word.update({'idx': idx + 1}) for idx, word in enumerate(words)]
 
     if step == 2:
@@ -113,7 +116,8 @@ def exercise_dialog(request, ex_lang, ex_id):
     if redirect:
         return redirect
 
-    raw_dialog = list(filter(lambda s: len(s) > 1, exercise.text.split('\n')))
+    raw_dialog = list(filter(lambda s: len(s) > 1,
+                      exercise.text.split('\n')))  # type: ignore
 
     scene = raw_dialog[0] if raw_dialog[0].startswith(
         'Scene:') or raw_dialog[0].startswith('Situation:') else None
@@ -128,7 +132,7 @@ def exercise_dialog(request, ex_lang, ex_id):
             }
         )
 
-    words = exercise.words.all().values()
+    words = exercise.words.all().values()  # type: ignore
     [word.update({'idx': idx + 1}) for idx, word in enumerate(words)]
 
     context = {
@@ -137,7 +141,7 @@ def exercise_dialog(request, ex_lang, ex_id):
         'words': words,
         'lang': ex_lang
     }
-    return render(request, f'exercises/dialog.html', context)
+    return render(request, 'exercises/dialog.html', context)
 
 
 # TODO: move to Jinja filter
@@ -245,7 +249,9 @@ def words_logging(request, ex_id, step_num):
         else:
             logger_words.error(message)
 
-    return HttpResponse({'status': 200})
+        return HttpResponse({'status': 200})
+
+    return HttpResponse({'status': 400})
 
 
 def exercise_irregular_verbs(request, ex_id, step):
@@ -285,7 +291,7 @@ def exercise_irregular_verbs(request, ex_id, step):
     if redirect:
         return redirect
 
-    words = exercise.words.select_related(
+    words = exercise.words.select_related(  # type: ignore
         'infinitive').values(
             'id',
             'infinitive__word',
@@ -316,3 +322,195 @@ def exercise_irregular_verbs(request, ex_id, step):
     }
 
     return render(request, template_name, context)
+
+
+# TODO: убрать ex_type. После удаления требуются правки в urls и admin.
+def new_exercise_words(request, ex_id, step):
+    titles = {1: 'Запоминаем', 2: 'Выбираем',
+              3: 'Расставляем', 4: 'По местам!', 5: 'Переводим'}
+    popover_data = {
+        1: {
+            'title': 'Упражнение "Запоминаем"',
+            'content': 'Данный шаг рассчитан на твоё знакомство с новым словом.<br>'
+            'В первом блоке представлено слово на иностранном языке с <em>транскрипцией</em> под ним и <em>аудио</em> слева.<br>'
+            'Ниже поясняющая <em>картинка</em> к слову и <em>примеры с другими значениями</em> данного слова и <em>предложениями</em>, где это слово можно употреблять в качестве примера.<br><br>'
+            '<u>Внимательно изучи каждый блок</u>, переключая слова на <em>переключателях</em> в нижней части экрана.'
+        },
+        2: {
+            'title': 'Упражнение "Выбираем"',
+            'content': 'Первая проверка того насколько ты хорошо узнал новые слова.<br>'
+            'В верхней части написано слово на иностранном языке, а ниже представлены варианты перевода этого слова. Верный из них только один.<br>'
+            'Если при нажатии ты увидел, что оно загорелось зеленым, а остальные красным, то всё верно и можешь переходить к следующему слову.<br>'
+            'Если же выбранное слово загорелось красным, то ты выбрал не правильно - хорошенько подумай ещё раз и выбери другое слово.<br>'
+        },
+        3: {
+            'title': 'Упражнение "Расставляем"',
+            'content': 'Пора поработать со всеми словами сразу.<br>'
+            'Слова разделены на два столбика - в первом иностранные, во втором на русском языке. Слова во втором столбике можно менять местами перестакивая (зажми правую кнопку мыши над словом и веди курсор вверх или вниз).<br>'
+            'Твоей задачей будет расставить слова так, чтобы напротив каждого был его перевод. Как только захочешь проверить себя, нажми внизу кнопку "Проверить": если всё правильно, то в правом нижнем углу ты увидишь уведомление об успешном прохождении.'
+        },
+        4: {
+            'title': 'Упражнение "По местам!"',
+            'content': 'Набираем обороты.<br>'
+            'Слово написано, но буквы перемешаны. Тебе предстоит это исправить.<br>'
+            'Хорошо запомни написание слова, тебе это пригодится на следующем шаге.'
+        },
+        5: {
+            'title': 'Упражнение "Переводим"',
+            'content': 'Последний и самый сложный шаг.<br>'
+            'Тебе предстоит написать слово на иностранном языке целиком.<br>'
+            'В данном упражнении ввод не чувствителен к регистру, а значит можешь написать слово и с маленькой, и с большой буквы (даже если все буквы будут маленькими или большими). Главное - проверить насколько ты хорошо теперь умеешь использовать полученные знания.'
+        }
+    }
+
+    source_details_prefetched = Prefetch(
+        'englishworddetail', queryset=EnglishWordDetail.objects.all())
+    target_details_prefetched = Prefetch(
+        'russianworddetail', queryset=RussianWordDetail.objects.all())
+    lang_prefetched = Prefetch('language', queryset=Language.objects.all())
+
+    translations_prefetched = [
+        Prefetch(
+            'source_word',
+            queryset=Word.objects
+            .prefetch_related(source_details_prefetched, lang_prefetched).all()
+        ),
+        Prefetch(
+            'target_word',
+            queryset=Word.objects
+            .prefetch_related(target_details_prefetched, lang_prefetched).all()
+        ),
+    ]
+
+    words_prefetched = Prefetch('words', queryset=Translation.objects.prefetch_related(
+        *translations_prefetched).all())
+
+    exercise_qs = ExerciseWords.objects.prefetch_related(
+        words_prefetched)
+    exercise = exercise_qs.get(pk=ex_id)
+
+    translations_qs = exercise.words
+
+    template_name = f'exercises/words/step_{step}.html'
+    context = {
+        'ex_lang': exercise.lang.name,
+        'ex_id': ex_id,
+        'exercise': exercise,
+        'step': step,
+        'title': titles[step],
+        'popover': popover_data[step],
+        'translations': translations_qs.all(),
+        'words_count_range': range(1, translations_qs.count() + 1)
+    }
+
+    return render(request, template_name, context)
+
+
+def new_exercise_dialog(request, ex_id):
+    exercise, redirect = get_exercise_or_404(request, ExerciseDialog, ex_id)
+
+    if redirect:
+        return redirect
+
+    raw_dialog = tuple(filter(lambda s: len(s) > 1,
+                              exercise.text.split('\n')))  # type: ignore
+
+    scene = raw_dialog[0] if raw_dialog[0].startswith(
+        'Scene:') or raw_dialog[0].startswith('Situation:') else None
+    raw_text = raw_dialog[1:] if scene else raw_dialog
+    messages = []
+    for message in raw_text:
+        person_name, message_text = message.split(':', 1)
+        messages.append(
+            {
+                'from': person_name,
+                'text': message_text
+            }
+        )
+
+    words = exercise.words.all()
+
+    context = {
+        'scene': scene,
+        'messages': messages,
+        'translations': words,
+        'lang': exercise.lang.name
+    }
+    return render(request, 'exercises/dialogs/dialog.html', context)
+
+
+def new_exercise_irregular_verbs(request, ex_id, step):
+    titles = {1: 'Запоминаем', 2: 'Выбираем',
+              3: 'Выбираем (сложно)'}
+    popover_data = {
+        1: {
+            'title': 'Упражнение "Запоминаем"',
+            'content': 'Данный шаг рассчитан на твоё знакомство с новым словом.<br>'
+            'В первом блоке представлено слово на иностранном языке с <em>транскрипцией</em> под ним и <em>аудио</em> слева.<br>'
+            'Ниже поясняющая <em>картинка</em> к слову и <em>примеры с другими значениями</em> данного слова и <em>предложениями</em>, где это слово можно употреблять в качестве примера.<br><br>'
+            '<u>Внимательно изучи каждый блок</u>, переключая слова на <em>переключателях</em> в нижней части экрана.'
+        },
+        2: {
+            'title': 'Упражнение "Выбираем"',
+            'content': 'Первая проверка того насколько ты хорошо узнал новые формы неправильных глаголов.<br>'
+            'Перед тобой три формы глагола в плитках, но одна из них пропала. Твоей задачей будет выбрать подходящую форму.<br>'
+            'Если при нажатии ты увидел, что плитка загорелась зеленым, то всё верно и можешь переходить к следующему слову.<br>'
+            'Если же выбранное слово загорелось красным, то ты выбрал не правильно - хорошенько подумай ещё раз и выбери другое слово.<br>'
+        },
+        3: {
+            'title': 'Упражнение "Расставляем"',
+            'content': 'Пора поработать с двумя неизвестными формами сразу.<br>'
+            'Задача та же, что и в прошлом шаге, но теперь известна только одна форма. По ней ты должен понять и подставить остальные формы.<br>'
+            'Если при нажатии ты увидел, что плитка загорелась зеленым, то всё верно и можешь переходить к следующему слову.<br>'
+            'Если же выбранное слово загорелось красным, то ты выбрал не правильно - хорошенько подумай ещё раз и выбери другое слово.<br>'
+        },
+    }
+
+    exercise, redirect = get_exercise_or_404(
+        request, NewExerciseIrregularEnglishVerb, ex_id)
+
+    if redirect:
+        return redirect
+
+    prefetched_details = Prefetch(
+        'englishworddetail', queryset=EnglishWordDetail.objects.all()
+    )
+    prefetched = Prefetch(
+        'infinitive',
+        queryset=Word.objects.prefetch_related(prefetched_details).all()
+    )
+
+    words = exercise.words.prefetch_related(prefetched)
+
+    template_name = f'exercises/english/irregular_verbs/step_{step}.html'
+    context = {
+        'title': titles[step],
+        'popover': popover_data[step],
+        'ex_id': ex_id,
+        'ex_lang': 'english',
+        'step': step,
+        'irregular_verbs': words,
+        'words_count_range': range(1, len(words) + 1)
+    }
+
+    return render(request, template_name, context)
+
+
+def new_generate_dialog_json(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            words = data.get('words_ids')
+            sentences_count = data.get('sentences_count')
+            level = data.get('level')
+            lang = data.get('langID')
+            language = Language.objects.get(pk=lang).name
+            dialog_text = new_generate_dialog(
+                language, words, sentences_count, level=level)
+            dialog_text = dialog_text.replace('**', '')
+            return JsonResponse({'result': dialog_text})
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return JsonResponse({'error': str(e)}, status=500)

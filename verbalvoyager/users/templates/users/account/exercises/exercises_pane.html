@@ -1,5 +1,5 @@
 <div class="exercises-container">
-    {% for exercise_words in exercises_words %}
+    {% for exercise in exercises %}
         <div class="card">
             {% comment %} <div class="image_container">
             <svg class="image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -10,30 +10,35 @@
             </div> {% endcomment %}
             <div class="title">
                 <span>
-                    {% if exercise_words.is_active %}
+                    {% if exercise.is_active %}
                         <i class="bi bi-check-circle text-success"></i>
                     {% else %}
                         <i class="bi bi-x-circle text-danger"></i>
                     {% endif %}
-                    {{ exercise_words }}
+                    {{ exercise.name }}
                 </span>
             </div>
             <div class="size">
                 <span></span>
-                    
-                <ul class="list-size">
-                    {% for word in exercise_words.words.all %}
-                        <li class="item-list"><button class="item-list-button">{{ word }}</button></li>
+                <div class="list-size">
+                    {% for translation in exercise.words.all %}
+                        <span class="item-list"><button class="item-list-button">{{ translation.source_word.word }}</button></span>
+                    {% endfor %}
+
+                </div>
+                {% comment %} <ul class="list-size">
+                    {% for translation in exercise.words.all %}
+                        <li class="item-list"><button class="item-list-button">{{ translation.source_word.word }}</button></li>
                     {% endfor %}
                     {% comment %} <li class="item-list"><button class="item-list-button">1</button></li>
                     <li class="item-list"><button class="item-list-button">1.5</button></li>
-                    <li class="item-list"><button class="item-list-button">2</button></li> {% endcomment %}
-                </ul>
+                    <li class="item-list"><button class="item-list-button">2</button></li> 
+                </ul> {% endcomment %}
             </div>
             <div class="action">
-                <a class="btn-default" href="{{ exercise_words.get_absolute_url }}" role="button" aria-disabled="true">Перейти</a>
+                <a class="btn-default" href="{{ exercise.get_absolute_url }}" role="button" aria-disabled="true">Перейти</a>
                 {% comment %} <button type="button" class="button">
-                    <a href={{ exercise_words.get_absolute_url }}>Перейти</a>
+                    <a href={{ exercise.get_absolute_url }}>Перейти</a>
                     <span class="button__text">Перейти</span>
                     <span class="button__icon">
                         <i class="bi bi-box-arrow-up-right"></i>

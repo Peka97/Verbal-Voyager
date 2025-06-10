@@ -1,9 +1,13 @@
 from openai import OpenAI
 
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect
 from django.http.response import Http404
 from django.conf import settings
-from dictionary.models import EnglishWord, FrenchWord, SpanishWord
+from django.contrib.auth.models import AnonymousUser
+
+from dictionary.models import EnglishWord, FrenchWord, SpanishWord, Translation
+from .services.cache import get_cached_global_exercise
+from dictionary.models import Translation, Word
 
 
 def generate_dialog(lang: str, word_ids: list, sentence_count: int, level: str) -> str:
@@ -11,7 +15,7 @@ def generate_dialog(lang: str, word_ids: list, sentence_count: int, level: str) 
         base_url="https://openrouter.ai/api/v1",
         api_key=settings.OPENAI_API_KEY,
     )
-    
+
     if lang in ('english', 'russian'):
         word_obj = EnglishWord
     elif lang == 'french':
@@ -22,7 +26,7 @@ def generate_dialog(lang: str, word_ids: list, sentence_count: int, level: str) 
         return
 
     word_objects = [word_obj.objects.get(pk=word_id) for word_id in word_ids]
-    
+
     if lang == 'russian':
         words = ', '.join(word.translation for word in word_objects)
     else:
@@ -52,15 +56,47 @@ def generate_dialog(lang: str, word_ids: list, sentence_count: int, level: str) 
     return completion.choices[0].message.content
 
 
-def get_exercise_or_404(request, exercise_obj, ex_pk):
-    exercise = get_object_or_404(exercise_obj, pk=ex_pk)
+def new_generate_dialog(lang: str, word_ids: list, sentence_count: int, level: str) -> str:
+    client = OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=settings.OPENAI_API_KEY,
+    )
 
-    if exercise.external_access or (request.user.is_authenticated and request.user.is_teacher()):
-        pass
+    translation_objects = Translation.objects.filter(pk__in=word_ids)
+
+    if lang == 'Russian':
+        words = ', '.join(
+            translation.target_word.word for translation in translation_objects)
     else:
-        if not request.user.is_authenticated:
-            return None, redirect(f"/users/auth?next={request.path}")
-        if exercise.student != request.user:
-            raise Http404("Запрашиваемый объект не найден")
+        words = ', '.join(
+            translation.source_word.word for translation in translation_objects)
+
+    completion = client.chat.completions.create(
+        model="deepseek/deepseek-chat",
+        messages=[
+            {
+                "role": "user",
+                "content": f"""
+                Придумай небольшой диалог ({sentence_count} реплик на каждого) двух друзей на {lang} языке с использованием следующих слов: {words}. 
+                Уровень языка {level}.
+                Используй строго следующую структуру:\n 
+                "Situation: [здесь краткое описание ситуации, в которой находятся друзья]\n
+                [имя первого друга]: [текст]\n
+                [имя второго друга]: [текст]"\n
+                Кавычки и квадратные скобки из структуры выше убери в конечном варианте.
+                """
+            }
+        ]
+    )
+    return completion.choices[0].message.content
+
+
+def get_exercise_or_404(request, exercise_obj, exercise_id):
+    exercise = get_cached_global_exercise(exercise_obj, exercise_id)
+
+    if not exercise.external_access and isinstance(request.user, AnonymousUser):
+        return None, redirect(f"/users/auth?next={request.path}")
+    if exercise.student != request.user and not request.user.is_teacher():
+        raise Http404("Запрашиваемый объект не найден")
 
     return exercise, None

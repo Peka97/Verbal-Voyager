@@ -4,8 +4,6 @@ from nested_admin import NestedStackedInline, NestedModelAdmin
 from .models import EnglishLessonPlan, EnglishLessonMainAims, EnglishLessonSubsidiaryAims
 from logging_app.helpers import log_action
 
-# Register your models here.
-
 
 class EnglishLessonMainAimsInline(NestedStackedInline):
     model = EnglishLessonMainAims

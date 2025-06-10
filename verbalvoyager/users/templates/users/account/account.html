@@ -1,13 +1,13 @@
 {% extends 'pages/extends/base.html' %}
+{% load cache %}
 {% load static %}
 {% load tz %}
 
-{% comment %} {% load filters %} {% endcomment %}
 
-{% block title %}Профиль{% endblock  %}
+{% block 'title' %}Профиль{% endblock 'title' %}
 
 {% block 'meta' %}
-	{% if user.is_supervisor %}
+	{% if user_is_supervisor %}
 		<meta id='supervisor_role' data-self="{{user.pk}}" data-teachers="{{teachers}}">
 	{% endif %}
 {% endblock 'meta' %}
@@ -20,9 +20,10 @@
 	<link rel="stylesheet" href="{% static 'users/css/profile_pane.css' %}">
 	<link rel="stylesheet" href="{% static 'users/css/exercises_pane.css' %}">
 	<link rel="stylesheet" href="{% static 'users/css/checkbox.css' %}">
-{% endblock  %}
+	<link rel="stylesheet" href="{% static 'users/css/lesson_plan_modal.css' %}">
+{% endblock 'style' %}
 
-{% block content %}
+{% block 'content' %}
 <div class="container page">
 	<div class='container-nav-profile'>
 		<ul class="nav nav-tabs profile" id="Tab" role="tablist">
@@ -32,9 +33,11 @@
 			<li class="nav-item profile" role="presentation">
 				<button class="nav-link profile {% if current_pane == 'profile' %} active {% endif %}" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="{% if current_pane == 'profile' %} true {% else %} false {% endif %}">Профиль</button>
 			</li>
-			{% comment %} <li class="nav-item profile" role="presentation">
-				<button class="nav-link profile {% if current_pane == 'exercises' %} active {% endif %}" id="exercises-tab" data-bs-toggle="tab" data-bs-target="#exercises-tab-pane" type="button" role="tab" aria-controls="exercises-tab-pane" aria-selected="{% if current_pane == 'exercises' %} true {% else %} false {% endif %}">Упражнения</button>
-			</li> {% endcomment %}
+			{% if not user_is_teacher %}
+				<li class="nav-item profile" role="presentation">
+					<button class="nav-link profile {% if current_pane == 'exercises' %} active {% endif %}" id="exercises-tab" data-bs-toggle="tab" data-bs-target="#exercises-tab-pane" type="button" role="tab" aria-controls="exercises-tab-pane" aria-selected="{% if current_pane == 'exercises' %} true {% else %} false {% endif %}">Упражнения</button>
+				</li>
+			{% endif %}
 		</ul>
 	
 		<div class="tab-content" id="TabContent">
@@ -44,13 +47,15 @@
 			<div class="tab-pane fade {% if current_pane == 'profile' %} show active {% endif %}" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
 				{% include "users/account/profile/profile_pane.html" %}
 			</div>
-			{% comment %} <div class="tab-pane fade {% if current_pane == 'exercises' %} show active {% endif %}" id="exercises-tab-pane" role="tabpanel" aria-labelledby="exercises-tab" tabindex="0">
-				{% include "users/account/exercises/exercises_pane.html" %}	
-			</div> {% endcomment %}
+			{% if not user_is_teacher %}
+				<div class="tab-pane fade {% if current_pane == 'exercises' %} show active {% endif %}" id="exercises-tab-pane" role="tabpanel" aria-labelledby="exercises-tab" tabindex="0">
+					{% include "users/account/exercises/exercises_pane.html" %}
+				</div>
+			{% endif %}
 		</div>
 	</div>
 </body>
-{% endblock content %}
+{% endblock 'content' %}
 
 {% block 'js' %}
 	<!-- JQuery -->
@@ -58,10 +63,15 @@
 	<!-- Custom JS -->
 	<script src="{% static 'pages/js/popovers_on.js' %}"></script>
 	<script type="module" src="{% static 'event_calendar/js/main.js' %}"></script>
+	<script type="module" src="{% static 'users/js/timezone_update.js' %}"></script>
+
 	{% if user_is_teacher %}
 		<script type="module" src="{% static 'users/js/calendar_send_event_update_fix_.js' %}"></script>
+		<script type="module" src="{% static 'users/js/lesson_plan_teacher_modal.js' %}" defer></script>
+	{% else %}
+		<script type="module" src="{% static 'users/js/lesson_plan_student_modal.js' %}" defer></script>
 	{% endif %}
-	{% if user.is_supervisor %}
+	{% if user_is_supervisor %}
 		<script type="module" src="{% static 'users/js/load_another_calendar.js' %}"></script>
 	{% endif %}
 	<script>
@@ -69,4 +79,5 @@
 		const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 		document.cookie = "django_timezone=" + timezone;
 	</script>
-{% endblock  %}
+
+{% endblock 'js' %}

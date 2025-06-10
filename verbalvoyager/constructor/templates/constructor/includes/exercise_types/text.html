@@ -1,0 +1,12 @@
+<div class="module module-text" data-module-id="{{ module.id }}">
+    <div class="module-content">
+        {{ module.config.content|linebreaks }}
+    </div>
+    {% if children %}
+        <div class="module-children">
+            {% for child in children %}
+                {{ child }}
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>

@@ -575,6 +575,10 @@ div.tab-content {
                             color: var(--amber-a700);
                             cursor: pointer;
                         }
+
+                        i.lesson-plan {
+                            color: var(--indigo-700);
+                        }
                     }
                 }
             }

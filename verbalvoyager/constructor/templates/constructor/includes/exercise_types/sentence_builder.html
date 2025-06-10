@@ -1,0 +1,29 @@
+{% load lesson_filters %}
+
+<div class="section-content">
+    <div class="sentence-builder-activity">
+        {% for sentence in module.config.sentences %}
+        <div class="sentence-task" data-sentence="{{ sentence|escape }}">
+            <h4>Соберите предложение:</h4>
+            
+            <div class="sentence-container">
+                {# Контейнер для сортировки слов #}
+                <div class="sortable-words">
+                    {% with words=sentence|process_sentence %}
+                    {% for word in words %}
+                    <div class="word-tile" 
+                         data-word="{{ word }}"
+                         data-correct-position="{{ forloop.counter0 }}"
+                         draggable="true">
+                        {{ word }}
+                    </div>
+                    {% endfor %}
+                    {% endwith %}
+                </div>
+            </div>
+            
+            {% comment %} <div class="sentence-feedback"></div> {% endcomment %}
+        </div> 
+        {% endfor %}
+    </div>
+</div>

@@ -1,6 +1,6 @@
 {% extends "exercises/english/includes/irregular_verbs.html" %}
 {% load static %}
-{% load exercises_filters %}
+{% load new_exercises_filters %}
 
 {% block 'title' %}Irregular Verbs | Step {{step}}{% endblock  %}
 {% block 'style' %}
@@ -10,92 +10,98 @@
 
 {% block 'words' %}
     <!-- Words -->
-    {% for word in words %}
-        <div id='word_{{word.idx}}' class="row justify-content-center word__block {% if word.idx != 1 %}hidden{% endif %} hidden-anim">
-            <div class="col">
-                <div class="row justify-content-center words">
-                    <div class="col word">
-                        {% if word.infinitive__sound_url %}
-                            <div class="sound__wrap">
-                                <button type="button" class="btn word__play_sound">
-                                    <i class="bi bi-play-circle"></i>
-                                </button>
-                                <audio class='word__audio'>
-                                    <source src="{{ word.infinitive__sound_url }}">
-                                </audio>
-                            </div>
-                        {% endif %}
-                        <div class="word__wrap">    
-                            <div class="word__word">
-                                <div class="infinitive__wrap">
-                                    {% if word.infinitive__prefix %}
-                                        <span class="word__prefix">({{word.infinitive__prefix}})</span>
+    {% for irregular_verb in irregular_verbs %}
+        {% with translation=irregular_verb.infinitive.translations_from.first %}
+            {% with source_word_details=irregular_verb.infinitive|get_word_details target_word_details=translation.target_word|get_word_details %}
+            <div id="word_{{ forloop.counter }}" class="row justify-content-center word__block {% if forloop.counter != 1 %}hidden{% endif %} hidden-anim">
+                <div class="col">
+                    <div class="row justify-content-center words">
+                        <div class="col word">
+                            {% if source_word_details.audio_url %}
+                                <div class="sound__wrap">
+                                    <button type="button" class="btn word__play_sound">
+                                        <i class="bi bi-play-circle"></i>
+                                    </button>
+                                    <audio class='word__audio'>
+                                        <source src="{{ source_word_details.audio_url }}">
+                                    </audio>
+                                </div>
+                            {% endif %}
+                            <div class="word__wrap">    
+                                <div class="word__word">
+                                    {% if translation.prefix %}
+                                        <span class="word__prefix">({{translation.prefix}})</span>
                                     {% endif %}
-                                    {{word.infinitive__word|capfirst}}
-                                    
-                                    <span class="word__speech_code"> ({{word.infinitive__speech_code}})</span>
+                                    {{translation.source_word.word|capfirst}} {% if source_word_details.genus %} ({{source_word_details.genus}}){% endif %}
+
+                                    {% if translation.get_part_of_speech_display != "none" %}
+                                        <span class="word__speech_code"> ({{translation.get_part_of_speech_display}})</span>
+                                    {% endif %}
                                 </div>
-                                <div class='irregular_forms__wrap'>
-                                    {{word.past_simple|capfirst}} - 
-                                    {{word.past_participle|capfirst}}
-                                </div>
+                                {% if source_word_details.transcription %}
+                                    <p class="word__transcription">[ {{ source_word_details.transcription }} ]</p>
+                                {% endif %}
                             </div>
-                            {% if word.infinitive__transcription %}
-                                <p class="word__transcription">[ {{ word.infinitive__transcription }} ]</p>
+                            {% if translation.definition %}
+                                <div class="word__definition_wrap">
+                                    <button type="button" class="btn btn-lg btn__help help-btn" data-bs-toggle="popover" data-bs-html="true" data-bs-delay='{"show":0,"hide":1000}' data-bs-title="Значение слова" data-bs-content="{{ translation.definition|capfirst }}"><i class="bi bi-question-circle"></i></button>
+                                </div>
                             {% endif %}
                         </div>
-                        {% if word.infinitive__definition %}
-                            <div class="word__definition_wrap">
-                                <button type="button" class="btn btn-lg btn__help help-btn" data-bs-toggle="popover" data-bs-html="true" data-bs-delay='{"show":0,"hide":150}' data-bs-title="Значение слова" data-bs-content="{{ word.infinitive__definition|capfirst }}"><i class="bi bi-question-circle"></i></button>
-                            </div>
-                        {% endif %}
+                        <div class="col translate">
+                            <p class="word__translate">{{translation.target_word.word|capfirst}}</p>
+                        </div>
                     </div>
-                    <div class="col translate">
-                        <p class="word__translate">{{word.infinitive__translation|capfirst}}</p>
-                    </div>
-                </div>
-                <div class='word__card'>
-                    <div class="row content-row">
-                        <div class="col content-col my-auto">
-                            <div class='row'>
-
-                                <div class="col col-xs-12 col-md-7 image__col">
-                                    {% if word.infinitive__image_url %}
-                                        <img class="bd-placeholder-img word__image" src="{{ word.infinitive__image_url }}" alt="Word Image">
-                                    {% else %}
-                                        <img class="bd-placeholder-img word__image" src="{% static "exercises/images/img_not_found.webp"%}" alt="Word Image Not Found"><img/>
-                                    {% endif %}
-                                </div>
-                                <div class="col means">
-                                    <div class="means__wrap">
-                                        <p class="means__title">Другие значения:</p>
-                                        {% comment %} {% if word.another_means %}
-                                            <ul class="means__list">
-                                                {% for another_mean in word.another_means|str_to_list %}
-                                                    <li>
-                                                        <p class="text">{{ another_mean|capfirst }}</p>
-                                                    </li>
-                                                {% endfor %}
-                                            </ul>
+                    <div class='word__card'>
+                        <div class="row content-row">
+                            <div class="col content-col my-auto">
+                                <div class='row'>
+                                    <div class="col col-xs-12 col-md-7 image__col">
+                                        {% if target_word_details.image_url %}
+                                            <img class="bd-placeholder-img word__image" src="{{ target_word_details.image_url|set_image_size }}" alt="Word Image">
                                         {% else %}
-                                            <p class="means__not_found">Нет</p>
-                                        {% endif %} {% endcomment %}
-                                    </div>
-                                </div>
-                                <div class="col sentences">
-                                    <div class="sentences__wrap">
-                                        <p class="sentences__title">Предложения:</p>
-                                        {% if word.infinitive__examples %}
-                                            <ul class="sentences__list">
-                                                {% for example in word.infinitive__examples|str_to_list %}
-                                                    <li>
-                                                        <p class="text">{{ example|highlight }}</p>
-                                                    </li>
-                                                {% endfor %}
-                                            </ul>
-                                        {% else %}
-                                            <p class="sentences__not_found">Нет</p>
+                                            <img class="bd-placeholder-img word__image" src="{% static "exercises/images/img_not_found.webp"%}" alt="Word Image Not Found"><img/>
                                         {% endif %}
+                                    </div>
+                                    <div class="col means">
+                                        <div class="means__wrap">
+                                            <p class="means__title">Другие значения:</p>
+                                            {% with another_means=translation|get_another_translates %}
+                                                {% if another_means %}
+                                                    <ul class="means__list">
+                                                        {{ another_means|parse_to_list }}
+                                                    </ul>
+                                                {% else %}
+                                                    <p class="means__not_found">Нет</p>
+                                                {% endif %}
+                                            {% endwith %}
+                                        </div>
+                                    </div>
+                                    <div class="col sentences">
+                                        <div class="sentences__wrap">
+                                            <p class="sentences__title">Предложения:</p>
+                                            {% if translation.examples %}
+                                                <ul class="sentences__list">
+                                                    {% for example in translation.examples %}
+                                                    <li class="sentence__wrap">
+                                                        <div class="sound__wrap">
+                                                            <button type="button" class="btn word__play_sound">
+                                                                <i class="bi bi-play-circle"></i>
+                                                            </button>
+                                                            <audio class='word__audio'>
+                                                                <source src="{{ example.soundUrl }}">
+                                                            </audio>
+                                                        </div>
+                                                        <div class="text__wrap">
+                                                            <p class="text">{{ example.text|highlight }}</p>
+                                                        </div>
+                                                    </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <p class="sentences__not_found">Нет</p>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -103,7 +109,8 @@
                     </div>
                 </div>
             </div>
-        </div>
+            {% endwith %}
+        {% endwith %}
     {% endfor %}
 {% endblock  %}
 

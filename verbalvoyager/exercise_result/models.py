@@ -1,10 +1,11 @@
+import logging
+
 from django.db import models
 
-from logger import get_logger
 from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseSpanishDialog, ExerciseRussianDialog, ExerciseIrregularEnglishVerb
 
 
-logger = get_logger()
+logger = logging.getLogger('django')
 
 # ExerciseWordsResult
 class AnstractExerciseWordsResult(models.Model):

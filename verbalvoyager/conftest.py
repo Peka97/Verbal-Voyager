@@ -6,6 +6,7 @@ from django.contrib.admin.sites import AdminSite
 
 
 from dictionary.models import EnglishWord, IrregularEnglishVerb
+
 from exercises.models import ExerciseCategory, ExerciseEnglishWords, ExerciseEnglishDialog, \
     ExerciseIrregularEnglishVerb
 
@@ -35,6 +36,7 @@ def student_group():
     group, _ = Group.objects.get_or_create(name='Student')
     return group
 
+
 @pytest.fixture
 def student_demo_group():
     group, _ = Group.objects.get_or_create(name='StudentDemo')
@@ -45,6 +47,7 @@ def student_demo_group():
 def teacher_group():
     group, _ = Group.objects.get_or_create(name='Teacher')
     return group
+
 
 @pytest.fixture
 def teacher_demo_group():
@@ -60,13 +63,6 @@ def groupless_user(django_user_model):
         password='password'
     )
     return user
-
-
-@pytest.fixture
-def groupless_user_client(groupless_user):
-    client = Client()
-    client.force_login(groupless_user)
-    return client
 
 
 @pytest.fixture
@@ -115,6 +111,7 @@ def teacher_user(django_user_model, teacher_group):
     user.groups.add(teacher_group)
     return user
 
+
 @pytest.fixture
 def teacher_demo_user(django_user_model, teacher_demo_group):
     user = django_user_model.objects.create_user(
@@ -124,6 +121,7 @@ def teacher_demo_user(django_user_model, teacher_demo_group):
     )
     user.groups.add(teacher_demo_group)
     return user
+
 
 @pytest.fixture
 def teacher_client(teacher_user):
@@ -142,6 +140,7 @@ def teacher_client(teacher_user):
 # @pytest.fixture
 # def exercise_english_dialog_model():
 #     return ExerciseEnglishDialog
+
 
 @pytest.fixture
 def exercise_demo_category():
@@ -249,6 +248,7 @@ def exercise_irregular_verbs_with_external_access(irregular_verbs, student_user,
     exercise.words.set(irregular_verbs)
     return exercise
 
+
 @pytest.fixture
 def exercise_irregular_verbs_with_category_demo(irregular_verbs, student_user, teacher_user, exercise_demo_category):
     exercise, _ = ExerciseIrregularEnglishVerb.objects.get_or_create(
@@ -257,10 +257,11 @@ def exercise_irregular_verbs_with_category_demo(irregular_verbs, student_user, t
         teacher=teacher_user,
         category=exercise_demo_category
     )
-    
+
     exercise.category = exercise_demo_category
     exercise.words.set(irregular_verbs)
     return exercise
+
 
 @pytest.fixture
 def exercise_english_words(english_words, student_user, teacher_user):
@@ -293,10 +294,11 @@ def exercise_english_word_with_category_demo(english_words, student_user, teache
         teacher=teacher_user,
         category=exercise_demo_category
     )
-    
+
     exercise.words.set(english_words)
 
     return exercise
+
 
 @pytest.fixture
 def exercise_english_dialog(english_words, student_user, teacher_user):
@@ -352,6 +354,7 @@ def exercise_english_dialog_with_exernal_access(english_words, student_user, tea
     exercise.words.set(english_words)
     return exercise
 
+
 @pytest.fixture
 def exercise_english_dialog_with_category_demo(english_words, student_user, teacher_user, exercise_demo_category):
     exercise, _ = ExerciseEnglishDialog.objects.get_or_create(
@@ -360,7 +363,7 @@ def exercise_english_dialog_with_category_demo(english_words, student_user, teac
         teacher=teacher_user,
         category=exercise_demo_category
     )
-    
+
     exercise.category = exercise_demo_category
     exercise.words.set(english_words)
     return exercise

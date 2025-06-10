@@ -24,6 +24,10 @@ CSRF_TRUSTED_ORIGINS = [
 
 # Application definition
 INSTALLED_APPS = [
+    # New Admin UI
+    # "admin_interface",
+    # "colorfield",
+
     # Default
     'django.contrib.admin',
     'django.contrib.auth',
@@ -38,6 +42,7 @@ INSTALLED_APPS = [
     'fontawesomefree',  # CSS static
     'nested_admin',  # Django Admin multiinlines
     'django_recaptcha',  # Recaptcha
+    'django_json_widget',  # Django Admin JSON Widget
 
     # Created
     'users',
@@ -48,7 +53,11 @@ INSTALLED_APPS = [
     'event_calendar',
     'lesson_plan',
     'logging_app',
+    'constructor',
 ]
+
+# X_FRAME_OPTIONS = "SAMEORIGIN"
+# SILENCED_SYSTEM_CHECKS = ["security.W019"]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -193,6 +202,77 @@ else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     STATICFILES_STORAGE = 'flexible_manifest_staticfiles.storage.ManifestStaticFilesStorage'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
+
+# Для корректного отображения русских имен файлов
+FILE_UPLOAD_PERMISSIONS = 0o644
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
+
+# Redis
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        # 'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        "LOCATION": CURRENT_CONFIG.REDIS_DEFAULT_LOCATION,
+        "OPTIONS": {
+            "SOCKET_CONNECT_TIMEOUT": 5,
+            "SOCKET_TIMEOUT": 5,
+            "VERSION": CURRENT_CONFIG.REDIS_VERSION,
+            "SSL": not CURRENT_CONFIG.DEBUG,
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 100,
+                "retry_on_timeout": True,
+            },
+            # Для частых операций записи
+            "COMPRESS_MIN_LENGTH": 500,  # сжимать только большие значения
+        },
+        "KEY_PREFIX": "vv",
+        "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+        "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
+    },
+    "sessions": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": CURRENT_CONFIG.REDIS_SESSION_LOCATION,
+        "OPTIONS": {
+            "SOCKET_CONNECT_TIMEOUT": 5,
+            "SOCKET_TIMEOUT": 5,
+            "VERSION": CURRENT_CONFIG.REDIS_VERSION,
+            "SSL": not CURRENT_CONFIG.DEBUG,
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 100,
+                "retry_on_timeout": True,
+            },
+            "COMPRESS_MIN_LENGTH": 500,
+        },
+        "KEY_PREFIX": "vv:s",
+        "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+        "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
+    }
+}
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "sessions"
+SESSION_COOKIE_AGE = 1209600
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_REDIS_MAX_ENTRIES = 10000
+SESSION_REDIS_EXPIRE = SESSION_COOKIE_AGE
+REDIS_METRICS_ENABLED = True
+
+if not CURRENT_CONFIG.DEBUG:
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    CSRF_COOKIE_SECURE = True
+
+if DEBUG:
+    from django.core.cache import cache
+    cache.clear()
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -210,37 +290,44 @@ EMAIL_HOST_PASSWORD = CURRENT_CONFIG.email_password
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-
     'formatters': {
-        'console': {
-            'format': '%(name)-12s [%(levelname)-8s] %(name)s::%(module)s::%(lineno)s - %(message)s'
+        'default': {
+            'format': "%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
         },
-        'file': {
-            'format': '%(asctime)s [%(levelname)-8s] %(name)s::%(module)s::%(lineno)s - %(message)s'
-        }
     },
     'handlers': {
         'console': {
             'level': 'ERROR',
             'class': 'logging.StreamHandler',
-            'formatter': 'console',
+            'formatter': 'default',
         },
-        'file': {
+        'django_file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'formatter': 'file',
-            'filename': os.path.join(BASE_DIR, 'logs/django.log'),
+            'filename': CURRENT_CONFIG.DJANGO_LOG_FILE_PATH,
+            'formatter': 'default'
+        },
+        'words_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': CURRENT_CONFIG.WORDS_LOG_FILE_PATH,
+            'formatter': 'default'
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'django_file'],
             'level': 'ERROR',
             'propagate': True
         },
         'django.request': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'django_file'],
             'level': 'ERROR',
+            'propagate': True,
+        },
+        'words': {
+            'handlers': ['words_file',],
+            'level': 'INFO',
             'propagate': False,
         },
     }

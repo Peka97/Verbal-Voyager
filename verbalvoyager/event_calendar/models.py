@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 
 from django.db import models
@@ -6,10 +7,8 @@ from django.urls import reverse
 from django.contrib.admin.utils import quote
 from django.core.exceptions import FieldError
 
-from logger import get_logger
 
-
-logger = get_logger()
+logger = logging.getLogger('django')
 User = get_user_model()
 
 
@@ -30,8 +29,8 @@ class Review(models.Model):
         verbose_name='Название курса',
         on_delete=models.CASCADE,
         related_name='reviews',
-        blank=True,  # TODO: remove?
-        null=True,  # TODO: remove?
+        blank=True,
+        null=True
     )
     text = models.TextField(
         verbose_name='Отзыв',
@@ -73,11 +72,11 @@ class LessonTask(models.Model):
     )
     points = models.SmallIntegerField(
         verbose_name='Баллы',
-        default=1,
+        default=1
     )
     is_completed = models.BooleanField(
         verbose_name='Задача завершена',
-        default=False,
+        default=False
     )
     lesson_id = models.ForeignKey(
         'Lesson',
@@ -85,7 +84,8 @@ class LessonTask(models.Model):
         on_delete=models.CASCADE,
         related_name='lesson_tasks',
         blank=True,
-        null=True
+        null=True,
+        db_index=True
     )
 
     def save(self, *args, **kwargs):
@@ -116,7 +116,8 @@ class Lesson(models.Model):
         help_text="Поле заполняется автоматически, если остаётся пустым"
     )
     datetime = models.DateTimeField(
-        verbose_name='Дата и время урока'
+        verbose_name='Дата и время урока',
+        db_index=True
     )
     duration = models.SmallIntegerField(
         verbose_name='Продолжительность',
@@ -132,19 +133,21 @@ class Lesson(models.Model):
     )
     student_id = models.ForeignKey(
         User,
-        related_name='lessons_new_student',
+        related_name='lesson_student',
         limit_choices_to={'groups__name__in': ['Student', ]},
         on_delete=models.CASCADE,
         verbose_name="Ученик",
-        null=True
+        null=True,
+        db_index=True
     )
     teacher_id = models.ForeignKey(
         User,
         verbose_name="Учитель",
         limit_choices_to={'groups__name__in': ['Teacher', ]},
         on_delete=models.CASCADE,
-        related_name='lessons_new_teacher',
-        null=True
+        related_name='lesson_teacher',
+        null=True,
+        db_index=True
     )
     project_id = models.ForeignKey(
         'Project',
@@ -152,7 +155,8 @@ class Lesson(models.Model):
         on_delete=models.CASCADE,
         related_name='lessons_new_project',
         blank=True,
-        null=True
+        null=True,
+        db_index=True
     )
 
     def get_admin_edit_url(self):
@@ -201,6 +205,7 @@ class ProjectTask(models.Model):
             projects = Project.objects.filter(tasks=self.pk)
             for project in projects:
                 project.save()
+
         except FieldError:
             pass
 
@@ -242,12 +247,13 @@ class Project(models.Model):
     )
     types = models.ManyToManyField(
         ProjectType,
-        verbose_name='Тип проекта'
+        verbose_name='Тип проекта',
+        related_name='project_id'
     )
     students = models.ManyToManyField(
         User,
         verbose_name='Студенты',
-        limit_choices_to={'groups__name__in': ['Student', ]},
+        limit_choices_to={'groups__name__in': ['Student', ]}
     )
     teacher_id = models.ForeignKey(
         User,
@@ -260,7 +266,7 @@ class Project(models.Model):
     from_date = models.DateField(
         verbose_name='Дата начала',
         null=True,
-        blank=True,
+        blank=True
     )
     to_date = models.DateField(
         verbose_name='Дата окончания',
@@ -270,7 +276,7 @@ class Project(models.Model):
     lesson_1 = models.DateTimeField(
         verbose_name='Время первого урока в неделе',
         null=True,
-        blank=True,
+        blank=True
     )
     lesson_1_duration = models.IntegerField(
         verbose_name='Длительность урока',
@@ -330,8 +336,8 @@ class Project(models.Model):
 
     def set_progress(self):
         if self.tasks.count() > 0:
-            self.progress = self.tasks.filter(
-                is_completed=False).count() * 100 / self.tasks.count()
+            self.progress = self.tasks \
+                .filter(is_completed=False).count() * 100 / self.tasks.count()
         else:
             self.progress = 0
 

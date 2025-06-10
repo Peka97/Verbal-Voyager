@@ -7,9 +7,9 @@ from django.urls import reverse
 @pytest.mark.django_db
 def test_exercise_english_words_success(exercise_english_words, student_client):
     url = reverse(
-        'exercise_words',
+        'new_exercise_words',
         kwargs={
-            'ex_lang': 'english',
+
             'ex_id': exercise_english_words.pk,
             'step': 1
         }
@@ -21,9 +21,9 @@ def test_exercise_english_words_success(exercise_english_words, student_client):
 @pytest.mark.django_db
 def test_exercise_english_words_redirect(exercise_english_words, client):
     url = reverse(
-        'exercise_words',
+        'new_exercise_words',
         kwargs={
-            'ex_lang': 'english',
+
             'ex_id': exercise_english_words.pk,
             'step': 1
         }
@@ -36,9 +36,9 @@ def test_exercise_english_words_redirect(exercise_english_words, client):
 def test_exercise_english_words_not_found(exercise_english_words, client, another_student_user):
     client.force_login(another_student_user)
     url = reverse(
-        'exercise_words',
+        'new_exercise_words',
         kwargs={
-            'ex_lang': 'english',
+
             'ex_id': exercise_english_words.pk,
             'step': 1
         }
@@ -50,9 +50,9 @@ def test_exercise_english_words_not_found(exercise_english_words, client, anothe
 @pytest.mark.django_db
 def test_exercise_english_words_with_exeternal_access_success(exercise_english_words_with_exernal_access, client):
     url = reverse(
-        'exercise_words',
+        'new_exercise_words',
         kwargs={
-            'ex_lang': 'english',
+
             'ex_id': exercise_english_words_with_exernal_access.pk,
             'step': 1
         }
@@ -67,9 +67,9 @@ def test_exercise_english_words_with_exeternal_access_success(exercise_english_w
 def test_exercise_english_dialogs_success(exercise_english_dialog, client, student_user):
     client.force_login(student_user)
     url = reverse(
-        'exercise_dialog',
+        'new_exercise_dialog',
         kwargs={
-            'ex_lang': 'english',
+
             'ex_id': exercise_english_dialog.pk,
         }
     )
@@ -80,9 +80,9 @@ def test_exercise_english_dialogs_success(exercise_english_dialog, client, stude
 @pytest.mark.django_db
 def test_exercise_english_dialogs_redirect(exercise_english_dialog, client):
     url = reverse(
-        'exercise_dialog',
+        'new_exercise_dialog',
         kwargs={
-            'ex_lang': 'english',
+
             'ex_id': exercise_english_dialog.pk,
         }
     )
@@ -94,9 +94,9 @@ def test_exercise_english_dialogs_redirect(exercise_english_dialog, client):
 def test_exercise_english_dialogs_words_not_found(exercise_english_dialog, client, another_student_user):
     client.force_login(another_student_user)
     url = reverse(
-        'exercise_dialog',
+        'new_exercise_dialog',
         kwargs={
-            'ex_lang': 'english',
+
             'ex_id': exercise_english_dialog.pk,
         }
     )
@@ -107,9 +107,9 @@ def test_exercise_english_dialogs_words_not_found(exercise_english_dialog, clien
 @pytest.mark.django_db
 def test_exercise_english_dialogs_with_exeternal_access_success(exercise_english_dialog_with_exernal_access, client):
     url = reverse(
-        'exercise_dialog',
+        'new_exercise_dialog',
         kwargs={
-            'ex_lang': 'english',
+
             'ex_id': exercise_english_dialog_with_exernal_access.pk,
         }
     )
@@ -123,7 +123,7 @@ def test_exercise_english_dialogs_with_exeternal_access_success(exercise_english
 def test_exercise_irregular_verbs_success(exercise_irregular_verbs, client, student_user):
     client.force_login(student_user)
     url = reverse(
-        'exercise_irregular_verbs',
+        'new_exercise_irregular_verbs',
         kwargs={
             'ex_id': exercise_irregular_verbs.pk,
             'step': 1
@@ -136,7 +136,7 @@ def test_exercise_irregular_verbs_success(exercise_irregular_verbs, client, stud
 @pytest.mark.django_db
 def test_exercise_irregular_verbs_redirect(exercise_irregular_verbs, client):
     url = reverse(
-        'exercise_irregular_verbs',
+        'new_exercise_irregular_verbs',
         kwargs={
             'ex_id': exercise_irregular_verbs.pk,
             'step': 1
@@ -150,7 +150,7 @@ def test_exercise_irregular_verbs_redirect(exercise_irregular_verbs, client):
 def test_exercise_irregular_verbs_not_found(exercise_irregular_verbs, client, another_student_user):
     client.force_login(another_student_user)
     url = reverse(
-        'exercise_irregular_verbs',
+        'new_exercise_irregular_verbs',
         kwargs={
             'ex_id': exercise_irregular_verbs.pk,
             'step': 1
@@ -164,7 +164,7 @@ def test_exercise_irregular_verbs_not_found(exercise_irregular_verbs, client, an
 @pytest.mark.django_db
 def test_exercise_irregular_verbs_with_exeternal_access_success(exercise_irregular_verbs_with_external_access, client):
     url = reverse(
-        'exercise_irregular_verbs',
+        'new_exercise_irregular_verbs',
         kwargs={
             'ex_id': exercise_irregular_verbs_with_external_access.pk,
             'step': 1

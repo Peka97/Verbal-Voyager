@@ -17,7 +17,7 @@
               </a>
             </li>
             <li class="header nav-item dropdown">
-              <a class="header nav-link dropdown-toggle align-middle px-1 {% if not user.is_admin %} disabled {% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-disabled="true">
+              <a class="header nav-link dropdown-toggle align-middle px-1 {% if not user.is_superuser %} disabled {% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-disabled="true">
                 Курсы
               </a>
               <ul class="header dropdown-menu">
@@ -28,9 +28,9 @@
                 {% endfor %}
               </ul>
             </li>
-            <li><a href="{% url 'about' %}" class="header nav-link px-1 w-100 {% if not user.is_admin %} disabled {% endif %}" aria-disabled="true">О проекте</a></li>
-            <li><a href="{% url 'faq' %}" class="header nav-link px-1 w-100 {% if not user.is_admin %} disabled {% endif %}" aria-disabled="true">FAQ</a></li>
-            <li><a href="{% url 'portfolio' %}" class="header nav-link px-1 w-100 {% if not user.is_admin %} disabled {% endif %}" aria-disabled="true">О себе</a></li>
+            <li><a href="{% url 'about' %}" class="header nav-link px-1 w-100 {% if not user.is_superuser %} disabled {% endif %}" aria-disabled="true">О проекте</a></li>
+            <li><a href="{% url 'faq' %}" class="header nav-link px-1 w-100 {% if not user.is_superuser %} disabled {% endif %}" aria-disabled="true">FAQ</a></li>
+            <li><a href="{% url 'portfolio' %}" class="header nav-link px-1 w-100 {% if not user.is_superuser %} disabled {% endif %}" aria-disabled="true">О себе</a></li>
             <li><a href="{% url 'contacts' %}" class="header nav-link px-1 w-100" aria-disabled="true">Контакты</a></li>
           </ul>
         </div>
@@ -50,9 +50,9 @@
             <img class='avatar rounded-circle' src="{% static "users/images/default_avatar.webp" %}" alt="User photo">
           </a>
           <ul class="header dropdown-menu dropdown-menu-end text-small shadow" style="">
-            <li><a class="header dropdown-item" href="{% url 'account' current_pane='activities' %}">Активности</a></li>
-            <li><a class="header dropdown-item" href="{% url 'account' current_pane='profile' %}">Профиль</a></li>
-            {% comment %} <li><a class="header dropdown-item" href="{% url 'account' current_pane='exercises' %}">Упражнения</a></li> {% endcomment %}
+            <li><a class="header dropdown-item" href="{% url 'account' %}?pane=activities">Активности</a></li>
+            <li><a class="header dropdown-item" href="{% url 'account' %}?pane=profile">Профиль</a></li>
+            <li><a class="header dropdown-item" href="{% url 'account' %}?pane=exercises">Упражнения</a></li>
             {% if user_is_teacher or user.is_teacher %}
               <li><hr class="dropdown-divider"></li>
               <li><a class="header dropdown-item" href="{% url 'admin:index' %}">Администрирование</a></li>

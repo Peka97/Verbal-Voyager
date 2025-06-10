@@ -2,7 +2,7 @@ from django.db import models
 
 
 class EnglishLessonPlan(models.Model):
-    lesson_id = models.ForeignKey(
+    lesson_id = models.OneToOneField(
         'event_calendar.Lesson',
         verbose_name='Урок',
         on_delete=models.SET_NULL,
@@ -11,7 +11,7 @@ class EnglishLessonPlan(models.Model):
         null=True,
         help_text="Урок, к которому составлен план"
     )
-    exercise_id = models.ForeignKey(
+    exercise_id = models.OneToOneField(
         'exercises.ExerciseEnglishWords',
         verbose_name='Упражнение',
         on_delete=models.SET_NULL,
@@ -28,7 +28,7 @@ class EnglishLessonPlan(models.Model):
         help_text="Опиши основные темы урока"
     )
     new_vocabulary = models.ManyToManyField(
-        'dictionary.EnglishWord',
+        'dictionary.Translation',
         verbose_name='Новые слова',
         related_name='new_vocabulary',
         blank=True,

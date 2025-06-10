@@ -1,0 +1,49 @@
+{% extends "exercises/words/includes/words.html" %}
+{% load static %}
+{% load new_exercises_filters %}
+
+{% block title %}Exercise | Step {{step}}{% endblock  %}
+{% block 'style' %}
+    <link rel="stylesheet" href="{% static 'exercises/css/step_base.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/words/step_3.css' %}">
+{% endblock  %}
+
+{% block 'words' %}
+    <div class="row row-cols-2 justify-content-center words__block">
+        <div class="col words">
+            <div class='words_container pe-2' id="words">
+                {% for translation in translations %}
+                    <div class='row word' id="word_{{ translation.target_word.pk }}">
+                        <div class='col'>
+                            <span>{{ translation.source_word.word }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col translates">
+            <div class='translate_container' id="translates">
+                {% with all_translates=translations|get_all_translates %}
+
+                {% for trans_word in all_translates|get_shuffled_values %}
+                    <div class='row translate' id="translate_{{ trans_word|find_translation_id:translations }}">
+                        <div class='col'>
+                            <span lang="ru"><i class="drag-handle bi bi-list"></i>{{ trans_word|capfirst }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+    <div class="row btn__answer">
+        <button type="button" class="btn btn-default btn__check" id="liveToastBtn">Проверить</button>
+    </div>
+
+{% endblock  %}
+
+{% block 'js' %}
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script type="module" src="{% static 'exercises/js/words/step_3.js' %}"></script>
+{% endblock  %}

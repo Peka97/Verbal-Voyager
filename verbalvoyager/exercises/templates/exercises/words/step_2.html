@@ -1,0 +1,53 @@
+{% extends "exercises/words/includes/words.html" %}
+{% load static %}
+{% load new_exercises_filters %}
+
+
+{% block 'title' %} Exercise | Step {{step}}{% endblock  %}
+{% block 'style' %}
+    <link rel="stylesheet" href="{% static 'exercises/css/step_base.css' %}">
+    <link rel="stylesheet" href="{% static 'exercises/css/words/step_2.css' %}">
+{% endblock  %}
+
+{% block 'words' %}
+
+    <!-- Words -->
+    {% with all_translates=translations|get_all_translates %}
+
+    {% for translation in translations %}
+        <div id="word_{{ forloop.counter }}" class="row row-cols-1 justify-content-center word-check word__block {% if forloop.counter != 1 %}hidden{% endif %} hidden-anim">
+            <div class="col">
+                <p class="text text-center word__main">{{ translation.source_word.word|capfirst }}</p>
+            </div>
+            <div class="translate__list"> 
+                {% for var in all_translates|get_random_slice:translation.target_word.word %}
+                    <div class="col text-center word__variant__wrap">
+                        <button type=button class="btn btn-default word__variant {% if translation.target_word.word == var %} answer {% endif %}">
+                            <p>{{ var }}</p>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+
+    {% endwith %}
+
+    <!-- Ex. Alerts -->
+    <div class='row row-alerts justify-content-center pt-3'>
+        <div class='col'>
+            <div class='alerts'>
+                <div id='alert-success' class="alert alert-success text-center hidden" role="alert">
+                    Верно! Так держать!
+                </div>
+                <div id='alert-danger' class="alert alert-danger text-center hidden" role="alert">
+                    Не верно! Подумай ещё
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock  %}
+
+{% block 'js' %}
+    <script type="module" src="{% static 'exercises/js/words/step_2.js' %}"></script>
+{% endblock  %}

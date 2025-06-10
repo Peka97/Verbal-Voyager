@@ -64,17 +64,17 @@ class CustomPasswordResetForm(PasswordResetForm):
 
 
 class TimezoneForm(forms.ModelForm):
-    captcha = ReCaptchaField(
-        widget=ReCaptchaV3(
-            attrs={
-                'id': 'timezoneCaptcha',
-            }
-        )
-    )
+    # captcha = ReCaptchaField(
+    #     widget=ReCaptchaV3(
+    #         attrs={
+    #             'id': 'timezoneCaptcha',
+    #         }
+    #     )
+    # )
     
     class Meta:
         model = User
-        fields = ['timezone', 'captcha']
+        fields = ['timezone', ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

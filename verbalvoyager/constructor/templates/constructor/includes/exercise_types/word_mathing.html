@@ -1,0 +1,29 @@
+{% load lesson_filters %}
+
+<div class="row row-cols-2 justify-content-center words__block">
+    <div class="col words">
+        <div class='words_container pe-2' id="words">
+            {% for word in words %}
+                <div class='row word' id='word_{{word.idx}}'>
+                    <div class='col'>
+                        <span>{{ word.word }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col translates">
+        <div class='translate_container' id="translates">
+            {% for trans_word in words|get_shuffled_translates %}
+                <div class='row translate' id='translate_{{ trans_word.idx }}'>
+                    <div class='col'>
+                        <span lang="ru"><i class="drag-handle bi bi-list"></i>{{ trans_word.translation|capfirst }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div class="row btn__answer">
+    <button type="button" class="btn btn-default btn__check" id="liveToastBtn">Проверить</button>
+</div>

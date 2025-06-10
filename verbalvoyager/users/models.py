@@ -1,9 +1,12 @@
 from typing import Any
 
 import pytz
-from django.contrib.auth.models import AbstractUser
-from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.db import models
+from django.core.cache import cache
+
+
+# from .services.cache import get_cached_user_groups
 
 
 class User(AbstractUser):
@@ -18,29 +21,25 @@ class User(AbstractUser):
         self._meta.get_field('email').__dict__['_unique'] = True
         self._meta.get_field('email').__dict__['null'] = True
 
+    def _in_group(self, group_name):
+        cache_key = f"user_{self.pk}_in_group_{group_name.lower()}"
+        return cache.get_or_set(
+            cache_key,
+            lambda: self.groups.filter(name=group_name).exists(),
+            timeout=3600
+        )
+
     def is_teacher(self):
-        try:
-            return self.groups.filter(name='Teacher').exists()
-        except ValueError:
-            return False
+        return self._in_group('Teacher') if not isinstance(self, AnonymousUser) else False
 
     def is_student(self):
-        try:
-            return self.groups.filter(name='Student').exists()
-        except ValueError:
-            return False
+        return self._in_group('Student') if not isinstance(self, AnonymousUser) else False
 
     def is_supervisor(self):
-        try:
-            return self.groups.filter(name='Supervisor').exists()
-        except ValueError:
-            return False
+        return self._in_group('Supervisor') if not isinstance(self, AnonymousUser) else False
 
-    def is_admin(self):
-        try:
-            return True if self.username == 'admin' else False
-        except ObjectDoesNotExist:
-            return False
+    # def is_admin(self):
+    #     return self.is_superuser if not isinstance(self, AnonymousUser) else False
 
     def get_groups(self):
         return tuple(self.groups.all())

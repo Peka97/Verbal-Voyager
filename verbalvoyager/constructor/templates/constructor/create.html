@@ -1,0 +1,96 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Конструктор урока{% endblock %}</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/compromise@14.8.0/builds/compromise.min.js"></script>
+    
+    <link rel="stylesheet" href="{% static "constructor/css/create.css" %}" type="text/css">
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <div class="section">
+        <h1>{% block heading %}Конструктор урока{% endblock %}</h1>
+        {% csrf_token %}
+        <div class="lesson-meta">
+            <div class="form-group">
+                <label for="constructor-name">Название конструктора:</label>
+                <input type="text" id="constructor-name" class="form-control" 
+                    placeholder="Мой конструктор уроков" required
+                    value="{% block constructor_name %}{% endblock %}">
+            </div>
+            
+            <div class="form-group">
+                <label for="lesson-title">Название урока:</label>
+                <input type="text" id="lesson-title" class="form-control" 
+                    placeholder="Мой новый урок" required
+                    value="{% block lesson_title %}{% endblock %}">
+            </div>
+            
+            <div class="form-group">
+                <label for="lesson-description">Описание урока:</label>
+                <textarea id="lesson-description" class="form-control" 
+                        placeholder="Описание урока...">{% block lesson_description %}{% endblock %}</textarea>
+            </div>
+        </div>
+
+        <!-- 1. Выбор слов -->
+        <div class="section">
+            <h2>1. Слова</h2>
+            <div class="autocomplete-container">
+                <input type="text" class="autocomplete-input" placeholder="Search..." autocomplete="off">
+                <div class="autocomplete-dropdown">
+                    {% for word in words %}
+                        <div class="autocomplete-item" data-id="{{word.pk}}">{{word.word}}</div>
+                    {% endfor %}
+                </div>
+                <div class="selected-items">
+                    {% block selected_words %}{% endblock %}
+                </div>
+            </div>
+        </div>
+        
+
+        <!-- 2. Список упражнений -->
+        <div class="section">
+            <h2>2. Структура</h2>
+            <button id="add-module-btn">+ Добавить модуль</button>
+            <ul id="module-list">
+                <!-- Сюда добавляются упражнения -->
+            </ul>
+        </div>
+
+        <!-- 3. Сохранение -->
+        <button id="save-order">Сохранить набор упражнений</button>
+
+        <!-- Модальное окно выбора модуля -->
+        <div id="module-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Выберите модуль</h2>
+                <div class="exercise-tiles">
+                    {% for exercise_type in exercise_types %}
+                    <div class="exercise-tile" data-id="{{exercise_type.id}}" data-name="{{exercise_type.name}}" data-code="{{exercise_type.code}}" data-description="{{exercise_type.description}}">
+                        <h3>{{ exercise_type.name }} ({{exercise_type.code}})</h3>
+                        <p>{{ exercise_type.description }}</p>
+                        <div class="exercise-preview">
+                            <img src="https://placehold.co/188x120" alt="">
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="{% static 'constructor/js/compromise.js' %}"></script>
+
+    <script type="module" src="{% static 'constructor/js/create.js' %}"></script>
+    <script type="module" src="{% static 'constructor/js/edit.js' %}"></script>
+
+</body>
+</html>

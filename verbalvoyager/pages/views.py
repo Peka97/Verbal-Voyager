@@ -1,12 +1,13 @@
+import logging
 
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 
-from event_calendar.models import Review, Course, Project
-from logger import get_logger
+from event_calendar.models import Review
+from users.services.cache import get_cached_courses
 
 
-logger = get_logger()
+logger = logging.getLogger('django')
 User = get_user_model()
 
 
@@ -33,26 +34,24 @@ def handler_500(request, exception=None):
     }
     return render(request, 'pages/error.html', context, status=500)
 
-
 def index(request):
     context = {}
 
-    user = request.user
-    courses = list(Course.objects.all())
     reviews = list(Review.objects.order_by('?').values(
         'course__name', 'text', 'created_at', 'from_user__first_name')[:3])
 
     for review in reviews:
         review['created_at'] = review['created_at'].strftime("%d.%m.%Y")
 
-    context['user'] = user
-    context['courses'] = courses
+    context['courses'] = get_cached_courses()
     context['reviews'] = reviews
-    context['student_count'] = {
-        'english': Project.objects.filter(course_id__name='Английский язык').count(),
-        'french': Project.objects.filter(course_id__name='Французский язык').count(),
-        'spanish': Project.objects.filter(course_id__name='Испанский язык').count(),
-    }
+    # context['student_count'] = {
+    #     'english': Project.objects.filter(course_id__name='Английский язык').count(),
+    #     'french': Project.objects.filter(course_id__name='Французский язык').count(),
+    #     'spanish': Project.objects.filter(course_id__name='Испанский язык').count(),
+    #     'russian': Project.objects.filter(course_id__name='Русский язык').count(),
+    #     'сhinese': Project.objects.filter(course_id__name='Китайский язык').count(),
+    # }
 
     return render(request, 'pages/index.html', context)
 
@@ -80,7 +79,6 @@ def portfolio(request):
 def about_project(request):
     context = {}
     return render(request, 'pages/about.html', context)
-
 
 def contacts(request):
     context = {}

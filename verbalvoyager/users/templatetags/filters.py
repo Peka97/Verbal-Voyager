@@ -11,9 +11,9 @@ register = template.Library()
 logger = get_logger()
 
 
-@register.filter(name="type_names_to_list")
-def type_names_to_list(value):
-    return [proj_type.name for proj_type in value]
+@register.filter(name="project_types_to_list")
+def project_types_to_list(project_types):
+    return [project_type.name for project_type in project_types]
 
 
 @register.filter(name="join_student_names")
