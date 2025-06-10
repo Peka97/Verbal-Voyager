@@ -141,8 +141,8 @@
                                                     <div class="vocabulary-section">
                                                         <h3>📖 Новые слова</h3>
                                                         <div class="words-cloud">
-                                                            {% for word in lsn.lesson_plan.new_vocabulary.all %}
-                                                                <span id="word_{{word.pk}}" class="word-tag">{{ word.word }}</span>
+                                                            {% for translation in lsn.lesson_plan.new_vocabulary.all %}
+                                                                <span id="word_{{translation.pk}}" class="word-tag">{{ translation.source_word.word }}</span>
                                                             {% endfor %}
                                                             
 
@@ -267,16 +267,11 @@
                                                     <div class="vocabulary-section">
                                                         <h3>📖 Новые слова</h3>
                                                         <div class="words-cloud">
-                                                            {% for word in lesson.lesson_plan.new_vocabulary.all %}
-                                                                <span id="word_{{word.pk}}" class="word-tag">{{ word.word }}</span>
+                                                            {% for translation in lesson.lesson_plan.new_vocabulary.all %}
+                                                                <span id="word_{{translation.pk}}" class="word-tag">{{ translation.source_word.word }}</span>
                                                             {% endfor %}
-                                                            
-
                                                         </div>
                                                         <button class="translate-word-button hidden">Перевести</button>
-                                                        {% comment %} <span class="words-check-button hidden">
-                                                            <i class="bi bi-send-fill send-icon"></i>
-                                                        </span> {% endcomment %}
                                                     </div>
 
                                                     <div class="materials-section">

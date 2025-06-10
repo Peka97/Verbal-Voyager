@@ -4,8 +4,9 @@ import requests
 import re
 
 from django.http import JsonResponse
+from django.db.models import Q
 
-from .models import EnglishWord
+from .models import EnglishWord, Language, Translation
 from .utils import get_word_class_name
 
 logger = logging.getLogger('django')
@@ -121,16 +122,29 @@ def get_translation(request, lang):
         try:
             words = json.loads(request.body)
             print(words)
+            # print(lang)
 
             result = {}
-            word_object = get_word_class_name(lang)
+
             for word in words:
-                word_qs = word_object.objects.filter(word=word)
-                if word_qs.exists():
+                lang_obj = Language.objects.get(name='English')
+
+                # in future need add for russian lang
+                if lang != 'russian':
+                    translation_qs = Translation.objects.filter(
+                        source_word__word=word, source_word__language=lang_obj)
+                    translation = translation_qs.first()
+
+                if translation_qs.exists():
                     result[word] = {
-                        'id': word_qs.first().id,
+                        'wordID': translation.source_word.pk,
                         'translations': [
-                            word_obj.translation for word_obj in word_qs.all()]
+                            {
+                                'id': translation.pk,
+                                'translation': translation.target_word.word
+                            }
+                            for translation in translation_qs.all()
+                        ]
                     }
 
             return JsonResponse({'result': result}, status=200)

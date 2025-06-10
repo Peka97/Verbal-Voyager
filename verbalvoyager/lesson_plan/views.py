@@ -7,7 +7,7 @@ from django.db.models import Prefetch
 
 from .models import EnglishLessonPlan, EnglishLessonMainAims, EnglishLessonSubsidiaryAims
 from event_calendar.models import Lesson
-from dictionary.models import EnglishWord
+from dictionary.models import EnglishWord, Translation
 
 logger = logging.getLogger('django')
 
@@ -23,7 +23,7 @@ def json_update_lesson_plan(request, lesson_id):
         lesson_plan_prefetch = (
             Prefetch(
                 'new_vocabulary',
-                queryset=EnglishWord.objects.all(),
+                queryset=Translation.objects.all(),
             ),
             Prefetch(
                 'main_aims',
@@ -61,7 +61,7 @@ def json_update_lesson_plan(request, lesson_id):
             if 'new_vocabulary' in data:
                 lesson_plan.new_vocabulary.clear()
 
-                words_qs = EnglishWord.objects.filter(
+                words_qs = Translation.objects.filter(
                     pk__in=data['new_vocabulary']).all()
                 if not words_qs:
                     errors[words_qs] = f'Words not found in dictionary.'

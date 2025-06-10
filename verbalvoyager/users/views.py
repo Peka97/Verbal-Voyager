@@ -110,6 +110,11 @@ def user_account(request):
         lessons = defaultdict(list)
 
         for lesson in lessons_obj:
+
+            if hasattr(lesson, 'lesson_plan'):
+                print(lesson)
+                print(lesson.lesson_plan)
+                print(lesson.lesson_plan.new_vocabulary.all())
             lessons[lesson.datetime].append(lesson)
 
         lessons = tuple(lessons.values())

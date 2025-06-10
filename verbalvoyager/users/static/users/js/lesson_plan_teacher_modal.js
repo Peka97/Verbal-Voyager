@@ -477,6 +477,7 @@ function saveChanges() {
 
 	// Собираем новые слова
 	currentModal.querySelectorAll(".word-tag").forEach((word) => {
+		console.dir(word);
 		currentValues.new_vocabulary.push(word.id.split("_")[1]);
 	});
 
@@ -600,33 +601,35 @@ function replaceInputWithSpan(element) {
 
 // Функция отображения модального окна с переводами
 function showTranslationsModal(translations) {
+	console.dir(translations);
 	const translationModal = document.getElementById("translation-modal");
 	const wordsContainer = document.getElementById("words-container");
 	wordsContainer.innerHTML = "";
 
 	// Создаем плитки для каждого слова
-	Object.entries(translations.result).forEach(([originalWord, options]) => {
+	Object.entries(translations.result).forEach(([originalWord, wordData]) => {
+		console.dir(originalWord);
+		console.dir(wordData);
 		const wordTile = document.createElement("div");
 		wordTile.className = "word-tile";
-		const wordId = options.id;
-		const translations = options.translations;
+		const translations = wordData.translations;
 
 		wordTile.innerHTML = `
-      <div class="word-original">${originalWord}</div>
-      <div class="translations-list">
-        ${translations
-					.map(
-						(option, index) => `
-          <div id="${wordId}" class="translation-option ${index === 0 ? "selected" : ""}" 
-               data-word="${originalWord}" 
-               data-translation="${option}">
-            ${option}
-          </div>
-        `
-					)
-					.join("")}
-      </div>
-    `;
+            <div class="word-original">${originalWord}</div>
+            <div class="translations-list">
+                ${translations
+									.map(
+										(translation) => `
+                    <div id="${translation.id}" class="translation-option ${translation.is_default ? "selected" : ""}" 
+                         data-word="${originalWord}" 
+                         data-translation="${translation.translation}">
+                        ${translation.translation}
+                    </div>
+                `
+									)
+									.join("")}
+            </div>
+        `;
 
 		wordsContainer.appendChild(wordTile);
 	});

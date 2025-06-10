@@ -28,7 +28,7 @@ class EnglishLessonPlan(models.Model):
         help_text="Опиши основные темы урока"
     )
     new_vocabulary = models.ManyToManyField(
-        'dictionary.EnglishWord',
+        'dictionary.Translation',
         verbose_name='Новые слова',
         related_name='new_vocabulary',
         blank=True,
