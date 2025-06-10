@@ -1,6 +1,5 @@
 {% extends "exercises/words/includes/words.html" %}
 {% load static %}
-{% load new_exercises_filters %}
 
 {% block 'title' %} Exercise | Step {{step}}{% endblock  %}
 {% block 'style' %}
@@ -9,106 +8,19 @@
 {% endblock  %}
 
 {% block 'words' %}
+{{ ex_lang }}
     <!-- Words -->
     {% for translation in translations %}
-        {% with source_word_details=translation.source_word|get_word_details target_word_details=translation.target_word|get_word_details %}
-        <div id="word_{{ forloop.counter }}" class="row justify-content-center word__block {% if forloop.counter != 1 %}hidden{% endif %} hidden-anim">
-            <div class="col">
-                <div class="row justify-content-center words">
-                    <div class="col word">
-                        {% if source_word_details.audio_url %}
-                            <div class="sound__wrap">
-                                <button type="button" class="btn word__play_sound">
-                                    <i class="bi bi-play-circle"></i>
-                                </button>
-                                <audio class='word__audio'>
-                                    <source src="{{ source_word_details.audio_url }}">
-                                </audio>
-                            </div>
-                        {% endif %}
-                        <div class="word__wrap">    
-                            <div class="word__word">
-                                {% if translation.prefix %}
-                                    <span class="word__prefix">({{translation.prefix}})</span>
-                                {% endif %}
-                                {{translation.source_word.word|capfirst}} {% if source_word_details.genus %} ({{source_word_details.genus}}){% endif %}
-
-                                {% if translation.get_part_of_speech_display != "none" %}
-                                    <span class="word__speech_code"> ({{translation.get_part_of_speech_display}})</span>
-                                {% endif %}
-                            </div>
-                            {% if source_word_details.transcription %}
-                                <p class="word__transcription">[ {{ source_word_details.transcription }} ]</p>
-                            {% endif %}
-                        </div>
-                        {% if translation.definition %}
-                            <div class="word__definition_wrap">
-                                <button type="button" class="btn btn-lg btn__help help-btn" data-bs-toggle="popover" data-bs-html="true" data-bs-delay='{"show":0,"hide":150}' data-bs-title="Значение слова" data-bs-content="{{ translation.definition|capfirst }}"><i class="bi bi-question-circle"></i></button>
-                            </div>
-                        {% endif %}
-                    </div>
-                    <div class="col translate">
-                        <p class="word__translate">{{translation.target_word.word|capfirst}}</p>
-                    </div>
-                </div>
-                <div class='word__card'>
-                    <div class="row content-row">
-                        <div class="col content-col my-auto">
-                            <div class='row'>
-                                <div class="col col-xs-12 col-md-7 image__col">
-                                    {% if target_word_details.image_url %}
-                                        <img class="bd-placeholder-img word__image" src="{{ target_word_details.image_url|set_image_size }}" alt="Word Image">
-                                    {% else %}
-                                        <img class="bd-placeholder-img word__image" src="{% static "exercises/images/img_not_found.webp"%}" alt="Word Image Not Found"><img/>
-                                    {% endif %}
-                                </div>
-                                <div class="col means">
-                                    <div class="means__wrap">
-                                        <p class="means__title">Другие значения:</p>
-                                        {% with another_means=translation|get_another_translates %}
-                                            {% if another_means %}
-                                                <ul class="means__list">
-                                                    {{ another_means|parse_to_list }}
-                                                </ul>
-                                            {% else %}
-                                                <p class="means__not_found">Нет</p>
-                                            {% endif %}
-                                        {% endwith %}
-                                    </div>
-                                </div>
-                                <div class="col sentences">
-                                    <div class="sentences__wrap">
-                                        <p class="sentences__title">Предложения:</p>
-                                        {% if translation.examples %}
-                                            <ul class="sentences__list">
-                                                {% for example in translation.examples %}
-                                                <li class="sentence__wrap">
-                                                    <div class="sound__wrap">
-                                                        <button type="button" class="btn word__play_sound">
-                                                            <i class="bi bi-play-circle"></i>
-                                                        </button>
-                                                        <audio class='word__audio'>
-                                                            <source src="{{ example.soundUrl }}">
-                                                        </audio>
-                                                    </div>
-                                                    <div class="text__wrap">
-                                                        <p class="text">{{ example.text|highlight }}</p>
-                                                    </div>
-                                                </li>
-                                                {% endfor %}
-                                            </ul>
-                                        {% else %}
-                                            <p class="sentences__not_found">Нет</p>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endwith %}
+        {% if ex_lang != 'Russian' %}
+            {% with source_word=translation.source_word target_word=translation.target_word %}
+                {% include "exercises/words/includes/words_review.html" %}
+            {% endwith %}
+        {% else %}
+            {% with source_word=translation.target_word target_word=translation.source_word %}
+                {% include "exercises/words/includes/words_review.html" %}
+            {% endwith %}
+        {% endif %}
+        
     {% endfor %}
 
 {% endblock  %}

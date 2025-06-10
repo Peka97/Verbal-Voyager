@@ -13,10 +13,12 @@ logger = logging.getLogger('django')
 
 @receiver(m2m_changed, sender=ExerciseWords.words.through)
 def validate_words_m2m(sender, instance, action, **kwargs):
-    if action == "pre_add":  # проверяем перед добавлением новых слов
+    if action == "pre_add":
         for word_id in kwargs.get('pk_set', []):
-            translation = Translation.objects.get(
-                pk=word_id)  # замените на вашу модель
+            translation = Translation.objects.get(pk=word_id)
+
+            if instance.lang and instance.lang.name == 'Russian' and translation.source_word.language.name == 'English':
+                continue
             if translation.source_word.language != instance.lang:
                 raise ValidationError(
                     f'Слово "{translation}" не подходит для языка "{instance.lang}"'

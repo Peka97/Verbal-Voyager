@@ -15,14 +15,14 @@
       <div class="col">
         <ul class="nav nav-tabs nav-fill">
           <li class="nav-item align-self-center px-auto">
-            <a id='step_1' class="nav-link btn {% if step == 1 %} active step-active {% elif step > 1 %} step-complete {% endif %} disabled" href={% url "new_exercise_words" ex_type='words' ex_lang=ex_lang ex_id=ex_id step=1 %} aria-disabled="true">
+            <a id='step_1' class="nav-link btn {% if step == 1 %} active step-active {% elif step > 1 %} step-complete {% endif %} disabled" href={% url "new_exercise_words"   ex_id=ex_id step=1 %} aria-disabled="true">
               <strong>
                 Step 1
               </strong>
             </a>
           </li>
           <li class="nav-item align-self-center px-auto">
-            <a id='step_2' class="nav-link btn {% if step == 2 %} active step-active {% elif step > 2 %} step-complete {% else %} step-future {% endif %} disabled" href={% url "new_exercise_words" ex_type='words' ex_lang=ex_lang ex_id=ex_id step=2 %} aria-disabled="true">
+            <a id='step_2' class="nav-link btn {% if step == 2 %} active step-active {% elif step > 2 %} step-complete {% else %} step-future {% endif %} disabled" href={% url "new_exercise_words"   ex_id=ex_id step=2 %} aria-disabled="true">
               <strong>
                 Step 2
               </strong>
@@ -36,7 +36,7 @@
             </a>
           </li>
           <li class="nav-item align-self-center">
-            <a id='step_3' class="nav-link btn {% if step == 3 %} active step-active {% elif step > 3 %} step-complete {% else %} step-future {% endif %} disabled" href={% url "new_exercise_words" ex_type='words' ex_lang=ex_lang ex_id=ex_id step=3 %} aria-disabled="true">
+            <a id='step_3' class="nav-link btn {% if step == 3 %} active step-active {% elif step > 3 %} step-complete {% else %} step-future {% endif %} disabled" href={% url "new_exercise_words"   ex_id=ex_id step=3 %} aria-disabled="true">
               <strong>
                 Step 3
               </strong>
@@ -50,7 +50,7 @@
             </a>
           </li>
           <li class="nav-item align-self-center px-auto">
-            <a id='step_4' class="nav-link btn {% if step == 4 %} active step-active {% elif step > 4 %} step-complete {% else %} step-future {% endif %} disabled" href={% url "new_exercise_words" ex_type='words' ex_lang=ex_lang ex_id=ex_id step=4 %} aria-disabled="true">
+            <a id='step_4' class="nav-link btn {% if step == 4 %} active step-active {% elif step > 4 %} step-complete {% else %} step-future {% endif %} disabled" href={% url "new_exercise_words"   ex_id=ex_id step=4 %} aria-disabled="true">
               <strong>
                 Step 4
               </strong>
@@ -64,7 +64,7 @@
             </a>
           </li>
           <li class="nav-item align-self-center px-auto">
-            <a id='step_5' class="nav-link btn {% if step == 5 %} active step-active {% else %} step-future {% endif %} disabled" href={% url "new_exercise_words" ex_type='words' ex_lang=ex_lang ex_id=ex_id step=5 %} aria-disabled="true">
+            <a id='step_5' class="nav-link btn {% if step == 5 %} active step-active {% else %} step-future {% endif %} disabled" href={% url "new_exercise_words"   ex_id=ex_id step=5 %} aria-disabled="true">
               <strong>
                 Step 5
               </strong>

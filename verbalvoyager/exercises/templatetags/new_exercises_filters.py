@@ -78,8 +78,6 @@ def highlight(values):
 
 @register.filter
 def get_word_details(word):
-    print(word)
-    print(type(word))
     match word.language.name:
         case 'English':
             return word.englishworddetail if hasattr(word, 'englishworddetail') else None
@@ -99,32 +97,40 @@ def set_image_size(image_url, new_width=640, new_height=480):
 
 
 @register.filter
-def get_another_translates(translation):
-    prefetch = Prefetch('target_word', queryset=Word.objects.all())
-    another_translations_obj = Translation.objects \
-        .filter(source_word=translation.source_word) \
-        .exclude(target_word=translation.target_word) \
-        .prefetch_related(prefetch).all()
-    return [translation.target_word.word for translation in another_translations_obj]
+def get_another_translates(translation, reverse=False):
+    if not reverse:
+        prefetch = Prefetch('target_word', queryset=Word.objects.all())
+        another_translations_obj = Translation.objects \
+            .filter(source_word=translation.source_word, source_word__language=translation.source_word.language) \
+            .exclude(target_word=translation.target_word) \
+            .prefetch_related(prefetch).all()
+
+        return [translation.target_word.word for translation in another_translations_obj]
+    else:
+        prefetch = Prefetch('source_word', queryset=Word.objects.all())
+        another_translations_obj = Translation.objects \
+            .filter(target_word=translation.target_word, source_word__language=translation.source_word.language) \
+            .exclude(source_word=translation.source_word) \
+            .prefetch_related(prefetch).all()
+
+        return [translation.source_word.word for translation in another_translations_obj]
 
 
 @register.filter
 def get_all_translates(translations):
-    print([translation.target_word.word for translation in translations])
     return [translation.target_word.word for translation in translations]
 
 
 @register.filter
 def get_random_slice(translations, correct_word):
-    if len(translations) <= 4:
-        shuffle(translations)
-        return translations
+    shuffle(translations)
 
-    translations.remove(correct_word)
-    shuffle(translations)
-    translations = translations[:2]
-    translations.append(correct_word)
-    shuffle(translations)
+    if len(translations) > 4:
+        translations.remove(correct_word)
+        translations = translations[:3]
+        translations.append(correct_word)
+        shuffle(translations)
+
     return translations
 
 

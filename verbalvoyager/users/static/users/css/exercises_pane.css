@@ -51,16 +51,16 @@
 	}
 
 	.title {
-		overflow: clip;
+		/* overflow: clip; */
 
-		width: 100%;
+		/* width: 100%; */
 
 		font-size: 1rem;
 		font-weight: 600;
 		color: var(--light);
 		text-transform: capitalize;
-		text-wrap: nowrap;
-		text-overflow: ellipsis;
+		/* text-wrap: nowrap; */
+		/* text-overflow: ellipsis; */
 	}
 
 	.size {
@@ -69,17 +69,22 @@
 	}
 
 	.list-size {
-		max-height: 25vh;
+		max-height: 20vh;
 		overflow: auto;
 		scrollbar-width: none;
 		gap: 0.25rem;
 
 		margin-top: 0.25rem;
 		padding: 0;
+		margin-bottom: 0.5rem;
 	}
 
 	.list-size .item-list {
 		list-style: none;
+	}
+
+	.item-list-button {
+		margin: 0.1rem 0;
 	}
 
 	.list-size .item-list-button {
@@ -113,6 +118,7 @@
 		display: flex;
 		align-items: center;
 		gap: 1rem;
+		margin-top: auto;
 	}
 
 	.price {

@@ -1,3 +1,4 @@
+from enum import unique
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
@@ -522,7 +523,7 @@ class ExerciseWords(models.Model):
     get_words.short_description = 'Слова в упражнении'
 
     def get_absolute_url(self):
-        return reverse(self.view_name, kwargs={"ex_type": "words", "ex_lang": self.lang, "ex_id": self.pk, "step": '1'})
+        return reverse(self.view_name, kwargs={"ex_id": self.pk, "step": '1'})
 
     def get_url(self):
         return settings.SITE_NAME + self.get_absolute_url()
@@ -713,7 +714,7 @@ class ExerciseDialog(models.Model):
         return f"{self.pk} - {self.student.last_name} {self.student.first_name} - {status}"
 
     def get_absolute_url(self):
-        return reverse(self.view_name, kwargs={"ex_lang": "english", "ex_id": self.pk})
+        return reverse(self.view_name, kwargs={"ex_id": self.pk})
 
     def __str__(self) -> str:
         return f"{self.name} (ENG)"

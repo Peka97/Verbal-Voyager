@@ -12,6 +12,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 
 
 from users.services.cache import get_cached_all_teachers, get_cached_lessons_for_teacher, get_cached_lessons_for_student, get_cached_courses, get_cached_projects, get_cached_user_english_words, get_cached_user_french_words, get_cached_user_russian_words, get_cached_user_spanish_words,  get_cached_user_english_irregular_verbs, get_cached_user_english_dialogs, get_cached_user_french_dialogs, get_cached_user_russian_dialogs, get_cached_user_spanish_dialogs
+from users.services.cache import get_cached_user_words, get_cached_user_dialogs, get_cached_user_english_irregular_verbs
 from users.forms import RegistrationUserForm, CustomPasswordResetForm, AuthUserForm, TimezoneForm
 from users.utils import get_words_learned_count, get_exercises_done_count, init_student_demo_access
 
@@ -88,6 +89,9 @@ def user_account(request):
     user = request.user
     current_pane = request.GET.get('pane')
 
+    if not current_pane:
+        current_pane = 'activities'
+
     context = {
         'user_is_teacher': user.is_teacher(),
         'user_is_supervisor': user.is_supervisor(),
@@ -146,42 +150,47 @@ def set_user_timezone(request):
 
 
 def get_user_exercises(user, projects):
-    result = []
-    unique_courses = {p.course_id.name for p in projects}
+    result = [
+        *get_cached_user_words(user),
+        *get_cached_user_dialogs(user),
+        *get_cached_user_english_irregular_verbs(user),
+    ]
+    result.sort(key=lambda exer: exer.is_active, reverse=True)
+    # unique_courses = {p.course_id.name for p in projects}
 
-    for course in unique_courses:
-        match course:
-            case "Английский язык":
-                result.extend(
-                    get_cached_user_english_words(user)
-                )
-                result.extend(
-                    get_cached_user_english_dialogs(user)
-                )
-                result.extend(
-                    get_cached_user_english_irregular_verbs(user)
-                )
-            case "Французский язык":
-                result.extend(
-                    get_cached_user_french_words(user)
-                )
-                result.extend(
-                    get_cached_user_french_dialogs(user)
-                )
-            case "Русский язык":
-                result.extend(
-                    get_cached_user_russian_words(user)
-                )
-                result.extend(
-                    get_cached_user_russian_dialogs(user)
-                )
-            case "Испанский язык":
-                result.extend(
-                    get_cached_user_spanish_words(user)
-                )
-                result.extend(
-                    get_cached_user_spanish_dialogs(user)
-                )
+    # for course in unique_courses:
+    #     match course:
+    #         case "Английский язык":
+    #             result.extend(
+    #                 get_cached_user_english_words(user)
+    #             )
+    #             result.extend(
+    #                 get_cached_user_english_dialogs(user)
+    #             )
+    #             result.extend(
+    #                 get_cached_user_english_irregular_verbs(user)
+    #             )
+    #         case "Французский язык":
+    #             result.extend(
+    #                 get_cached_user_french_words(user)
+    #             )
+    #             result.extend(
+    #                 get_cached_user_french_dialogs(user)
+    #             )
+    #         case "Русский язык":
+    #             result.extend(
+    #                 get_cached_user_russian_words(user)
+    #             )
+    #             result.extend(
+    #                 get_cached_user_russian_dialogs(user)
+    #             )
+    #         case "Испанский язык":
+    #             result.extend(
+    #                 get_cached_user_spanish_words(user)
+    #             )
+    #             result.extend(
+    #                 get_cached_user_spanish_dialogs(user)
+    #             )
     return result
 
 # TODO: обновление таймзоны без обновления страницы

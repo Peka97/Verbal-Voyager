@@ -10,11 +10,11 @@ handler500 = handler_500
 
 urlpatterns = [
     # [New] ExerciseWords
-    path('v2/<str:ex_type>/<str:ex_lang>/<int:ex_id>/<int:step>',
+    path('v2/words/<int:ex_id>/<int:step>',
          views.new_exercise_words, name='new_exercise_words'),
 
     # [New] ExerciseDialog
-    path('v2/dialog/<str:ex_lang>/<int:ex_id>',
+    path('v2/dialog/<int:ex_id>',
          views.new_exercise_dialog, name='new_exercise_dialog'),
 
     # [New] ExerciseIrregularVerbs

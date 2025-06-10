@@ -4,6 +4,9 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
+from django.db.models import Prefetch
+
+from dictionary.models import Translation, Word, Language
 
 from .filters import TeachersListFilter, StudentsListFilter
 from .models import ExerciseCategory, ExerciseEnglishWords, ExerciseFrenchWords, \
@@ -311,7 +314,7 @@ class ExerciseWordsAdmin(admin.ModelAdmin):
     save_as = True
     search_fields = [
         'pk', 'student__pk', 'student__first_name', 'student__last_name',
-        'name', 'words__source_word', 'words__target_word'
+        'name', 'words__source_word__word', 'words__target_word__word',
     ]
     autocomplete_fields = ('words', 'student', 'teacher')
     filter_horizontal = ('words', )
@@ -319,6 +322,14 @@ class ExerciseWordsAdmin(admin.ModelAdmin):
         'pk', 'name', 'is_active', 'student', 'teacher',
         'get_words', 'external_access', 'source_link'
     )
+    list_filter = [
+        TeachersListFilter,
+        StudentsListFilter,
+        # ('lang', RelatedDropdownFilter),
+        ('category', RelatedDropdownFilter),
+        ('is_active', DropdownFilter),
+        ('external_access', DropdownFilter),
+    ]
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -328,7 +339,22 @@ class ExerciseWordsAdmin(admin.ModelAdmin):
                 .exclude(student__groups__name='StudentDemo') \
                 .exclude(teacher__groups__name='TeacherDemo')
 
-        return queryset.select_related('student', 'teacher').prefetch_related('words')
+        language_prefetched = Prefetch(
+            'language', queryset=Language.objects.all())
+        words_prefetched = (
+            Prefetch('source_word', queryset=Word.objects.prefetch_related(
+                language_prefetched).all()),
+            Prefetch('target_word', queryset=Word.objects.prefetch_related(
+                language_prefetched).all()),
+        )
+        exercise_prefetched = (
+            Prefetch(
+                'words', queryset=Translation.objects.prefetch_related(*words_prefetched).all()),
+            # Prefetch(
+            #     'lang', queryset=Language.objects.all())
+        )
+
+        return queryset.select_related('student', 'teacher').prefetch_related(*exercise_prefetched)
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -346,14 +372,20 @@ class ExerciseWordsAdmin(admin.ModelAdmin):
         return mark_safe(f'<a href={obj.get_url()}>Перейти<a>')
     source_link.short_description = 'Ссылка на упражнение'
 
-    def clean(self):
-        super().clean()
+    # def clean(self):
+    #     super().clean()
+    #     print('CLEAN')
 
-        if self.pk:
-            for translation in self.words.all():
-                if translation.source_word.language != self.lang:
-                    raise ValidationError(
-                        f'Слово "{translation}" не подходит для языка "{self.lang.name}"')
+    #     if self.pk:
+    #         for translation in self.words.all():
+    #             print(self.lang.name)
+    #             print(translation.source_word.language)
+    #             if self.lang.name == 'Russian' and translation.source_word.language.name != 'English':
+    #                 raise ValidationError(
+    #                     f'Слово "{translation}" не подходит для языка "{self.lang.name}". Для русского языка нужно использовать английские слова.')
+    #             elif translation.source_word.language != self.lang:
+    #                 raise ValidationError(
+    #                     f'Слово "{translation}" не подходит для языка "{self.lang.name}"')
 
 
 @admin.register(NewExerciseIrregularEnglishVerb)

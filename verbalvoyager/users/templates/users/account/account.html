@@ -33,27 +33,25 @@
 			<li class="nav-item profile" role="presentation">
 				<button class="nav-link profile {% if current_pane == 'profile' %} active {% endif %}" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="{% if current_pane == 'profile' %} true {% else %} false {% endif %}">Профиль</button>
 			</li>
-			<li class="nav-item profile" role="presentation">
-				<button class="nav-link profile {% if current_pane == 'exercises' %} active {% endif %}" id="exercises-tab" data-bs-toggle="tab" data-bs-target="#exercises-tab-pane" type="button" role="tab" aria-controls="exercises-tab-pane" aria-selected="{% if current_pane == 'exercises' %} true {% else %} false {% endif %}">Упражнения</button>
-			</li>
+			{% if not user_is_teacher %}
+				<li class="nav-item profile" role="presentation">
+					<button class="nav-link profile {% if current_pane == 'exercises' %} active {% endif %}" id="exercises-tab" data-bs-toggle="tab" data-bs-target="#exercises-tab-pane" type="button" role="tab" aria-controls="exercises-tab-pane" aria-selected="{% if current_pane == 'exercises' %} true {% else %} false {% endif %}">Упражнения</button>
+				</li>
+			{% endif %}
 		</ul>
 	
 		<div class="tab-content" id="TabContent">
 			<div class="tab-pane fade {% if current_pane == 'activities' %} show active {% endif %}" id="activities-tab-pane" role="tabpanel" aria-labelledby="activities-tab" tabindex="0">
-				{% comment %} {% cache 3600 "activities" request.user.id %} {% endcomment %}
-					{% include "users/account/activities/activities_pane.html" %}
-				{% comment %} {% endcache %} {% endcomment %}
+				{% include "users/account/activities/activities_pane.html" %}
 			</div>
 			<div class="tab-pane fade {% if current_pane == 'profile' %} show active {% endif %}" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-				{% comment %} {% cache 3600 "profile" request.user.id %} {% endcomment %}
-					{% include "users/account/profile/profile_pane.html" %}
-				{% comment %} {% endcache %} {% endcomment %}
+				{% include "users/account/profile/profile_pane.html" %}
 			</div>
-			<div class="tab-pane fade {% if current_pane == 'exercises' %} show active {% endif %}" id="exercises-tab-pane" role="tabpanel" aria-labelledby="exercises-tab" tabindex="0">
-				{% comment %} {% cache 3600 "exercises" request.user.id %} {% endcomment %}
+			{% if not user_is_teacher %}
+				<div class="tab-pane fade {% if current_pane == 'exercises' %} show active {% endif %}" id="exercises-tab-pane" role="tabpanel" aria-labelledby="exercises-tab" tabindex="0">
 					{% include "users/account/exercises/exercises_pane.html" %}
-				{% comment %} {% endcache %} {% endcomment %}
-			</div>
+				</div>
+			{% endif %}
 		</div>
 	</div>
 </body>

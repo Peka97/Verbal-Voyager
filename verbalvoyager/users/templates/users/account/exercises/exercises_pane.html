@@ -15,19 +15,25 @@
                     {% else %}
                         <i class="bi bi-x-circle text-danger"></i>
                     {% endif %}
-                    {{ exercise }}
+                    {{ exercise.name }}
                 </span>
             </div>
             <div class="size">
                 <span></span>
-                <ul class="list-size">
-                    {% for word in exercise.prefetched_words %}
-                        <li class="item-list"><button class="item-list-button">{% if word.word %}{{ word.word }} {% else %}{{ word.prefetched_word }}{% endif %}</button></li>
+                <div class="list-size">
+                    {% for translation in exercise.words.all %}
+                        <span class="item-list"><button class="item-list-button">{{ translation.source_word.word }}</button></span>
+                    {% endfor %}
+
+                </div>
+                {% comment %} <ul class="list-size">
+                    {% for translation in exercise.words.all %}
+                        <li class="item-list"><button class="item-list-button">{{ translation.source_word.word }}</button></li>
                     {% endfor %}
                     {% comment %} <li class="item-list"><button class="item-list-button">1</button></li>
                     <li class="item-list"><button class="item-list-button">1.5</button></li>
-                    <li class="item-list"><button class="item-list-button">2</button></li> {% endcomment %}
-                </ul>
+                    <li class="item-list"><button class="item-list-button">2</button></li> 
+                </ul> {% endcomment %}
             </div>
             <div class="action">
                 <a class="btn-default" href="{{ exercise.get_absolute_url }}" role="button" aria-disabled="true">Перейти</a>

@@ -325,7 +325,7 @@ def exercise_irregular_verbs(request, ex_id, step):
 
 
 # TODO: убрать ex_type. После удаления требуются правки в urls и admin.
-def new_exercise_words(request, ex_type, ex_lang, ex_id, step):
+def new_exercise_words(request, ex_id, step):
     titles = {1: 'Запоминаем', 2: 'Выбираем',
               3: 'Расставляем', 4: 'По местам!', 5: 'Переводим'}
     popover_data = {
@@ -380,7 +380,6 @@ def new_exercise_words(request, ex_type, ex_lang, ex_id, step):
             queryset=Word.objects
             .prefetch_related(target_details_prefetched, lang_prefetched).all()
         ),
-
     ]
 
     words_prefetched = Prefetch('words', queryset=Translation.objects.prefetch_related(
@@ -390,16 +389,11 @@ def new_exercise_words(request, ex_type, ex_lang, ex_id, step):
         words_prefetched)
     exercise = exercise_qs.get(pk=ex_id)
 
-    translations_qs = exercise.words  # type: ignore
-
-    # [word.update({'idx': idx + 1}) for idx, word in enumerate(translations)]
-
-    # if step == 2:
-    #     load_translate_vars(translations_qs, ex_lang)
+    translations_qs = exercise.words
 
     template_name = f'exercises/words/step_{step}.html'
     context = {
-        'ex_lang': ex_lang,
+        'ex_lang': exercise.lang.name,
         'ex_id': ex_id,
         'exercise': exercise,
         'step': step,
@@ -412,7 +406,7 @@ def new_exercise_words(request, ex_type, ex_lang, ex_id, step):
     return render(request, template_name, context)
 
 
-def new_exercise_dialog(request, ex_lang, ex_id):
+def new_exercise_dialog(request, ex_id):
     exercise, redirect = get_exercise_or_404(request, ExerciseDialog, ex_id)
 
     if redirect:
@@ -440,7 +434,7 @@ def new_exercise_dialog(request, ex_lang, ex_id):
         'scene': scene,
         'messages': messages,
         'translations': words,
-        'lang': ex_lang
+        'lang': exercise.lang.name
     }
     return render(request, 'exercises/dialogs/dialog.html', context)
 

@@ -415,6 +415,7 @@ body > .words__container {
 				}
 
 				.col.word {
+					min-height: 6rem;
 					flex-wrap: wrap;
 					position: relative;
 					background-color: var(--purple-900);
@@ -423,8 +424,10 @@ body > .words__container {
 
 					.sound__wrap {
 						display: flex;
+						height: 100%;
+						justify-content: center;
 						position: absolute;
-						top: 1.5rem;
+						top: 0rem;
 						left: 1rem;
 						width: 10%;
 						align-self: center;
@@ -439,14 +442,24 @@ body > .words__container {
 							}
 						}
 
-						.btn:hover {
-							cursor: pointer;
-							transform: scale(1.1);
-							transition: all 250ms ease;
+						.word__play_sound.btn {
+							padding: 0;
+							border: none !important;
 
 							i {
-								color: var(--amber-600);
+								color: var(--amber-400);
+								font-size: 2em;
 							}
+						}
+
+						.word__play_sound.btn:hover {
+							cursor: pointer;
+							transform: scale(1.1);
+							transition: all 250ms ease-in-out;
+
+							/* i {
+								color: var(--amber-600);
+							} */
 						}
 
 						.btn:first-child:active {
@@ -461,9 +474,11 @@ body > .words__container {
 
 					.word__definition_wrap {
 						display: flex;
+						height: 100%;
+						justify-content: center;
 						position: absolute;
-						right: 0.5rem;
-						top: 1.5rem;
+						right: 1rem;
+						top: 0rem;
 
 						button {
 							padding: 0;
@@ -477,11 +492,11 @@ body > .words__container {
 						button:hover {
 							cursor: pointer;
 							transform: scale(1.1);
-							transition: all 250ms ease;
+							transition: all 250ms ease-in-out;
 
-							i {
+							/* i {
 								color: var(--amber-600);
-							}
+							} */
 						}
 					}
 				}
@@ -588,6 +603,16 @@ body > .words__container {
 
 								.example-word {
 									color: var(--amber-400);
+								}
+
+								.word__play_sound.btn:hover {
+									cursor: pointer;
+									/* transform: scale(1.1); */
+									transition: all 250ms ease-in-out;
+
+									i {
+										color: var(--amber-600);
+									}
 								}
 							}
 
@@ -736,10 +761,10 @@ body > .words__container {
 }
 
 @media (max-width: 1280px) {
-	.sound__wrap,
+	/* .sound__wrap,
 	.word__definition_wrap {
 		top: 2rem !important;
-	}
+	} */
 
 	i {
 		font-size: x-large !important;
@@ -747,9 +772,15 @@ body > .words__container {
 }
 
 @media (max-width: 768px) {
-	.sound__wrap,
+	/* .sound__wrap,
 	.word__definition_wrap {
 		top: 1.7rem !important;
+	} */
+
+	.content-col {
+		.word__image {
+			border-radius: 2em 0 0 0em !important;
+		}
 	}
 
 	.btn-exit-wrap {
@@ -774,15 +805,19 @@ body > .words__container {
 }
 
 @media (max-width: 426px) {
-	.sound__wrap,
+	/* .sound__wrap,
 	.word__definition_wrap {
 		top: 0.3rem !important;
+	} */
+
+	.col.word {
+		min-height: 4rem !important;
 	}
 }
 
 @media (max-width: 321px) {
-	.sound__wrap,
+	/* .sound__wrap,
 	.word__definition_wrap {
 		top: -0.2rem !important;
-	}
+	} */
 }

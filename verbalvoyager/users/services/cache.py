@@ -10,6 +10,9 @@ from event_calendar.models import Lesson, LessonTask, Project, Course, ProjectTy
 from lesson_plan.models import EnglishLessonPlan, EnglishLessonMainAims, EnglishLessonSubsidiaryAims
 from dictionary.models import EnglishWord, IrregularEnglishVerb, FrenchWord, SpanishWord
 
+from exercises.models import ExerciseWords, ExerciseDialog, NewExerciseIrregularEnglishVerb
+from dictionary.models import Word, Translation, NewEnglishVerb, Language
+
 
 VERSION = settings.CACHES['default']['OPTIONS']['VERSION']
 User = get_user_model()
@@ -208,6 +211,33 @@ def get_cached_user_english_words(user):
     )
 
 
+def get_cached_user_words(user):
+    CACHE_KEY = f"user_{user.id}_exercises_exercise_words_{VERSION}"
+    prefetched_languages = Prefetch(
+        'lang',
+        queryset=Language.objects.all(),
+        to_attr='prefetched_languages'
+    )
+    prefetched_words = (
+        Prefetch(
+            'source_word',
+            queryset=Word.objects.all(),
+        ),
+    )
+    prefetched_translations = Prefetch(
+        'words',
+        queryset=Translation.objects.prefetch_related(*prefetched_words).all(),
+    )
+
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: ExerciseWords.objects.filter(
+            student=user,
+        ).prefetch_related(prefetched_translations, prefetched_languages).order_by('is_active', '-created_at').all(),
+        timeout=60*60*24
+    )
+
+
 def get_cached_user_french_words(user):
     CACHE_KEY = f"user_{user.id}_exercises_exercise_french_words_{VERSION}"
     prefetched_words = Prefetch(
@@ -259,25 +289,45 @@ def get_cached_user_spanish_words(user):
     )
 
 
+# def get_cached_user_english_irregular_verbs(user):
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_english_irregular_verbs_{VERSION}"
+#     prefetched_english_words = Prefetch(
+#         'infinitive',
+#         queryset=EnglishWord.objects.all(),
+#         to_attr='prefetched_word'
+#     )
+#     prefetched_english_verb = Prefetch(
+#         'words',
+#         queryset=IrregularEnglishVerb.objects.prefetch_related(
+#             prefetched_english_words).all(),
+#         to_attr='prefetched_words'
+#     )
+#     return cache.get_or_set(
+#         CACHE_KEY,
+#         lambda: ExerciseIrregularEnglishVerb.objects.filter(
+#             student=user,
+#             is_active=True
+#         ).prefetch_related(prefetched_english_verb).only('id', 'name', 'is_active', 'created_at', 'words__infinitive').order_by('is_active', '-created_at').all(),
+#         timeout=60*60*24
+#     )
+
 def get_cached_user_english_irregular_verbs(user):
     CACHE_KEY = f"user_{user.id}_exercises_exercise_english_irregular_verbs_{VERSION}"
     prefetched_english_words = Prefetch(
         'infinitive',
-        queryset=EnglishWord.objects.all(),
-        to_attr='prefetched_word'
+        queryset=Word.objects.all(),
     )
     prefetched_english_verb = Prefetch(
         'words',
-        queryset=IrregularEnglishVerb.objects.prefetch_related(
+        queryset=NewEnglishVerb.objects.prefetch_related(
             prefetched_english_words).all(),
-        to_attr='prefetched_words'
     )
     return cache.get_or_set(
         CACHE_KEY,
-        lambda: ExerciseIrregularEnglishVerb.objects.filter(
+        lambda: NewExerciseIrregularEnglishVerb.objects.filter(
             student=user,
             is_active=True
-        ).prefetch_related(prefetched_english_verb).only('id', 'name', 'is_active', 'created_at', 'words__infinitive').order_by('is_active', '-created_at').all(),
+        ).prefetch_related(prefetched_english_verb).order_by('is_active', '-created_at').all(),
         timeout=60*60*24
     )
 
@@ -295,6 +345,28 @@ def get_cached_user_english_dialogs(user):
         lambda: ExerciseEnglishDialog.objects.filter(
             student=user
         ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
+        timeout=60*60*24
+    )
+
+
+def get_cached_user_dialogs(user):
+    CACHE_KEY = f"user_{user.id}_exercises_exercise_dialogs_{VERSION}"
+    prefetched_words = (
+        Prefetch(
+            'source_word',
+            queryset=Word.objects.all(),
+        ),
+    )
+    prefetched_translations = Prefetch(
+        'words',
+        queryset=Translation.objects.prefetch_related(*prefetched_words).all(),
+    )
+
+    return cache.get_or_set(
+        CACHE_KEY,
+        lambda: ExerciseDialog.objects.filter(
+            student=user
+        ).prefetch_related(prefetched_translations).order_by('is_active', '-created_at').all(),
         timeout=60*60*24
     )
 
