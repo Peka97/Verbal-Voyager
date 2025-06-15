@@ -534,7 +534,6 @@ class ExerciseWords(models.Model):
         return f"{self.pk} - {self.student} - {status}"
 
     class Meta:
-        # abstract = True
         ordering = ['-is_active']
         verbose_name = verbose_name_plural = 'All | Exercise Words'
 
@@ -720,6 +719,5 @@ class ExerciseDialog(models.Model):
         return f"{self.name} (ENG)"
 
     class Meta:
-        verbose_name = 'All | Exercise Dialog'
-        verbose_name_plural = 'All | Exercises Dialog'
+        verbose_name = verbose_name_plural = 'All | Exercise Dialog'
         ordering = ['-is_active']

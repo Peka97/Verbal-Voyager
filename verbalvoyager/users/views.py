@@ -160,47 +160,8 @@ def get_user_exercises(user, projects):
         *get_cached_user_dialogs(user),
         *get_cached_user_english_irregular_verbs(user),
     ]
-    result = sorted(
-        result,
-        key=lambda exer: (-exer.is_active, exer.created_at),
-        reverse=True
-    )
-    # result.sort(key=lambda exer: exer.is_active, reverse=True)
-    # unique_courses = {p.course_id.name for p in projects}
-
-    # for course in unique_courses:
-    #     match course:
-    #         case "Английский язык":
-    #             result.extend(
-    #                 get_cached_user_english_words(user)
-    #             )
-    #             result.extend(
-    #                 get_cached_user_english_dialogs(user)
-    #             )
-    #             result.extend(
-    #                 get_cached_user_english_irregular_verbs(user)
-    #             )
-    #         case "Французский язык":
-    #             result.extend(
-    #                 get_cached_user_french_words(user)
-    #             )
-    #             result.extend(
-    #                 get_cached_user_french_dialogs(user)
-    #             )
-    #         case "Русский язык":
-    #             result.extend(
-    #                 get_cached_user_russian_words(user)
-    #             )
-    #             result.extend(
-    #                 get_cached_user_russian_dialogs(user)
-    #             )
-    #         case "Испанский язык":
-    #             result.extend(
-    #                 get_cached_user_spanish_words(user)
-    #             )
-    #             result.extend(
-    #                 get_cached_user_spanish_dialogs(user)
-    #             )
+    # TODO: add sort for created_at field
+    result.sort(key=lambda exer: exer.is_active, reverse=True)
     return result
 
 # TODO: обновление таймзоны без обновления страницы

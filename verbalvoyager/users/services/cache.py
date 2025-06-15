@@ -71,7 +71,7 @@ def get_cached_projects_for_student(user):
 def get_cached_lessons_for_student(user):
     CACHE_KEY = f"user_{user.id}_lessons_{VERSION}"
     lesson_plan_prefatches = (
-        Prefetch('new_vocabulary', queryset=EnglishWord.objects.only('word'),),
+        Prefetch('new_vocabulary', queryset=Translation.objects.all(),),
         Prefetch('main_aims', queryset=EnglishLessonMainAims.objects.all(),),
         Prefetch('subsidiary_aims',
                  queryset=EnglishLessonSubsidiaryAims.objects.all(),)

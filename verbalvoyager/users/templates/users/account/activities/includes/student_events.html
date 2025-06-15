@@ -127,8 +127,8 @@
                                         <div class="vocabulary-section">
                                             <h3>📖 Новые слова</h3>
                                             <div class="words-cloud">
-                                                {% for word in event.lesson_plan.prefetched_vocabulary %}
-                                                    <span class="word-tag">{{ word.word }}</span>
+                                                {% for translation in event.lesson_plan.new_vocabulary.all %}
+                                                    <span class="word-tag">{{ translation.source_word.word }}</span>
                                                 {% endfor %}
                                             </div>
                                         </div>

@@ -11,7 +11,7 @@ SECRET_KEY = CURRENT_CONFIG.SECRET_KEY
 DEBUG = CURRENT_CONFIG.DEBUG
 
 ALLOWED_HOSTS = [
-    '127.0.0.1', 'localhost', '', '::1', '158.160.153.184', 'verbal-voyager.ru', 'www.verbal-voyager.ru',
+    '127.0.0.1', 'localhost', '', '::1', '158.160.153.184', 'verbal-voyager.ru', 'www.verbal-voyager.ru', 'cdn.verbal-voyager.ru'
 ]
 
 INTERNAL_IPS = [
@@ -20,7 +20,7 @@ INTERNAL_IPS = [
 
 # CSRF
 CSRF_TRUSTED_ORIGINS = [
-    'http://verbal-voyager.ru', 'http://www.verbal-voyager.ru', 'https://verbal-voyager.ru', 'https://www.verbal-voyager.ru']
+    'http://verbal-voyager.ru', 'http://cdn.verbal-voyager.ru', 'http://www.verbal-voyager.ru', 'https://verbal-voyager.ru', 'https://www.verbal-voyager.ru', 'http://cdn.verbal-voyager.ru']
 
 # Application definition
 INSTALLED_APPS = [
@@ -216,15 +216,20 @@ FILE_UPLOAD_HANDLERS = [
 # Redis
 CACHES = {
     "default": {
-        # "BACKEND": "django_redis.cache.RedisCache",
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        "BACKEND": "django_redis.cache.RedisCache",
+        # 'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
         "LOCATION": CURRENT_CONFIG.REDIS_DEFAULT_LOCATION,
         "OPTIONS": {
             "SOCKET_CONNECT_TIMEOUT": 5,
             "SOCKET_TIMEOUT": 5,
-            "IGNORE_EXCEPTIONS": True,
-            "PICKLE_VERSION": -1,
             "VERSION": CURRENT_CONFIG.REDIS_VERSION,
+            "SSL": not CURRENT_CONFIG.DEBUG,
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 100,
+                "retry_on_timeout": True,
+            },
+            # Для частых операций записи
+            "COMPRESS_MIN_LENGTH": 500,  # сжимать только большие значения
         },
         "KEY_PREFIX": "vv",
         "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
@@ -236,9 +241,13 @@ CACHES = {
         "OPTIONS": {
             "SOCKET_CONNECT_TIMEOUT": 5,
             "SOCKET_TIMEOUT": 5,
-            "IGNORE_EXCEPTIONS": True,
-            "PICKLE_VERSION": -1,
             "VERSION": CURRENT_CONFIG.REDIS_VERSION,
+            "SSL": not CURRENT_CONFIG.DEBUG,
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 100,
+                "retry_on_timeout": True,
+            },
+            "COMPRESS_MIN_LENGTH": 500,
         },
         "KEY_PREFIX": "vv:s",
         "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
@@ -252,6 +261,10 @@ SESSION_COOKIE_AGE = 1209600
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
 SESSION_SAVE_EVERY_REQUEST = True
+SESSION_REDIS_MAX_ENTRIES = 10000
+SESSION_REDIS_EXPIRE = SESSION_COOKIE_AGE
+REDIS_METRICS_ENABLED = True
+
 if not CURRENT_CONFIG.DEBUG:
     SESSION_COOKIE_SAMESITE = 'Lax'
     CSRF_COOKIE_SECURE = True

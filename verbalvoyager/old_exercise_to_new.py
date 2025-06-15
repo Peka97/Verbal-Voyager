@@ -181,6 +181,8 @@ def transfer_exercise_dialogs(qs, source_lang, target_lang):
 
 def transfer_irregular_verbs(qs, source_lang, target_lang):
     for old_exercise in qs.all():
+        if old_exercise.pk < 14:
+            continue
         english_verbs = []
 
         for irregular_verb in old_exercise.words.all():
@@ -194,9 +196,10 @@ def transfer_irregular_verbs(qs, source_lang, target_lang):
             if not new_english_verb_qs.exists():
                 print(
                     f"NOT FOUND WORD: {irregular_verb.infinitive.word}. Creating...")
+                english_verb = Word.objects.get(word='can')
 
                 new_english_verb = NewEnglishVerb(
-                    infinitive=irregular_verb.infinitive.word,
+                    infinitive=english_verb,
                     past_simple=irregular_verb.past_simple,
                     past_participle=irregular_verb.past_participle
                 )
@@ -266,4 +269,4 @@ if __name__ == '__main__':
     # Irregular verbs
     old_english_exercises_qs = ExerciseIrregularEnglishVerb.objects
 
-    # transfer_irregular_verbs(old_english_exercises_qs, en_lang, ru_lang)
+    transfer_irregular_verbs(old_english_exercises_qs, en_lang, ru_lang)

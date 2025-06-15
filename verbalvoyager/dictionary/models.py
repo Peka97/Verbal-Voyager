@@ -564,7 +564,6 @@ class Translation(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        # TODO: move to forms
         if self.source_word.language == self.target_word.language:
             raise ValidationError(
                 'Слово-источник и слово-цель должны быть на разных языках.')

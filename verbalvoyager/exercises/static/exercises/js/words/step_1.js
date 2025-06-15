@@ -1,7 +1,7 @@
 import { showToast } from '/static/pages/js/modules/toast_notification.js';
 import { toNextStep } from '../modules/next_step.js';
 import { pagination, updatePagination } from '../modules/pagination.js';
-import { send_points } from '../modules/send_points_fix.js';
+import { send_points } from '/static/exercises/js/modules/send_points_fix.js';
 
 pagination.forEach(el => {
     el.onclick = (event) => {
@@ -15,11 +15,11 @@ let words = [...document.getElementsByClassName('word__block')];
 let points = words.length;
 words[0].classList.add('watched');
 
-function checkAllWordsWatched (event) {
+function checkAllWordsWatched(event) {
     let current_word_block = document.querySelector('div.word__block:not(.hidden)');
     current_word_block.classList.add('watched');
 
-    for (let i=0; i < words.length; i++) {
+    for (let i = 0; i < words.length; i++) {
         if (!words[i].classList.contains('watched')) {
             return false;
         }
@@ -30,7 +30,7 @@ function checkAllWordsWatched (event) {
         allWordsWatched = true;
         send_points('words', points);
     }
-    
+
     return true;
 }
 

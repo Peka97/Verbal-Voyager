@@ -101,18 +101,8 @@ ul.errorlist {
 .input-container {
 	margin: auto;
 	padding: 2%;
-	background: linear-gradient(
-			14deg,
-			var(--purple-400) 0%,
-			var(--indigo-500) 66%,
-			var(--deep-purple-300) 100%
-		),
-		radial-gradient(
-			circle,
-			var(--deep-purple-400) 0%,
-			var(--purple-400) 65%,
-			var(--indigo-400) 100%
-		);
+	background: linear-gradient(14deg, var(--purple-400) 0%, var(--indigo-500) 66%, var(--deep-purple-300) 100%),
+		radial-gradient(circle, var(--deep-purple-400) 0%, var(--purple-400) 65%, var(--indigo-400) 100%);
 	border: 0.1rem white solid;
 	border-radius: 1rem;
 	max-width: min-content;
@@ -166,7 +156,7 @@ ul.errorlist {
 		position: absolute;
 		pointer-events: none;
 		left: 5px;
-		top: 10px;
+		top: -5px;
 		transition: 0.2s ease all;
 		-moz-transition: 0.2s ease all;
 		-webkit-transition: 0.2s ease all;
@@ -552,8 +542,7 @@ ul.errorlist {
 	height: 4px;
 	background: #fff;
 	border-radius: 50%;
-	box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1),
-		0 0 0 8px rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 255, 255, 0.1);
+	box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1), 0 0 0 8px rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 255, 255, 0.1);
 	animation: animate 3s linear infinite;
 }
 

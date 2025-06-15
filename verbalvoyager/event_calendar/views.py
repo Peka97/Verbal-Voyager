@@ -28,9 +28,12 @@ def update(request):
     lessons_data = data.get('lessons')
 
     if tasks_data:
-        students_id.extend(create_tasks(tasks_data['toCreate']))
-        students_id.extend(update_tasks(tasks_data['toUpdate']))
-        students_id.extend(delete_tasks(tasks_data['toDelete']))
+        if tasks_data['toCreate']:
+            students_id.extend(create_tasks(tasks_data['toCreate']))
+        if tasks_data['toUpdate']:
+            students_id.extend(update_tasks(tasks_data['toUpdate']))
+        if tasks_data['toDelete']:
+            students_id.extend(delete_tasks(tasks_data['toDelete']))
 
     if lessons_data:
         students_id.extend(update_lessons(lessons_data))

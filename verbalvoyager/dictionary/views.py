@@ -2,56 +2,63 @@ import json
 import logging
 import requests
 import re
+from pprint import pprint
 
 from django.http import JsonResponse
 from django.db.models import Q
 
-from .models import EnglishWord, Language, Translation
+from .models import EnglishWord, Language, Translation, Word, EnglishWordDetail, RussianWordDetail
 from .utils import get_word_class_name
 
 logger = logging.getLogger('django')
 
 
-def load_from_api(request, lang):
+def load_from_api(request):
+    print(request)
     if request.method != 'POST':
-        return
+        return JsonResponse({"error": f"Wrong method: {request.method}."}, status=405)
+
+    if not request.body:
+        return JsonResponse({'error': 'No data.'}, status=400)
 
     data = json.loads(request.body)
-    word_id, word, translation = load_word_data(data)
+    translation_id, source_word_id, target_word_id = load_word_data(data)
 
-    if word and translation:
-        word_check = EnglishWord.objects.filter(
-            word=word, translation=translation)
+    if not source_word_id:
+        return JsonResponse({'error': 'No source word.'}, status=400)
+
+    print(translation_id, source_word_id, target_word_id)
+
+    if source_word_id and target_word_id:
+        word_check = Translation.objects.filter(
+            source_word=source_word_id, target_word=target_word_id)
 
         if word_check.exists():
-            word_check_obj = word_check.first()
+            return JsonResponse({'error': f'Слово уже есть в словаре: ID {word_check.first().pk}.'}, status=409)
 
-            if not word_id or \
-                    (
-                        word_check_obj.word == word and
-                        word_check_obj.translation == translation and
-                        str(word_check_obj.pk) != str(word_id)
-                    ):
-                return JsonResponse({'error': f'Слово уже есть в словаре: ID {word_check_obj.pk}.'}, status=409)
+    source_word_obj = Word.objects.get(pk=source_word_id)
 
     url = 'https://dictionary.skyeng.ru/api/public/v1/words/search?pageSize=1'
     headers = {'accept': 'application/json'}
-    params = {'search': word, }
+    params = {'search': source_word_obj.word, }
 
     try:
         resp = requests.get(url, params, headers=headers)
         resp_json = resp.json()[0]
+        pprint(resp_json)
     except IndexError:
         return JsonResponse({'error': 'Не найдено. Проверьте правильность ввода.'}, status=404)
 
     meanings = resp_json['meanings']
     means = [mean['translation']['text'] for mean in meanings]
 
-    if translation not in means:
+    if not target_word_id:
         return JsonResponse({'means': means}, status=200)
 
+    target_word_obj = Word.objects.get(pk=target_word_id)
+
     for mean in meanings:
-        if mean['translation']['text'] != translation:
+        if mean['translation']['text'].lower() != target_word_obj.word:
             continue
 
         url = 'https://dictionary.skyeng.ru/api/public/v1/meanings'
@@ -67,12 +74,16 @@ def load_from_api(request, lang):
 
         else:
             answer = {
-                'word': word,
-                'translation': translation,
+                'word': source_word_obj.word,
+                'translation': target_word_obj.word,
             }
             answer = parse_word_data(resp_json[0], answer)
+            create_word_details(source_word_obj.pk, answer)
+            create_word_details(target_word_obj.pk, answer)
 
             return JsonResponse(answer, status=200)
+
+    return JsonResponse({'means': means}, status=200)
 
 
 def load_word_data(data):
@@ -90,10 +101,7 @@ def parse_word_data(word_api, answer):
     answer['sound_url'] = word_api['soundUrl']
     answer['transcription'] = word_api['transcription']
     answer['another_means'] = []
-    answer['examples'] = [
-        example['text']
-        for example in word_api['examples']
-    ]
+    answer['examples'] = word_api['examples']
 
     try:
         answer['image_url'] = word_api['images'][0]['url']
@@ -151,3 +159,37 @@ def get_translation(request, lang):
         except Exception as e:
             logger.error(f'Error getting translation: {e}', exc_info=True)
             return JsonResponse({'message': 'Что-то пошло не так.'}, status=500)
+
+
+def create_word_details(word_id, data):
+    word = Word.objects.get(pk=word_id)
+
+    match word.language.name:
+        case 'English':
+            if EnglishWordDetail.objects.filter(word=word).exists():
+                details = EnglishWordDetail.objects.get(word=word)
+            else:
+                details = EnglishWordDetail(
+                    word=word,
+                )
+            details.transcription = data.get('transcription')
+            details.audio_url = data.get('sound_url')
+        case 'French':
+            # пока не реализовано
+            return
+        case 'Spanish':
+            # пока не реализовано
+            return
+        case 'Russian':
+            if RussianWordDetail.objects.filter(word=word).exists():
+                details = RussianWordDetail.objects.get(word=word)
+            else:
+                details = RussianWordDetail(
+                    word=word,
+                )
+            details.image_url = data.get('image_url')
+        case _:
+            return None
+
+    details.save()
+    return details

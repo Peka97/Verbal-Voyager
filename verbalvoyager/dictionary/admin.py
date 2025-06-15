@@ -11,6 +11,7 @@ from pages.filters import ChoiceDropdownFilter
 from logging_app.helpers import log_action
 from .filters import WordLanguageFilter, InvalidWordsFilter
 from .services.normalizers import normalize_words
+from .forms import TranslationAdminForm
 
 
 @admin.register(EnglishWord)
@@ -178,6 +179,7 @@ class WordAdmin(BaseAdmin):
     has_details.boolean = True
     has_details.short_description = _('Has details')
 
+    # TODO: copy from Translation method
     def get_search_results(self, request, queryset, search_term):
         if not search_term:
             return queryset, False
@@ -217,9 +219,14 @@ class WordAdmin(BaseAdmin):
                 del actions['normalize_words_action']
         return actions
 
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
+
 
 @admin.register(Translation)
 class TranslationAdmin(BaseAdmin):
+    form = TranslationAdminForm
     save_as = True
     search_fields = ('source_word__word', 'target_word__word')
     autocomplete_fields = ('source_word', 'target_word')
@@ -227,9 +234,18 @@ class TranslationAdmin(BaseAdmin):
     search_fields = ('source_word__word', 'target_word__word')
     list_filter = (WordLanguageFilter,)
     ordering = ('source_word__word', 'target_word__word')
-    formfield_overrides = {
-        JSONField: {'widget': JSONEditorWidget},
-    }
+    fieldsets = (
+        ('Translation Main', {
+            'fields': (('source_word', 'target_word'),),
+        }),
+        ('Translation Extra', {
+            'classes': ('collapse', ),
+            'fields': ('part_of_speech', 'definition', 'examples', 'prefix'),
+        }),
+    )
+    # formfield_overrides = {
+    #     JSONField: {'widget': JSONEditorWidget},
+    # }
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('source_word', 'target_word')
@@ -261,11 +277,22 @@ class TranslationAdmin(BaseAdmin):
 
         return queryset, False
 
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
+
+    class Media:
+        js = ['admin/js/load_translation_data.js',]
+
 
 class AbstractWordDetailAdmin(BaseAdmin):
     list_display = ('word',)
     search_fields = ('word__word', )
     autocomplete_fields = ('word', )
+
+    @log_action
+    def save_model(self, request, obj, form, change):
+        return super().save_model(request, obj, form, change)
 
 
 @admin.register(EnglishWordDetail)
