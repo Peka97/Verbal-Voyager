@@ -536,7 +536,7 @@ class ExerciseWords(models.Model):
     class Meta:
         # abstract = True
         ordering = ['-is_active']
-        verbose_name = verbose_name_plural = 'ALL | Exercise Words'
+        verbose_name = verbose_name_plural = 'All | Exercise Words'
 
 
 class NewExerciseIrregularEnglishVerb(models.Model):

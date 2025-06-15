@@ -160,7 +160,12 @@ def get_user_exercises(user, projects):
         *get_cached_user_dialogs(user),
         *get_cached_user_english_irregular_verbs(user),
     ]
-    result.sort(key=lambda exer: exer.is_active, reverse=True)
+    result = sorted(
+        result,
+        key=lambda exer: (-exer.is_active, exer.created_at),
+        reverse=True
+    )
+    # result.sort(key=lambda exer: exer.is_active, reverse=True)
     # unique_courses = {p.course_id.name for p in projects}
 
     # for course in unique_courses:
