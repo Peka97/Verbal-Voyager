@@ -15,7 +15,7 @@ logger = logging.getLogger('django')
 def json_update_lesson_plan(request, lesson_id):
     print(lesson_id)
     if request.method == 'POST':
-        errors = {}
+        errors = []
 
         # try:
         data = json.loads(request.body)
@@ -64,7 +64,8 @@ def json_update_lesson_plan(request, lesson_id):
                 words_qs = Translation.objects.filter(
                     pk__in=data['new_vocabulary']).all()
                 if not words_qs:
-                    errors[words_qs] = f'Words not found in dictionary.'
+                    for word in data['new_vocabulary']:
+                        errors.append(f'Word "{word}"not found in dictionary.')
                 else:
                     lesson_plan.new_vocabulary.set(words_qs)
 

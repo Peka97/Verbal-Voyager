@@ -108,3 +108,5 @@ def update_lessons(lessons_to_update: dict) -> list:
     with transaction.atomic():
         Lesson.objects.bulk_update(
             lessons.values(), ('status', 'is_paid',))
+
+    return students_id

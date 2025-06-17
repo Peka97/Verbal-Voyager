@@ -42,6 +42,9 @@ def update(request):
         cache.delete_pattern(f"user_{student_id}_lessons*")
         cache.delete_pattern(f"user_{student_id}_lesson_tasks*")
 
+    cache.delete_pattern(f"user_{request.user.pk}_lessons*")
+    cache.delete_pattern(f"user_{request.user.pk}_lesson_tasks*")
+
     return JsonResponse({'status': 'OK'})
 
 

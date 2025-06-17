@@ -43,8 +43,7 @@ def user_auth(request):
         else:
             request.session.flush()
             login(request, user)
-
-        return redirect(next_url)
+            return redirect(next_url)
 
     return render(request, 'users/auth.html', context)
 
@@ -98,7 +97,7 @@ def user_account(request):
     }
 
     if request.method == 'POST':
-        set_user_timezone(request)
+        context['timezone_form'] = set_user_timezone(request)
     else:
         context['timezone_form'] = TimezoneForm(instance=request.user)
 
@@ -148,10 +147,9 @@ def set_user_timezone(request):
     if form.is_valid():
         form.save()
         messages.success(request, 'Часовой пояс успешно обновлен.')
-        url = reverse('account', kwargs={'current_pane': 'profile'})
-        return redirect(url)
     else:
         messages.error(request, 'Ошибка при обновлении часового пояса.')
+    return form
 
 
 def get_user_exercises(user, projects):

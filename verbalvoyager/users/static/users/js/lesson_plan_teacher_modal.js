@@ -128,9 +128,7 @@ function sendUpdateToServer(lesson_id, dataToSend) {
 			return;
 		} else {
 			resp.json().then((data) => {
-				const errors = Object.entries(data.errors)
-					.map(([key, value]) => `${value}`)
-					.join(".</br>");
+				const errors = data.errors.join(".</br>");
 
 				showToast(
 					`
@@ -573,9 +571,7 @@ async function sendWordsForTranslation(dataToSend) {
 			});
 		} else {
 			resp.json().then((data) => {
-				const errors = Object.entries(data.errors)
-					.map(([key, value]) => `${value}`)
-					.join(".</br>");
+				const errors = data.errors.join("</br>");
 
 				showToast(
 					`
@@ -618,16 +614,16 @@ function showTranslationsModal(translations) {
             <div class="word-original">${originalWord}</div>
             <div class="translations-list">
                 ${translations
-									.map(
-										(translation) => `
+				.map(
+					(translation) => `
                     <div id="${translation.id}" class="translation-option ${translation.is_default ? "selected" : ""}" 
                          data-word="${originalWord}" 
                          data-translation="${translation.translation}">
                         ${translation.translation}
                     </div>
                 `
-									)
-									.join("")}
+				)
+				.join("")}
             </div>
         `;
 

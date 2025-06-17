@@ -129,10 +129,8 @@ def get_translation(request, lang):
     if request.method == 'POST':
         try:
             words = json.loads(request.body)
-            print(words)
-            # print(lang)
-
             result = {}
+            errors = []
 
             for word in words:
                 lang_obj = Language.objects.get(name='English')
@@ -154,7 +152,10 @@ def get_translation(request, lang):
                             for translation in translation_qs.all()
                         ]
                     }
-
+                else:
+                    errors.append(f'Слово "{word}" не найдено.')
+            if errors:
+                return JsonResponse({'errors': errors}, status=404)
             return JsonResponse({'result': result}, status=200)
         except Exception as e:
             logger.error(f'Error getting translation: {e}', exc_info=True)
