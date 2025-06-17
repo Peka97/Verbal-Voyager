@@ -17,10 +17,14 @@ class AbstractUserListFilter(SimpleListFilter):
 
     def lookups(self, request, model_admin):
         users = User.objects.filter(
-            groups__name=self.user_group).order_by('last_name', 'first_name')
+            groups__name__contains=self.user_group).order_by('last_name', 'first_name')
+
+        if request.user.username != 'admin':
+            queryset = queryset.exclude(groups__name='TeacherDemo')
 
         return [
-            (user.pk, _(f'{user.last_name} {user.first_name}')) for user in users
+            (user.pk, _(f'{user.last_name} {user.first_name}'))
+            for user in users.distinct('last_name', 'first_name')
         ]
 
 
@@ -31,6 +35,7 @@ class TeachersListFilter(AbstractUserListFilter):
 
     def queryset(self, request, queryset):
         if self.value():
+
             return queryset.filter(teacher=self.value())
 
 

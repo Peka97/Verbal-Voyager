@@ -28,7 +28,6 @@ def init_student_demo_access(user: User):
 
 def create_demo_exercise(exercise_model, user_id):
     demo_exercise = exercise_model.objects.filter(
-        name='Demo Example',
         category__name='Demo'
     ).first()
 
