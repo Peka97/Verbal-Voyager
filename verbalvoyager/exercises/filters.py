@@ -16,7 +16,7 @@ class AbstractUserListFilter(SimpleListFilter):
         super().__init__(request, params, model, model_admin)
 
     def lookups(self, request, model_admin):
-        users = User.objects.filter(
+        queryset = User.objects.filter(
             groups__name__contains=self.user_group).order_by('last_name', 'first_name')
 
         if request.user.username != 'admin':
@@ -24,7 +24,7 @@ class AbstractUserListFilter(SimpleListFilter):
 
         return [
             (user.pk, _(f'{user.last_name} {user.first_name}'))
-            for user in users.distinct('last_name', 'first_name')
+            for user in queryset.distinct('last_name', 'first_name')
         ]
 
 
@@ -34,9 +34,7 @@ class TeachersListFilter(AbstractUserListFilter):
     user_group = 'Teacher'
 
     def queryset(self, request, queryset):
-        if self.value():
-
-            return queryset.filter(teacher=self.value())
+        return queryset.filter(teacher=self.value()) if self.value() else None
 
 
 class StudentsListFilter(AbstractUserListFilter):
@@ -45,6 +43,4 @@ class StudentsListFilter(AbstractUserListFilter):
     user_group = 'Student'
 
     def queryset(self, request, queryset):
-
-        if self.value():
-            return queryset.filter(student=self.value())
+        return queryset.filter(student=self.value()) if self.value() else None
