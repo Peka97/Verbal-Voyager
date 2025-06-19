@@ -13,6 +13,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 
 from users.services.cache import get_cached_all_teachers, get_cached_lessons_for_teacher, get_cached_lessons_for_student, get_cached_courses, get_cached_projects, get_cached_user_english_words, get_cached_user_french_words, get_cached_user_russian_words, get_cached_user_spanish_words,  get_cached_user_english_irregular_verbs, get_cached_user_english_dialogs, get_cached_user_french_dialogs, get_cached_user_russian_dialogs, get_cached_user_spanish_dialogs
 from users.services.cache import get_cached_user_words, get_cached_user_dialogs, get_cached_user_english_irregular_verbs
+from users.services.utils import get_current_month_range
 from users.forms import RegistrationUserForm, CustomPasswordResetForm, AuthUserForm, TimezoneForm
 from users.utils import get_words_learned_count, get_exercises_done_count, init_student_demo_access
 
@@ -87,6 +88,7 @@ def user_logout(request):
 def user_account(request):
     user = request.user
     current_pane = request.GET.get('pane')
+    start_date, end_date = get_current_month_range(user)
 
     if not current_pane:
         current_pane = 'activities'
@@ -104,21 +106,17 @@ def user_account(request):
     if context['user_is_supervisor']:
         context['teachers'] = tuple(get_cached_all_teachers())
 
-    if context['user_is_teacher']:
-        lessons_obj = get_cached_lessons_for_teacher(user)
-        lessons = defaultdict(list)
+    if not context['user_is_teacher']:
+        # lessons_obj = get_cached_lessons_for_teacher(
+        #     user, start_date, end_date)
 
-        for lesson in lessons_obj:
+        # lessons = defaultdict(list)
 
-            if hasattr(lesson, 'lesson_plan'):
-                print(lesson)
-                print(lesson.lesson_plan)
-                print(lesson.lesson_plan.new_vocabulary.all())
-            lessons[lesson.datetime].append(lesson)
+        # for lesson in lessons_obj:
+        #     lessons[lesson.datetime].append(lesson)
 
-        lessons = tuple(lessons.values())
-    else:
-        lessons = get_cached_lessons_for_student(user)
+        # lessons = tuple(lessons.values())
+        lessons = get_cached_lessons_for_student(user, start_date, end_date)
         projects = get_cached_projects(user)
         exercises = get_user_exercises(user, projects)
         context['projects'] = projects
@@ -135,7 +133,8 @@ def user_account(request):
             exercises
         )
 
-    context['events'] = lessons
+        # context['events'] = lessons
+
     context['courses'] = get_cached_courses()
     context['current_pane'] = current_pane
 

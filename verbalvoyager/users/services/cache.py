@@ -68,7 +68,7 @@ def get_cached_projects_for_student(user):
     )
 
 
-def get_cached_lessons_for_student(user):
+def get_cached_lessons_for_student(user, start_date, end_date):
     CACHE_KEY = f"user_{user.id}_lessons_{VERSION}"
     lesson_plan_prefatches = (
         Prefetch('new_vocabulary', queryset=Translation.objects.all(),),
@@ -100,7 +100,8 @@ def get_cached_lessons_for_student(user):
     return cache.get_or_set(
         CACHE_KEY,
         lambda: Lesson.objects.filter(
-            student_id=user
+            student_id=user,
+            datetime__range=(start_date, end_date)
         ).prefetch_related(
             *prefatches
         ).select_related(
@@ -110,27 +111,27 @@ def get_cached_lessons_for_student(user):
     )
 
 
-def get_cached_lessons_for_teacher(user):
-    CACHE_KEY = f"user_{user.id}_lessons_{VERSION}"
-    lesson_plan_prefatches = (
+def get_cached_lessons_for_teacher(teacher, start_date, end_date):
+    CACHE_KEY = f"user_{teacher.pk}_lessons_{VERSION}"
+    lesson_plan_prefetches = (
         Prefetch('new_vocabulary', queryset=Translation.objects.all(),),
         Prefetch('main_aims', queryset=EnglishLessonMainAims.objects.all(),),
         Prefetch('subsidiary_aims',
                  queryset=EnglishLessonSubsidiaryAims.objects.all(),)
     )
-    project_types_prefatches = (
+    project_types_prefetches = (
         Prefetch('types', queryset=ProjectType.objects.only('name'),),
     )
 
-    prefatches = (
+    prefetches = (
         Prefetch('lesson_tasks', queryset=LessonTask.objects.all(),),
         Prefetch('project_id',
                  queryset=Project.objects.prefetch_related(
-                     *project_types_prefatches).all()),
+                     *project_types_prefetches).all()),
         Prefetch(
             'lesson_plan',
             queryset=EnglishLessonPlan.objects.prefetch_related(
-                *lesson_plan_prefatches).all(),
+                *lesson_plan_prefetches).all(),
         )
     )
     lesson_fields = (
@@ -142,17 +143,45 @@ def get_cached_lessons_for_teacher(user):
     return cache.get_or_set(
         CACHE_KEY,
         lambda: Lesson.objects.filter(
-            teacher_id=user
-        ).prefetch_related(
-            *prefatches
-        ).select_related(
-            'teacher_id', 'student_id'
-        ).only(*lesson_fields).order_by('datetime'),
+            teacher_id=teacher.pk,
+            datetime__range=(start_date, end_date)
+        ).prefetch_related(*prefetches)
+         .select_related('teacher_id', 'student_id')
+         .only(*lesson_fields)
+         .order_by('datetime'),
         timeout=3600
     )
 
 
-def get_cached_lessons_for_other_teacher(user, teacher_id):
+# def get_cached_lessons_for_other_teacher(user, teacher_id):
+#     CACHE_KEY = f"user_{user.id}_lessons_for_{teacher_id}_{VERSION}"
+
+#     prefatches = (
+#         Prefetch('lesson_tasks', queryset=LessonTask.objects.all(),
+#                  to_attr='prefetched_tasks'),
+#         Prefetch('project_id__types', queryset=ProjectType.objects.only(
+#             'name').all(), to_attr='prefetched_types')
+#     )
+#     lesson_fields = (
+#         'id', 'title', 'datetime', 'duration', 'is_paid', 'status',
+#         'teacher_id__first_name', 'teacher_id__last_name', 'teacher_id__timezone',
+#         'student_id__first_name', 'student_id__last_name', 'student_id__timezone',
+#         'project_id'
+#     )
+#     return cache.get_or_set(
+#         CACHE_KEY,
+#         lambda: Lesson.objects.filter(
+#             teacher_id=teacher_id
+#         ).prefetch_related(
+#             *prefatches
+#         ).select_related(
+#             'teacher_id', 'project_id', 'student_id'
+#         ).only(*lesson_fields).order_by('datetime'),
+#         timeout=3600
+#     )
+
+
+def get_cached_lessons_for_other_teacher(user, teacher_id, start_date, end_date):
     CACHE_KEY = f"user_{user.id}_lessons_for_{teacher_id}_{VERSION}"
 
     prefatches = (
@@ -170,7 +199,8 @@ def get_cached_lessons_for_other_teacher(user, teacher_id):
     return cache.get_or_set(
         CACHE_KEY,
         lambda: Lesson.objects.filter(
-            teacher_id=teacher_id
+            teacher_id=teacher_id,
+            datetime__range=(start_date, end_date)
         ).prefetch_related(
             *prefatches
         ).select_related(

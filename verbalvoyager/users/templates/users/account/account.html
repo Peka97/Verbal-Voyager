@@ -7,6 +7,7 @@
 {% block 'title' %}Профиль{% endblock 'title' %}
 
 {% block 'meta' %}
+	<meta id='user_pk' data-pk="{{user.pk}}" data-teacher="{{ user_is_teacher}}">
 	{% if user_is_supervisor %}
 		<meta id='supervisor_role' data-self="{{user.pk}}" data-teachers="{{teachers}}">
 	{% endif %}
@@ -21,6 +22,7 @@
 	<link rel="stylesheet" href="{% static 'users/css/exercises_pane.css' %}">
 	<link rel="stylesheet" href="{% static 'users/css/checkbox.css' %}">
 	<link rel="stylesheet" href="{% static 'users/css/lesson_plan_modal.css' %}">
+	<link rel="stylesheet" href="{% static 'users/css/loader.css' %}">
 {% endblock 'style' %}
 
 {% block 'content' %}

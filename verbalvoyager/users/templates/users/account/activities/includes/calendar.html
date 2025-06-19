@@ -1,4 +1,5 @@
 <div class="content calendar-container">
+	
 	<div class="col-12 calendar-title-wrap">
 		{% if user_is_supervisor %}
 		<span class="calendar-left-button fa fa-chevron-left" id="prev_teacher"> </span>
@@ -42,7 +43,14 @@
 			<td class="day">Sat</td>
 		</table>
 		<div class="frame">
-			<table class="dates-table w-100"> 
+			<!-- Лоадер для календаря -->
+			<div id="calendar-loader" class="loader-container" style="display: none;">
+				<div class="calendar-loader" style="width: 347px; height: 424px;">
+					<div class="loader-spinner"></div>
+				</div>
+			</div>
+			<table class="dates-table w-100">
+				
 				<tbody class="tbody">
 					{% comment %} {{ calendar|safe }} {% endcomment %}
 				</tbody>
@@ -82,9 +90,7 @@
 			</div>
 		</form>
 	</div> {% endcomment %}
-	{% comment %} <div name='empty-card' class="event-card empty-card hidden">
-		<div class='event-name px-3'>Занятий сегодня нет</div>
-	</div> {% endcomment %}
+	
 	{% if user_is_teacher %}
 		{% include 'users/account/activities/includes/teacher_events.html' %}
 	{% else %}
