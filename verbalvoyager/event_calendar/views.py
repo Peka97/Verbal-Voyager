@@ -67,8 +67,6 @@ def load_teacher_lessons(request, teacher_id):
     for lesson in lessons_obj:
         lessons[lesson.datetime].append(lesson)
 
-    print(lessons_obj.count())
-
     context['events'] = tuple(lessons.values())
     rendered_template = render(
         request, 'users/account/activities/includes/teacher_events.html', context).content.decode('utf-8')
@@ -83,17 +81,12 @@ def load_student_lessons(request, student_id):
     student = User.objects.get(pk=student_id)
     start_date = request.GET.get('start')
     end_date = request.GET.get('end')
-    print(f"Student: {student}")
-    print(f"Start date: {start_date}")
-    print(f"End date: {end_date}")
 
     if student.username != request.user.username:
         student_name = f"{student.last_name} {student.first_name}"
 
     lessons = get_cached_lessons_for_student(
         request.user, start_date, end_date)
-
-    print(lessons.count())
 
     context['events'] = lessons
     rendered_template = render(
