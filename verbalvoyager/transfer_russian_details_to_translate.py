@@ -3,7 +3,8 @@ if __name__ == '__main__':
     import django
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'verbalvoyager.settings')
     django.setup()
-    from dictionary.models import Translation, RussianWordDetail
+    from dictionary.models import Translation, RussianWordDetail, Language
+    from django.core.exceptions import ValidationError
 
     ru_details = RussianWordDetail.objects.all()
 
@@ -15,4 +16,7 @@ if __name__ == '__main__':
 
         for translation in translation_qs.all():
             translation.image_url = ru_detail.image_url
-            translation.save()
+            try:
+                translation.save()
+            except ValidationError:
+                print(f'Error with {translation.pk}')
