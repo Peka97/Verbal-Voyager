@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 
 
-from .utils import generate_dialog, get_exercise_or_404, new_generate_dialog
+from .utils import generate_dialog, check_exercise_access, get_exercise_or_404, new_generate_dialog
 
 from .models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, \
     ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, \
@@ -324,7 +324,6 @@ def exercise_irregular_verbs(request, ex_id, step):
     return render(request, template_name, context)
 
 
-# TODO: убрать ex_type. После удаления требуются правки в urls и admin.
 def new_exercise_words(request, ex_id, step):
     titles = {1: 'Запоминаем', 2: 'Выбираем',
               3: 'Расставляем', 4: 'По местам!', 5: 'Переводим'}
@@ -363,33 +362,29 @@ def new_exercise_words(request, ex_id, step):
         }
     }
 
-    source_details_prefetched = Prefetch(
-        'englishworddetail', queryset=EnglishWordDetail.objects.all())
-    target_details_prefetched = Prefetch(
-        'russianworddetail', queryset=RussianWordDetail.objects.all())
-    lang_prefetched = Prefetch('language', queryset=Language.objects.all())
+    exercise = ExerciseWords.objects.select_related('lang').get(pk=ex_id)
+    _, redirect = check_exercise_access(request, exercise)
+
+    if redirect:
+        return redirect
+
+    words_prefetch_qs = Word.objects.select_related('language')
+
+    if step == 1:
+        source_word_prefetch_qs = words_prefetch_qs.prefetch_details(
+            exercise.lang.name)
+        target_word_prefetch_qs = words_prefetch_qs
+    else:
+        source_word_prefetch_qs = words_prefetch_qs
+        target_word_prefetch_qs = words_prefetch_qs
 
     translations_prefetched = [
-        Prefetch(
-            'source_word',
-            queryset=Word.objects
-            .prefetch_related(source_details_prefetched, lang_prefetched).all()
-        ),
-        Prefetch(
-            'target_word',
-            queryset=Word.objects
-            .prefetch_related(target_details_prefetched, lang_prefetched).all()
-        ),
+        Prefetch('source_word', queryset=source_word_prefetch_qs),
+        Prefetch('target_word', queryset=target_word_prefetch_qs),
     ]
 
-    words_prefetched = Prefetch('words', queryset=Translation.objects.prefetch_related(
-        *translations_prefetched).all())
-
-    exercise_qs = ExerciseWords.objects.prefetch_related(
-        words_prefetched)
-    exercise = exercise_qs.get(pk=ex_id)
-
-    translations_qs = exercise.words
+    translations_qs = exercise.words.prefetch_related(
+        *translations_prefetched).all()
 
     template_name = f'exercises/words/step_{step}.html'
     context = {
@@ -407,13 +402,25 @@ def new_exercise_words(request, ex_id, step):
 
 
 def new_exercise_dialog(request, ex_id):
-    exercise, redirect = get_exercise_or_404(request, ExerciseDialog, ex_id)
+    exercise = ExerciseDialog.objects.select_related('lang').get(pk=ex_id)
+    _, redirect = check_exercise_access(request, exercise)
 
     if redirect:
         return redirect
 
-    raw_dialog = tuple(filter(lambda s: len(s) > 1,
-                              exercise.text.split('\n')))  # type: ignore
+    words_prefetch_qs = Word.objects.select_related('language')
+
+    translations_prefetched = [
+        Prefetch('source_word', queryset=words_prefetch_qs),
+        Prefetch('target_word', queryset=words_prefetch_qs),
+    ]
+
+    translations_qs = exercise.words.prefetch_related(
+        *translations_prefetched).all()
+
+    raw_dialog = tuple(
+        filter(lambda s: len(s) > 1, exercise.text.split('\n'))
+    )  # type: ignore
 
     scene = raw_dialog[0] if raw_dialog[0].startswith(
         'Scene:') or raw_dialog[0].startswith('Situation:') else None
@@ -428,12 +435,10 @@ def new_exercise_dialog(request, ex_id):
             }
         )
 
-    words = exercise.words.all()
-
     context = {
         'scene': scene,
         'messages': messages,
-        'translations': words,
+        'translations': translations_qs.all(),
         'lang': exercise.lang.name
     }
     return render(request, 'exercises/dialogs/dialog.html', context)
@@ -466,21 +471,39 @@ def new_exercise_irregular_verbs(request, ex_id, step):
         },
     }
 
-    exercise, redirect = get_exercise_or_404(
-        request, NewExerciseIrregularEnglishVerb, ex_id)
+    exercise = NewExerciseIrregularEnglishVerb.objects.get(pk=ex_id)
+    _, redirect = check_exercise_access(request, exercise)
 
     if redirect:
         return redirect
 
-    prefetched_details = Prefetch(
-        'englishworddetail', queryset=EnglishWordDetail.objects.all()
-    )
-    prefetched = Prefetch(
-        'infinitive',
-        queryset=Word.objects.prefetch_related(prefetched_details).all()
+    words_prefetch_qs = Word.objects.select_related('language')
+
+    if step == 1:
+        source_word_prefetch_qs = words_prefetch_qs.prefetch_details('English')
+        target_word_prefetch_qs = words_prefetch_qs
+    else:
+        source_word_prefetch_qs = words_prefetch_qs
+        target_word_prefetch_qs = words_prefetch_qs
+
+    translations_prefetched = [
+        Prefetch('source_word', queryset=source_word_prefetch_qs),
+        Prefetch('target_word', queryset=target_word_prefetch_qs),
+    ]
+
+    translations_qs = Prefetch(
+        'translations_from',
+        queryset=Translation.objects.prefetch_related(
+            *translations_prefetched),
+        to_attr='prefetched_translations_from'
     )
 
-    words = exercise.words.prefetch_related(prefetched)
+    prefetched = Prefetch(
+        'infinitive',
+        queryset=Word.objects.prefetch_related(translations_qs)
+    )
+
+    irregular_verbs = exercise.words.prefetch_related(prefetched).all()
 
     template_name = f'exercises/english/irregular_verbs/step_{step}.html'
     context = {
@@ -489,8 +512,8 @@ def new_exercise_irregular_verbs(request, ex_id, step):
         'ex_id': ex_id,
         'ex_lang': 'english',
         'step': step,
-        'irregular_verbs': words,
-        'words_count_range': range(1, len(words) + 1)
+        'irregular_verbs': irregular_verbs,
+        'words_count_range': range(1, len(irregular_verbs) + 1)
     }
 
     return render(request, template_name, context)

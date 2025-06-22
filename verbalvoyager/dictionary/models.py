@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Prefetch
 from django.core.exceptions import ValidationError
 
 
@@ -325,6 +326,46 @@ class Language(models.Model):
         verbose_name_plural = 'Языки'
 
 
+class WordQuerySet(models.QuerySet):
+    def prefetch_details(self, language_name=None):
+        if not language_name:
+            return self.prefetch_related(
+                Prefetch('englishworddetail',
+                         queryset=EnglishWordDetail.objects.all(),
+                         to_attr='english_detail'),
+                Prefetch('frenchworddetail',
+                         queryset=FrenchWordDetail.objects.all(),
+                         to_attr='french_detail'),
+                Prefetch('spanishworddetail',
+                         queryset=SpanishWordDetail.objects.all(),
+                         to_attr='spanish_detail')
+            )
+
+        language_name = language_name.lower()
+
+        match language_name:
+            case 'english':
+                obj_name = EnglishWordDetail
+            case 'french':
+                obj_name = FrenchWordDetail
+            case 'spanish':
+                obj_name = SpanishWordDetail
+
+        return self.prefetch_related(
+            Prefetch(f'{language_name.lower()}worddetail',
+                     queryset=obj_name.objects.all(),
+                     to_attr=f'_{language_name.lower()}_detail')
+        )
+
+
+class WordManager(models.Manager):
+    def get_queryset(self):
+        return WordQuerySet(self.model, using=self._db)
+
+    def prefetch_details(self, language_name=None):
+        return self.get_queryset().prefetch_details(language_name)
+
+
 class Word(models.Model):
     word = models.CharField(
         max_length=50,
@@ -340,8 +381,26 @@ class Word(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    objects = WordManager()
+
+    @property
+    def details(self):
+        language_to_detail = {
+            'english': '_english_detail',
+            'french': '_french_detail',
+            'spanish': '_spanish_detail',
+        }
+
+        lang_code = self.language.name.lower()
+        detail_attr = language_to_detail.get(lang_code)
+
+        if not detail_attr:
+            return None
+
+        details = getattr(self, detail_attr, None)
+        return details
+
     def __str__(self):
-        # return "%(class)s"
         return f"{self.word} [{self.language}]"
 
     class Meta:
@@ -561,6 +620,12 @@ class Translation(models.Model):
         default='',
         verbose_name='Префикс',
         help_text='Префикс слова-источника в данном переводе.'
+    )
+    image_url = models.URLField(
+        blank=True,
+        null=True,
+        verbose_name='Изображение',
+        help_text='Ссылка на изображение слова.'
     )
 
     def save(self, *args, **kwargs):

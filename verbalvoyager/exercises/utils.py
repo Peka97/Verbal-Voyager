@@ -96,7 +96,18 @@ def get_exercise_or_404(request, exercise_obj, exercise_id):
 
     if not exercise.external_access and isinstance(request.user, AnonymousUser):
         return None, redirect(f"/users/auth?next={request.path}")
+
     if exercise.student != request.user and not request.user.is_teacher():
         raise Http404("Запрашиваемый объект не найден")
 
     return exercise, None
+
+
+def check_exercise_access(request, exercise_obj):
+    if not exercise_obj.external_access and isinstance(request.user, AnonymousUser):
+        return False, redirect(f"/users/auth?next={request.path}")
+
+    if exercise_obj.student != request.user and not request.user.is_teacher():
+        raise Http404("Запрашиваемый объект не найден")
+
+    return True, None

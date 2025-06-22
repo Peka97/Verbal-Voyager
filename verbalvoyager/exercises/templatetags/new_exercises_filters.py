@@ -76,17 +76,17 @@ def highlight(values):
     return mark_safe(values)
 
 
-@register.filter
-def get_word_details(word):
-    match word.language.name:
-        case 'English':
-            return word.englishworddetail if hasattr(word, 'englishworddetail') else None
-        case 'French':
-            return word.frenchworddetail if hasattr(word, 'frenchworddetail') else None
-        case 'Spanish':
-            return word.spanishworddetail if hasattr(word, 'spanishworddetail') else None
-        case 'Russian':
-            return word.russianworddetail.first() if hasattr(word, 'russianworddetail') else None
+# @register.filter
+# def get_word_details(word):
+#     match word.language.name:
+#         case 'English':
+#             return word.englishworddetail if hasattr(word, 'englishworddetail') else None
+#         case 'French':
+#             return word.frenchworddetail if hasattr(word, 'frenchworddetail') else None
+#         case 'Spanish':
+#             return word.spanishworddetail if hasattr(word, 'spanishworddetail') else None
+#         case 'Russian':
+#             return word.russianworddetail.first() if hasattr(word, 'russianworddetail') else None
 
 
 @register.filter

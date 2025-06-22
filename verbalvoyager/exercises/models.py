@@ -513,6 +513,10 @@ class ExerciseWords(models.Model):
         verbose_name="Учитель"
     )
 
+    @property
+    def prefetched_words(self):
+        return getattr(self, '_prefetched_words', []) or self.words.all()
+
     def get_words(self):
         words = [
             f'{word.source_word} - {word.target_word}<br>' for word in self.words.all()
