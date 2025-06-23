@@ -1,6 +1,7 @@
 import { showToast } from "/static/pages/js/modules/toast_notification.js";
+import { toNextStep } from "../modules/next_step.js";
 import { pagination, updatePagination } from "../modules/pagination.js";
-import { send_points } from "../modules/send_points_fix.js";
+import { send_points } from "../modules/send_points.js";
 
 pagination.forEach((el) => {
 	el.onclick = (event) => {
@@ -51,31 +52,17 @@ function getRandomWords(exclude) {
 function insertDropdownInWordRows() {
 	for (let i = 0; i < wordRows.length; i++) {
 		let currentWordRow = wordRows[i];
-		let RandomWordIndexOne = getRandomWordId();
-		let RandomWordIndexTwo;
+		let choosenRandomWord = currentWordRow.children[getRandomWordId()];
 
-		do {
-			RandomWordIndexTwo = getRandomWordId();
-		} while (RandomWordIndexOne === RandomWordIndexTwo);
+		let currentWord = choosenRandomWord.innerText.replace(/\s+/g, "");
+		let wordVariants = getRandomWords(currentWord);
+		wordVariants.push(currentWord);
 
-		let choosenRandomWordOne = currentWordRow.children[RandomWordIndexOne];
-		let choosenRandomWordTwo = currentWordRow.children[RandomWordIndexTwo];
+		wordVariants = shuffle(wordVariants);
 
-		let currentWordOne = choosenRandomWordOne.innerText.replace(/\s+/g, "");
-		let currentWordTwo = choosenRandomWordTwo.innerText.replace(/\s+/g, "");
-
-		let wordVariantsOne = getRandomWords(currentWordOne);
-		let wordVariantsTwo = getRandomWords(currentWordTwo);
-
-		wordVariantsOne.push(currentWordOne);
-		wordVariantsTwo.push(currentWordTwo);
-
-		wordVariantsOne = shuffle(wordVariantsOne);
-		wordVariantsTwo = shuffle(wordVariantsTwo);
-
-		choosenRandomWordOne.innerHTML = `
+		choosenRandomWord.innerHTML = `
         <div class="word__main menu">
-            <div class="item" data-key="${currentWordOne}">
+            <div class="item" data-key="${currentWord}">
                 <a href="#" class="menu-word-link">
                     <span class="word-rus">choose a word</span>
                     <svg viewBox="0 0 360 360" xml:space="preserve">
@@ -86,45 +73,16 @@ function insertDropdownInWordRows() {
                 </a>
                 <div class="dropdown submenu">
                     <div class="submenu-item">
-                        <a class="submenu-word-link" href="#">${wordVariantsOne[0]}</a>
+                        <a class="submenu-word-link" href="#">${wordVariants[0]}</a>
                     </div>
                     <div class="submenu-item">
-                        <a class="submenu-word-link" href="#">${wordVariantsOne[1]}</a>
+                        <a class="submenu-word-link" href="#">${wordVariants[1]}</a>
                     </div>
                     <div class="submenu-item">
-                        <a class="submenu-word-link" href="#">${wordVariantsOne[2]}</a>
+                        <a class="submenu-word-link" href="#">${wordVariants[2]}</a>
                     </div>
                     <div class="submenu-item">
-                        <a class="submenu-word-link" href="#">${wordVariantsOne[3]}</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        `;
-		choosenRandomWordTwo.innerHTML = `
-        <div class="word__main menu">
-            <div class="item" data-key="${currentWordTwo}">
-                <a href="#" class="menu-word-link">
-                    <span class="word-rus">choose a word</span>
-                    <svg viewBox="0 0 360 360" xml:space="preserve">
-                        <g id="SVGRepo_iconCarrier">
-                        <path id="XMLID_225_" d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393 c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393 s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"></path>
-                        </g>
-                    </svg>
-                </a>
-                <div class="dropdown submenu">
-                    <div class="submenu-item">
-                        <a class="submenu-word-link" href="#">${wordVariantsTwo[0]}</a>
-                    </div>
-                    <div class="submenu-item">
-                        <a class="submenu-word-link" href="#">${wordVariantsTwo[1]}</a>
-                    </div>
-                    <div class="submenu-item">
-                        <a class="submenu-word-link" href="#">${wordVariantsTwo[2]}</a>
-                    </div>
-                    <div class="submenu-item">
-                        <a class="submenu-word-link" href="#">${wordVariantsTwo[3]}</a>
+                        <a class="submenu-word-link" href="#">${wordVariants[3]}</a>
                         </div>
                     </div>
                 </div>
@@ -169,8 +127,8 @@ function allWordsCorrect() {
 	}
 
 	send_points("irregular_verbs", points);
-	showToast("Упражнение завершено! Переходи в Личный кабинет.");
-	// toNextStep(2)
+	showToast("Отлично! Переходи к следующему шагу.");
+	toNextStep(2);
 }
 
 insertDropdownInWordRows();

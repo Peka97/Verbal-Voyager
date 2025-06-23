@@ -11,8 +11,8 @@ class EnglishLessonPlan(models.Model):
         null=True,
         help_text="Урок, к которому составлен план"
     )
-    exercise_id = models.OneToOneField(
-        'exercises.ExerciseEnglishWords',
+    exercise = models.OneToOneField(
+        'exercises.ExerciseWords',
         verbose_name='Упражнение',
         on_delete=models.SET_NULL,
         related_name='english_lesson_plan',

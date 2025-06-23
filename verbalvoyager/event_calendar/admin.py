@@ -13,7 +13,7 @@ from event_calendar.models import Lesson, Course, Review, ProjectType, Project, 
 from event_calendar.forms import LessonAdminForm, ProjectAdminForm
 from lesson_plan.models import EnglishLessonPlan
 from lesson_plan.admin import EnglishLessonPlanAdmin
-from exercises.models import ExerciseEnglishWords
+from exercises.models import ExerciseWords
 from logging_app.helpers import log_action
 
 
@@ -107,7 +107,7 @@ class LessonAdmin(NestedModelAdmin):
 
                 else:
                     if words_queryset.exists():
-                        new_exercise = ExerciseEnglishWords.objects.create(
+                        new_exercise = ExerciseWords.objects.create(
                             name=f"New vocabulary \"{lesson_plan_form.cleaned_data.get('lesson_id').title}\"",
                             student=lesson_plan.lesson_id.student_id,
                             teacher=lesson_plan.lesson_id.teacher_id,

@@ -1,3 +1,4 @@
+from gettext import translation
 import json
 import logging
 import requests
@@ -7,8 +8,7 @@ from pprint import pprint
 from django.http import JsonResponse
 from django.db.models import Q
 
-from .models import EnglishWord, Language, Translation, Word, EnglishWordDetail, RussianWordDetail
-from .utils import get_word_class_name
+from .models import Language, Translation, Word, EnglishWordDetail
 
 logger = logging.getLogger('django')
 
@@ -79,7 +79,7 @@ def load_from_api(request):
             }
             answer = parse_word_data(resp_json[0], answer)
             create_word_details(source_word_obj.pk, answer)
-            create_word_details(target_word_obj.pk, answer)
+            create_word_details(translation_id, answer)
 
             return JsonResponse(answer, status=200)
 
@@ -162,8 +162,8 @@ def get_translation(request, lang):
             return JsonResponse({'message': 'Что-то пошло не так.'}, status=500)
 
 
-def create_word_details(word_id, data):
-    word = Word.objects.get(pk=word_id)
+def create_word_details(pk, data):
+    word = Word.objects.get(pk=pk)
 
     match word.language.name:
         case 'English':
@@ -182,13 +182,8 @@ def create_word_details(word_id, data):
             # пока не реализовано
             return
         case 'Russian':
-            if RussianWordDetail.objects.filter(word=word).exists():
-                details = RussianWordDetail.objects.get(word=word)
-            else:
-                details = RussianWordDetail(
-                    word=word,
-                )
-            details.image_url = data.get('image_url')
+            translation = Translation.objects.get(pk=pk)
+            translation.image_url = data.get('image_url')
         case _:
             return None
 

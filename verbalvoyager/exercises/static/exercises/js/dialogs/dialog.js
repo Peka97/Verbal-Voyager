@@ -1,5 +1,5 @@
 import { showToast } from "/static/pages/js/modules/toast_notification.js";
-import { send_points } from "/static/exercises/js/modules/send_points_fix.js";
+import { send_points } from "/static/exercises/js/modules/send_points.js";
 
 let messages = [...document.getElementsByClassName("message")];
 // let names = document.getElementById("names").dataset;

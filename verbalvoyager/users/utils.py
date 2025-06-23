@@ -1,7 +1,6 @@
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from exercises.models import ExerciseEnglishWords, ExerciseEnglishDialog, ExerciseIrregularEnglishVerb
 from exercises.models import ExerciseWords, ExerciseDialog, NewExerciseIrregularEnglishVerb
 
 User = get_user_model()
@@ -15,7 +14,7 @@ def get_exercises_done_count(exercises):
     return sum(1 for ex in exercises if ex.is_active)
 
 
-def init_student_demo_access(user: User):
+def init_student_demo_access(user: User):  # type: ignore
     student_demo_group, _ = Group.objects.get_or_create(name='StudentDemo')
     user.groups.add(student_demo_group.id)
     exercises = [

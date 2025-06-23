@@ -7,7 +7,7 @@ from django.db.models import Prefetch
 
 from .models import EnglishLessonPlan, EnglishLessonMainAims, EnglishLessonSubsidiaryAims
 from event_calendar.models import Lesson
-from dictionary.models import EnglishWord, Translation
+from dictionary.models import Translation
 
 logger = logging.getLogger('django')
 
