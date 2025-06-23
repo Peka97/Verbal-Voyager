@@ -1,7 +1,7 @@
 import logging
 
-from exercises.models import ExerciseWords, ExerciseDialog, NewExerciseIrregularEnglishVerb
-from exercise_result.models import ExerciseWordsResult, ExerciseDialogResult, NewExerciseIrregularEnglishVerbResult
+from exercises.models import ExerciseWords, ExerciseDialog, ExerciseIrregularEnglishVerb
+from exercise_result.models import ExerciseWordsResult, ExerciseDialogResult, ExerciseIrregularEnglishVerbResult
 
 logger = logging.getLogger('django')
 
@@ -13,7 +13,7 @@ def get_exercise_and_result_class(ex_type: str) -> object | None:
         case 'dialog':
             return ExerciseDialog, ExerciseDialogResult
         case 'irregular_verbs':
-            return NewExerciseIrregularEnglishVerb, NewExerciseIrregularEnglishVerbResult
+            return ExerciseIrregularEnglishVerb, ExerciseIrregularEnglishVerbResult
         case _:
             return None, None
 

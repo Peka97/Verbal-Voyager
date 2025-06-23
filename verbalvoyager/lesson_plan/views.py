@@ -1,13 +1,16 @@
 import logging
 import json
+from unicodedata import category
 
 from django.http import JsonResponse
 from django.db import transaction
 from django.db.models import Prefetch
 
+from exercises.models import ExerciseCategory, ExerciseWords
+
 from .models import EnglishLessonPlan, EnglishLessonMainAims, EnglishLessonSubsidiaryAims
 from event_calendar.models import Lesson
-from dictionary.models import Translation
+from dictionary.models import Language, Translation
 
 logger = logging.getLogger('django')
 
@@ -57,7 +60,6 @@ def json_update_lesson_plan(request, lesson_id):
                     setattr(lesson_plan, field, data[field])
             lesson_plan.save()
 
-            # Обновляем новые слова (ManyToMany)
             if 'new_vocabulary' in data:
                 lesson_plan.new_vocabulary.clear()
 
@@ -69,10 +71,27 @@ def json_update_lesson_plan(request, lesson_id):
                 else:
                     lesson_plan.new_vocabulary.set(words_qs)
 
+                exercise_qs = ExerciseWords.objects.filter(
+                    lesson_plan_id=lesson_plan, words=lesson_plan.new_vocabulary.all()
+                )
+
+                if not exercise_qs.exists():
+                    exercise = ExerciseWords(
+                        name='New vocabulary',
+                        category=ExerciseCategory.objects.get_or_create(
+                            name='New vocabulary'),
+                        words=lesson_plan.new_vocabulary.all(),
+                        student=lesson_plan.lesson.student,
+                        teacher=lesson_plan.lesson.teacher,
+                        lang=Language.objects.get(name='English'),
+                    )
+                    exercise.save()
+                    lesson_plan.exercise_id = exercise
+                    lesson_plan.save()
+
             if errors:
                 return JsonResponse({'message': 'Ошибки обновления слов.', 'errors': errors}, status=400)
 
-            # Обновляем основные цели (ForeignKey)
             if 'main_aims' in data:
                 lesson_plan.main_aims.all().delete()
 
@@ -82,7 +101,6 @@ def json_update_lesson_plan(request, lesson_id):
                         lesson_plan_id=lesson_plan
                     )
 
-            # Обновляем подзадачи (ForeignKey)
             if 'subsidiary_aims' in data:
                 lesson_plan.subsidiary_aims.all().delete()
 
@@ -93,10 +111,3 @@ def json_update_lesson_plan(request, lesson_id):
                     )
 
         return JsonResponse({'message': 'Обновлено.'}, status=200)
-
-        # except Lesson.DoesNotExist as e:
-        #     logger.error(f'Error updating lesson plan: {e}', exc_info=True)
-        #     return JsonResponse({'message': 'План урока не найден.', 'errors': errors}, status=404)
-        # except Exception as e:
-        #     logger.error(f'Error updating lesson plan: {e}', exc_info=True)
-        #     return JsonResponse({'message': 'Что-то пошло не так.', 'errors': errors}, status=500)

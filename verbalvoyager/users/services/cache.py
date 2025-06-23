@@ -8,8 +8,8 @@ from django.contrib.auth import get_user_model
 from event_calendar.models import Lesson, LessonTask, Project, Course, ProjectType
 from lesson_plan.models import EnglishLessonPlan, EnglishLessonMainAims, EnglishLessonSubsidiaryAims
 
-from exercises.models import ExerciseWords, ExerciseDialog, NewExerciseIrregularEnglishVerb
-from dictionary.models import Word, Translation, NewEnglishVerb, Language
+from exercises.models import ExerciseWords, ExerciseDialog, ExerciseIrregularEnglishVerb
+from dictionary.models import Word, Translation, EnglishVerb, Language
 
 
 VERSION = settings.CACHES['default']['OPTIONS']['VERSION']
@@ -347,12 +347,12 @@ def get_cached_user_english_irregular_verbs(user):
     )
     prefetched_english_verb = Prefetch(
         'words',
-        queryset=NewEnglishVerb.objects.prefetch_related(
+        queryset=EnglishVerb.objects.prefetch_related(
             prefetched_english_words).all(),
     )
     return cache.get_or_set(
         CACHE_KEY,
-        lambda: NewExerciseIrregularEnglishVerb.objects.filter(
+        lambda: ExerciseIrregularEnglishVerb.objects.filter(
             student=user,
             is_active=True
         ).prefetch_related(prefetched_english_verb).order_by('is_active', '-created_at').all(),

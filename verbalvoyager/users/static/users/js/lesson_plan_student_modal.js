@@ -4,6 +4,10 @@ let originalContents = {};
 let hasChanges = false;
 
 document.addEventListener("DOMContentLoaded", function () {
+	modalInit();
+});
+
+export function modalInit() {
 	// Получаем элементы
 	const openBtnElements = document.querySelectorAll(".open-modal-btn:not(.empty)");
 	const closeBtnElements = document.querySelectorAll(".close-modal");
@@ -28,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			onModalClose();
 		}
 	});
-});
+}
 
 function onModalOpen(event) {
 	document.body.classList.add("body-no-scroll");

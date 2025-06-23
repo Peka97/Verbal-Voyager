@@ -31,6 +31,16 @@
 	});
 })(jQuery);
 
+async function loadModals() {
+	const metaUser = document.querySelector("meta#user_pk");
+
+	if (metaUser.dataset["teacher"] === "True") {
+		return import("/static/users/js/lesson_plan_teacher_modal.js");
+	} else {
+		return import("/static/users/js/lesson_plan_student_modal.js");
+	}
+}
+
 export function renderCalendar() {
 	event_data = {
 		events: [],
@@ -155,6 +165,7 @@ function init_calendar(date) {
 		})
 		.finally(() => {
 			// Скрываем лоадер и показываем календарь
+			loadModals().then((modal) => modal.modalInit());
 			$("#calendar-loader").hide();
 		});
 }
