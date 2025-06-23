@@ -16,13 +16,11 @@ logger = logging.getLogger('django')
 
 
 def json_update_lesson_plan(request, lesson_id):
-    print(lesson_id)
     if request.method == 'POST':
         errors = []
 
         # try:
         data = json.loads(request.body)
-        print(data)
         lesson_plan_prefetch = (
             Prefetch(
                 'new_vocabulary',
@@ -63,29 +61,30 @@ def json_update_lesson_plan(request, lesson_id):
             if 'new_vocabulary' in data:
                 lesson_plan.new_vocabulary.clear()
 
-                words_qs = Translation.objects.filter(
+                words = Translation.objects.filter(
                     pk__in=data['new_vocabulary']).all()
-                if not words_qs:
+                if not words:
                     for word in data['new_vocabulary']:
                         errors.append(f'Word "{word}"not found in dictionary.')
                 else:
-                    lesson_plan.new_vocabulary.set(words_qs)
+                    lesson_plan.new_vocabulary.set(words)
 
-                exercise_qs = ExerciseWords.objects.filter(
-                    lesson_plan_id=lesson_plan, words=lesson_plan.new_vocabulary.all()
-                )
-
-                if not exercise_qs.exists():
+                if lesson_plan.exercise:
+                    lesson_plan.exercise.words.set(words)
+                else:
+                    category, _ = ExerciseCategory.objects.get_or_create(
+                        name='New vocabulary')
                     exercise = ExerciseWords(
                         name='New vocabulary',
-                        category=ExerciseCategory.objects.get_or_create(
-                            name='New vocabulary'),
-                        words=lesson_plan.new_vocabulary.all(),
-                        student=lesson_plan.lesson.student,
-                        teacher=lesson_plan.lesson.teacher,
+                        category=category,
+                        student=lesson_plan.lesson_id.student_id,
+                        teacher=lesson_plan.lesson_id.teacher_id,
                         lang=Language.objects.get(name='English'),
                     )
+
                     exercise.save()
+                    exercise.words.set(words)
+
                     lesson_plan.exercise_id = exercise
                     lesson_plan.save()
 
