@@ -3,312 +3,312 @@ from django.db.models import Prefetch
 from django.core.exceptions import ValidationError
 
 
-class AbstractWord(models.Model):
-    word = models.CharField(
-        verbose_name='Слово в оригинале',
-        max_length=50,
-        null=True,
-        blank=True,
-    )
-    translation = models.CharField(
-        verbose_name='Перевод на русский',
-        max_length=100,
-        null=True,
-        blank=True,
-    )
-    examples = models.TextField(
-        verbose_name='Примеры употребления',
-        max_length=500,
-        null=True,
-        blank=True,
-        help_text='Напишите одно и или несколько предложений, разделяя их переносом строки.'
-    )
-    another_means = models.CharField(
-        verbose_name='Другие значения',
-        max_length=400,
-        blank=True,
-        null=True,
-        editable=False
-    )
-    sound_url = models.URLField(
-        verbose_name='Аудио файл',
-        max_length=300,
-        blank=True,
-        null=True,
-        help_text='Ссылка на аудиофайл с переводом слова.'
-    )
-    image_url = models.URLField(
-        verbose_name='Изображение',
-        max_length=150,
-        blank=True,
-        null=True,
-        help_text='Ссылка на изображение слова.'
-    )
+# class AbstractWord(models.Model):
+#     word = models.CharField(
+#         verbose_name='Слово в оригинале',
+#         max_length=50,
+#         null=True,
+#         blank=True,
+#     )
+#     translation = models.CharField(
+#         verbose_name='Перевод на русский',
+#         max_length=100,
+#         null=True,
+#         blank=True,
+#     )
+#     examples = models.TextField(
+#         verbose_name='Примеры употребления',
+#         max_length=500,
+#         null=True,
+#         blank=True,
+#         help_text='Напишите одно и или несколько предложений, разделяя их переносом строки.'
+#     )
+#     another_means = models.CharField(
+#         verbose_name='Другие значения',
+#         max_length=400,
+#         blank=True,
+#         null=True,
+#         editable=False
+#     )
+#     sound_url = models.URLField(
+#         verbose_name='Аудио файл',
+#         max_length=300,
+#         blank=True,
+#         null=True,
+#         help_text='Ссылка на аудиофайл с переводом слова.'
+#     )
+#     image_url = models.URLField(
+#         verbose_name='Изображение',
+#         max_length=150,
+#         blank=True,
+#         null=True,
+#         help_text='Ссылка на изображение слова.'
+#     )
 
-    def clean(self):
-        if self.word:
-            self.word = self.word.lower()
-        if self.translation:
-            self.translation = self.translation.lower()
+#     def clean(self):
+#         if self.word:
+#             self.word = self.word.lower()
+#         if self.translation:
+#             self.translation = self.translation.lower()
 
-    def save(self, *args, **kwargs):
-        self.clean()
+#     def save(self, *args, **kwargs):
+#         self.clean()
 
-        super(AbstractWord, self).save(*args, **kwargs)
+#         super(AbstractWord, self).save(*args, **kwargs)
 
-    class Meta:
-        abstract = True
-        verbose_name = 'Слово'
-        verbose_name_plural = 'Слова'
+#     class Meta:
+#         abstract = True
+#         verbose_name = 'Слово'
+#         verbose_name_plural = 'Слова'
 
-        indexes = [models.Index(fields=['word',]), ]
-        ordering = ['word']
-
-
-class EnglishWord(AbstractWord):
-    SPEECH_CODES = {
-        'n': 'noun',
-        'v': 'verb',
-        'j': 'adjective',
-        'r': 'adverb',
-        'prp': 'preposition',
-        'prn': 'pronoun',
-        'crd': 'cardinal number',
-        'cjc': 'conjunction',
-        'exc': 'interjection',
-        'det': 'article',
-        'abb': 'abbreviation',
-        'x': 'particle',
-        'ord': 'ordinal number',
-        'md ': 'modal verb',
-        'ph ': 'phrase',
-        'phi': 'idiom'
-    }
-    speech_code = models.CharField(
-        verbose_name='Код части речи',
-        max_length=50,
-        choices=SPEECH_CODES,
-        blank=True,
-        null=True,
-        help_text='Код части речи слова в соответствии с Oxford Dictionaries.'
-    )
-    definition = models.CharField(
-        verbose_name='Определение',
-        max_length=350,
-        blank=True,
-        null=True,
-        help_text='Определение слова'
-    )
-    prefix = models.CharField(
-        verbose_name='Префикс',
-        max_length=25,
-        blank=True,
-        null=True,
-        help_text='Префикс'
-    )
-    transcription = models.CharField(
-        verbose_name='Транскрипция',
-        max_length=75,
-        blank=True,
-        null=True,
-        help_text='Транскрипция слова'
-    )
-
-    def clean(self):
-        super(EnglishWord, self).clean()
-        existing_word = EnglishWord.objects.filter(
-            word=self.word,
-            translation=self.translation
-        ).exclude(pk=self.pk)
-        if existing_word.exists():
-            raise ValidationError(
-                f"Такое сочетание слова и перевода уже существует - {existing_word}")
-
-    def save(self, *args, **kwargs):
-        self.clean()
-
-        another_means_words = EnglishWord.objects.filter(
-            word=self.word).exclude(pk=self.pk).all()
-        self.another_means = ', '.join(
-            [word.translation for word in another_means_words if word.translation])
-
-        super(EnglishWord, self).save(*args, **kwargs)
-
-    def __str__(self) -> str:
-        return f'{self.word} ({self.get_speech_code_display()}) - {self.translation}'
-
-    class Meta(AbstractWord.Meta):
-        verbose_name = f'[TO DELETE] Eng | {AbstractWord.Meta.verbose_name}'
-        verbose_name_plural = f'[TO DELETE] Eng | {AbstractWord.Meta.verbose_name_plural}'
+#         indexes = [models.Index(fields=['word',]), ]
+#         ordering = ['word']
 
 
-class FrenchWord(AbstractWord):
-    genus = models.CharField(
-        verbose_name='Род слова',
-        max_length=50,
-        choices=[
-            ('m', 'Мужской'),
-            ('f', 'Женский'),
-            ('n', 'Средний')
-        ],
-        blank=True,
-        null=True
-    )
+# class EnglishWord(AbstractWord):
+#     SPEECH_CODES = {
+#         'n': 'noun',
+#         'v': 'verb',
+#         'j': 'adjective',
+#         'r': 'adverb',
+#         'prp': 'preposition',
+#         'prn': 'pronoun',
+#         'crd': 'cardinal number',
+#         'cjc': 'conjunction',
+#         'exc': 'interjection',
+#         'det': 'article',
+#         'abb': 'abbreviation',
+#         'x': 'particle',
+#         'ord': 'ordinal number',
+#         'md ': 'modal verb',
+#         'ph ': 'phrase',
+#         'phi': 'idiom'
+#     }
+#     speech_code = models.CharField(
+#         verbose_name='Код части речи',
+#         max_length=50,
+#         choices=SPEECH_CODES,
+#         blank=True,
+#         null=True,
+#         help_text='Код части речи слова в соответствии с Oxford Dictionaries.'
+#     )
+#     definition = models.CharField(
+#         verbose_name='Определение',
+#         max_length=350,
+#         blank=True,
+#         null=True,
+#         help_text='Определение слова'
+#     )
+#     prefix = models.CharField(
+#         verbose_name='Префикс',
+#         max_length=25,
+#         blank=True,
+#         null=True,
+#         help_text='Префикс'
+#     )
+#     transcription = models.CharField(
+#         verbose_name='Транскрипция',
+#         max_length=75,
+#         blank=True,
+#         null=True,
+#         help_text='Транскрипция слова'
+#     )
 
-    def clean(self):
-        existing_word = FrenchWord.objects.filter(
-            word=self.word,
-            translation=self.translation
-        ).exclude(pk=self.pk)
-        if existing_word.exists():
-            raise ValidationError(
-                f"Такое сочетание слова и перевода уже существует - {existing_word}")
+#     def clean(self):
+#         super(EnglishWord, self).clean()
+#         existing_word = EnglishWord.objects.filter(
+#             word=self.word,
+#             translation=self.translation
+#         ).exclude(pk=self.pk)
+#         if existing_word.exists():
+#             raise ValidationError(
+#                 f"Такое сочетание слова и перевода уже существует - {existing_word}")
 
-    def save(self, *args, **kwargs):
-        self.clean()
+#     def save(self, *args, **kwargs):
+#         self.clean()
 
-        another_means_words = FrenchWord.objects.filter(
-            word=self.word).exclude(pk=self.pk).all()
-        self.another_means = ', '.join(
-            [word.translation for word in another_means_words if word.translation])
+#         another_means_words = EnglishWord.objects.filter(
+#             word=self.word).exclude(pk=self.pk).all()
+#         self.another_means = ', '.join(
+#             [word.translation for word in another_means_words if word.translation])
 
-        super(FrenchWord, self).save(*args, **kwargs)
+#         super(EnglishWord, self).save(*args, **kwargs)
 
-    def __str__(self) -> str:
-        return f'{self.word} ({self.genus}) - {self.translation}'
+#     def __str__(self) -> str:
+#         return f'{self.word} ({self.get_speech_code_display()}) - {self.translation}'
 
-    class Meta(AbstractWord.Meta):
-        verbose_name = f'[TO DELETE] Fr | {AbstractWord.Meta.verbose_name}'
-        verbose_name_plural = f'[TO DELETE] Fr | {AbstractWord.Meta.verbose_name_plural}'
-
-
-class FrenchVerb(models.Model):
-    infinitive = models.ForeignKey(
-        verbose_name='Инфинитив',
-        to=FrenchWord,
-        on_delete=models.SET_NULL,
-        related_name='verb',
-        blank=True,
-        null=True,
-    )
-    participe_present = models.CharField(
-        verbose_name='Причастие настоящего времени',
-        max_length=50,
-    )
-    participe_passe = models.CharField(
-        verbose_name='Причастие прошедшего времени',
-        max_length=50,
-    )
-    indicatif_j = models.CharField(
-        verbose_name='Indicatif présent je',
-        max_length=50,
-    )
-    indicatif_tu = models.CharField(
-        verbose_name='Indicatif présent tu',
-        max_length=50,
-    )
-    indicatif_il = models.CharField(
-        verbose_name='Indicatif présent il/elle',
-        max_length=50,
-    )
-    indicatif_nous = models.CharField(
-        verbose_name='Indicatif présent nous',
-        max_length=50,
-    )
-    indicatif_vous = models.CharField(
-        verbose_name='Indicatif présent vous',
-        max_length=50,
-    )
-    indicatif_ils = models.CharField(
-        verbose_name='Indicatif présent ils/elles',
-        max_length=50,
-    )
-
-    def __str__(self) -> str:
-        return f'{self.infinitive.word if self.infinitive else self.infinitive} - {self.participe_present} - {self.participe_passe}'
-
-    class Meta:
-        verbose_name = '[TO DELETE] Fr | Неправильный глагол (old)'
-        verbose_name_plural = '[TO DELETE] Fr | Неправильные глаголы (old)'
+#     class Meta(AbstractWord.Meta):
+#         verbose_name = f'[TO DELETE] Eng | {AbstractWord.Meta.verbose_name}'
+#         verbose_name_plural = f'[TO DELETE] Eng | {AbstractWord.Meta.verbose_name_plural}'
 
 
-class IrregularEnglishVerb(models.Model):
-    infinitive = models.ForeignKey(
-        verbose_name='Инфинитив',
-        to=EnglishWord,
-        on_delete=models.SET_NULL,
-        related_name='irregular_verb',
-        blank=True,
-        null=True,
-    )
-    past_simple = models.CharField(
-        verbose_name='Прошедшее время',
-        max_length=50,
-    )
-    past_participle = models.CharField(
-        verbose_name='Причастие прошедшего времени',
-        max_length=50,
-    )
+# class FrenchWord(AbstractWord):
+#     genus = models.CharField(
+#         verbose_name='Род слова',
+#         max_length=50,
+#         choices=[
+#             ('m', 'Мужской'),
+#             ('f', 'Женский'),
+#             ('n', 'Средний')
+#         ],
+#         blank=True,
+#         null=True
+#     )
 
-    def __str__(self) -> str:
-        return f'{self.infinitive.word if self.infinitive else self.infinitive} - {self.past_simple} - {self.past_participle}'
+#     def clean(self):
+#         existing_word = FrenchWord.objects.filter(
+#             word=self.word,
+#             translation=self.translation
+#         ).exclude(pk=self.pk)
+#         if existing_word.exists():
+#             raise ValidationError(
+#                 f"Такое сочетание слова и перевода уже существует - {existing_word}")
 
-    class Meta:
-        verbose_name = '[TO DELETE] Eng | Неправильный глагол (old)'
-        verbose_name_plural = '[TO DELETE] Eng | Неправильные глаголы (old)'
+#     def save(self, *args, **kwargs):
+#         self.clean()
 
-        ordering = ['infinitive__word']
+#         another_means_words = FrenchWord.objects.filter(
+#             word=self.word).exclude(pk=self.pk).all()
+#         self.another_means = ', '.join(
+#             [word.translation for word in another_means_words if word.translation])
+
+#         super(FrenchWord, self).save(*args, **kwargs)
+
+#     def __str__(self) -> str:
+#         return f'{self.word} ({self.genus}) - {self.translation}'
+
+#     class Meta(AbstractWord.Meta):
+#         verbose_name = f'[TO DELETE] Fr | {AbstractWord.Meta.verbose_name}'
+#         verbose_name_plural = f'[TO DELETE] Fr | {AbstractWord.Meta.verbose_name_plural}'
 
 
-class SpanishWord(AbstractWord):
-    definition = models.CharField(
-        verbose_name='Определение',
-        max_length=350,
-        blank=True,
-        null=True,
-        help_text='Определение слова'
-    )
-    prefix = models.CharField(
-        verbose_name='Префикс',
-        max_length=25,
-        blank=True,
-        null=True,
-        help_text='Префикс'
-    )
-    transcription = models.CharField(
-        verbose_name='Транскрипция',
-        max_length=75,
-        blank=True,
-        null=True,
-        help_text='Транскрипция слова'
-    )
+# class FrenchVerb(models.Model):
+#     infinitive = models.ForeignKey(
+#         verbose_name='Инфинитив',
+#         to=FrenchWord,
+#         on_delete=models.SET_NULL,
+#         related_name='verb',
+#         blank=True,
+#         null=True,
+#     )
+#     participe_present = models.CharField(
+#         verbose_name='Причастие настоящего времени',
+#         max_length=50,
+#     )
+#     participe_passe = models.CharField(
+#         verbose_name='Причастие прошедшего времени',
+#         max_length=50,
+#     )
+#     indicatif_j = models.CharField(
+#         verbose_name='Indicatif présent je',
+#         max_length=50,
+#     )
+#     indicatif_tu = models.CharField(
+#         verbose_name='Indicatif présent tu',
+#         max_length=50,
+#     )
+#     indicatif_il = models.CharField(
+#         verbose_name='Indicatif présent il/elle',
+#         max_length=50,
+#     )
+#     indicatif_nous = models.CharField(
+#         verbose_name='Indicatif présent nous',
+#         max_length=50,
+#     )
+#     indicatif_vous = models.CharField(
+#         verbose_name='Indicatif présent vous',
+#         max_length=50,
+#     )
+#     indicatif_ils = models.CharField(
+#         verbose_name='Indicatif présent ils/elles',
+#         max_length=50,
+#     )
 
-    def clean(self):
-        super(SpanishWord, self).clean()
-        existing_word = SpanishWord.objects.filter(
-            word=self.word,
-            translation=self.translation
-        ).exclude(pk=self.pk)
-        if existing_word.exists():
-            raise ValidationError(
-                f"Такое сочетание слова и перевода уже существует - {existing_word}")
+#     def __str__(self) -> str:
+#         return f'{self.infinitive.word if self.infinitive else self.infinitive} - {self.participe_present} - {self.participe_passe}'
 
-    def save(self, *args, **kwargs):
-        self.clean()
+#     class Meta:
+#         verbose_name = '[TO DELETE] Fr | Неправильный глагол (old)'
+#         verbose_name_plural = '[TO DELETE] Fr | Неправильные глаголы (old)'
 
-        another_means_words = SpanishWord.objects.filter(
-            word=self.word).exclude(pk=self.pk).all()
-        self.another_means = ', '.join(
-            [word.translation for word in another_means_words if word.translation])
 
-        super(SpanishWord, self).save(*args, **kwargs)
+# class IrregularEnglishVerb(models.Model):
+#     infinitive = models.ForeignKey(
+#         verbose_name='Инфинитив',
+#         to=EnglishWord,
+#         on_delete=models.SET_NULL,
+#         related_name='irregular_verb',
+#         blank=True,
+#         null=True,
+#     )
+#     past_simple = models.CharField(
+#         verbose_name='Прошедшее время',
+#         max_length=50,
+#     )
+#     past_participle = models.CharField(
+#         verbose_name='Причастие прошедшего времени',
+#         max_length=50,
+#     )
 
-    def __str__(self) -> str:
-        return f'{self.word} - {self.translation}'
+#     def __str__(self) -> str:
+#         return f'{self.infinitive.word if self.infinitive else self.infinitive} - {self.past_simple} - {self.past_participle}'
 
-    class Meta(AbstractWord.Meta):
-        verbose_name = f'[TO DELETE] Sp | {AbstractWord.Meta.verbose_name}'
-        verbose_name_plural = f'[TO DELETE] Sp | {AbstractWord.Meta.verbose_name_plural}'
+#     class Meta:
+#         verbose_name = '[TO DELETE] Eng | Неправильный глагол (old)'
+#         verbose_name_plural = '[TO DELETE] Eng | Неправильные глаголы (old)'
+
+#         ordering = ['infinitive__word']
+
+
+# class SpanishWord(AbstractWord):
+#     definition = models.CharField(
+#         verbose_name='Определение',
+#         max_length=350,
+#         blank=True,
+#         null=True,
+#         help_text='Определение слова'
+#     )
+#     prefix = models.CharField(
+#         verbose_name='Префикс',
+#         max_length=25,
+#         blank=True,
+#         null=True,
+#         help_text='Префикс'
+#     )
+#     transcription = models.CharField(
+#         verbose_name='Транскрипция',
+#         max_length=75,
+#         blank=True,
+#         null=True,
+#         help_text='Транскрипция слова'
+#     )
+
+#     def clean(self):
+#         super(SpanishWord, self).clean()
+#         existing_word = SpanishWord.objects.filter(
+#             word=self.word,
+#             translation=self.translation
+#         ).exclude(pk=self.pk)
+#         if existing_word.exists():
+#             raise ValidationError(
+#                 f"Такое сочетание слова и перевода уже существует - {existing_word}")
+
+#     def save(self, *args, **kwargs):
+#         self.clean()
+
+#         another_means_words = SpanishWord.objects.filter(
+#             word=self.word).exclude(pk=self.pk).all()
+#         self.another_means = ', '.join(
+#             [word.translation for word in another_means_words if word.translation])
+
+#         super(SpanishWord, self).save(*args, **kwargs)
+
+#     def __str__(self) -> str:
+#         return f'{self.word} - {self.translation}'
+
+#     class Meta(AbstractWord.Meta):
+#         verbose_name = f'[TO DELETE] Sp | {AbstractWord.Meta.verbose_name}'
+#         verbose_name_plural = f'[TO DELETE] Sp | {AbstractWord.Meta.verbose_name_plural}'
 
 
 # New models:
@@ -723,34 +723,34 @@ class SpanishWordDetail(WordDetail):
         verbose_name_plural = 'Sp | Детали'
 
 
-class RussianWordDetail(models.Model):
-    word = models.ForeignKey(
-        Word,
-        on_delete=models.CASCADE,
-        related_name='%(class)s',
-        verbose_name='Слово',
-        help_text='Слово, для которого создаются детали.'
-    )
-    image_url = models.URLField(
-        blank=True,
-        null=True,
-        verbose_name='Изображение',
-        help_text='Ссылка на изображение слова.'
-    )
+# class RussianWordDetail(models.Model):
+#     word = models.ForeignKey(
+#         Word,
+#         on_delete=models.CASCADE,
+#         related_name='%(class)s',
+#         verbose_name='Слово',
+#         help_text='Слово, для которого создаются детали.'
+#     )
+#     image_url = models.URLField(
+#         blank=True,
+#         null=True,
+#         verbose_name='Изображение',
+#         help_text='Ссылка на изображение слова.'
+#     )
 
-    def __str__(self):
-        return f'[{self.pk}] {self.word} details'
+#     def __str__(self):
+#         return f'[{self.pk}] {self.word} details'
 
-    class Meta:
-        verbose_name = 'Ru | Детали'
-        verbose_name_plural = 'Ru | Детали'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['word', 'image_url'],
-                name='unique_word_image_url',
-                condition=~models.Q(image_url='') & ~models.Q(image_url=None),
-            ),
-        ]
+#     class Meta:
+#         verbose_name = 'Ru | Детали'
+#         verbose_name_plural = 'Ru | Детали'
+#         constraints = [
+#             models.UniqueConstraint(
+#                 fields=['word', 'image_url'],
+#                 name='unique_word_image_url',
+#                 condition=~models.Q(image_url='') & ~models.Q(image_url=None),
+#             ),
+#         ]
 
 
 class NewEnglishVerb(models.Model):

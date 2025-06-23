@@ -11,7 +11,7 @@ from django.conf import settings
 from django.utils.http import url_has_allowed_host_and_scheme
 
 
-from users.services.cache import get_cached_all_teachers, get_cached_lessons_for_teacher, get_cached_lessons_for_student, get_cached_courses, get_cached_projects, get_cached_user_english_words, get_cached_user_french_words, get_cached_user_russian_words, get_cached_user_spanish_words,  get_cached_user_english_irregular_verbs, get_cached_user_english_dialogs, get_cached_user_french_dialogs, get_cached_user_russian_dialogs, get_cached_user_spanish_dialogs
+from users.services.cache import get_cached_all_teachers, get_cached_lessons_for_student, get_cached_courses, get_cached_projects, get_cached_user_english_irregular_verbs
 from users.services.cache import get_cached_user_words, get_cached_user_dialogs, get_cached_user_english_irregular_verbs
 from users.services.utils import get_current_month_range
 from users.forms import RegistrationUserForm, CustomPasswordResetForm, AuthUserForm, TimezoneForm

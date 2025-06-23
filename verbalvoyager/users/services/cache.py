@@ -5,10 +5,8 @@ from django.conf import settings
 from django.db.models import Prefetch
 from django.contrib.auth import get_user_model
 
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseIrregularEnglishVerb, ExerciseSpanishWords, ExerciseRussianDialog, ExerciseSpanishDialog
 from event_calendar.models import Lesson, LessonTask, Project, Course, ProjectType
 from lesson_plan.models import EnglishLessonPlan, EnglishLessonMainAims, EnglishLessonSubsidiaryAims
-from dictionary.models import EnglishWord, IrregularEnglishVerb, FrenchWord, SpanishWord
 
 from exercises.models import ExerciseWords, ExerciseDialog, NewExerciseIrregularEnglishVerb
 from dictionary.models import Word, Translation, NewEnglishVerb, Language
@@ -224,21 +222,21 @@ def get_cached_projects(user):
     )
 
 
-def get_cached_user_english_words(user):
-    CACHE_KEY = f"user_{user.id}_exercises_exercise_english_words_{VERSION}"
-    prefetched_words = Prefetch(
-        'words',
-        queryset=EnglishWord.objects.all(),
-        to_attr='prefetched_words'
-    )
+# def get_cached_user_english_words(user):
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_english_words_{VERSION}"
+#     prefetched_words = Prefetch(
+#         'words',
+#         queryset=EnglishWord.objects.all(),
+#         to_attr='prefetched_words'
+#     )
 
-    return cache.get_or_set(
-        CACHE_KEY,
-        lambda: ExerciseEnglishWords.objects.filter(
-            student=user
-        ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
-        timeout=60*60*24
-    )
+#     return cache.get_or_set(
+#         CACHE_KEY,
+#         lambda: ExerciseEnglishWords.objects.filter(
+#             student=user
+#         ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
+#         timeout=60*60*24
+#     )
 
 
 def get_cached_user_words(user):
@@ -268,55 +266,55 @@ def get_cached_user_words(user):
     )
 
 
-def get_cached_user_french_words(user):
-    CACHE_KEY = f"user_{user.id}_exercises_exercise_french_words_{VERSION}"
-    prefetched_words = Prefetch(
-        'words',
-        queryset=FrenchWord.objects.all(),
-        to_attr='prefetched_words'
-    )
+# def get_cached_user_french_words(user):
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_french_words_{VERSION}"
+#     prefetched_words = Prefetch(
+#         'words',
+#         queryset=FrenchWord.objects.all(),
+#         to_attr='prefetched_words'
+#     )
 
-    return cache.get_or_set(
-        CACHE_KEY,
-        lambda: ExerciseFrenchWords.objects.filter(
-            student=user
-        ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
-        timeout=60*60*24
-    )
-
-
-def get_cached_user_russian_words(user):
-    CACHE_KEY = f"user_{user.id}_exercises_exercise_russian_words_{VERSION}"
-    prefetched_words = Prefetch(
-        'words',
-        queryset=EnglishWord.objects.all(),
-        to_attr='prefetched_words'
-    )
-
-    return cache.get_or_set(
-        CACHE_KEY,
-        lambda: ExerciseRussianWords.objects.filter(
-            student=user
-        ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
-        timeout=60*60*24
-    )
+#     return cache.get_or_set(
+#         CACHE_KEY,
+#         lambda: ExerciseFrenchWords.objects.filter(
+#             student=user
+#         ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
+#         timeout=60*60*24
+#     )
 
 
-def get_cached_user_spanish_words(user):
-    CACHE_KEY = f"user_{user.id}_exercises_exercise_spanish_words_{VERSION}"
-    prefetched_words = Prefetch(
-        'words',
-        queryset=SpanishWord.objects.all(),
-        to_attr='prefetched_words'
-    )
+# def get_cached_user_russian_words(user):
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_russian_words_{VERSION}"
+#     prefetched_words = Prefetch(
+#         'words',
+#         queryset=EnglishWord.objects.all(),
+#         to_attr='prefetched_words'
+#     )
 
-    return cache.get_or_set(
-        CACHE_KEY,
-        lambda: ExerciseSpanishWords.objects.filter(
-            student=user
-        ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
-        timeout=60*60*24
-    )
+#     return cache.get_or_set(
+#         CACHE_KEY,
+#         lambda: ExerciseRussianWords.objects.filter(
+#             student=user
+#         ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
+#         timeout=60*60*24
+#     )
+
+
+# def get_cached_user_spanish_words(user):
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_spanish_words_{VERSION}"
+#     prefetched_words = Prefetch(
+#         'words',
+#         queryset=SpanishWord.objects.all(),
+#         to_attr='prefetched_words'
+#     )
+
+#     return cache.get_or_set(
+#         CACHE_KEY,
+#         lambda: ExerciseSpanishWords.objects.filter(
+#             student=user
+#         ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
+#         timeout=60*60*24
+#     )
 
 
 # def get_cached_user_english_irregular_verbs(user):
@@ -362,21 +360,21 @@ def get_cached_user_english_irregular_verbs(user):
     )
 
 
-def get_cached_user_english_dialogs(user):
-    CACHE_KEY = f"user_{user.id}_exercises_exercise_english_dialogs_{VERSION}"
-    prefetched_words = Prefetch(
-        'words',
-        queryset=EnglishWord.objects.all(),
-        to_attr='prefetched_words'
-    )
+# def get_cached_user_english_dialogs(user):
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_english_dialogs_{VERSION}"
+#     prefetched_words = Prefetch(
+#         'words',
+#         queryset=EnglishWord.objects.all(),
+#         to_attr='prefetched_words'
+#     )
 
-    return cache.get_or_set(
-        CACHE_KEY,
-        lambda: ExerciseEnglishDialog.objects.filter(
-            student=user
-        ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
-        timeout=60*60*24
-    )
+#     return cache.get_or_set(
+#         CACHE_KEY,
+#         lambda: ExerciseEnglishDialog.objects.filter(
+#             student=user
+#         ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
+#         timeout=60*60*24
+#     )
 
 
 def get_cached_user_dialogs(user):
@@ -401,50 +399,50 @@ def get_cached_user_dialogs(user):
     )
 
 
-def get_cached_user_french_dialogs(user):
-    CACHE_KEY = f"user_{user.id}_exercises_exercise_french_dialogs_{VERSION}"
-    prefetched_words = Prefetch(
-        'words',
-        queryset=FrenchWord.objects.all(),
-        to_attr='prefetched_words'
-    )
+# def get_cached_user_french_dialogs(user):
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_french_dialogs_{VERSION}"
+#     prefetched_words = Prefetch(
+#         'words',
+#         queryset=FrenchWord.objects.all(),
+#         to_attr='prefetched_words'
+#     )
 
-    return cache.get_or_set(
-        CACHE_KEY,
-        lambda: ExerciseFrenchDialog.objects.filter(
-            student=user
-        ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
-        timeout=60*60*24
-    )
-
-
-def get_cached_user_russian_dialogs(user):
-    CACHE_KEY = f"user_{user.id}_exercises_exercise_russian_dialogs_{VERSION}"
-    prefetched_words = Prefetch(
-        'words',
-        queryset=EnglishWord.objects.all(),
-        to_attr='prefetched_words'
-    )
-
-    return cache.get_or_set(
-        CACHE_KEY,
-        lambda: ExerciseRussianDialog.objects.filter(
-            student=user
-        ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
-        timeout=60*60*24
-    )
+#     return cache.get_or_set(
+#         CACHE_KEY,
+#         lambda: ExerciseFrenchDialog.objects.filter(
+#             student=user
+#         ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
+#         timeout=60*60*24
+#     )
 
 
-def get_cached_user_spanish_dialogs(user):
-    CACHE_KEY = f"user_{user.id}_exercises_exercise_spanish_dialogs_{VERSION}"
+# def get_cached_user_russian_dialogs(user):
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_russian_dialogs_{VERSION}"
+#     prefetched_words = Prefetch(
+#         'words',
+#         queryset=EnglishWord.objects.all(),
+#         to_attr='prefetched_words'
+#     )
 
-    return cache.get_or_set(
-        CACHE_KEY,
-        lambda: ExerciseSpanishDialog.objects.filter(
-            student=user
-        ).prefetch_related('words').only('id', 'name', 'is_active', 'created_at').all(),
-        timeout=60*60*24
-    )
+#     return cache.get_or_set(
+#         CACHE_KEY,
+#         lambda: ExerciseRussianDialog.objects.filter(
+#             student=user
+#         ).prefetch_related(prefetched_words).only('id', 'name', 'is_active', 'created_at').order_by('is_active', '-created_at').all(),
+#         timeout=60*60*24
+#     )
+
+
+# def get_cached_user_spanish_dialogs(user):
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_spanish_dialogs_{VERSION}"
+
+#     return cache.get_or_set(
+#         CACHE_KEY,
+#         lambda: ExerciseSpanishDialog.objects.filter(
+#             student=user
+#         ).prefetch_related('words').only('id', 'name', 'is_active', 'created_at').all(),
+#         timeout=60*60*24
+#     )
 
 
 def get_cached_all_teachers():

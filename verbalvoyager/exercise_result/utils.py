@@ -1,13 +1,30 @@
 import logging
 
-from exercises.models import ExerciseEnglishWords, ExerciseFrenchWords, ExerciseRussianWords, ExerciseSpanishWords, ExerciseEnglishDialog, ExerciseFrenchDialog, ExerciseSpanishDialog, ExerciseRussianDialog, ExerciseIrregularEnglishVerb # noqa 
-from exercise_result.models import ExerciseEnglishWordsResult, ExerciseFrenchWordsResult, ExerciseRussianWordsResult, ExerciseSpanishWordsResult, ExerciseEnglishDialogResult, ExerciseFrenchDialogResult, ExerciseSpanishDialogResult, ExerciseRussianDialogResult, ExerciseIrregularEnglishVerbResult # noqa 
-
+from exercises.models import ExerciseWords, ExerciseDialog, NewExerciseIrregularEnglishVerb
+from exercise_result.models import ExerciseWordsResult, ExerciseDialogResult, NewExerciseIrregularEnglishVerbResult
 
 logger = logging.getLogger('django')
 
-def get_exercise_class_name(ex_type: str, ex_lang: str) -> tuple:
-    ex_type =  ''.join(map(lambda word: word.capitalize(), ex_type.split("_")))
-    exercise_obj_name = f"Exercise{ex_lang.capitalize()}{ex_type}"
-    exercise_result_obj_name = exercise_obj_name + 'Result'
-    return globals().get(exercise_obj_name), globals().get(exercise_result_obj_name)
+
+def get_exercise_and_result_class(ex_type: str) -> object | None:
+    match ex_type:
+        case 'words':
+            return ExerciseWords, ExerciseWordsResult
+        case 'dialog':
+            return ExerciseDialog, ExerciseDialogResult
+        case 'irregular_verbs':
+            return NewExerciseIrregularEnglishVerb, NewExerciseIrregularEnglishVerbResult
+        case _:
+            return None, None
+
+
+def get_last_step(ex_type: str) -> str | None:
+    match ex_type:
+        case 'words':
+            return '5'
+        case 'dialog':
+            return '1'
+        case 'irregular_verbs':
+            return '3'
+        case _:
+            return None
