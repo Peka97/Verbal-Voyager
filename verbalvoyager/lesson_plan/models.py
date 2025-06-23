@@ -30,7 +30,7 @@ class EnglishLessonPlan(models.Model):
     new_vocabulary = models.ManyToManyField(
         'dictionary.Translation',
         verbose_name='Новые слова',
-        related_name='new_vocabulary',
+        related_name='lesson_plan',
         blank=True,
         help_text="Новые слова"
     )

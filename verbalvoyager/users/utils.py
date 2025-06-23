@@ -1,7 +1,7 @@
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from exercises.models import ExerciseWords, ExerciseDialog, NewExerciseIrregularEnglishVerb
+from exercises.models import ExerciseWords, ExerciseDialog, ExerciseIrregularEnglishVerb
 
 User = get_user_model()
 
@@ -18,7 +18,7 @@ def init_student_demo_access(user: User):  # type: ignore
     student_demo_group, _ = Group.objects.get_or_create(name='StudentDemo')
     user.groups.add(student_demo_group.id)
     exercises = [
-        ExerciseWords, ExerciseDialog, NewExerciseIrregularEnglishVerb
+        ExerciseWords, ExerciseDialog, ExerciseIrregularEnglishVerb
     ]
 
     for exercise_type in exercises:
@@ -38,7 +38,7 @@ def create_demo_exercise(exercise_model, user_id):
         category=demo_exercise.category
     )
 
-    if not exercise_model is NewExerciseIrregularEnglishVerb:
+    if not exercise_model is ExerciseIrregularEnglishVerb:
         exercise.lang = demo_exercise.lang
 
     if exercise_model is ExerciseDialog:

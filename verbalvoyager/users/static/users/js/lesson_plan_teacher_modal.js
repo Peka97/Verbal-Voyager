@@ -6,6 +6,10 @@ let originalContents = {};
 let hasChanges = false;
 
 document.addEventListener("DOMContentLoaded", function () {
+	modalInit();
+});
+
+export function modalInit() {
 	// Получаем элементы
 	const openBtnElements = document.querySelectorAll(".open-modal-btn");
 	const closeBtnElements = document.querySelectorAll(".close-modal");
@@ -68,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			showTranslationsModal(translations);
 		});
 	});
-});
+}
 
 function toggleEditMode() {
 	isEditMode = !isEditMode;
@@ -614,16 +618,16 @@ function showTranslationsModal(translations) {
             <div class="word-original">${originalWord}</div>
             <div class="translations-list">
                 ${translations
-				.map(
-					(translation) => `
+									.map(
+										(translation) => `
                     <div id="${translation.id}" class="translation-option ${translation.is_default ? "selected" : ""}" 
                          data-word="${originalWord}" 
                          data-translation="${translation.translation}">
                         ${translation.translation}
                     </div>
                 `
-				)
-				.join("")}
+									)
+									.join("")}
             </div>
         `;
 
