@@ -4,8 +4,6 @@ from rangefilter.filters import DateRangeQuickSelectListFilterBuilder
 from .models import ActionLog
 from .filters import TeachersListFilter
 
-# Register your models here.
-
 
 @admin.register(ActionLog)
 class ActionLogAdmin(admin.ModelAdmin):

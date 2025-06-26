@@ -256,6 +256,9 @@ def get_cached_user_words(user):
         'words',
         queryset=Translation.objects.prefetch_related(*prefetched_words).all(),
     )
+    # return tuple(ExerciseWords.objects.filter(
+    #     student=user,
+    # ).prefetch_related(prefetched_translations, prefetched_languages).order_by('is_active', '-created_at').all())
 
     return cache.get_or_set(
         CACHE_KEY,
@@ -350,6 +353,12 @@ def get_cached_user_english_irregular_verbs(user):
         queryset=EnglishVerb.objects.prefetch_related(
             prefetched_english_words).all(),
     )
+
+    # return tuple(ExerciseIrregularEnglishVerb.objects.filter(
+    #     student=user,
+    #     is_active=True
+    # ).prefetch_related(prefetched_english_verb).order_by('is_active', '-created_at').all())
+
     return cache.get_or_set(
         CACHE_KEY,
         lambda: ExerciseIrregularEnglishVerb.objects.filter(
@@ -389,6 +398,9 @@ def get_cached_user_dialogs(user):
         'words',
         queryset=Translation.objects.prefetch_related(*prefetched_words).all(),
     )
+    # return tuple(ExerciseDialog.objects.filter(
+    #     student=user
+    # ).prefetch_related(prefetched_translations).order_by('is_active', '-created_at').all())
 
     return cache.get_or_set(
         CACHE_KEY,

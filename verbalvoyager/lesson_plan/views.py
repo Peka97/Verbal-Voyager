@@ -69,8 +69,8 @@ def json_update_lesson_plan(request, lesson_id):
                 else:
                     lesson_plan.new_vocabulary.set(words)
 
-                if lesson_plan.exercise:
-                    lesson_plan.exercise.words.set(words)
+                if lesson_plan.exercise_id:
+                    lesson_plan.exercise_id.words.set(words)
                 else:
                     category, _ = ExerciseCategory.objects.get_or_create(
                         name='New vocabulary')

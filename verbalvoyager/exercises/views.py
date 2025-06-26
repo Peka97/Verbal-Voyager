@@ -2,7 +2,7 @@ import json
 import logging
 from random import sample, shuffle
 
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -115,7 +115,12 @@ def new_exercise_words(request, ex_id, step):
         }
     }
 
-    exercise = ExerciseWords.objects.select_related('lang').get(pk=ex_id)
+    exercise_qs = ExerciseWords.objects.select_related('lang').filter(pk=ex_id)
+
+    if not exercise_qs.exists():
+        return HttpResponse({'status': 404})
+
+    exercise = exercise_qs.first()
     _, redirect = check_exercise_access(request, exercise)
 
     if redirect:

@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.dispatch import receiver
 from django.core.cache import cache
@@ -9,6 +10,8 @@ from django.core.exceptions import ValidationError
 from .models import ExerciseCategory, ExerciseWords
 from dictionary.models import Translation, Word
 logger = logging.getLogger('django')
+
+VERSION = settings.CACHES['default']['OPTIONS']['VERSION']
 
 
 @receiver(m2m_changed, sender=ExerciseWords.words.through)
@@ -29,6 +32,15 @@ def validate_words_m2m(sender, instance, action, **kwargs):
 def invalidate_exercise_category_cache(sender, instance, **kwargs):
     try:
         cache.delete_pattern("global_*_exercises_category*")
+    except Exception as err:
+        logger.error(err, exc_info=True)
+
+
+@receiver([post_save, post_delete, m2m_changed], sender=ExerciseWords)
+def clear_exercise_words_cache(sender, instance, **kwargs):
+    try:
+        CACHE_KEY = f"*user_{instance.student_id}_exercises_exercise_words_{VERSION}"
+        cache.delete_pattern(CACHE_KEY)
     except Exception as err:
         logger.error(err, exc_info=True)
 
