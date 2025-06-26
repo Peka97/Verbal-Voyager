@@ -267,9 +267,9 @@ if not CURRENT_CONFIG.DEBUG:
     SESSION_COOKIE_SAMESITE = 'Lax'
     CSRF_COOKIE_SECURE = True
 
-if DEBUG:
-    from django.core.cache import cache
-    cache.clear()
+# if DEBUG:
+#     from django.core.cache import cache
+#     cache.clear()
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
