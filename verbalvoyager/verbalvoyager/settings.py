@@ -181,12 +181,12 @@ RECAPTCHA_PRIVATE_KEY = CURRENT_CONFIG.RECAPTCHA_PRIVATE_KEY
 LANGUAGE_CODE = 'ru-ru'
 
 USE_I18N = True
-USE_L10N = True  # Optional, but recommended (localization)
+USE_L10N = True
 LANGUAGES = [
-    ('ru', 'Russian'),  # Добавьте ваш язык
+    ('ru', 'Russian'),
 ]
 LOCALE_PATHS = [
-    BASE_DIR / 'locale',  # Укажите путь к каталогу с переводами
+    BASE_DIR / 'locale',
 ]
 
 TIME_ZONE = 'Europe/Saratov'
@@ -207,7 +207,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
 
-# Для корректного отображения русских имен файлов
 FILE_UPLOAD_PERMISSIONS = 0o644
 FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
@@ -228,8 +227,7 @@ CACHES = {
                 "max_connections": 100,
                 "retry_on_timeout": True,
             },
-            # Для частых операций записи
-            "COMPRESS_MIN_LENGTH": 500,  # сжимать только большие значения
+            "COMPRESS_MIN_LENGTH": 500,
         },
         "KEY_PREFIX": "vv",
         "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
@@ -273,7 +271,6 @@ if not CURRENT_CONFIG.DEBUG:
 #     from django.core.cache import cache
 #     cache.clear()
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # SMTP
