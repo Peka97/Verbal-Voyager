@@ -34,7 +34,7 @@ class ExerciseCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(ExerciseWords)
 class ExerciseWordsAdmin(admin.ModelAdmin):
-    form = NewWordsExerciseForm
+    # form = NewWordsExerciseForm
     show_full_result_count = False
     save_as = True
     search_fields = [
@@ -59,10 +59,12 @@ class ExerciseWordsAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
 
-        if request.user.username != 'admin':
-            queryset = queryset \
-                .exclude(student__groups__name='StudentDemo') \
-                .exclude(teacher__groups__name='TeacherDemo')
+        # Метод вызывает ошибки
+
+        # if request.user.username != 'admin':
+        #     queryset = queryset \
+        #         .exclude(student__groups__name='StudentDemo') \
+        #         .exclude(teacher__groups__name='TeacherDemo')
 
         language_prefetched = Prefetch(
             'language', queryset=Language.objects.all())
