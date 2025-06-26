@@ -1,3 +1,5 @@
+import { initStatusHandlers } from "/static/users/js/calendar_send_event_update.js";
+
 (function ($) {
 	"use strict";
 
@@ -27,6 +29,7 @@
 			init_calendar(date);
 			check_events(today, month, year);
 			setTimeout(() => show_events(today, month, year), 1000);
+			setTimeout(() => initStatusHandlers(), 500);
 		});
 	});
 })(jQuery);
@@ -57,6 +60,8 @@ export function renderCalendar() {
 
 	init_calendar(date);
 	check_events(today, date.getMonth() + 1, date.getFullYear());
+	setTimeout(() => show_events(today, month, year), 1000);
+	setTimeout(() => initStatusHandlers(), 500);
 }
 
 // Initialize the calendar by appending the HTML dates
@@ -253,6 +258,7 @@ function month_click(event) {
 	today = date.getDate();
 	check_events(today, month, year);
 	setTimeout(() => show_events(today, date.getMonth() + 1, date.getFullYear()), 1000);
+	setTimeout(() => initStatusHandlers(), 500);
 }
 
 function loadMonthData() {
@@ -334,7 +340,13 @@ function next_year(event) {
 	var new_year = date.getFullYear() + 1;
 	$("year").html(new_year);
 	date.setFullYear(new_year);
+	let today = date.getDate();
+	let month = date.getMonth() + 1;
+	console.log(today, month, new_year);
 	init_calendar(date);
+	check_events(today, month, new_year);
+	setTimeout(() => show_events(today, date.getMonth(), date.getFullYear()), 1000);
+	setTimeout(() => initStatusHandlers(), 500);
 }
 
 // Event handler for when the year left-button is clicked
@@ -344,7 +356,13 @@ function prev_year(event) {
 	var new_year = date.getFullYear() - 1;
 	$("year").html(new_year);
 	date.setFullYear(new_year);
+	let today = date.getDate();
+	let month = date.getMonth() + 1;
+	console.log(today, month, new_year);
 	init_calendar(date);
+	check_events(today, month, new_year);
+	setTimeout(() => show_events(today, date.getMonth(), date.getFullYear()), 1000);
+	setTimeout(() => initStatusHandlers(), 500);
 }
 
 // Event handler for clicking the new event button

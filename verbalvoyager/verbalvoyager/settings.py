@@ -216,8 +216,8 @@ FILE_UPLOAD_HANDLERS = [
 # Redis
 CACHES = {
     "default": {
-        # "BACKEND": "django_redis.cache.RedisCache",
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        "BACKEND": "django_redis.cache.RedisCache",
+        # 'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
         "LOCATION": CURRENT_CONFIG.REDIS_DEFAULT_LOCATION,
         "OPTIONS": {
             "SOCKET_CONNECT_TIMEOUT": 5,
@@ -269,9 +269,9 @@ if not CURRENT_CONFIG.DEBUG:
     SESSION_COOKIE_SAMESITE = 'Lax'
     CSRF_COOKIE_SECURE = True
 
-if DEBUG:
-    from django.core.cache import cache
-    cache.clear()
+# if DEBUG:
+#     from django.core.cache import cache
+#     cache.clear()
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
