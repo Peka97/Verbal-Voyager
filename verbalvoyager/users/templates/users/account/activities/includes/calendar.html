@@ -55,7 +55,7 @@
 					{% comment %} {{ calendar|safe }} {% endcomment %}
 				</tbody>
 			</table>
-			{% if user.is_staff %}
+			{% if user_is_teacher %}
 				<div id="panel-send-event-update" class="button-panel panel-task hidden">
 					{% csrf_token %}
 					<div id="btn-cancel-send-event-update" class="button-panel panel-lesson event-btn">
