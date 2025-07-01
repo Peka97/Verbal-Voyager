@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 
 
 from .models import ExerciseCategory, ExerciseWords
-from dictionary.models import Translation, Word
+from dictionary.models import Translation
 logger = logging.getLogger('django')
 
 VERSION = settings.CACHES['default']['OPTIONS']['VERSION']

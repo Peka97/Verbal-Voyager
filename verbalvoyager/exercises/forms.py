@@ -78,8 +78,6 @@ class NewWordsExerciseForm(forms.ModelForm):
             raise ValidationError('Поле "Язык" не заполнено.')
 
         for translation in translations.all():
-            print(lang.name)
-            print(translation.source_word.language.name)
             if lang.name == 'Russian' and translation.source_word.language.name == 'English':
                 continue
             elif translation.source_word.language != lang:

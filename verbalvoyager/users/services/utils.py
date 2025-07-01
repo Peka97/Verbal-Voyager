@@ -1,5 +1,4 @@
 from django.utils import timezone
-from django.core.cache import cache
 from datetime import timedelta
 import pytz
 

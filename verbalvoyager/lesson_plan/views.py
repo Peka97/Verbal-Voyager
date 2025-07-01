@@ -1,6 +1,5 @@
 import logging
 import json
-from unicodedata import category
 
 from django.http import JsonResponse
 from django.db import transaction

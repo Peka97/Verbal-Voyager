@@ -17,7 +17,7 @@ User = get_user_model()
 
 
 def get_cached_user_groups(user):
-    CACHE_KEY = f"user_{user.id}_groups_{VERSION}"
+    CACHE_KEY = f"user_{user.id}_groups_v{VERSION}"
     return cache.get_or_set(
         CACHE_KEY,
         lambda: user.objects.get(id=user.id).groups,
@@ -26,7 +26,7 @@ def get_cached_user_groups(user):
 
 
 def get_cached_courses():
-    CACHE_KEY = f"global_courses_{VERSION}"
+    CACHE_KEY = f"global_courses_v{VERSION}"
     return cache.get_or_set(
         CACHE_KEY,
         lambda: Course.objects.all(),
@@ -34,7 +34,7 @@ def get_cached_courses():
     )
 
 # def get_cached_user_account_teacher(user):
-#     CACHE_KEY = f"user_{user.id}_lessons_{VERSION}"
+#     CACHE_KEY = f"user_{user.id}_lessons_v{VERSION}"
 #     lessons = cache.get(CACHE_KEY)
 
 #     if lessons is not None:
@@ -47,7 +47,7 @@ def get_cached_courses():
 
 
 def get_cached_projects_for_teacher(user):
-    projects_cache_key = f"user_{user.id}_projects_{VERSION}"
+    projects_cache_key = f"user_{user.id}_projects_v{VERSION}"
     return cache.get_or_set(
         projects_cache_key,
         lambda: Project.objects.filter(
@@ -57,7 +57,7 @@ def get_cached_projects_for_teacher(user):
 
 
 def get_cached_projects_for_student(user):
-    projects_cache_key = f"user_{user.id}_projects_{VERSION}"
+    projects_cache_key = f"user_{user.id}_projects_v{VERSION}"
     return cache.get_or_set(
         projects_cache_key,
         lambda: Project.objects.filter(
@@ -67,10 +67,7 @@ def get_cached_projects_for_student(user):
 
 
 def get_cached_lessons_for_student(user, start_date, end_date):
-    print(start_date)
-    print(type(start_date))
-    print(end_date)
-    CACHE_KEY = f"user_{user.id}_lessons_{VERSION}"
+    CACHE_KEY = f"user_{user.id}_lessons_{start_date.year}_{start_date.month}_{end_date.month}_v{VERSION}"
     lesson_plan_prefatches = (
         Prefetch('new_vocabulary', queryset=Translation.objects.all(),),
         Prefetch('main_aims', queryset=EnglishLessonMainAims.objects.all(),),
@@ -113,12 +110,13 @@ def get_cached_lessons_for_student(user, start_date, end_date):
 
 
 def get_cached_lessons_for_teacher(teacher, start_date, end_date):
-    CACHE_KEY = f"user_{teacher.pk}_lessons_{VERSION}"
+    CACHE_KEY = f"user_{teacher.id}_lessons_{start_date.year}_{start_date.month}_{end_date.month}_v{VERSION}"
     lesson_plan_prefetches = (
         Prefetch('new_vocabulary', queryset=Translation.objects.all(),),
         Prefetch('main_aims', queryset=EnglishLessonMainAims.objects.all(),),
         Prefetch('subsidiary_aims',
-                 queryset=EnglishLessonSubsidiaryAims.objects.all(),)
+                 queryset=EnglishLessonSubsidiaryAims.objects.all(),
+                 ),
     )
     project_types_prefetches = (
         Prefetch('types', queryset=ProjectType.objects.only('name'),),
@@ -139,7 +137,7 @@ def get_cached_lessons_for_teacher(teacher, start_date, end_date):
         'id', 'title', 'datetime', 'duration', 'is_paid', 'status',
         'teacher_id__first_name', 'teacher_id__last_name', 'teacher_id__timezone',
         'student_id__first_name', 'student_id__last_name', 'student_id__timezone',
-        'project_id'
+        'project_id',
     )
     return cache.get_or_set(
         CACHE_KEY,
@@ -155,7 +153,7 @@ def get_cached_lessons_for_teacher(teacher, start_date, end_date):
 
 
 # def get_cached_lessons_for_other_teacher(user, teacher_id):
-#     CACHE_KEY = f"user_{user.id}_lessons_for_{teacher_id}_{VERSION}"
+#     CACHE_KEY = f"user_{user.id}_lessons_for_{teacher_id}_v{VERSION}"
 
 #     prefatches = (
 #         Prefetch('lesson_tasks', queryset=LessonTask.objects.all(),
@@ -183,7 +181,7 @@ def get_cached_lessons_for_teacher(teacher, start_date, end_date):
 
 
 def get_cached_lessons_for_other_teacher(user, teacher_id, start_date, end_date):
-    CACHE_KEY = f"user_{user.id}_lessons_for_{teacher_id}_{VERSION}"
+    CACHE_KEY = f"user_{user.id}_lessons_for_{teacher_id}_v{VERSION}"
 
     prefatches = (
         Prefetch('lesson_tasks', queryset=LessonTask.objects.all(),
@@ -212,7 +210,7 @@ def get_cached_lessons_for_other_teacher(user, teacher_id, start_date, end_date)
 
 
 def get_cached_projects(user):
-    CACHE_KEY = f"user_{user.id}_projects_{VERSION}"
+    CACHE_KEY = f"user_{user.id}_projects_v{VERSION}"
 
     return cache.get_or_set(
         CACHE_KEY,
@@ -226,7 +224,7 @@ def get_cached_projects(user):
 
 
 # def get_cached_user_english_words(user):
-#     CACHE_KEY = f"user_{user.id}_exercises_exercise_english_words_{VERSION}"
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_english_words_v{VERSION}"
 #     prefetched_words = Prefetch(
 #         'words',
 #         queryset=EnglishWord.objects.all(),
@@ -243,7 +241,7 @@ def get_cached_projects(user):
 
 
 def get_cached_user_words(user):
-    CACHE_KEY = f"user_{user.id}_exercises_exercise_words_{VERSION}"
+    CACHE_KEY = f"user_{user.id}_exercises_exercise_words_v{VERSION}"
     prefetched_languages = Prefetch(
         'lang',
         queryset=Language.objects.all(),
@@ -273,7 +271,7 @@ def get_cached_user_words(user):
 
 
 # def get_cached_user_french_words(user):
-#     CACHE_KEY = f"user_{user.id}_exercises_exercise_french_words_{VERSION}"
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_french_words_v{VERSION}"
 #     prefetched_words = Prefetch(
 #         'words',
 #         queryset=FrenchWord.objects.all(),
@@ -290,7 +288,7 @@ def get_cached_user_words(user):
 
 
 # def get_cached_user_russian_words(user):
-#     CACHE_KEY = f"user_{user.id}_exercises_exercise_russian_words_{VERSION}"
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_russian_words_v{VERSION}"
 #     prefetched_words = Prefetch(
 #         'words',
 #         queryset=EnglishWord.objects.all(),
@@ -307,7 +305,7 @@ def get_cached_user_words(user):
 
 
 # def get_cached_user_spanish_words(user):
-#     CACHE_KEY = f"user_{user.id}_exercises_exercise_spanish_words_{VERSION}"
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_spanish_words_v{VERSION}"
 #     prefetched_words = Prefetch(
 #         'words',
 #         queryset=SpanishWord.objects.all(),
@@ -324,7 +322,7 @@ def get_cached_user_words(user):
 
 
 # def get_cached_user_english_irregular_verbs(user):
-#     CACHE_KEY = f"user_{user.id}_exercises_exercise_english_irregular_verbs_{VERSION}"
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_english_irregular_verbs_v{VERSION}"
 #     prefetched_english_words = Prefetch(
 #         'infinitive',
 #         queryset=EnglishWord.objects.all(),
@@ -346,7 +344,7 @@ def get_cached_user_words(user):
 #     )
 
 def get_cached_user_english_irregular_verbs(user):
-    CACHE_KEY = f"user_{user.id}_exercises_exercise_english_irregular_verbs_{VERSION}"
+    CACHE_KEY = f"user_{user.id}_exercises_exercise_english_irregular_verbs_v{VERSION}"
     prefetched_english_words = Prefetch(
         'infinitive',
         queryset=Word.objects.all(),
@@ -373,7 +371,7 @@ def get_cached_user_english_irregular_verbs(user):
 
 
 # def get_cached_user_english_dialogs(user):
-#     CACHE_KEY = f"user_{user.id}_exercises_exercise_english_dialogs_{VERSION}"
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_english_dialogs_v{VERSION}"
 #     prefetched_words = Prefetch(
 #         'words',
 #         queryset=EnglishWord.objects.all(),
@@ -390,7 +388,7 @@ def get_cached_user_english_irregular_verbs(user):
 
 
 def get_cached_user_dialogs(user):
-    CACHE_KEY = f"user_{user.id}_exercises_exercise_dialogs_{VERSION}"
+    CACHE_KEY = f"user_{user.id}_exercises_exercise_dialogs_v{VERSION}"
     prefetched_words = (
         Prefetch(
             'source_word',
@@ -415,7 +413,7 @@ def get_cached_user_dialogs(user):
 
 
 # def get_cached_user_french_dialogs(user):
-#     CACHE_KEY = f"user_{user.id}_exercises_exercise_french_dialogs_{VERSION}"
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_french_dialogs_v{VERSION}"
 #     prefetched_words = Prefetch(
 #         'words',
 #         queryset=FrenchWord.objects.all(),
@@ -432,7 +430,7 @@ def get_cached_user_dialogs(user):
 
 
 # def get_cached_user_russian_dialogs(user):
-#     CACHE_KEY = f"user_{user.id}_exercises_exercise_russian_dialogs_{VERSION}"
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_russian_dialogs_v{VERSION}"
 #     prefetched_words = Prefetch(
 #         'words',
 #         queryset=EnglishWord.objects.all(),
@@ -449,7 +447,7 @@ def get_cached_user_dialogs(user):
 
 
 # def get_cached_user_spanish_dialogs(user):
-#     CACHE_KEY = f"user_{user.id}_exercises_exercise_spanish_dialogs_{VERSION}"
+#     CACHE_KEY = f"user_{user.id}_exercises_exercise_spanish_dialogs_v{VERSION}"
 
 #     return cache.get_or_set(
 #         CACHE_KEY,
@@ -461,7 +459,7 @@ def get_cached_user_dialogs(user):
 
 
 def get_cached_all_teachers():
-    CACHE_KEY = f'global_users_in_group_teachers_{VERSION}'
+    CACHE_KEY = f'global_users_in_group_teachers_v{VERSION}'
     return cache.get_or_set(
         CACHE_KEY,
         lambda: User.objects.filter(groups__name='Teacher').exclude(
@@ -471,7 +469,7 @@ def get_cached_all_teachers():
 
 
 def get_cached_admin_user_in_group(group_name):
-    CACHE_KEY = f'global_admin_users_in_group_{group_name}_{VERSION}'
+    CACHE_KEY = f'global_admin_users_in_group_{group_name}_v{VERSION}'
     return cache.get_or_set(
         CACHE_KEY,
         lambda: User.objects.filter(

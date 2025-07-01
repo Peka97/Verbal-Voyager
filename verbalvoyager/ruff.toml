@@ -25,6 +25,7 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
+    "/home/peka97/Verbal-Voyager/scripts/*"
 ]
 
 # Same as Black.
@@ -36,7 +37,7 @@ target-version = "py39"
 
 [lint]
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
-select = ["E4", "E7", "E9", "F"]
+select = ["E4", "E7", "E9", "F", "T201"]
 ignore = []
 
 # Allow fix for all enabled rules (when `--fix`) is provided.

@@ -4,11 +4,9 @@ import logging
 
 from django.http import JsonResponse
 from django.views import View
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView
-from django.core.files.storage import default_storage
-from django.urls import reverse_lazy, reverse
-from django.shortcuts import redirect, render, get_object_or_404
+from django.urls import reverse
+from django.shortcuts import render, get_object_or_404
 
 from .models import ModuleType, LessonPage, LessonPageConstructor, Document
 from dictionary.models import Word
@@ -30,7 +28,6 @@ class ExerciseConstructorCreateView(View):
             # Парсим данные
             try:
                 data = json.loads(request.POST.get('data', '{}'))
-                print(data)
             except json.JSONDecodeError:
                 return JsonResponse({
                     'status': 'error',
@@ -50,7 +47,7 @@ class ExerciseConstructorCreateView(View):
             # Создаем конструктор
             constructor = LessonPageConstructor.objects.create(
                 name=data.get(
-                    'name', f"Lesson"),
+                    'name', "Lesson"),
                 config={'structure': structure}
             )
 

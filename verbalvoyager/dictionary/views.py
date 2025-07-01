@@ -1,4 +1,3 @@
-from gettext import translation
 import json
 import logging
 import requests
@@ -6,7 +5,6 @@ import re
 from pprint import pprint
 
 from django.http import JsonResponse
-from django.db.models import Q
 
 from .models import Language, Translation, Word, EnglishWordDetail
 
@@ -14,7 +12,6 @@ logger = logging.getLogger('django')
 
 
 def load_from_api(request):
-    print(request)
     if request.method != 'POST':
         return JsonResponse({"error": f"Wrong method: {request.method}."}, status=405)
 
@@ -26,8 +23,6 @@ def load_from_api(request):
 
     if not source_word_id:
         return JsonResponse({'error': 'No source word.'}, status=400)
-
-    print(translation_id, source_word_id, target_word_id)
 
     if source_word_id and target_word_id:
         word_check = Translation.objects.filter(

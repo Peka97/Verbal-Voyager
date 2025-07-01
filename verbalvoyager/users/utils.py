@@ -1,9 +1,15 @@
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+
 from exercises.models import ExerciseWords, ExerciseDialog, ExerciseIrregularEnglishVerb
+from event_calendar.models import Lesson
 
 User = get_user_model()
+
+
+def get_lessons_done_count(user: User):
+    return Lesson.objects.filter(student_id=user, status='D').count()
 
 
 def get_words_learned_count(exercises):
@@ -38,7 +44,7 @@ def create_demo_exercise(exercise_model, user_id):
         category=demo_exercise.category
     )
 
-    if not exercise_model is ExerciseIrregularEnglishVerb:
+    if exercise_model is not ExerciseIrregularEnglishVerb:
         exercise.lang = demo_exercise.lang
 
     if exercise_model is ExerciseDialog:

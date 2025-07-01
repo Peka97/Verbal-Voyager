@@ -1,12 +1,10 @@
 from django.contrib import admin, messages
 from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
-from django.db.models import Q, Case, When, Value, IntegerField, JSONField
-from django_json_widget.widgets import JSONEditorWidget
+from django.db.models import Q, Case, When, Value, IntegerField
 
 from .models import Language, Word, Translation, EnglishWordDetail, FrenchWordDetail, SpanishWordDetail
 from .models import EnglishVerb, FrenchVerb
-from pages.filters import ChoiceDropdownFilter
 from logging_app.helpers import log_action
 from .filters import WordLanguageFilter, InvalidWordsFilter
 from .services.normalizers import normalize_words

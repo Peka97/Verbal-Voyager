@@ -1,7 +1,5 @@
 import logging
-from collections import defaultdict
 
-from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, get_user_model
@@ -11,11 +9,10 @@ from django.conf import settings
 from django.utils.http import url_has_allowed_host_and_scheme
 
 
-from users.services.cache import get_cached_all_teachers, get_cached_lessons_for_student, get_cached_courses, get_cached_projects, get_cached_user_english_irregular_verbs
-from users.services.cache import get_cached_user_words, get_cached_user_dialogs, get_cached_user_english_irregular_verbs
-from users.services.utils import get_current_month_range
+from users.services.cache import get_cached_all_teachers, get_cached_courses, get_cached_projects, get_cached_user_english_irregular_verbs
+from users.services.cache import get_cached_user_words, get_cached_user_dialogs
 from users.forms import RegistrationUserForm, CustomPasswordResetForm, AuthUserForm, TimezoneForm
-from users.utils import get_words_learned_count, get_exercises_done_count, init_student_demo_access
+from users.utils import get_lessons_done_count, get_words_learned_count, get_exercises_done_count, init_student_demo_access
 
 
 logger = logging.getLogger('django')
@@ -88,7 +85,6 @@ def user_logout(request):
 def user_account(request):
     user = request.user
     current_pane = request.GET.get('pane')
-    start_date, end_date = get_current_month_range(user)
 
     if not current_pane:
         current_pane = 'activities'
@@ -107,33 +103,20 @@ def user_account(request):
         context['teachers'] = tuple(get_cached_all_teachers())
 
     if not context['user_is_teacher']:
-        # lessons_obj = get_cached_lessons_for_teacher(
-        #     user, start_date, end_date)
-
-        # lessons = defaultdict(list)
-
-        # for lesson in lessons_obj:
-        #     lessons[lesson.datetime].append(lesson)
-
-        # lessons = tuple(lessons.values())
-        lessons = get_cached_lessons_for_student(user, start_date, end_date)
         projects = get_cached_projects(user)
         exercises = get_user_exercises(user, projects)
         context['projects'] = projects
         context['exercises'] = exercises
 
-        # Временно отключена статистика
         context['statistics'] = {}
-        context['statistics']['lessons_done_count'] = lessons.filter(
-            status='D').count()
+        context['statistics']['lessons_done_count'] = get_lessons_done_count(
+            user)
         context['statistics']['exercises_done_count'] = get_exercises_done_count(
             exercises
         )
         context['statistics']['words_learned_count'] = get_words_learned_count(
             exercises
         )
-
-        # context['events'] = lessons
 
     context['courses'] = get_cached_courses()
     context['current_pane'] = current_pane

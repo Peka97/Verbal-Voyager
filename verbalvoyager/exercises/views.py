@@ -2,7 +2,7 @@ import json
 import logging
 from random import sample, shuffle
 
-from django.http import HttpResponse, JsonResponse, Http404
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required

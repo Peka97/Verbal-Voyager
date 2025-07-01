@@ -1,4 +1,3 @@
-from gettext import translation
 import re
 
 from random import shuffle

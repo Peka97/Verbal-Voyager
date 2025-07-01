@@ -106,6 +106,5 @@ def student_dang_lesson(lesson):
 
 @register.filter(name="datetime_plus_duration")
 def datetime_plus_duration(lesson_datetime, duration):
-    print(lesson_datetime, duration)
     time_end = lesson_datetime + timedelta(minutes=duration)
     return f"{lesson_datetime.strftime('%H:%M')} - {time_end.strftime('%H:%M')}"

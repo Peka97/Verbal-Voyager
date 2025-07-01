@@ -7,7 +7,6 @@ from django.contrib.auth.models import AnonymousUser
 
 from dictionary.models import Translation
 from .services.cache import get_cached_global_exercise
-from dictionary.models import Translation, Word
 
 
 # def generate_dialog(lang: str, word_ids: list, sentence_count: int, level: str) -> str:

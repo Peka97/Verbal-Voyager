@@ -11,7 +11,7 @@ from dictionary.models import Translation, Word, Language
 from .filters import TeachersListFilter, StudentsListFilter
 from .models import ExerciseCategory, ExerciseWords, \
     ExerciseIrregularEnglishVerb, ExerciseDialog
-from .forms import NewWordsExerciseForm, NewExerciseDialogAdminForm
+from .forms import NewExerciseDialogAdminForm
 from pages.filters import DropdownFilter, RelatedDropdownFilter
 from logging_app.helpers import log_action
 
@@ -231,7 +231,6 @@ class ExerciseDialogAdmin(admin.ModelAdmin):
 
         if request.user.username != 'admin':
             group_name = 'Student'
-            print(queryset)
             queryset = queryset.filter(student__groups__name=group_name)
 
         return queryset, use_distinct
