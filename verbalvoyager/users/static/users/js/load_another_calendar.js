@@ -1,4 +1,4 @@
-import { renderCalendar } from "/static/event_calendar/js/main.js";
+import { renderCalendar } from "/static/event_calendar/js/main_v2.js";
 
 const supervisorMetaElement = document.querySelector("meta#supervisor_role");
 const prevCalendarButton = document.querySelector("span#prev_teacher");

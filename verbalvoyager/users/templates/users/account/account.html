@@ -73,11 +73,11 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	<!-- Custom JS -->
 	<script src="{% static 'pages/js/popovers_on.js' %}"></script>
-	<script type="module" src="{% static 'event_calendar/js/main.js' %}"></script>
+	<script type="module" src="{% static 'event_calendar/js/main_v2.js' %}"></script>
 	<script type="module" src="{% static 'users/js/timezone_update.js' %}"></script>
 
 	{% if user_is_teacher %}
-		<script type="module" src="{% static 'users/js/calendar_send_event_update.js' %}"></script>
+		<script type="module" src="{% static 'users/js/calendar_send_event_update_v2.js' %}"></script>
 		<script type="module" src="{% static 'users/js/lesson_plan_teacher_modal.js' %}" defer></script>
 	{% else %}
 		<script type="module" src="{% static 'users/js/lesson_plan_student_modal.js' %}" defer></script>

@@ -1,4 +1,4 @@
-import { initStatusHandlers } from "/static/users/js/calendar_send_event_update.js";
+import { initStatusHandlers } from "/static/users/js/calendar_send_event_update_v2.js";
 
 (function ($) {
   "use strict";
