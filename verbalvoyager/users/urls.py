@@ -1,8 +1,17 @@
-from django.urls import path
 from django.contrib.auth import views as auth_views
+from django.urls import path
 
-from . import views
 from pages.views import handler_403, handler_404, handler_500
+
+# , UserRegisterView, UserAccountView, UserLogoutView, CustomPasswordResetView, CustomPasswordResetCompleteView
+from .views import (
+    CustomPasswordResetCompleteView,
+    CustomPasswordResetView,
+    SetUserTimezoneView,
+    UserAccountView,
+    UserAuthRegisterView,
+    UserLogoutView,
+)
 
 
 handler403 = handler_403
@@ -10,15 +19,15 @@ handler404 = handler_404
 handler500 = handler_500
 
 urlpatterns = [
-    path('auth', views.user_auth, name='auth'),
-    path('register', views.user_register, name='register'),
-    # path('account/json/update/timezone', views.json_update_timezone, name='update_timezone'),
-    path('account', views.user_account, name='account'),
-    path('logout', views.user_logout, name='logout'),
+    path('auth/', UserAuthRegisterView.as_view(), name='auth'),
+    path('account/', UserAccountView.as_view(), name='account'),
+    path('account/timezone/update/', SetUserTimezoneView.as_view(),
+         name='account_timezone_update'),
+    path('logout/', UserLogoutView.as_view(), name='logout'),
 
     path(
         'reset_password/',
-        views.CustomPasswordResetView.as_view(),
+        CustomPasswordResetView.as_view(),
         name='reset_password'
     ),
     path(
@@ -33,7 +42,7 @@ urlpatterns = [
     ),
     path(
         'password_reset_complete/',
-        views.CustomPasswordResetCompleteView.as_view(),
+        CustomPasswordResetCompleteView.as_view(),
         name='password_reset_complete'
     ),
 ]

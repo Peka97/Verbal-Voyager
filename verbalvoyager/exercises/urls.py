@@ -1,7 +1,8 @@
 from django.urls import path
 
-from . import views
 from pages.views import handler_403, handler_404, handler_500
+
+from . import views
 
 
 handler403 = handler_403

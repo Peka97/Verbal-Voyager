@@ -1,8 +1,7 @@
-from django.db.utils import IntegrityError
 from django.db.models import Q
+from django.db.utils import IntegrityError
 
-
-from dictionary.models import Word, Translation
+from dictionary.models import Translation, Word
 
 
 def normalize_words(words_qs):

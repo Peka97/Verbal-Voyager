@@ -1,8 +1,13 @@
 from django.contrib import admin
 
-from .models import ExerciseWordsResult, ExerciseDialogResult, ExerciseIrregularEnglishVerbResult
-from .filters import TeachersListFilter, StudentsListFilter
 from logging_app.helpers import log_action
+
+from .filters import StudentsListFilter, TeachersListFilter
+from .models import (
+    ExerciseDialogResult,
+    ExerciseIrregularEnglishVerbResult,
+    ExerciseWordsResult,
+)
 
 
 class AbstractExerciseResultAdmin(admin.ModelAdmin):

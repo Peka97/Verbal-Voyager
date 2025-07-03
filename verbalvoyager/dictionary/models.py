@@ -1,6 +1,6 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Prefetch
-from django.core.exceptions import ValidationError
 
 
 class Language(models.Model):
@@ -205,7 +205,7 @@ class Translation(models.Model):
         ]
 
     def __str__(self):
-        return f"[{self.pk}] {self.source_word.word} [{self.part_of_speech} \ {self.source_word.language.name}] -> {self.target_word.word} [{self.part_of_speech} \ {self.target_word.language.name}]"
+        return rf"[{self.pk}] {self.source_word.word} [{self.part_of_speech} \ {self.source_word.language.name}] -> {self.target_word.word} [{self.part_of_speech} \ {self.target_word.language.name}]"
 
 
 class WordDetail(models.Model):

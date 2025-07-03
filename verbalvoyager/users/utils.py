@@ -2,8 +2,9 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 
-from exercises.models import ExerciseWords, ExerciseDialog, ExerciseIrregularEnglishVerb
 from event_calendar.models import Lesson
+from exercises.models import ExerciseDialog, ExerciseIrregularEnglishVerb, ExerciseWords
+
 
 User = get_user_model()
 

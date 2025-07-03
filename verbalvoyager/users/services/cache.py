@@ -1,27 +1,38 @@
 
 
-from django.core.cache import cache
 from django.conf import settings
-from django.db.models import Prefetch
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
+from django.db.models import Prefetch
 
-from event_calendar.models import Lesson, LessonTask, Project, Course, ProjectType
-from lesson_plan.models import EnglishLessonPlan, EnglishLessonMainAims, EnglishLessonSubsidiaryAims
-
-from exercises.models import ExerciseWords, ExerciseDialog, ExerciseIrregularEnglishVerb
-from dictionary.models import Word, Translation, EnglishVerb, Language
+from dictionary.models import EnglishVerb, Language, Translation, Word
+from event_calendar.models import Course, Lesson, LessonTask, Project, ProjectType
+from exercises.models import ExerciseDialog, ExerciseIrregularEnglishVerb, ExerciseWords
+from lesson_plan.models import (
+    EnglishLessonMainAims,
+    EnglishLessonPlan,
+    EnglishLessonSubsidiaryAims,
+)
 
 
 VERSION = settings.CACHES['default']['OPTIONS']['VERSION']
 User = get_user_model()
 
+HOUR = 3600
+DAY = 24 * HOUR
+WEEK = 7 * DAY
+MONTH = 30 * DAY
+
 
 def get_cached_user_groups(user):
+    if not user:
+        return None
+
     CACHE_KEY = f"user_{user.id}_groups_v{VERSION}"
     return cache.get_or_set(
         CACHE_KEY,
-        lambda: user.objects.get(id=user.id).groups,
-        timeout=3600
+        lambda: user.groups,
+        timeout=HOUR
     )
 
 
@@ -30,7 +41,7 @@ def get_cached_courses():
     return cache.get_or_set(
         CACHE_KEY,
         lambda: Course.objects.all(),
-        timeout=60*60*24*7
+        timeout=WEEK
     )
 
 # def get_cached_user_account_teacher(user):
@@ -47,26 +58,35 @@ def get_cached_courses():
 
 
 def get_cached_projects_for_teacher(user):
+    if not user:
+        return None
+
     projects_cache_key = f"user_{user.id}_projects_v{VERSION}"
     return cache.get_or_set(
         projects_cache_key,
         lambda: Project.objects.filter(
             teacher_id=user).values_list('pk', flat=True),
-        timeout=3600
+        timeout=HOUR
     )
 
 
 def get_cached_projects_for_student(user):
+    if not user:
+        return None
+
     projects_cache_key = f"user_{user.id}_projects_v{VERSION}"
     return cache.get_or_set(
         projects_cache_key,
         lambda: Project.objects.filter(
             student_id=user).values_list('pk', flat=True),
-        timeout=3600
+        timeout=HOUR
     )
 
 
 def get_cached_lessons_for_student(user, start_date, end_date):
+    if not user or not start_date or not end_date:
+        return None
+
     CACHE_KEY = f"user_{user.id}_lessons_{start_date.year}_{start_date.month}_{end_date.month}_v{VERSION}"
     lesson_plan_prefatches = (
         Prefetch('new_vocabulary', queryset=Translation.objects.all(),),
@@ -105,11 +125,14 @@ def get_cached_lessons_for_student(user, start_date, end_date):
         ).select_related(
             'teacher_id', 'student_id'
         ).only(*lesson_fields).order_by('datetime'),
-        timeout=3600
+        timeout=HOUR
     )
 
 
 def get_cached_lessons_for_teacher(teacher, start_date, end_date):
+    if not teacher or not start_date or not end_date:
+        return None
+
     CACHE_KEY = f"user_{teacher.id}_lessons_{start_date.year}_{start_date.month}_{end_date.month}_v{VERSION}"
     lesson_plan_prefetches = (
         Prefetch('new_vocabulary', queryset=Translation.objects.all(),),
@@ -148,7 +171,7 @@ def get_cached_lessons_for_teacher(teacher, start_date, end_date):
          .select_related('teacher_id', 'student_id')
          .only(*lesson_fields)
          .order_by('datetime'),
-        timeout=3600
+        timeout=HOUR
     )
 
 
@@ -181,6 +204,9 @@ def get_cached_lessons_for_teacher(teacher, start_date, end_date):
 
 
 def get_cached_lessons_for_other_teacher(user, teacher_id, start_date, end_date):
+    if not user or not start_date or not end_date:
+        return None
+
     CACHE_KEY = f"user_{user.id}_lessons_for_{teacher_id}_v{VERSION}"
 
     prefatches = (
@@ -205,11 +231,14 @@ def get_cached_lessons_for_other_teacher(user, teacher_id, start_date, end_date)
         ).select_related(
             'teacher_id', 'project_id', 'student_id'
         ).only(*lesson_fields).order_by('datetime'),
-        timeout=3600
+        timeout=HOUR
     )
 
 
 def get_cached_projects(user):
+    if not user:
+        return None
+
     CACHE_KEY = f"user_{user.id}_projects_v{VERSION}"
 
     return cache.get_or_set(
@@ -219,7 +248,7 @@ def get_cached_projects(user):
         ).prefetch_related(
             Prefetch('course_id', queryset=Course.objects.only('name').all(),)
         ).only('pk', 'course_id__name'),
-        timeout=3600
+        timeout=HOUR
     )
 
 
@@ -241,6 +270,9 @@ def get_cached_projects(user):
 
 
 def get_cached_user_words(user):
+    if not user:
+        return None
+
     CACHE_KEY = f"user_{user.id}_exercises_exercise_words_v{VERSION}"
     prefetched_languages = Prefetch(
         'lang',
@@ -257,16 +289,13 @@ def get_cached_user_words(user):
         'words',
         queryset=Translation.objects.prefetch_related(*prefetched_words).all(),
     )
-    # return tuple(ExerciseWords.objects.filter(
-    #     student=user,
-    # ).prefetch_related(prefetched_translations, prefetched_languages).order_by('is_active', '-created_at').all())
 
     return cache.get_or_set(
         CACHE_KEY,
         lambda: ExerciseWords.objects.filter(
             student=user,
         ).prefetch_related(prefetched_translations, prefetched_languages).order_by('is_active', '-created_at').all(),
-        timeout=60*60*24
+        timeout=DAY
     )
 
 
@@ -344,6 +373,9 @@ def get_cached_user_words(user):
 #     )
 
 def get_cached_user_english_irregular_verbs(user):
+    if not user:
+        return None
+
     CACHE_KEY = f"user_{user.id}_exercises_exercise_english_irregular_verbs_v{VERSION}"
     prefetched_english_words = Prefetch(
         'infinitive',
@@ -355,18 +387,13 @@ def get_cached_user_english_irregular_verbs(user):
             prefetched_english_words).all(),
     )
 
-    # return tuple(ExerciseIrregularEnglishVerb.objects.filter(
-    #     student=user,
-    #     is_active=True
-    # ).prefetch_related(prefetched_english_verb).order_by('is_active', '-created_at').all())
-
     return cache.get_or_set(
         CACHE_KEY,
         lambda: ExerciseIrregularEnglishVerb.objects.filter(
             student=user,
             is_active=True
         ).prefetch_related(prefetched_english_verb).order_by('is_active', '-created_at').all(),
-        timeout=60*60*24
+        timeout=DAY
     )
 
 
@@ -388,6 +415,9 @@ def get_cached_user_english_irregular_verbs(user):
 
 
 def get_cached_user_dialogs(user):
+    if not user:
+        return None
+
     CACHE_KEY = f"user_{user.id}_exercises_exercise_dialogs_v{VERSION}"
     prefetched_words = (
         Prefetch(
@@ -399,16 +429,13 @@ def get_cached_user_dialogs(user):
         'words',
         queryset=Translation.objects.prefetch_related(*prefetched_words).all(),
     )
-    # return tuple(ExerciseDialog.objects.filter(
-    #     student=user
-    # ).prefetch_related(prefetched_translations).order_by('is_active', '-created_at').all())
 
     return cache.get_or_set(
         CACHE_KEY,
         lambda: ExerciseDialog.objects.filter(
             student=user
         ).prefetch_related(prefetched_translations).order_by('is_active', '-created_at').all(),
-        timeout=60*60*24
+        timeout=DAY
     )
 
 
@@ -464,15 +491,18 @@ def get_cached_all_teachers():
         CACHE_KEY,
         lambda: User.objects.filter(groups__name='Teacher').exclude(
             username='admin').values_list('pk', flat=True),
-        timeout=3600
+        timeout=HOUR
     )
 
 
 def get_cached_admin_user_in_group(group_name):
+    if not group_name:
+        return None
+
     CACHE_KEY = f'global_admin_users_in_group_{group_name}_v{VERSION}'
     return cache.get_or_set(
         CACHE_KEY,
         lambda: User.objects.filter(
             groups__name=group_name).order_by('last_name', 'first_name'),
-        timeout=3600
+        timeout=HOUR
     )

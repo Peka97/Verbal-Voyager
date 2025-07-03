@@ -1,67 +1,74 @@
 import logging
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout, get_user_model
-from django.contrib.auth.views import PasswordResetView, PasswordResetCompleteView
-from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import (
+    FormView,
+    PasswordResetCompleteView,
+    PasswordResetView,
+)
+from django.http import Http404, JsonResponse
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.views import View
+from django.views.generic import TemplateView, UpdateView
 
+from users.forms import (
+    AuthUserForm,
+    CustomPasswordResetForm,
+    RegistrationUserForm,
+    TimezoneForm,
+)
+from users.services.cache import (
+    get_cached_all_teachers,
+    get_cached_courses,
+    get_cached_projects,
+)
+from users.services.utils import get_user_exercises
+from users.utils import (
+    get_exercises_done_count,
+    get_lessons_done_count,
+    get_words_learned_count,
+    init_student_demo_access,
+)
 
-from users.services.cache import get_cached_all_teachers, get_cached_courses, get_cached_projects, get_cached_user_english_irregular_verbs
-from users.services.cache import get_cached_user_words, get_cached_user_dialogs
-from users.forms import RegistrationUserForm, CustomPasswordResetForm, AuthUserForm, TimezoneForm
-from users.utils import get_lessons_done_count, get_words_learned_count, get_exercises_done_count, init_student_demo_access
+from .forms import AuthUserForm, RegistrationUserForm
 
 
 logger = logging.getLogger('django')
 User = get_user_model()
 
 
-def user_auth(request):
-    context = {
-        'auth_show': True,
-        'auth_form': AuthUserForm(),
-        'sign_in_form': RegistrationUserForm()
-    }
+class UserAuthRegisterView(FormView):
+    template_name = 'users/auth.html'
+    success_url = reverse_lazy('account')
 
-    next_url = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
-    if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
-        next_url = settings.LOGIN_REDIRECT_URL
+    def get_form_class(self):
+        return RegistrationUserForm if self.request.POST.get('action') == 'register' else AuthUserForm
 
-    if request.POST:
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-        user = authenticate(request, username=username, password=password)
+        context.update({
+            'auth_form': AuthUserForm(),
+            'sign_in_form': RegistrationUserForm(),
+            'auth_show': self.request.POST.get('action') != 'register'
+        })
 
-        if not user:
-            context['auth_error'] = 'Неправильное имя пользователя или пароль'
-        else:
-            request.session.flush()
-            login(request, user)
-            return redirect(next_url)
+        return context
 
-    return render(request, 'users/auth.html', context)
+    def form_valid(self, form):
+        action = self.request.POST.get('action')
 
-
-def user_register(request):
-    context = {
-        'auth_show': False,
-        'auth_form': AuthUserForm(),
-        'sign_in_form': RegistrationUserForm()
-    }
-
-    if request.POST:
-        form = RegistrationUserForm(request.POST)
-
-        if form.is_valid():
+        if action == 'register':
             user = form.save(commit=False)
             user.save()
 
-            request.session.flush()
-            login(request, user)
+            self.request.session.flush()
+            login(self.request, user)
 
             try:
                 init_student_demo_access(user)
@@ -69,97 +76,84 @@ def user_register(request):
                 logger.error(
                     f'Fail create demo exercises: {user}', exc_info=True)
 
-            return redirect(settings.LOGIN_REDIRECT_URL)
+        elif action == 'login':
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(
+                self.request, username=username, password=password)
+
+            if not user:
+                form.add_error(
+                    None, 'Неправильное имя пользователя или пароль')
+                return self.form_invalid(form)
+
+            self.request.session.flush()
+            login(self.request, user)
         else:
-            context['sign_in_form'] = form
 
-    return render(request, 'users/auth.html', context)
+            return Http404()
 
+        next_url = self.request.GET.get('next', self.success_url)
 
-def user_logout(request):
-    logout(request)
-    return redirect(settings.LOGOUT_REDIRECT_URL)
+        if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={self.request.get_host()}):
+            next_url = self.success_url
 
+        return redirect(next_url)
 
-@login_required
-def user_account(request):
-    user = request.user
-    current_pane = request.GET.get('pane')
-
-    if not current_pane:
-        current_pane = 'activities'
-
-    context = {
-        'user_is_teacher': user.is_teacher(),
-        'user_is_supervisor': user.is_supervisor(),
-    }
-
-    if request.method == 'POST':
-        context['timezone_form'] = set_user_timezone(request)
-    else:
-        context['timezone_form'] = TimezoneForm(instance=request.user)
-
-    if context['user_is_supervisor']:
-        context['teachers'] = tuple(get_cached_all_teachers())
-
-    if not context['user_is_teacher']:
-        projects = get_cached_projects(user)
-        exercises = get_user_exercises(user, projects)
-        context['projects'] = projects
-        context['exercises'] = exercises
-
-        context['statistics'] = {}
-        context['statistics']['lessons_done_count'] = get_lessons_done_count(
-            user)
-        context['statistics']['exercises_done_count'] = get_exercises_done_count(
-            exercises
-        )
-        context['statistics']['words_learned_count'] = get_words_learned_count(
-            exercises
-        )
-
-    context['courses'] = get_cached_courses()
-    context['current_pane'] = current_pane
-
-    return render(request, 'users/account/account.html', context)
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
 
 
-def set_user_timezone(request):
-    form = TimezoneForm(request.POST, instance=request.user)
-    if form.is_valid():
-        form.save()
-        messages.success(request, 'Часовой пояс успешно обновлен.')
-    else:
-        messages.error(request, 'Ошибка при обновлении часового пояса.')
-    return form
+class UserLogoutView(View):
+    def get(self, request):
+        logout(request)
+        return redirect(settings.LOGOUT_REDIRECT_URL)
 
 
-def get_user_exercises(user, projects):
-    result = [
-        *get_cached_user_words(user),
-        *get_cached_user_dialogs(user),
-        *get_cached_user_english_irregular_verbs(user),
-    ]
-    # TODO: add sort for created_at field
-    result.sort(key=lambda exer: exer.is_active, reverse=True)
-    return result
+class UserAccountView(LoginRequiredMixin, TemplateView):
+    template_name = 'users/account/account.html'
 
-# TODO: обновление таймзоны без обновления страницы
-# def json_update_timezone(request):
-#     if request.method == 'POST':
-#         try:
-#             timezone = json.loads(request.body)['timezone']
-#         except (KeyError, json.decoder.JSONDecodeError):
-#             return JsonResponse({'error': 'Invalid data'}, status=400)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        current_pane = self.request.GET.get('pane', 'activities')
 
-#         print(timezone)
+        context.update({
+            'user_is_teacher': user.is_teacher(),
+            'user_is_supervisor': user.is_supervisor(),
+            'timezone_form': TimezoneForm(instance=user),
+            'courses': get_cached_courses(),
+            'current_pane': current_pane,
+        })
 
-#         user = User.objects.get(request.user.id)
-#         print(user)
-#         # user.timezone = timezone
-#         # user.save()
+        if context['user_is_supervisor']:
+            context['teachers'] = tuple(get_cached_all_teachers())
 
-#         return JsonResponse({'result': 'Timezone updated'}, status=200)
+        if not context['user_is_teacher']:
+            projects = get_cached_projects(user)
+            exercises = get_user_exercises(user, projects)
+            context.update({
+                'projects': projects,
+                'exercises': exercises,
+                'statistics': {
+                    'lessons_done_count': get_lessons_done_count(user),
+                    'exercises_done_count': get_exercises_done_count(exercises),
+                    'words_learned_count': get_words_learned_count(exercises),
+                }
+            })
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        form = TimezoneForm(request.POST, instance=request.user)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Часовой пояс успешно обновлен.')
+        else:
+            messages.error(request, 'Ошибка при обновлении часового пояса.')
+
+        return self.get(request, *args, **kwargs)
 
 
 class CustomPasswordResetView(PasswordResetView):
@@ -176,3 +170,21 @@ class CustomPasswordResetCompleteView(PasswordResetCompleteView):
     form_class = PasswordResetCompleteView
     template_name = 'users/password_reset_form.html'
     success_url = ''
+
+
+class SetUserTimezoneView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = TimezoneForm
+    success_url = reverse_lazy('account')
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Часовой пояс успешно обновлен.')
+        return JsonResponse({'status': 'success', 'message': 'Часовой пояс успешно обновлен.'})
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Ошибка при обновлении часового пояса.')
+        return JsonResponse({'status': 'error', 'message': 'Ошибка при обновлении часового пояса.', 'errors': form.errors})

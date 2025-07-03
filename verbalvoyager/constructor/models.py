@@ -1,8 +1,8 @@
 import os
 import urllib.parse
 
-from django.db import models
 from django.core.files.storage import FileSystemStorage
+from django.db import models
 
 
 def document_upload_to(instance, filename):
@@ -82,8 +82,8 @@ class LessonPageConstructor(models.Model):
 
     def render_structure(self, extra_context=None):
         """Рендеринг структуры с дополнительным контекстом"""
-        from django.template.loader import render_to_string
         from django.core.exceptions import ObjectDoesNotExist
+        from django.template.loader import render_to_string
 
         section_counter = 1
 

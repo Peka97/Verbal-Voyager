@@ -1,17 +1,21 @@
-from datetime import datetime
-import logging
-import json
 from collections import defaultdict
+from datetime import datetime
+import json
+import logging
 
-from django.http import JsonResponse
-from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.http import JsonResponse
+from django.shortcuts import render
 
-
-from .utils import create_tasks, update_tasks, delete_tasks, update_lessons
 from event_calendar.models import Lesson
-from users.services.cache import get_cached_lessons_for_teacher, get_cached_lessons_for_other_teacher, get_cached_lessons_for_student
+from users.services.cache import (
+    get_cached_lessons_for_other_teacher,
+    get_cached_lessons_for_student,
+    get_cached_lessons_for_teacher,
+)
+
+from .utils import create_tasks, delete_tasks, update_lessons, update_tasks
 
 
 logger = logging.getLogger('django')

@@ -1,5 +1,7 @@
-<form class="form" method="POST" action="{% url "register" %}">
+<form class="form" method="POST" action="{% url "auth" %}">
     {% csrf_token %}
+    <input type="hidden" name="action" value="register">
+
     <div class="form-title"><span>Регистрация нового пилота</span></div>
 
     <section class="bg-stars">

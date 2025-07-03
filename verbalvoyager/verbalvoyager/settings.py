@@ -1,6 +1,6 @@
 import os
-
 from pathlib import Path
+
 from config import CURRENT_CONFIG
 
 
@@ -215,8 +215,8 @@ FILE_UPLOAD_HANDLERS = [
 # Redis
 CACHES = {
     "default": {
-        # "BACKEND": "django_redis.cache.RedisCache",
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        "BACKEND": "django_redis.cache.RedisCache",
+        # 'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
         "LOCATION": CURRENT_CONFIG.REDIS_DEFAULT_LOCATION,
         "OPTIONS": {
             "SOCKET_CONNECT_TIMEOUT": 5,
@@ -338,3 +338,5 @@ else:
     SITE_NAME = 'https://verbal-voyager.ru'
 
 SITE_ID = 1
+
+TEST_RUNNER = "django.test.runner.DiscoverRunner"

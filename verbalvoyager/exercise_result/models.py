@@ -2,7 +2,8 @@ import logging
 
 from django.db import models
 
-from exercises.models import ExerciseWords, ExerciseDialog, ExerciseIrregularEnglishVerb
+from exercises.models import ExerciseDialog, ExerciseIrregularEnglishVerb, ExerciseWords
+
 
 logger = logging.getLogger('django')
 

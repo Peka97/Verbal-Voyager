@@ -1,6 +1,5 @@
-import pytest
-
 from django.urls import reverse
+import pytest
 
 
 @pytest.mark.django_db
@@ -11,6 +10,7 @@ def test_home_page_get_success(client):
     assert response.status_code == 200
 
 
+@pytest.mark.django_db
 def test_english_course_page_get_success(client):
     url = reverse('english')
 
@@ -18,6 +18,7 @@ def test_english_course_page_get_success(client):
     assert response.status_code == 200
 
 
+@pytest.mark.django_db
 def test_french_course_page_get_success(client):
     url = reverse('french')
 
@@ -25,6 +26,7 @@ def test_french_course_page_get_success(client):
     assert response.status_code == 200
 
 
+@pytest.mark.django_db
 def test_spanish_course_page_get_success(client):
     url = reverse('spanish')
 
@@ -32,6 +34,7 @@ def test_spanish_course_page_get_success(client):
     assert response.status_code == 200
 
 
+@pytest.mark.django_db
 def test_portfolio_page_get_success(client):
     url = reverse('portfolio')
 
@@ -39,6 +42,7 @@ def test_portfolio_page_get_success(client):
     assert response.status_code == 200
 
 
+@pytest.mark.django_db
 def test_about_project_page_get_success(client):
     url = reverse('about')
 
@@ -46,6 +50,7 @@ def test_about_project_page_get_success(client):
     assert response.status_code == 200
 
 
+@pytest.mark.django_db
 def test_contacts_page_get_success(client):
     url = reverse('contacts')
 
@@ -53,6 +58,7 @@ def test_contacts_page_get_success(client):
     assert response.status_code == 200
 
 
+@pytest.mark.django_db
 def test_faq_page_get_success(client):
     url = reverse('faq')
 
@@ -60,6 +66,7 @@ def test_faq_page_get_success(client):
     assert response.status_code == 200
 
 
+@pytest.mark.django_db
 def test_err_403_page_get_success(client):
     url = reverse('err_403')
 
@@ -68,6 +75,7 @@ def test_err_403_page_get_success(client):
     assert response.context['title'] == 'Ошибка доступа: 403'
 
 
+@pytest.mark.django_db
 def test_err_404_page_get_success(client):
     url = reverse('err_404')
 
@@ -76,6 +84,7 @@ def test_err_404_page_get_success(client):
     assert response.context['title'] == 'Страница не найдена: 404'
 
 
+@pytest.mark.django_db
 def test_err_500_page_get_success(client):
     url = reverse('err_500')
 

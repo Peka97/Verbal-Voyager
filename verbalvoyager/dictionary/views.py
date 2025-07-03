@@ -1,12 +1,13 @@
 import json
 import logging
-import requests
-import re
 from pprint import pprint
+import re
 
 from django.http import JsonResponse
+import requests
 
-from .models import Language, Translation, Word, EnglishWordDetail
+from .models import EnglishWordDetail, Language, Translation, Word
+
 
 logger = logging.getLogger('django')
 

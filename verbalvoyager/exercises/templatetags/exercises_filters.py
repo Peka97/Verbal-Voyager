@@ -1,9 +1,9 @@
+from random import shuffle
 import re
 
-from random import shuffle
+from django import template
 from django.utils.safestring import mark_safe
 
-from django import template
 
 register = template.Library()
 
@@ -33,7 +33,7 @@ def get_words_list(values):
 def shiffle_(values):
     if isinstance(values, list):
         values = values[0]
-        
+
     values = list(values)
     shuffle(values)
     return ''.join(values)

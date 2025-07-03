@@ -1,15 +1,16 @@
-from django.views.decorators.http import require_GET
 import json
 import logging
 
 from django.http import JsonResponse
-from django.views import View
-from django.views.generic import DetailView
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from django.shortcuts import render, get_object_or_404
+from django.views import View
+from django.views.decorators.http import require_GET
+from django.views.generic import DetailView
 
-from .models import ModuleType, LessonPage, LessonPageConstructor, Document
 from dictionary.models import Word
+
+from .models import Document, LessonPage, LessonPageConstructor, ModuleType
 
 
 logger = logging.getLogger('django')

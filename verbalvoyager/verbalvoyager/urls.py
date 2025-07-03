@@ -1,9 +1,10 @@
-from django.contrib import admin
-from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
 
 from pages.views import handler_403, handler_404, handler_500
+
 
 # TODO: rename handler_\d+ to error_\d+_view
 handler403 = handler_403

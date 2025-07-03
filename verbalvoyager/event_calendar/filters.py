@@ -1,7 +1,7 @@
-from django.utils.translation import gettext_lazy as _
-from django.contrib.auth import get_user_model
 from django.contrib.admin import SimpleListFilter
+from django.contrib.auth import get_user_model
 from django.core.exceptions import FieldError
+from django.utils.translation import gettext_lazy as _
 
 from pages.filters import DROPDOWN_TEMPLATE_PATH
 from users.services.cache import get_cached_admin_user_in_group

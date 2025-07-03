@@ -1,14 +1,23 @@
 from django.contrib import admin, messages
-from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
-from django.db.models import Q, Case, When, Value, IntegerField
+from django.db.models import Case, IntegerField, Q, Value, When
+from django.utils.translation import gettext_lazy as _
 
-from .models import Language, Word, Translation, EnglishWordDetail, FrenchWordDetail, SpanishWordDetail
-from .models import EnglishVerb, FrenchVerb
 from logging_app.helpers import log_action
-from .filters import WordLanguageFilter, InvalidWordsFilter
-from .services.normalizers import normalize_words
+
+from .filters import InvalidWordsFilter, WordLanguageFilter
 from .forms import TranslationAdminForm
+from .models import (
+    EnglishVerb,
+    EnglishWordDetail,
+    FrenchVerb,
+    FrenchWordDetail,
+    Language,
+    SpanishWordDetail,
+    Translation,
+    Word,
+)
+from .services.normalizers import normalize_words
 
 
 class BaseAdmin(admin.ModelAdmin):

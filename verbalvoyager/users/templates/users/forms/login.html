@@ -1,5 +1,7 @@
 <form class="form" method='POST' action="{% url "auth" %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}">
     {% csrf_token %}
+    <input type="hidden" name="action" value="login">
+
     <div class="form-title"><span>Подняться на шатл</span></div>
 
     <div class="row input-container">

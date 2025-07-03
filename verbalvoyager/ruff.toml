@@ -25,37 +25,60 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
-    "/home/peka97/Verbal-Voyager/scripts/*"
+    "/home/peka97/Verbal-Voyager/scripts/*",
 ]
 
-# Same as Black.
 line-length = 88
 indent-width = 4
-
-# Assume Python 3.10.12
 target-version = "py39"
 
 [lint]
-# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
-select = ["E4", "E7", "E9", "F", "T201"]
-ignore = []
+# Основные правила:
+# - E/W: PEP 8 (без E501, если не хотите строгой проверки длины строки)
+# - F: Pyflakes (ошибки логики)
+# - I: Сортировка импортов (isort)
+# - B: print() и другие "запрещёнки" (B002, B010)
+# - UP: Modern Python (например, Union → |)
+select = [
+    "E4",
+    "E7",
+    "E9",
+    "F",
+    "T201",
+    "I",
+    "B",
+    "UP",
+    "W",
+] # Добавлены I, B, UP, W
 
-# Allow fix for all enabled rules (when `--fix`) is provided.
+# Игнорируем слишком строгие/неудобные правила
+ignore = [
+    "E501", # Длина строки (если хотите включить — удалите эту строку)
+    "E203", # Пробел перед ':' (конфликтует с black)
+    "F403", # from ... import * (иногда нужно в Django)
+    "F401", # Неиспользуемый импорт (может мешать в __init__.py)
+]
+
+# Разрешаем автофикс для всех правил
 fixable = ["ALL"]
 unfixable = []
 
-# Allow unused variables when underscore-prefixed.
+# Разрешаем неиспользуемые переменные с префиксом _
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
+# Игнорируем миграции Django и тесты для print()
+[lint.per-file-ignores]
+"*/migrations/*.py" = ["F401", "E402"] # Игнор для миграций
+"tests/*.py" = ["B002"]                # Разрешаем print() в тестах
+
+# Настройки isort (сортировка импортов)
+[isort]
+known-first-party = ["verbalvoyager"] # Замените на имя вашего Django-приложения
+lines-after-imports = 2
+force-sort-within-sections = true
+
 [format]
-# Like Black, use double quotes for strings.
 quote-style = "double"
-
-# Like Black, indent with spaces, rather than tabs.
 indent-style = "space"
-
-# Like Black, respect magic trailing commas.
 skip-magic-trailing-comma = false
-
-# Like Black, automatically detect the appropriate line ending.
 line-ending = "auto"

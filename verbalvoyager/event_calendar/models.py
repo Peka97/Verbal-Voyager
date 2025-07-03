@@ -1,11 +1,11 @@
-import logging
 from datetime import timedelta
+import logging
 
-from django.db import models
-from django.contrib.auth import get_user_model
-from django.urls import reverse
 from django.contrib.admin.utils import quote
+from django.contrib.auth import get_user_model
 from django.core.exceptions import FieldError
+from django.db import models
+from django.urls import reverse
 
 
 logger = logging.getLogger('django')

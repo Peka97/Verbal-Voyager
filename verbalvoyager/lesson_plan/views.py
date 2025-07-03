@@ -1,15 +1,20 @@
-import logging
 import json
+import logging
 
-from django.http import JsonResponse
 from django.db import transaction
 from django.db.models import Prefetch
+from django.http import JsonResponse
 
+from dictionary.models import Language, Translation
+from event_calendar.models import Lesson
 from exercises.models import ExerciseCategory, ExerciseWords
 
-from .models import EnglishLessonPlan, EnglishLessonMainAims, EnglishLessonSubsidiaryAims
-from event_calendar.models import Lesson
-from dictionary.models import Language, Translation
+from .models import (
+    EnglishLessonMainAims,
+    EnglishLessonPlan,
+    EnglishLessonSubsidiaryAims,
+)
+
 
 logger = logging.getLogger('django')
 

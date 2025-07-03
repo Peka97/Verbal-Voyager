@@ -1,8 +1,8 @@
 from django.contrib import admin
 from rangefilter.filters import DateRangeQuickSelectListFilterBuilder
 
-from .models import ActionLog
 from .filters import TeachersListFilter
+from .models import ActionLog
 
 
 @admin.register(ActionLog)

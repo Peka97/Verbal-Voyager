@@ -1,11 +1,11 @@
-from openai import OpenAI
-
-from django.shortcuts import redirect
-from django.http.response import Http404
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
+from django.http.response import Http404
+from django.shortcuts import redirect
+from openai import OpenAI
 
 from dictionary.models import Translation
+
 from .services.cache import get_cached_global_exercise
 
 

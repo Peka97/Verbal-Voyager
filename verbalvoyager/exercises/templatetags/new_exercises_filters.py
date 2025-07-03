@@ -1,12 +1,12 @@
-import re
-
 from random import shuffle
-from django.utils.safestring import mark_safe
+import re
 
 from django import template
 from django.db.models import Prefetch
+from django.utils.safestring import mark_safe
 
 from dictionary.models import Translation, Word
+
 
 register = template.Library()
 

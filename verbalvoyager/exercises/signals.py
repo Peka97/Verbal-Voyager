@@ -1,14 +1,16 @@
 import logging
 
 from django.conf import settings
-from django.db.models.signals import post_save, post_delete, m2m_changed
-from django.dispatch import receiver
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
+from django.db.models.signals import m2m_changed, post_delete, post_save
+from django.dispatch import receiver
 
+from dictionary.models import Translation
 
 from .models import ExerciseCategory, ExerciseWords
-from dictionary.models import Translation
+
+
 logger = logging.getLogger('django')
 
 VERSION = settings.CACHES['default']['OPTIONS']['VERSION']

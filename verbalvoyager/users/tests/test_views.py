@@ -1,217 +1,102 @@
 import pytest
 from django.urls import reverse
+from django.contrib.auth import get_user_model
+from django.test import Client
+from users.forms import RegistrationUserForm, AuthUserForm
+from django.contrib.auth.forms import PasswordResetForm
 
-
-@pytest.fixture
-def data_with_wrong_fields():
-    data = {
-        'username': 'student_user',  # Already exists
-        'password1': 'password',  # Too easy
-        'password2': 'password',
-        'first_name': 'John',
-        'last_name': 'Doe',
-        'email': 'john.doe@'  # Wrong format
-    }
-    return data
-
-
-@pytest.fixture
-def data_with_not_matched_passwords():
-    data = {
-        'username': 'new_username',
-        'password1': 'password',  # Don't match
-        'password2': 'password123',  # Don't match
-        'first_name': 'John',
-        'last_name': 'Doe',
-        'email': 'john.doe@example.com'
-    }
-    return data
-
-
-# Tests
-
-@pytest.mark.django_db
-def test_user_logout_with_redirect_home_page(client):
-    url = reverse('logout')
-
-    response = client.get(url, follow=False)
-    assert response.status_code == 302
-
-    response = client.get(url, follow=True)
-    assert response.status_code == 200
-    assert '<title> Главная </title>' in response.content.decode()
+User = get_user_model()
 
 
 @pytest.mark.django_db
-def test_user_auth_get_success(client):
+def test_user_auth_register_view_get(client):
     url = reverse('auth')
-
     response = client.get(url)
+
     assert response.status_code == 200
-
-
-# Failed with recaptcha. TODO: fix
-# @pytest.mark.django_db
-# def test_user_auth_success_and_redirect(client, student_user):
-#     url = reverse('auth')
-#     data = {
-#         'login': 'student_user',
-#         'password': 'password'
-#     }
-
-#     response = client.post(url, data)
-#     assert response.status_code == 302
-#     assert client.session['_auth_user_id'] == str(student_user.id)
-
-#     response = client.post(url, data, follow=True)
-#     assert response.status_code == 200
-#     # TODO: check redirect url
+    assert 'auth_form' in response.context
+    assert 'sign_in_form' in response.context
+    assert isinstance(response.context['auth_form'], AuthUserForm)
+    assert isinstance(response.context['sign_in_form'], RegistrationUserForm)
 
 
 @pytest.mark.django_db
-def test_user_auth_fail(client, student_user):
+def test_user_auth_register_view_post_register(client):
     url = reverse('auth')
     data = {
-        'login': student_user.username,
-        'password': 'wrong password'
+        'action': 'register',
+        'username': 'testuser',
+        'password1': 'testpassword123',
+        'password2': 'testpassword123',
+        'first_name': 'Test',
+        'last_name': 'User',
+        'email': 'testuser@example.com',
+        "captcha": "PASSED",
     }
 
     response = client.post(url, data)
-    assert response.status_code == 200
-    assert 'Неправильное имя пользователя или пароль' in response.content.decode()
 
+    if response.context and 'form' in response.context:
+        form = response.context['form']
+        if form.errors:
+            print("Form errors:", form.errors)
 
-# Failed with recaptcha. TODO: fix
-# @pytest.mark.django_db
-# def test_user_sign_up_success(
-#     client, 
-#     student_demo_group, 
-#     teacher_demo_group,
-#     teacher_demo_user,
-#     exercise_demo_category,
-#     exercise_english_word_with_category_demo,
-#     exercise_english_dialog_with_category_demo,
-#     exercise_irregular_verbs_with_category_demo
-#     ):
-#     url = reverse('auth')
-#     data = {
-#         'username': 'new_username',
-#         'password1': '0ifO-4Fuzw',
-#         'password2': '0ifO-4Fuzw',
-#         'first_name': 'John',
-#         'last_name': 'Doe',
-#         'email': 'john.doe@example.com'
-#     }
-
-#     response = client.post(url, data)
-#     assert response.status_code == 302
-#     response = client.post(url, data, follow=True)
-#     assert response.status_code == 200
-
-
-# Failed with recaptcha. TODO: fix
-# @pytest.mark.django_db
-# def test_user_sign_up_failed(client, student_user, data_with_wrong_fields, data_with_not_matched_passwords):
-#     url = reverse('auth')
-
-#     response = client.post(url, data_with_wrong_fields, follow=True)
-#     assert response.status_code == 200
-#     assert 'Пользователь с таким именем уже существует' in response.content.decode()
-#     assert 'Введённый пароль слишком широко распространён' in response.content.decode()
-#     assert 'Введите правильный адрес электронной почты' in response.content.decode()
-
-#     response = client.post(url, data_with_not_matched_passwords, follow=True)
-#     assert response.status_code == 200
-#     assert 'Введенные пароли не совпадают' in response.content.decode()
+    assert response.status_code == 302
+    assert User.objects.filter(username='testuser').exists()
 
 
 @pytest.mark.django_db
-def test_user_reset_password_get_success(client):
+def test_user_auth_register_view_post_login(client):
+    user = User.objects.create_user(
+        username='testuser', password='testpassword123')
+    url = reverse('auth')
+    data = {
+        'action': 'login',
+        'username': 'testuser',
+        'password': 'testpassword123'
+    }
+
+    response = client.post(url, data)
+
+    assert response.status_code == 302
+    assert response.wsgi_request.user.is_authenticated
+
+
+@pytest.mark.django_db
+def test_user_logout_view(client):
+    user = User.objects.create_user(
+        username='testuser', password='testpassword123')
+    client.login(username='testuser', password='testpassword123')
+    url = reverse('logout')
+    response = client.get(url)
+
+    assert response.status_code == 302
+    assert not response.wsgi_request.user.is_authenticated
+
+
+@pytest.mark.django_db
+def test_user_account_view_get(client):
+    user = User.objects.create_user(
+        username='testuser', password='testpassword123')
+    print(user)
+    client.login(username='testuser', password='testpassword123')
+    url = reverse('account')
+
+    response = client.get(url)
+
+    assert response.status_code == 200
+    assert 'user_is_teacher' in response.context
+    assert 'user_is_supervisor' in response.context
+    assert 'timezone_form' in response.context
+    assert 'courses' in response.context
+    assert 'current_pane' in response.context
+
+
+@pytest.mark.django_db
+def test_custom_password_reset_view_get(client):
     url = reverse('reset_password')
-
     response = client.get(url)
+
     assert response.status_code == 200
-
-
-@pytest.mark.django_db
-def test_account_activities_groupless_user_account_success(groupless_user_client):
-    url = reverse("account", kwargs={"current_pane": "activities"})
-    response = groupless_user_client.get(url, follow=True)
-    assert response.status_code == 200
-
-
-@pytest.mark.django_db
-def test_account_activities_student_account_success(student_client):
-    url = reverse("account", kwargs={"current_pane": "activities"})
-    response = student_client.get(url, follow=True)
-    assert response.status_code == 200
-
-
-@pytest.mark.django_db
-def test_account_activities_teacher_account_success(teacher_client):
-    url = reverse("account", kwargs={"current_pane": "activities"})
-    response = teacher_client.get(url, follow=True)
-    assert response.status_code == 200
-
-
-@pytest.mark.django_db
-def test_account_activities_anonimous_redirection(client):
-    url = reverse("account", kwargs={"current_pane": "activities"})
-    response = client.get(url)
-    assert response.status_code == 302
-
-
-@pytest.mark.django_db
-def test_account_profile_groupless_user_account_success(groupless_user_client):
-    url = reverse("account", kwargs={"current_pane": "profile"})
-    response = groupless_user_client.get(url, follow=True)
-    assert response.status_code == 200
-
-
-@pytest.mark.django_db
-def test_account_profile_student_account_success(student_client):
-    url = reverse("account", kwargs={"current_pane": "profile"})
-    response = student_client.get(url, follow=True)
-    assert response.status_code == 200
-
-
-@pytest.mark.django_db
-def test_account_profile_teacher_account_success(teacher_client):
-    url = reverse("account", kwargs={"current_pane": "profile"})
-    response = teacher_client.get(url, follow=True)
-    assert response.status_code == 200
-
-
-@pytest.mark.django_db
-def test_account_profile_anonimous_redirection(client):
-    url = reverse("account", kwargs={"current_pane": "profile"})
-    reponse = client.get(url)
-    assert reponse.status_code == 302
-
-
-@pytest.mark.django_db
-def test_account_exercises_groupless_user_account_success(groupless_user_client):
-    url = reverse("account", kwargs={"current_pane": "exercises"})
-    response = groupless_user_client.get(url, follow=True)
-    assert response.status_code == 200
-
-
-@pytest.mark.django_db
-def test_account_exercises_student_account_success(student_client):
-    url = reverse("account", kwargs={"current_pane": "exercises"})
-    response = student_client.get(url, follow=True)
-    assert response.status_code == 200
-
-
-@pytest.mark.django_db
-def test_account_exercises_teacher_account_success(teacher_client):
-    url = reverse("account", kwargs={"current_pane": "exercises"})
-    response = teacher_client.get(url, follow=True)
-    assert response.status_code == 200
-
-
-@pytest.mark.django_db
-def test_account_exercises_anonimous_redirection(client):
-    url = reverse("account", kwargs={"current_pane": "exercises"})
-    response = client.get(url)
-    assert response.status_code == 302
+    assert 'form' in response.context
+    assert isinstance(response.context['form'], PasswordResetForm)

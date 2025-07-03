@@ -1,9 +1,10 @@
-import pytz
 from datetime import datetime, timedelta
 
-from logger import get_logger
 from django import template
 from django.conf import settings
+import pytz
+
+from logger import get_logger
 
 
 register = template.Library()

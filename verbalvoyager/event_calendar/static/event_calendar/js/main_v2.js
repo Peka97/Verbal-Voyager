@@ -74,6 +74,7 @@ export function renderCalendar() {
 // Initialize the calendar by appending the HTML dates
 function init_calendar(date) {
   // Показываем лоадер календаря
+
   $("#calendar-loader").show();
 
   // Показываем лоадер событий

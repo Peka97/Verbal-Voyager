@@ -1,10 +1,10 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
-from django.conf import settings
 
-from dictionary.models import Translation, Language, EnglishVerb
+from dictionary.models import EnglishVerb, Language, Translation
 
 
 User = get_user_model()
@@ -109,7 +109,7 @@ class ExerciseWords(models.Model):
         return f"{self.pk} - {self.student} - {status}"
 
     class Meta:
-        ordering = ['-is_active']
+        ordering = ['-is_active', '-created_at']
         verbose_name = verbose_name_plural = 'All | Exercise Words'
 
 
@@ -210,7 +210,7 @@ class ExerciseDialog(models.Model):
 
     class Meta:
         verbose_name = verbose_name_plural = 'All | Exercise Dialog'
-        ordering = ['-is_active']
+        ordering = ['-is_active', '-created_at']
 
 
 class ExerciseIrregularEnglishVerb(models.Model):
@@ -295,4 +295,4 @@ class ExerciseIrregularEnglishVerb(models.Model):
 
     class Meta:
         verbose_name = verbose_name_plural = 'Eng | Irregular Verb '
-        ordering = ['-is_active']
+        ordering = ['-is_active', '-created_at']

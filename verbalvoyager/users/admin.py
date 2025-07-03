@@ -2,8 +2,9 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
 
-from .models import User
 from pages.filters import DropdownFilter, RelatedDropdownFilter
+
+from .models import User
 
 
 @admin.register(User)
@@ -50,12 +51,12 @@ class CustomUserAdmin(UserAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        
+
         if request.user.username != 'admin':
             queryset = queryset \
             .exclude(username='admin') \
             .exclude(groups__name__in=['TeacherDemo'])
-            
+
         return queryset.prefetch_related('groups')
 
     def get_fieldsets(self, request, obj=None):

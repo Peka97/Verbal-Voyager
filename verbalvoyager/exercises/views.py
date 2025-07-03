@@ -2,18 +2,17 @@ import json
 import logging
 from random import sample, shuffle
 
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
 
+from dictionary.models import Language, Translation, Word
 
+from .models import ExerciseDialog, ExerciseIrregularEnglishVerb, ExerciseWords
 from .utils import check_exercise_access, new_generate_dialog
 
-from .models import \
-    ExerciseWords, ExerciseIrregularEnglishVerb, ExerciseDialog
-from dictionary.models import Language, Translation, Word
 
 logger = logging.getLogger('django')
 logger_words = logging.getLogger('words')

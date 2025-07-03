@@ -4,6 +4,7 @@ from django.db import transaction
 
 from event_calendar.models import Lesson, LessonTask
 
+
 logger = logging.getLogger('django')
 
 

@@ -1,8 +1,13 @@
 from django.contrib import admin
-from nested_admin import NestedStackedInline, NestedModelAdmin
+from nested_admin import NestedModelAdmin, NestedStackedInline
 
-from .models import EnglishLessonPlan, EnglishLessonMainAims, EnglishLessonSubsidiaryAims
 from logging_app.helpers import log_action
+
+from .models import (
+    EnglishLessonMainAims,
+    EnglishLessonPlan,
+    EnglishLessonSubsidiaryAims,
+)
 
 
 class EnglishLessonMainAimsInline(NestedStackedInline):

@@ -1,20 +1,32 @@
-import logging
 from datetime import timedelta
+import logging
 
 from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
 from django.utils.translation import ngettext
-from rangefilter.filters import DateRangeFilterBuilder, DateRangeQuickSelectListFilterBuilder
-from nested_admin import NestedStackedInline, NestedModelAdmin, NestedTabularInline
+from nested_admin import NestedModelAdmin, NestedStackedInline, NestedTabularInline
+from rangefilter.filters import (
+    DateRangeFilterBuilder,
+    DateRangeQuickSelectListFilterBuilder,
+)
 
-from .filters import TeachersListFilter, StudentsListFilter
-from pages.filters import DropdownFilter, ChoiceDropdownFilter
-from event_calendar.models import Lesson, Course, Review, ProjectType, Project, ProjectTask, LessonTask
 from event_calendar.forms import LessonAdminForm, ProjectAdminForm
-from lesson_plan.models import EnglishLessonPlan
-from lesson_plan.admin import EnglishLessonPlanAdmin
+from event_calendar.models import (
+    Course,
+    Lesson,
+    LessonTask,
+    Project,
+    ProjectTask,
+    ProjectType,
+    Review,
+)
 from exercises.models import ExerciseWords
+from lesson_plan.admin import EnglishLessonPlanAdmin
+from lesson_plan.models import EnglishLessonPlan
 from logging_app.helpers import log_action
+from pages.filters import ChoiceDropdownFilter, DropdownFilter
+
+from .filters import StudentsListFilter, TeachersListFilter
 
 
 logger = logging.getLogger('django')
@@ -207,7 +219,7 @@ class ProjectTaskAdmin(admin.ModelAdmin):
     )
     actions = ('set_complete', 'unset_complete')
     fieldsets = (
-        (u'Task Type', {
+        ('Task Type', {
             'fields': ('name',),
         }),
         ('Task Target', {
@@ -252,7 +264,7 @@ class LessonTaskAdmin(admin.ModelAdmin):
     actions = ('set_complete', 'unset_complete')
 
     fieldsets = (
-        (u'Task Type', {
+        ('Task Type', {
             'description': 'Опиши суть задания:',
             'fields': ('name',),
         }),
@@ -320,7 +332,7 @@ class ProjectAdmin(admin.ModelAdmin):
     ]
 
     fieldsets = (
-        (u'Project Type', {
+        ('Project Type', {
             'description': 'Укажи название проекта, его курс и тип.',
             'fields': (('name', 'course_id'), 'types'),
         }),

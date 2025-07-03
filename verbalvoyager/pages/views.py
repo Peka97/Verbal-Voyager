@@ -1,7 +1,7 @@
 import logging
 
-from django.shortcuts import render
 from django.contrib.auth import get_user_model
+from django.shortcuts import render
 
 from event_calendar.models import Review
 from users.services.cache import get_cached_courses

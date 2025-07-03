@@ -1,4 +1,10 @@
-from django.contrib.admin import SimpleListFilter, AllValuesFieldListFilter, ChoicesFieldListFilter, RelatedFieldListFilter, RelatedOnlyFieldListFilter
+from django.contrib.admin import (
+    AllValuesFieldListFilter,
+    ChoicesFieldListFilter,
+    RelatedFieldListFilter,
+    RelatedOnlyFieldListFilter,
+    SimpleListFilter,
+)
 
 
 DROPDOWN_TEMPLATE_PATH = 'pages/admin/dropdown_filter.html'

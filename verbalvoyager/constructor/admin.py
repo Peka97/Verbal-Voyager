@@ -1,10 +1,9 @@
 from django.contrib import admin
-from django.utils.html import format_html
 from django.db.models import JSONField
+from django.utils.html import format_html
 from django_json_widget.widgets import JSONEditorWidget
 
-
-from .models import ModuleType, LessonPage, LessonPageConstructor, Document
+from .models import Document, LessonPage, LessonPageConstructor, ModuleType
 
 
 @admin.register(ModuleType)
