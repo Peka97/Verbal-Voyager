@@ -156,9 +156,10 @@ LOGOUT_REDIRECT_URL = '/'
 # Recaptcha
 # Тестовый ключ (v2, но работает и для v3)
 RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY')
-RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY')  # Тестовый ключ
-RECAPTCHA_REQUIRED_SCORE = 0.0  # Минимальный балл (можно 0.0 для тестов)
-RECAPTCHA_TESTING = True  # ✅ Важно! Именно так, а не TEST_MODE
+RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY')
+RECAPTCHA_REQUIRED_SCORE = 0.0
+RECAPTCHA_TESTING = True
+SILENCED_SYSTEM_CHECKS = ['***_recaptcha.recaptcha_test_key_error']
 
 # Internationalization
 LANGUAGE_CODE = 'ru-ru'
