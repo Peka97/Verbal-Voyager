@@ -63,7 +63,44 @@ jobs:
           touch logs/django.log
           touch logs/words.log
 
-      - name: Make migrations
+      - name: Make users migrations
+        working-directory: ${{ github.workspace }}/verbalvoyager/
+        env:
+          DJANGO_SETTINGS_MODULE: ${{ secrets.DJANGO_SETTINGS_MODULE }}
+          DJANGO_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          DEBUG: ${{ secrets.DEBUG }}
+          ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+          INTERNAL_IPS: ${{ secrets.INTERNAL_IPS }}
+          CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
+          ADMIN_TOOLS_ENABLE: ${{ secrets.ADMIN_TOOLS_ENABLE }}
+          SITE_NAME: ${{ secrets.SITE_NAME }}
+          DB_ENGINE: ${{ secrets.DB_ENGINE }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_TEST_NAME: ${{ secrets.DB_TEST_NAME }}
+          REDIS_BACKEND: ${{ secrets.REDIS_BACKEND }}
+          REDIS_DEFAULT_LOCATION: ${{ secrets.REDIS_DEFAULT_LOCATION }}
+          REDIS_DEFAULT_PREFIX: ${{ secrets.REDIS_DEFAULT_PREFIX }}
+          REDIS_SESSION_LOCATION: ${{ secrets.REDIS_SESSION_LOCATION }}
+          REDIS_SESSION_PREFIX: ${{ secrets.REDIS_SESSION_PREFIX }}
+          REDIS_VERSION: ${{ secrets.REDIS_VERSION }}
+          EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+          EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+          EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+          EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+          EMAIL_USE_TLS: ${{ secrets.EMAIL_USE_TLS }}
+          RECAPTCHA_PUBLIC_KEY: ${{ secrets.RECAPTCHA_PUBLIC_KEY }}
+          RECAPTCHA_PRIVATE_KEY: ${{ secrets.RECAPTCHA_PRIVATE_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          LOGGING_DJANGO_FILE_FP: ${{ secrets.LOGGING_DJANGO_FILE_FP }}
+          LOGGING_WORDS_FILE_FP: ${{ secrets.LOGGING_WORDS_FILE_FP }}
+          SILENCED_SYSTEM_CHECKS: django_recaptcha.recaptcha_test_key_error
+        run: python manage.py makemigrations users
+
+      - name: Make other migrations
         working-directory: ${{ github.workspace }}/verbalvoyager/
         env:
           DJANGO_SETTINGS_MODULE: ${{ secrets.DJANGO_SETTINGS_MODULE }}
