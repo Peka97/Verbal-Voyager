@@ -1,15 +1,14 @@
 from datetime import datetime, timedelta
+import logging
 
 from django import template
 from django.conf import settings
 import pytz
 
-from logger import get_logger
-
 
 register = template.Library()
 
-logger = get_logger()
+logger = logging.getLogger('django')
 
 
 @register.filter(name="project_types_to_list")
