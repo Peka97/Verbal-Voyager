@@ -59,7 +59,7 @@ class LessonForm(forms.ModelForm):
 
 class LessonAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(LessonAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['teacher_id'].queryset = User.objects.filter(
             groups__name__in=['Teacher'])
         self.fields['student_id'].queryset = User.objects.filter(
@@ -68,7 +68,7 @@ class LessonAdminForm(forms.ModelForm):
 
 class ProjectForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(ProjectForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     students = forms.ModelChoiceField(
         queryset=User.objects.exclude(username__startswith='_') &
@@ -85,7 +85,7 @@ class ProjectForm(forms.ModelForm):
 
 class ProjectAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(ProjectAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['teacher_id'].queryset = User.objects.filter(
             groups__name__in=['Teacher'])
         self.fields['teacher_id'].initial = User.objects.get(

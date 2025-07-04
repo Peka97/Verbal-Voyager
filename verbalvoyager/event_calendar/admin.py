@@ -138,7 +138,7 @@ class LessonAdmin(NestedModelAdmin):
         return queryset.select_related('teacher_id', 'student_id')
 
     def get_form(self, request, obj=None, **kwargs):
-        form = super(LessonAdmin, self).get_form(request, obj, **kwargs)
+        form = super().get_form(request, obj, **kwargs)
         form.base_fields['teacher_id'].initial = request.user
         form.base_fields['teacher_id'].queryset = User.objects.filter(
             groups__name__in=['Teacher'])
@@ -368,7 +368,7 @@ class ProjectAdmin(admin.ModelAdmin):
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     def get_form(self, request, obj=None, **kwargs):
-        form = super(ProjectAdmin, self).get_form(request, obj, **kwargs)
+        form = super().get_form(request, obj, **kwargs)
         form.base_fields['teacher_id'].initial = request.user
         form.base_fields['teacher_id'].queryset = User.objects.filter(
             groups__name__in=['Teacher'])

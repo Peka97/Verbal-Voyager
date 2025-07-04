@@ -35,8 +35,6 @@ from users.utils import (
     init_student_demo_access,
 )
 
-from .forms import AuthUserForm, RegistrationUserForm
-
 
 logger = logging.getLogger('django')
 User = get_user_model()

@@ -1,9 +1,11 @@
-import pytest
-from django.urls import reverse
 from django.contrib.auth import get_user_model
-from django.test import Client
-from users.forms import RegistrationUserForm, AuthUserForm
 from django.contrib.auth.forms import PasswordResetForm
+from django.test import Client
+from django.urls import reverse
+import pytest
+
+from users.forms import AuthUserForm, RegistrationUserForm
+
 
 User = get_user_model()
 
@@ -39,7 +41,7 @@ def test_user_auth_register_view_post_register(client):
     if response.context and 'form' in response.context:
         form = response.context['form']
         if form.errors:
-            print("Form errors:", form.errors)
+            pass
 
     assert response.status_code == 302
     assert User.objects.filter(username='testuser').exists()
@@ -47,7 +49,7 @@ def test_user_auth_register_view_post_register(client):
 
 @pytest.mark.django_db
 def test_user_auth_register_view_post_login(client):
-    user = User.objects.create_user(
+    User.objects.create_user(
         username='testuser', password='testpassword123')
     url = reverse('auth')
     data = {
@@ -64,7 +66,7 @@ def test_user_auth_register_view_post_login(client):
 
 @pytest.mark.django_db
 def test_user_logout_view(client):
-    user = User.objects.create_user(
+    User.objects.create_user(
         username='testuser', password='testpassword123')
     client.login(username='testuser', password='testpassword123')
     url = reverse('logout')
@@ -76,9 +78,8 @@ def test_user_logout_view(client):
 
 @pytest.mark.django_db
 def test_user_account_view_get(client):
-    user = User.objects.create_user(
+    User.objects.create_user(
         username='testuser', password='testpassword123')
-    print(user)
     client.login(username='testuser', password='testpassword123')
     url = reverse('account')
 

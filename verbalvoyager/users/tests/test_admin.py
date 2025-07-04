@@ -1,7 +1,8 @@
-import pytest
 from django.contrib.auth.models import Group
-from django.urls import reverse
 from django.test import Client
+from django.urls import reverse
+import pytest
+
 from users.models import User
 
 

@@ -1,6 +1,5 @@
-import pytest
-
 from django.contrib.auth.models import Group, Permission
+import pytest
 
 from users.models import User
 
