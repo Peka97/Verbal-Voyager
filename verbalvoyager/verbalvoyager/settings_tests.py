@@ -268,51 +268,51 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 # Logs
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {
-#         'default': {
-#             'format': "%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
-#         },
-#     },
-#     'handlers': {
-#         'console': {
-#             'level': 'ERROR',
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'default',
-#         },
-#         'django_file': {
-#             'level': 'ERROR',
-#             'class': 'logging.FileHandler',
-#             'filename': os.getenv('LOGGING_DJANGO_FILE_FP'),
-#             'formatter': 'default'
-#         },
-#         'words_file': {
-#             'level': 'INFO',
-#             'class': 'logging.FileHandler',
-#             'filename': os.getenv('LOGGING_WORDS_FILE_FP'),
-#             'formatter': 'default'
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['console', 'django_file'],
-#             'level': 'ERROR',
-#             'propagate': True
-#         },
-#         'django.request': {
-#             'handlers': ['console', 'django_file'],
-#             'level': 'ERROR',
-#             'propagate': True,
-#         },
-#         'words': {
-#             'handlers': ['words_file',],
-#             'level': 'INFO',
-#             'propagate': False,
-#         },
-#     }
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            'format': "%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'formatter': 'default',
+        },
+        'django_file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.getenv('LOGGING_DJANGO_FILE_FP'),
+            'formatter': 'default'
+        },
+        'words_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.getenv('LOGGING_WORDS_FILE_FP'),
+            'formatter': 'default'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'django_file'],
+            'level': 'ERROR',
+            'propagate': True
+        },
+        'django.request': {
+            'handlers': ['console', 'django_file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'words': {
+            'handlers': ['words_file',],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    }
+}
 
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 

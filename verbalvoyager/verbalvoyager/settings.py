@@ -156,6 +156,7 @@ LOGOUT_REDIRECT_URL = '/'
 # Recaptcha
 RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY')
+SILENCED_SYSTEM_CHECKS = ['***_recaptcha.recaptcha_test_key_error']
 
 # Internationalization
 LANGUAGE_CODE = 'ru-ru'
