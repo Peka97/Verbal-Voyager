@@ -126,7 +126,7 @@ jobs:
       - name: Run tests
         working-directory: ${{ github.workspace }}/verbalvoyager/
         env:
-          DJANGO_SETTINGS_MODULE: ${{ secrets.DJANGO_SETTINGS_MODULE }}
+          DJANGO_SETTINGS_MODULE: ${{ secrets.DJANGO_SETTINGS_TEST_MODULE }}
           DJANGO_SECRET_KEY: ${{ secrets.SECRET_KEY }}
           DEBUG: ${{ secrets.DEBUG }}
           ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
