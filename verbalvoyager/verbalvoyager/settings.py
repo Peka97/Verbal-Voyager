@@ -166,6 +166,7 @@ SILENCED_SYSTEM_CHECKS = os.getenv('SILENCED_SYSTEM_CHECKS', []).split(
 # Internationalization
 LANGUAGE_CODE = 'ru-ru'
 
+
 USE_I18N = True
 USE_L10N = True
 LANGUAGES = [
