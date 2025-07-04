@@ -118,7 +118,6 @@ WSGI_APPLICATION = 'verbalvoyager.wsgi.application'
 if DEBUG:
     DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 
-
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE'),
