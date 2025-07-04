@@ -42,7 +42,7 @@ jobs:
 
       - name: Set up PostgreSQL
         run: |
-          PGPASSWORD=postgres psql -U postgres -h localhost -c "CREATE USER ${{ secrets.DB_USER }} WITH PASSWORD '${{ secrets.DB_PASSWORD }}'';"
+          PGPASSWORD=postgres psql -U postgres -h localhost -c "CREATE USER ${{ secrets.DB_USER }} WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
           PGPASSWORD=postgres psql -U postgres -h localhost -c "CREATE DATABASE ${{ secrets.DB_NAME }} WITH OWNER ${{ secrets.DB_USER }};"
           PGPASSWORD=postgres psql -U postgres -h localhost -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.DB_NAME }} TO ${{ secrets.DB_USER }};"
 
