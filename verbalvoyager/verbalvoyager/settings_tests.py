@@ -159,7 +159,7 @@ RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY')
 RECAPTCHA_REQUIRED_SCORE = 0.0
 RECAPTCHA_TESTING = True
-SILENCED_SYSTEM_CHECKS = ['***_recaptcha.recaptcha_test_key_error']
+SILENCED_SYSTEM_CHECKS = ['***_recaptcha.recaptcha_test_key_error',]
 
 # Internationalization
 LANGUAGE_CODE = 'ru-ru'
