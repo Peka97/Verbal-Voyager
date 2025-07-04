@@ -40,6 +40,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set up PostgreSQL
+        run: |
+          docker exec postgres psql -U postgres -c "CREATE USER ${{ secrets.DB_USER }} WITH PASSWORD ${{ secrets.DB_PASSWORD }};"
+          docker exec postgres psql -U postgres -c "CREATE DATABASE ${{ secrets.DB_NAME }} WITH OWNER ${{ secrets.DB_USER }};"
+          docker exec postgres psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.DB_NAME }} TO ${{ secrets.DB_USER }};"
+
       - name: Set up Python 3.10.12
         uses: actions/setup-python@v4
         with:
