@@ -1,26 +1,22 @@
 import os
 from pathlib import Path
 
-from config import CURRENT_CONFIG
+from dotenv import load_dotenv
 
+load_dotenv('.env.test', override=True)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = CURRENT_CONFIG.SECRET_KEY
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = CURRENT_CONFIG.DEBUG
+DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = [
-    '127.0.0.1', 'localhost', '', '::1', '158.160.153.184', 'verbal-voyager.ru', 'www.verbal-voyager.ru', 'cdn.verbal-voyager.ru'
-]
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
-INTERNAL_IPS = [
-    '127.0.0.1',
-]
+INTERNAL_IPS = os.getenv('INTERNAL_IPS').split(',')
 
 # CSRF
-CSRF_TRUSTED_ORIGINS = [
-    'http://verbal-voyager.ru', 'http://cdn.verbal-voyager.ru', 'http://www.verbal-voyager.ru', 'https://verbal-voyager.ru', 'https://www.verbal-voyager.ru', 'http://cdn.verbal-voyager.ru']
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(',')
 
 # Application definition
 INSTALLED_APPS = [
@@ -70,7 +66,7 @@ MIDDLEWARE = [
     'users.middleware.TimezoneMiddleware'
 ]
 
-if CURRENT_CONFIG.DEBUG:
+if DEBUG:
     INSTALLED_APPS = [
         *INSTALLED_APPS,
         'debug_toolbar',
@@ -100,7 +96,7 @@ TEMPLATES = [
 ]
 
 # Enable Django Admin Tools
-if CURRENT_CONFIG.admin_tools_enabled:
+if os.getenv('ADMIN_TOOLS_ENABLE') is True:
     INSTALLED_APPS = [
         'admin_tools',
         'admin_tools.theming',
@@ -119,38 +115,22 @@ if CURRENT_CONFIG.admin_tools_enabled:
 
 WSGI_APPLICATION = 'verbalvoyager.wsgi.application'
 
-if CURRENT_CONFIG.DEBUG:
+if DEBUG:
     DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 
-if CURRENT_CONFIG.DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'verbalvoyagertest',
-            'USER': 'django',
-            'PASSWORD': 'django',
-            'HOST': 'localhost',
-            'PORT': '5432',
-            'TEST': {
-                'NAME': 'test_verbal_voyager',
-            },
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': os.getenv('DB_ENGINE'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
+        'TEST': {
+            'NAME': os.getenv('DB_TEST_NAME'),
+        },
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'verbalvoyager',
-            'USER': 'django',
-            'PASSWORD': CURRENT_CONFIG.psql_pswd,
-            'HOST': 'localhost',
-            'PORT': '',
-            'TEST': {
-                'NAME': 'test_verbal_voyager',
-            },
-        }
-    }
-
+}
 
 # Authentication
 AUTH_USER_MODEL = 'users.User'
@@ -174,10 +154,11 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 # Recaptcha
-RECAPTCHA_PUBLIC_KEY = CURRENT_CONFIG.RECAPTCHA_PUBLIC_TEST_KEY
-RECAPTCHA_PRIVATE_KEY = CURRENT_CONFIG.RECAPTCHA_PRIVATE_TEST_KEY
-RECAPTCHA_REQUIRED_SCORE = 0.0
-RECAPTCHA_TEST_MODE = True
+# Тестовый ключ (v2, но работает и для v3)
+RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY')  # Тестовый ключ
+RECAPTCHA_REQUIRED_SCORE = 0.0  # Минимальный балл (можно 0.0 для тестов)
+RECAPTCHA_TESTING = True  # ✅ Важно! Именно так, а не TEST_MODE
 
 # Internationalization
 LANGUAGE_CODE = 'ru-ru'
@@ -195,7 +176,7 @@ TIME_ZONE = 'Europe/Saratov'
 USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
-if CURRENT_CONFIG.DEBUG:
+if DEBUG:
     STATIC_URL = '/static/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 else:
@@ -217,39 +198,39 @@ FILE_UPLOAD_HANDLERS = [
 # Redis
 CACHES = {
     "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
+        "BACKEND": os.getenv("REDIS_BACKEND"),
         # 'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-        "LOCATION": CURRENT_CONFIG.REDIS_DEFAULT_LOCATION,
+        "LOCATION": os.getenv("REDIS_DEFAULT_LOCATION"),
         "OPTIONS": {
             "SOCKET_CONNECT_TIMEOUT": 5,
             "SOCKET_TIMEOUT": 5,
-            "VERSION": CURRENT_CONFIG.REDIS_VERSION,
-            "SSL": not CURRENT_CONFIG.DEBUG,
+            "VERSION": os.getenv("REDIS_VERSION"),
+            "SSL": not DEBUG,
             "CONNECTION_POOL_KWARGS": {
                 "max_connections": 100,
                 "retry_on_timeout": True,
             },
             "COMPRESS_MIN_LENGTH": 500,
         },
-        "KEY_PREFIX": "test_vv",
+        "KEY_PREFIX": os.getenv("REDIS_DEFAULT_PREFIX"),
         "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
         "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
     },
     "sessions": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": CURRENT_CONFIG.REDIS_SESSION_LOCATION,
+        "LOCATION": os.getenv("REDIS_SESSION_LOCATION"),
         "OPTIONS": {
             "SOCKET_CONNECT_TIMEOUT": 5,
             "SOCKET_TIMEOUT": 5,
-            "VERSION": CURRENT_CONFIG.REDIS_VERSION,
-            "SSL": not CURRENT_CONFIG.DEBUG,
+            "VERSION": os.getenv("REDIS_VERSION"),
+            "SSL": not DEBUG,
             "CONNECTION_POOL_KWARGS": {
                 "max_connections": 100,
                 "retry_on_timeout": True,
             },
             "COMPRESS_MIN_LENGTH": 500,
         },
-        "KEY_PREFIX": "test_vv:s",
+        "KEY_PREFIX": os.getenv("REDIS_SESSION_PREFIX"),
         "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
         "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
     }
@@ -265,7 +246,7 @@ SESSION_REDIS_MAX_ENTRIES = 10000
 SESSION_REDIS_EXPIRE = SESSION_COOKIE_AGE
 REDIS_METRICS_ENABLED = True
 
-if not CURRENT_CONFIG.DEBUG:
+if DEBUG:
     SESSION_COOKIE_SAMESITE = 'Lax'
     CSRF_COOKIE_SECURE = True
 
@@ -278,12 +259,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # SMTP
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Вывод писем в консоль
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 465
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_USE_SSL = True
 EMAIL_TIMEOUT = 15
-EMAIL_HOST_USER = CURRENT_CONFIG.email_login
-EMAIL_HOST_PASSWORD = CURRENT_CONFIG.email_password
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 # Logs
 LOGGING = {
@@ -303,13 +284,13 @@ LOGGING = {
         'django_file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': CURRENT_CONFIG.DJANGO_LOG_FILE_PATH,
+            'filename': os.getenv('LOGGING_DJANGO_FILE_FP'),
             'formatter': 'default'
         },
         'words_file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': CURRENT_CONFIG.WORDS_LOG_FILE_PATH,
+            'filename': os.getenv('LOGGING_WORDS_FILE_FP'),
             'formatter': 'default'
         },
     },
@@ -332,14 +313,9 @@ LOGGING = {
     }
 }
 
-OPENAI_API_KEY = CURRENT_CONFIG.OPENAI_API_KEY
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
-if DEBUG:
-    SITE_NAME = 'http://127.0.0.1:8000'
-else:
-    SITE_NAME = 'https://verbal-voyager.ru'
-
+SITE_NAME = os.getenv('SITE_NAME')
 SITE_ID = 1
-
 
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
