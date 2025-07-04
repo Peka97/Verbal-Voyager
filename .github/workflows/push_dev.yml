@@ -36,7 +36,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Print secret safely
-        run: echo "DB_PASSWORD is set (value masked)"
+        run: |
+          echo "DB_ENGINE: $DB_ENGINE"
         env:
           DB_ENGINE: ${{ secrets.DB_ENGINE }}
       - name: Make migrations for users app
