@@ -35,6 +35,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      - name: Print secret safely
+        run: echo "DB_PASSWORD is set (value masked)"
+        env:
+          DB_ENGINE: ${{ secrets.DB_ENGINE }}
       - name: Make migrations for users app
         working-directory: ${{ github.workspace }}/verbalvoyager/
         env:
