@@ -1,4 +1,5 @@
 import os
+import json
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -154,9 +155,13 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 # Recaptcha
-RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY')
-RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY')
-SILENCED_SYSTEM_CHECKS = ['***_recaptcha.recaptcha_test_key_error']
+# RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY')
+# RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY')
+RECAPTCHA_PUBLIC_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+RECAPTCHA_PRIVATE_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
+SILENCED_SYSTEM_CHECKS = os.getenv('SILENCED_SYSTEM_CHECKS', []).split(
+    ',') if os.getenv('SILENCED_SYSTEM_CHECKS') else []
+
 
 # Internationalization
 LANGUAGE_CODE = 'ru-ru'

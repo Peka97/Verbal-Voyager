@@ -92,6 +92,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           LOGGING_DJANGO_FILE_FP: ${{ secrets.LOGGING_DJANGO_FILE_FP }}
           LOGGING_WORDS_FILE_FP: ${{ secrets.LOGGING_WORDS_FILE_FP }}
+          SILENCED_SYSTEM_CHECKS: django_recaptcha.recaptcha_test_key_error
         run: python manage.py makemigrations
 
       - name: Run migrations
