@@ -16,7 +16,7 @@ jobs:
         image: postgres:14.17
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: 
+          POSTGRES_PASSWORD: postgres
           POSTGRES_DB: verbalvoyagertest
         ports:
           - 5432:5432
@@ -42,9 +42,9 @@ jobs:
 
       - name: Set up PostgreSQL
         run: |
-          psql -U postgres -h localhost -c "CREATE USER ${{ secrets.DB_USER }} WITH PASSWORD ${{ secrets.DB_PASSWORD }};"
-          psql -U postgres -h localhost -c "CREATE DATABASE ${{ secrets.DB_NAME }} WITH OWNER ${{ secrets.DB_USER }};"
-          psql -U postgres -h localhost -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.DB_NAME }} TO ${{ secrets.DB_USER }};"
+          PGPASSWORD=postgres psql -U postgres -h localhost -c "CREATE USER ${{ secrets.DB_USER }} WITH PASSWORD ${{ secrets.DB_PASSWORD }};"
+          PGPASSWORD=postgres psql -U postgres -h localhost -c "CREATE DATABASE ${{ secrets.DB_NAME }} WITH OWNER ${{ secrets.DB_USER }};"
+          PGPASSWORD=postgres psql -U postgres -h localhost -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.DB_NAME }} TO ${{ secrets.DB_USER }};"
 
       - name: Set up Python 3.10.12
         uses: actions/setup-python@v4
