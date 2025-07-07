@@ -71,22 +71,23 @@ def test_admin_user_save(admin_user):
 def test_teacher_user_save(teacher_user):
     client = Client()
     client.login(
-        username=teacher_user.username,
-        password=teacher_user.password
+        username='teacher',
+        password='teacherpassword',
     )
     url = reverse('admin:users_user_add')
+
+    response = client.get(url)
+    assert response.status_code == 200
 
     data = {
         'username': 'newstudent',
         'password1': 'newpassword123',
         'password2': 'newpassword123',
     }
-    response = client.get(url)
-    assert response.status_code == 200
 
     response = client.post(url, data)
 
-    assert response.status_code == 302  # Redirect after successful save
+    assert response.status_code == 302
     assert User.objects.filter(username='newstudent').exists()
 
 
@@ -95,6 +96,9 @@ def test_student_user_not_save(student_user):
     client = Client()
     client.login(username='student', password='studentpassword')
     url = reverse('admin:users_user_add')
+
+    response = client.get(url)
+    assert response.status_code == 302
 
     data = {
         'username': 'newstudent2',

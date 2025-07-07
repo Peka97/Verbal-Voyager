@@ -18,8 +18,7 @@ def admin_user():
 
 
 @pytest.fixture
-def teacher_user():
-    teacher_group, _ = Group.objects.get_or_create(name='Teacher')
+def teacher_user(teacher_group):
     user = User.objects.create_user(
         username='teacher',
         password='teacherpassword',
@@ -40,6 +39,77 @@ def student_user():
     )
     user.groups.add(student_group)
     return user
+
+
+@pytest.fixture
+def teacher_group():
+    group = Group.objects.get_or_create(name='Teacher')[0]
+    permissions = Permission.objects.filter(
+        codename__in=[
+            'view_logentry,'
+            'view_group,'
+            'view_permission,'
+            'view_course,'
+            'add_lesson,'
+            'change_lesson,'
+            'delete_lesson,'
+            'view_lesson,'
+            'add_lessontask,'
+            'change_lessontask,'
+            'delete_lessontask,'
+            'view_lessontask,'
+            'add_project,'
+            'change_project,'
+            'delete_project,'
+            'view_project,'
+            'add_projecttask,'
+            'change_projecttask,'
+            'delete_projecttask,'
+            'view_projecttask,'
+            'view_projecttype,'
+            'add_review,'
+            'change_review,'
+            'view_review,'
+            'view_exercisedialogresult,'
+            'view_exercisewordsresult,'
+            'view_newexerciseirregularenglishverbresult,'
+            'add_exercisecategory,'
+            'change_exercisecategory,'
+            'delete_exercisecategory,'
+            'view_exercisecategory,'
+            'add_exercisedialog,'
+            'change_exercisedialog,'
+            'delete_exercisedialog,'
+            'view_exercisedialog,'
+            'add_exercisewords,'
+            'change_exercisewords,'
+            'delete_exercisewords,'
+            'view_exercisewords,'
+            'add_newexerciseirregularenglishverb,'
+            'change_newexerciseirregularenglishverb,'
+            'delete_newexerciseirregularenglishverb,'
+            'view_newexerciseirregularenglishverb,'
+            'add_englishlessonmainaims,'
+            'change_englishlessonmainaims,'
+            'delete_englishlessonmainaims,'
+            'view_englishlessonmainaims,'
+            'add_englishlessonplan,'
+            'change_englishlessonplan,'
+            'delete_englishlessonplan,'
+            'view_englishlessonplan,'
+            'add_englishlessonsubsidiaryaims,'
+            'change_englishlessonsubsidiaryaims,'
+            'delete_englishlessonsubsidiaryaims,'
+            'view_englishlessonsubsidiaryaims,'
+            'add_user,'
+            'change_user,'
+            'view_user,'
+        ]
+    )
+    group.permissions.add(*permissions)
+    return group
+
+# TODO: to delete afted separete for signle fixture
 
 
 @pytest.fixture(autouse=True)

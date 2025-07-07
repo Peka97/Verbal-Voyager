@@ -5,6 +5,9 @@ from django.test import Client
 from users.forms import RegistrationUserForm, AuthUserForm
 # Import the default PasswordResetForm
 from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 @pytest.mark.django_db
@@ -23,7 +26,7 @@ def test_user_auth_register_view_get(client):
 
 
 @pytest.mark.django_db
-def test_user_auth_register_view_post_register(client, mocker):
+def test_user_auth_register_view_post_register(client):
     """
     Test that the UserAuthRegisterView handles registration correctly.
     """
@@ -34,25 +37,19 @@ def test_user_auth_register_view_post_register(client, mocker):
         'password1': 'testpassword123',
         'password2': 'testpassword123',
         'email': 'testuser@example.com',
-        'first_name': 'Test',  # Add required field
-        'last_name': 'User',   # Add required field
-        # Add required field (assuming 'PASSED' is a valid captcha response)
+        'first_name': 'Test',
+        'last_name': 'User',
         'captcha': 'PASSED'
     }
 
-    # Mock the captcha validation to always pass
-    mocker.patch('users.forms.RegistrationUserForm.clean_captcha',
-                 return_value=True)
-
     response = client.post(url, data)
 
-    # Print form errors if any
     if response.context and 'form' in response.context:
         form = response.context['form']
         if form.errors:
             print("Form errors:", form.errors)
 
-    assert response.status_code == 302  # Redirect after successful registration
+    assert response.status_code == 302
     assert User.objects.filter(username='testuser').exists()
 
 
@@ -63,16 +60,17 @@ def test_user_auth_register_view_post_login(client):
     """
     user = User.objects.create_user(
         username='testuser', password='testpassword123')
-    url = reverse('auth')  # Updated to use the correct URL pattern name
+    url = reverse('auth')
     data = {
         'action': 'login',
         'username': 'testuser',
-        'password': 'testpassword123'
+        'password': 'testpassword123',
+        'captcha': 'PASSED'
     }
 
     response = client.post(url, data)
 
-    assert response.status_code == 302  # Redirect after successful login
+    assert response.status_code == 302
     assert response.wsgi_request.user.is_authenticated
 
 
@@ -84,7 +82,7 @@ def test_user_logout_view(client):
     user = User.objects.create_user(
         username='testuser', password='testpassword123')
     client.login(username='testuser', password='testpassword123')
-    url = reverse('logout')  # Assuming the name of the URL pattern is 'logout'
+    url = reverse('logout')
 
     response = client.get(url)
 
@@ -100,7 +98,6 @@ def test_user_account_view_get(client):
     user = User.objects.create_user(
         username='testuser', password='testpassword123')
     client.login(username='testuser', password='testpassword123')
-    # Assuming the name of the URL pattern is 'account'
     url = reverse('account')
 
     response = client.get(url)
@@ -118,11 +115,9 @@ def test_custom_password_reset_view_get(client):
     """
     Test that the CustomPasswordResetView renders the correct template.
     """
-    url = reverse(
-        'reset_password')  # Updated to use the correct URL pattern name
+    url = reverse('reset_password')
     response = client.get(url)
 
     assert response.status_code == 200
     assert 'form' in response.context
-    # Use the default PasswordResetForm
     assert isinstance(response.context['form'], PasswordResetForm)
