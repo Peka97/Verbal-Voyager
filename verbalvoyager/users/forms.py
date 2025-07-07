@@ -15,12 +15,7 @@ User = get_user_model()
 
 
 class AuthUserForm(AuthenticationForm):
-    class Meta:
-        model = User
-        fields = [
-            'username',
-            'password1',
-        ]
+    pass
 
 
 class RegistrationUserForm(UserCreationForm):
