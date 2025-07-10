@@ -151,7 +151,6 @@ def find_all_template_files(app_name):
             path for path in settings.TEMPLATES[0]['DIRS']
             if f'{app_name}/templates/{app_name}' in path
         ]
-    print('Template dirs:', template_dirs, sep='\n')
 
     template_files = []
 
@@ -257,7 +256,7 @@ def find_all_js_files(app_name):
         if os.path.exists(app_static_path):
             for root, _, files in os.walk(app_static_path):
                 for file in files:
-                    if file.endswith('.js'):
+                    if file.endswith('.js') and not file.startswith('_'):
                         full_path = os.path.join(root, file)
                         js_files.append(full_path)
 

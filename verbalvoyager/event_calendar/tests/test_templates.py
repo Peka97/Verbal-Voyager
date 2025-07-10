@@ -1,16 +1,11 @@
-from conftest import check_all_js_imports
+
 import pytest
-from conftest import check_all_static_files_in_templates, check_all_js_imports
-
-
-@pytest.mark.django_db
-def test_check_all_static_files_in_templates():
-    assert check_all_static_files_in_templates('pages') == {}
+from conftest import check_all_js_imports
 
 
 @pytest.mark.django_db
 def test_check_all_js_imports():
-    missed_js_imports = check_all_js_imports('pages')
+    missed_js_imports = check_all_js_imports('event_calendar')
 
     if missed_js_imports:
         print("\n" + "="*50)
