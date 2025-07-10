@@ -262,7 +262,7 @@ def new_exercise_irregular_verbs(request, ex_id, step):
 
     irregular_verbs = exercise.words.prefetch_related(prefetched).all()
 
-    template_name = f'exercises/english/irregular_verbs/step_{step}.html'
+    template_name = f'exercises/irregular_verbs/step_{step}.html'
     context = {
         'title': titles[step],
         'popover': popover_data[step],

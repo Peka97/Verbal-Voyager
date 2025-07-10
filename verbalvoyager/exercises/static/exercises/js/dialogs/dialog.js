@@ -12,67 +12,67 @@ insertDropdownInMessages();
 fillSubMenuElements();
 
 function findWords() {
-	let result = Array();
-	for (let index = 1; index <= wordsLenght; index++) {
-		let elementID = `word_${index}`;
-		let element = document.getElementById(elementID);
-		result.push(element);
-	}
-	return result;
+  let result = Array();
+  for (let index = 1; index <= wordsLenght; index++) {
+    let elementID = `word_${index}`;
+    let element = document.getElementById(elementID);
+    result.push(element);
+  }
+  return result;
 }
 
 function setOrderInMessageContainer() {
-	let avatars = [...document.getElementsByClassName("avatar-container")];
-	for (let i = 0; i < avatars.length; i++) {
-		if ((i + 1) % 2 === 0) {
-			avatars[i].classList.add("order-2");
-		}
-	}
+  let avatars = [...document.getElementsByClassName("avatar-container")];
+  for (let i = 0; i < avatars.length; i++) {
+    if ((i + 1) % 2 === 0) {
+      avatars[i].classList.add("order-2");
+    }
+  }
 }
 
 function replaceTextIgnoringHTMLDOM(element, word, replacementHTML) {
-	const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+  const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
 
-	let node;
-	while ((node = walker.nextNode())) {
-		if (node.parentNode.nodeName !== "SCRIPT" && node.parentNode.nodeName !== "STYLE") {
-			const regex = new RegExp(`(?:(?<=\\s)|^)([¡¿])?(${word})(?:['s])?([!\?.,]*)?(?=\\s|$)`, "gi");
-			let text = node.textContent;
-			let match;
-			let lastIndex = 0;
-			const fragment = document.createDocumentFragment();
+  let node;
+  while ((node = walker.nextNode())) {
+    if (node.parentNode.nodeName !== "SCRIPT" && node.parentNode.nodeName !== "STYLE") {
+      const regex = new RegExp(`(?:(?<=\\s)|^)([¡¿])?(${word})(?:['s])?([!\?.,]*)?(?=\\s|$)`, "gi");
+      let text = node.textContent;
+      let match;
+      let lastIndex = 0;
+      const fragment = document.createDocumentFragment();
 
-			while ((match = regex.exec(text)) !== null) {
-				fragment.appendChild(document.createTextNode(text.substring(lastIndex, match.index)));
+      while ((match = regex.exec(text)) !== null) {
+        fragment.appendChild(document.createTextNode(text.substring(lastIndex, match.index)));
 
-				const tempDiv = document.createElement("span");
+        const tempDiv = document.createElement("span");
 
-				tempDiv.innerHTML = match[1]
-					? match[1]
-					: "" + replacementHTML + (match[0].replace(word, "") ? match[0].replace(word, "") : "");
-				// tempDiv.innerHTML = match[1] ? match[1] : '' + replacementHTML + (match[3] ? match[3] : ''); // Old
-				fragment.appendChild(tempDiv);
+        tempDiv.innerHTML = match[1]
+          ? match[1]
+          : "" + replacementHTML + (match[0].replace(word, "") ? match[0].replace(word, "") : "");
+        // tempDiv.innerHTML = match[1] ? match[1] : '' + replacementHTML + (match[3] ? match[3] : ''); // Old
+        fragment.appendChild(tempDiv);
 
-				lastIndex = match.index + match[0].length;
-			}
+        lastIndex = match.index + match[0].length;
+      }
 
-			fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
-			node.parentNode.replaceChild(fragment, node);
-		}
-	}
+      fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
+      node.parentNode.replaceChild(fragment, node);
+    }
+  }
 }
 
 function insertDropdownInMessages() {
-	messages.forEach((message) => {
-		let messageText = message.innerText.toLowerCase();
+  messages.forEach((message) => {
+    let messageText = message.innerText.toLowerCase();
 
-		words.forEach((wordEl) => {
-			let word = wordEl.dataset["word"];
-			const regexStr = `(?:(?<=\\s)|^)([¡¿])?(${word})(?:['s])?([!\?.,]*)?(?=\\s|$)`;
-			const regex = new RegExp(regexStr, "gmi");
+    words.forEach((wordEl) => {
+      let word = wordEl.dataset["word"];
+      const regexStr = `(?:(?<=\\s)|^)([¡¿])?(${word})(?:['s])?([!\?.,]*)?(?=\\s|$)`;
+      const regex = new RegExp(regexStr, "gmi");
 
-			if (messageText.matchAll(regex)) {
-				let dropDownHTML = `
+      if (messageText.matchAll(regex)) {
+        let dropDownHTML = `
                     <div class="menu">
                         <div class="item" data-key="${wordEl.dataset["word"]}">
                             <a href="#" class="menu-word-link">
@@ -90,106 +90,106 @@ function insertDropdownInMessages() {
                         </div>
                     </div>
                     `;
-				replaceTextIgnoringHTMLDOM(message, word, dropDownHTML);
-				// message.innerHTML = message.innerHTML.replaceAll(regex, dropDownHTML)
-			}
-		});
-	});
+        replaceTextIgnoringHTMLDOM(message, word, dropDownHTML);
+        // message.innerHTML = message.innerHTML.replaceAll(regex, dropDownHTML)
+      }
+    });
+  });
 }
 
 function fillSubMenuElements() {
-	let dropDownSubmenu = [...document.getElementsByClassName("dropdown submenu")];
+  let dropDownSubmenu = [...document.getElementsByClassName("dropdown submenu")];
 
-	dropDownSubmenu.forEach((subMenu) => {
-		const keyWord = subMenu.parentElement.dataset["key"];
-		const wordsVariants = getWordsVariants(keyWord);
+  dropDownSubmenu.forEach((subMenu) => {
+    const keyWord = subMenu.parentElement.dataset["key"];
+    const wordsVariants = getWordsVariants(keyWord);
 
-		for (var i = 0; i < wordsVariants.length; i++) {
-			let subMenuElement = document.createElement("div");
-			subMenuElement.className = "submenu-item";
-			let subMenuWordLink = document.createElement("a");
-			subMenuWordLink.className = "submenu-word-link";
-			subMenuWordLink.href = "#";
-			subMenuWordLink.value = wordsVariants[i].dataset.translation;
-			subMenuWordLink.text = wordsVariants[i].dataset.word;
+    for (var i = 0; i < wordsVariants.length; i++) {
+      let subMenuElement = document.createElement("div");
+      subMenuElement.className = "submenu-item";
+      let subMenuWordLink = document.createElement("a");
+      subMenuWordLink.className = "submenu-word-link";
+      subMenuWordLink.href = "#";
+      subMenuWordLink.value = wordsVariants[i].dataset.translation;
+      subMenuWordLink.text = wordsVariants[i].dataset.word;
 
-			subMenuElement.appendChild(subMenuWordLink);
-			subMenu.appendChild(subMenuElement);
-		}
-	});
+      subMenuElement.appendChild(subMenuWordLink);
+      subMenu.appendChild(subMenuElement);
+    }
+  });
 }
 
 function getWordsVariants(keyWord) {
-	const answer = words.filter((item) => {
-		return item.dataset.word === keyWord;
-	})[0];
+  const answer = words.filter((item) => {
+    return item.dataset.word === keyWord;
+  })[0];
 
-	let variants = words.filter((item) => {
-		return item.dataset.word !== keyWord;
-	});
+  let variants = words.filter((item) => {
+    return item.dataset.word !== keyWord;
+  });
 
-	if (variants.length > maxWordsInSubmenu) {
-		variants = variants.slice(0, maxWordsInSubmenu);
-	}
+  if (variants.length > maxWordsInSubmenu) {
+    variants = variants.slice(0, maxWordsInSubmenu);
+  }
 
-	variants.push(answer);
-	variants = shuffle(variants);
+  variants.push(answer);
+  variants = shuffle(variants);
 
-	return variants;
+  return variants;
 }
 
 function shuffle(array) {
-	var currentIndex = array.length,
-		temporaryValue,
-		randomIndex;
+  var currentIndex = array.length,
+    temporaryValue,
+    randomIndex;
 
-	while (0 !== currentIndex) {
-		randomIndex = Math.floor(Math.random() * currentIndex);
-		currentIndex -= 1;
+  while (0 !== currentIndex) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
 
-		temporaryValue = array[currentIndex];
-		array[currentIndex] = array[randomIndex];
-		array[randomIndex] = temporaryValue;
-	}
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
 
-	return array;
+  return array;
 }
 
 let wordLinks = [...document.getElementsByClassName("submenu-word-link")];
 let menus = [...document.getElementsByClassName("menu")];
 let points = menus.length;
 wordLinks.forEach((word_link) => {
-	word_link.addEventListener("click", (event) => {
-		event.preventDefault();
+  word_link.addEventListener("click", (event) => {
+    event.preventDefault();
 
-		let el = event.target;
-		const menu = el.parentElement.parentElement.parentElement.parentElement;
-		const key = el.parentElement.parentElement.parentElement.dataset.key.toLowerCase();
-		const chosen = el.firstChild.data.toLowerCase();
+    let el = event.target;
+    const menu = el.parentElement.parentElement.parentElement.parentElement;
+    const key = el.parentElement.parentElement.parentElement.dataset.key.toLowerCase();
+    const chosen = el.firstChild.data.toLowerCase();
 
-		if (key != chosen) {
-			menu.classList.remove("correct");
-			menu.classList.add("wrong");
-			if (points > 1) {
-				points--;
-			}
-		} else {
-			menu.firstElementChild.firstElementChild.firstElementChild.innerText = key;
-			menu.classList.remove("wrong");
-			menu.classList.add("correct");
-		}
+    if (key != chosen) {
+      menu.classList.remove("correct");
+      menu.classList.add("wrong");
+      if (points > 1) {
+        points--;
+      }
+    } else {
+      menu.firstElementChild.firstElementChild.firstElementChild.innerText = key;
+      menu.classList.remove("wrong");
+      menu.classList.add("correct");
+    }
 
-		allWordsCorrect();
-	});
+    allWordsCorrect();
+  });
 });
 
 function allWordsCorrect() {
-	for (let i = 0; i < menus.length; i++) {
-		if (!menus[i].classList.contains("correct")) {
-			return false;
-		}
-	}
+  for (let i = 0; i < menus.length; i++) {
+    if (!menus[i].classList.contains("correct")) {
+      return false;
+    }
+  }
 
-	send_points("dialog", points);
-	showToast("Отлично! Теперь прочитай получившийся текст и после возвращайся в личный кабинет.");
+  send_points("dialog", points);
+  showToast("Отлично! Теперь прочитай получившийся текст и после возвращайся в личный кабинет.");
 }

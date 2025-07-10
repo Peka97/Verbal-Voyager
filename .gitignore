@@ -169,7 +169,8 @@ test.py
 migrations/
 load_fixtures_data.sh
 # requirements.txt
-*dump*.json
+# *dump*.json
+*.json
 *.csv
 fix_words.py
 verbalvoyager/static/*

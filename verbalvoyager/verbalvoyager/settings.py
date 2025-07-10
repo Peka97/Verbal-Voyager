@@ -1,8 +1,6 @@
-import json
+from dotenv import load_dotenv
 import os
 from pathlib import Path
-
-from dotenv import load_dotenv
 
 
 load_dotenv()
@@ -41,6 +39,7 @@ INSTALLED_APPS = [
     'nested_admin',  # Django Admin multiinlines
     'django_recaptcha',  # Recaptcha
     'django_json_widget',  # Django Admin JSON Widget
+    'django_cleanup.apps.CleanupConfig',  # Auto cleaner
 
     # Created
     'users',

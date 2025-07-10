@@ -11,7 +11,7 @@ from logging_app.helpers import log_action
 from pages.filters import DropdownFilter, RelatedDropdownFilter
 
 from .filters import StudentsListFilter, TeachersListFilter
-from .forms import NewExerciseDialogAdminForm
+from .forms import NewExerciseDialogAdminForm, NewWordsExerciseForm
 from .models import (
     ExerciseCategory,
     ExerciseDialog,
@@ -38,7 +38,7 @@ class ExerciseCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(ExerciseWords)
 class ExerciseWordsAdmin(admin.ModelAdmin):
-    # form = NewWordsExerciseForm
+    form = NewWordsExerciseForm
     show_full_result_count = False
     save_as = True
     search_fields = [

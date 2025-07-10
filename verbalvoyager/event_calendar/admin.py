@@ -390,6 +390,21 @@ class ProjectAdmin(admin.ModelAdmin):
             days = []
             durations = []
 
+            if not from_date or not to_date:
+                self.message_user(
+                    request,
+                    f'Проект {project.pk} не имеет даты начала и\или окончания. Планирование занятий этого проекта было пропущено. Укажите даты и повторите попытку планирования для этого проекта.',
+                    messages.ERROR,
+                )
+                continue
+            if not project.lesson_1:
+                self.message_user(
+                    request,
+                    f'Проект {project.pk} не имеет даты ближайшего занятия. Планирование занятий этого проекта было пропущено. Укажите дату первого занятия и повторите попытку планирования для этого проекта.',
+                    messages.ERROR,
+                )
+                continue
+
             if project.lesson_1:
                 days.append(project.lesson_1)
                 durations.append(project.lesson_1_duration)
@@ -425,6 +440,11 @@ class ProjectAdmin(admin.ModelAdmin):
                     else:
                         in_period = False
                         break
+        from django.core.cache import cache
+
+        for student in students.all():
+            cache.delete_pattern(f"*user_{student.id}_lessons*")
+        cache.delete_pattern(f"*user_{teacher.id}_lessons*")
 
         self.message_user(
             request,
