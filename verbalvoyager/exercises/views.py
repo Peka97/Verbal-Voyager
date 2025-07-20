@@ -21,41 +21,41 @@ User = get_user_model()
 
 
 # TODO: move to Jinja filter
-def load_translate_vars(words: list[dict], ex_lang):
-    if ex_lang == 'russian':
-        all_translates = [word['word'] for word in words]
+# def load_translate_vars(words: list[dict], ex_lang):
+#     if ex_lang == 'russian':
+#         all_translates = [word['word'] for word in words]
 
-        for word in words:
-            all_translates_copy = all_translates.copy()
-            all_translates_copy.remove(word['word'])
+#         for word in words:
+#             all_translates_copy = all_translates.copy()
+#             all_translates_copy.remove(word['word'])
 
-            if len(words) > 4:
-                translate_vars = sample(all_translates_copy, 3)
-            else:
-                translate_vars = sample(all_translates_copy, len(words) - 1)
+#             if len(words) > 4:
+#                 translate_vars = sample(all_translates_copy, 3)
+#             else:
+#                 translate_vars = sample(all_translates_copy, len(words) - 1)
 
-            translate_vars.append(word['word'])
-            shuffle(translate_vars)
+#             translate_vars.append(word['word'])
+#             shuffle(translate_vars)
 
-            word['translate_vars'] = translate_vars
-    else:
-        all_translates = [word['translation'] for word in words]
+#             word['translate_vars'] = translate_vars
+#     else:
+#         all_translates = [word['translation'] for word in words]
 
-        for word in words:
-            all_translates_copy = all_translates.copy()
-            all_translates_copy.remove(word['translation'])
+#         for word in words:
+#             all_translates_copy = all_translates.copy()
+#             all_translates_copy.remove(word['translation'])
 
-            if len(words) > 4:
-                translate_vars = sample(all_translates_copy, 3)
-            else:
-                translate_vars = sample(all_translates_copy, len(words) - 1)
+#             if len(words) > 4:
+#                 translate_vars = sample(all_translates_copy, 3)
+#             else:
+#                 translate_vars = sample(all_translates_copy, len(words) - 1)
 
-            translate_vars.append(word['translation'])
-            shuffle(translate_vars)
+#             translate_vars.append(word['translation'])
+#             shuffle(translate_vars)
 
-            word['translate_vars'] = translate_vars
+#             word['translate_vars'] = translate_vars
 
-    return words
+#     return words
 
 
 @login_required

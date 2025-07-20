@@ -2,6 +2,7 @@ import logging
 
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
+from django.views.generic import TemplateView
 
 from event_calendar.models import Review
 from users.services.cache import get_cached_courses
@@ -11,80 +12,88 @@ logger = logging.getLogger('django')
 User = get_user_model()
 
 
-def handler_403(request, exception=None):
-    context = {
-        'title': 'Ошибка доступа: 403',
-        'error_message': 'Доступ к этой странице ограничен.',
-    }
-    return render(request, 'pages/error.html', context, status=403)
+class AbstractHandler(TemplateView):
+    template_name = 'pages/error.html'
 
 
-def handler_404(request, exception=None):
-    context = {
-        'title': 'Страница не найдена: 404',
-        'error_message': 'К сожалению такая страница была не найдена.',
-    }
-    return render(request, 'pages/error.html', context, status=404)
+class Handler403(AbstractHandler):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Ошибка доступа: 403'
+        context['error_message'] = 'Доступ к странице ограничен.'
+        return context
 
 
-def handler_500(request, exception=None):
-    context = {
-        'title': 'Ошибка сервера: 500',
-        'error_message': 'Внутренняя ошибка сайта, вернитесь на главную страницу.',
-    }
-    return render(request, 'pages/error.html', context, status=500)
-
-def index(request):
-    context = {}
-
-    reviews = list(Review.objects.order_by('?').values(
-        'course__name', 'text', 'created_at', 'from_user__first_name')[:3])
-
-    for review in reviews:
-        review['created_at'] = review['created_at'].strftime("%d.%m.%Y")
-
-    context['courses'] = get_cached_courses()
-    context['reviews'] = reviews
-    # context['student_count'] = {
-    #     'english': Project.objects.filter(course_id__name='Английский язык').count(),
-    #     'french': Project.objects.filter(course_id__name='Французский язык').count(),
-    #     'spanish': Project.objects.filter(course_id__name='Испанский язык').count(),
-    #     'russian': Project.objects.filter(course_id__name='Русский язык').count(),
-    #     'сhinese': Project.objects.filter(course_id__name='Китайский язык').count(),
-    # }
-
-    return render(request, 'pages/index.html', context)
+class Handler404(AbstractHandler):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Страница не найдена: 404'
+        context['error_message'] = 'К сожалению такая страница была не найдена.'
+        return context
 
 
-def english_course(request):
-    context = {}
-    return render(request, 'pages/english_course.html', context)
+class Handler500(AbstractHandler):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Ошибка сервера: 500'
+        context['error_message'] = 'Внутренняя ошибка сайта, вернитесь на главную страницу.'
+        return context
 
 
-def french_course(request):
-    context = {}
-    return render(request, 'pages/french_course.html', context)
+class IndexView(TemplateView):
+    template_name = 'pages/index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['courses'] = get_cached_courses()
+        reviews = Review.objects.order_by('?')[:3].values(
+            'course__name', 'text', 'created_at', 'from_user__first_name')
+
+        for review in reviews:
+            review['created_at'] = review['created_at'].strftime("%d.%m.%Y")
+
+        context['reviews'] = reviews
+        # context['student_count'] = {
+        #     'english': Project.objects.filter(course_id__name='Английский язык').count(),
+        #     'french': Project.objects.filter(course_id__name='Французский язык').count(),
+        #     'spanish': Project.objects.filter(course_id__name='Испанский язык').count(),
+        #     'russian': Project.objects.filter(course_id__name='Русский язык').count(),
+        #     'сhinese': Project.objects.filter(course_id__name='Китайский язык').count(),
+        # }
+        return context
 
 
-def spanish_course(request):
-    context = {}
-    return render(request, 'pages/spanish_course.html', context)
+class EnglishCourseView(TemplateView):
+    template_name = 'pages/english_course.html'
 
 
-def portfolio(request):
-    context = {}
-    return render(request, 'pages/portfolio.html', context)
+class FrenchCourseView(TemplateView):
+    template_name = 'pages/french_course.html'
 
 
-def about_project(request):
-    context = {}
-    return render(request, 'pages/about.html', context)
-
-def contacts(request):
-    context = {}
-    return render(request, 'pages/contacts.html', context)
+class SpanishCourseView(TemplateView):
+    template_name = 'pages/spanish_course.html'
 
 
-def faq(request):
-    context = {}
-    return render(request, 'pages/faq.html', context)
+class RussianCourseView(TemplateView):
+    template_name = 'pages/russian_course.html'
+
+
+class ChineseCourseView(TemplateView):
+    template_name = 'pages/chinese_course.html'
+
+
+class PortfolioView(TemplateView):
+    template_name = 'pages/portfolio.html'
+
+
+class AboutProjectView(TemplateView):
+    template_name = 'pages/about.html'
+
+
+class ContactsView(TemplateView):
+    template_name = 'pages/contacts.html'
+
+
+class FaqView(TemplateView):
+    template_name = 'pages/faq.html'

@@ -1,9 +1,6 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
-from pages.views import handler_403, handler_404, handler_500
-
-# , UserRegisterView, UserAccountView, UserLogoutView, CustomPasswordResetView, CustomPasswordResetCompleteView
 from .views import (
     CustomPasswordResetCompleteView,
     CustomPasswordResetView,
@@ -12,11 +9,6 @@ from .views import (
     UserAuthRegisterView,
     UserLogoutView,
 )
-
-
-handler403 = handler_403
-handler404 = handler_404
-handler500 = handler_500
 
 urlpatterns = [
     path('auth/', UserAuthRegisterView.as_view(), name='auth'),

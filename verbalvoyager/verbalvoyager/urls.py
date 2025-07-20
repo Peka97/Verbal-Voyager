@@ -3,13 +3,12 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from pages.views import handler_403, handler_404, handler_500
+from pages.views import Handler403, Handler404, Handler500
 
 
-# TODO: rename handler_\d+ to error_\d+_view
-handler403 = handler_403
-handler404 = handler_404
-handler500 = handler_500
+handler403 = Handler403.as_view()
+handler404 = Handler404.as_view()
+handler500 = Handler500.as_view()
 
 urlpatterns = [
     path('admin/', admin.site.urls, name='admin'),
@@ -28,6 +27,9 @@ if settings.DEBUG:
     urlpatterns = [
         *urlpatterns,
         path("__debug__/", include("debug_toolbar.urls")),
+        path('403', Handler403.as_view(), name='err_403'),
+        path('404', Handler404.as_view(), name='err_404'),
+        path('500', Handler500.as_view(), name='err_500'),
     ]
 
 # if settings.admin_tools_enabled:
